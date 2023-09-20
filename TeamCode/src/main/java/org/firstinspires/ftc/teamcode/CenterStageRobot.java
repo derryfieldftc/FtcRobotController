@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -17,9 +18,9 @@ public class CenterStageRobot implements iRobot{
     private DcMotorEx lfMotor;
     private DcMotorEx lrMotor;
 
-    private final double MIN_ROBOT_SPEED = 0.10; //min speed it will drive at
-    private final double MAX_ROBOT_SPEED = 0.80; //soft limit robot speed
-    private final double NORMAL_ROBOT_SPEED = 0.60; // The normal speed we drive at, 60% of full motor speed
+    private final double MIN_ROBOT_SPEED = 0.15; //min speed it will drive at
+    private final double MAX_ROBOT_SPEED = 1.00; //soft limit robot speed
+    private final double NORMAL_ROBOT_SPEED = 0.80; // The normal speed we drive at, 60% of full motor speed
     public CenterStageRobot(LinearOpMode creator) {
         this.creator = creator;
         this.hardwareMap = creator.hardwareMap;
@@ -31,6 +32,9 @@ public class CenterStageRobot implements iRobot{
         lrMotor = hardwareMap.get(DcMotorEx.class, "LRMotor");
         rfMotor = hardwareMap.get(DcMotorEx.class, "RFMotor");
         rrMotor = hardwareMap.get(DcMotorEx.class, "RRMotor");
+        lfMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        lrMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
     }
 
     @Override
