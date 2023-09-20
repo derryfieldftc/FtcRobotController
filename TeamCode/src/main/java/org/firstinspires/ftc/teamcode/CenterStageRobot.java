@@ -18,9 +18,9 @@ public class CenterStageRobot implements iRobot{
     private DcMotorEx lfMotor;
     private DcMotorEx lrMotor;
 
-    private final double MIN_ROBOT_SPEED = 0.15; //min speed it will drive at
-    private final double MAX_ROBOT_SPEED = 1.00; //soft limit robot speed
-    private final double NORMAL_ROBOT_SPEED = 0.80; // The normal speed we drive at, 60% of full motor speed
+    private final double MIN_ROBOT_SPEED = 0.15; // Min speed it will drive at
+    private final double MAX_ROBOT_SPEED = 1.00; // Soft limit robot speed
+    private final double NORMAL_ROBOT_SPEED = 0.80; // Percentage speed
     public CenterStageRobot(LinearOpMode creator) {
         this.creator = creator;
         this.hardwareMap = creator.hardwareMap;
@@ -53,7 +53,7 @@ public class CenterStageRobot implements iRobot{
     }
 
     @Override
-    public void driveXYRB(double x, double y, double r, double b, double bd) {
+    public void driveXYRB(double x, double y, double r, double boost, double boostDirection) {
         /*
             Because we use Mecanum wheels, we can move forward, rotate, and strafe.
             Here, we are taking into account the direction each wheel should travel at in
@@ -65,10 +65,10 @@ public class CenterStageRobot implements iRobot{
             double rrSpeed = -((y - x + r) * NORMAL_ROBOT_SPEED);  // Right Rear motor speed.
 
             // Calculates and sets power based on its arguments
-            setPowerWithAcceleration(lfMotor, lfSpeed, b, bd);
-            setPowerWithAcceleration(rfMotor, rfSpeed, b, bd);
-            setPowerWithAcceleration(lrMotor, lrSpeed, b, bd);
-            setPowerWithAcceleration(rrMotor, rrSpeed, b, bd);
+            this.setPowerWithAcceleration(lfMotor, lfSpeed, boost, boostDirection);
+            this.setPowerWithAcceleration(rfMotor, rfSpeed, boost, boostDirection);
+            this.setPowerWithAcceleration(lrMotor, lrSpeed, boost, boostDirection);
+            this.setPowerWithAcceleration(rrMotor, rrSpeed, boost, boostDirection);
 
             telemetry.addData("LF", lfMotor.getPower());
             telemetry.addData("LR", lrMotor.getPower());
