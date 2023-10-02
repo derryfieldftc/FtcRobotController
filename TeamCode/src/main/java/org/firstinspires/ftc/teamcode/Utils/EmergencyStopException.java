@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Utils;
 
 public class EmergencyStopException extends RuntimeException{
     public EmergencyStopException(String message) {

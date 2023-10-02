@@ -1,11 +1,13 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.TeleOp;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.Utils.CenterStageRobot;
+
 @TeleOp(name = "TeleOpBase")
 public class TeleOpBase extends LinearOpMode {
-    CenterStageRobot CenterStageRobot;
+    org.firstinspires.ftc.teamcode.Utils.CenterStageRobot CenterStageRobot;
 
     //This function is executed when this Op Mode is selected from the Driver Station.
     @Override

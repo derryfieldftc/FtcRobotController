@@ -1,9 +1,9 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.CenterStageRobot;
+import org.firstinspires.ftc.teamcode.Utils.CenterStageRobot;
 @Autonomous(name = "AutoDemoTest")
 public class AutoDemoTest extends LinearOpMode {
     CenterStageRobot moose;
