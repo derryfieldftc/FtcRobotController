@@ -51,9 +51,8 @@ public interface iRobot {
      *
      * @param l The speed of the left motors
      * @param r The speed of the right motors
-     * @param b Boost - To increase the normal speed of the robot up to the Maximum speed.
      */
-    void driveTank(double l, double r, double b);
+    void driveTank(double l, double r);
 
     /**
      * Gets the IMU Heading for drive
