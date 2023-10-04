@@ -23,7 +23,8 @@ public class MecanumDrive {
 	public void drive(
 			double forward,
 			double strafe,
-			double rotate
+			double rotate,
+			double scale
 	) {
 		double leftFrontPower = forward + strafe - rotate;
 		double rightFrontPower = forward - strafe + rotate;
@@ -37,10 +38,10 @@ public class MecanumDrive {
 			Math.abs(rightRearPower)
 		);
 
-		this.leftFront.setPower(  leftFrontPower / magnitude );
-		this.rightFront.setPower( rightFrontPower / magnitude );
-		this.leftRear.setPower(   leftRearPower / magnitude );
-		this.rightRear.setPower(  rightRearPower / magnitude );
+		this.leftFront.setPower(  scale * leftFrontPower / magnitude );
+		this.rightFront.setPower( scale * rightFrontPower / magnitude );
+		this.leftRear.setPower(   scale * leftRearPower / magnitude );
+		this.rightRear.setPower(  scale * rightRearPower / magnitude );
 
 	}
 
