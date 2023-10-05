@@ -36,7 +36,7 @@ public class CenterStageRobot implements iRobot {
     private final double shortPID = 4.0; // For distances <= 20"
 
     private final double ticksPerMotorRevolution = 530.3; //TODO Must check motor
-    private final double wheelCircumferenceInInches = (96 / 25.4) * Math.PI;  //TODO diameter in mm
+    private final double wheelCircumferenceInInches = (3.1) * Math.PI;
     private final double ticksPerInch = ticksPerMotorRevolution / wheelCircumferenceInInches;
 
 
