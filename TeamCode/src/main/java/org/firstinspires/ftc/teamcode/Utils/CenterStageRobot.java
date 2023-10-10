@@ -27,25 +27,26 @@ public class CenterStageRobot implements iRobot {
     private BNO055IMU imu;
 
     private final double MIN_ROBOT_SPEED = 0.15; // Min speed it will drive at
+
     private final double MAX_ROBOT_SPEED = 1.00; // Soft limit robot speed
     private final double NORMAL_ROBOT_SPEED = 0.80; // Percentage speed
     private final double correctionSpeed = 0.1; //How fast we want to go while correcting heading
 
     // TODO: PIDF values must be updated to work for this year.
     private final double longPID = 2.0; // For distance >= 20"
-    private final double shortPID = 4.0; // For distances <= 20"
+    private final double shortPID = 5.0; // For distances <= 20"
 
-    private final double ticksPerMotorRevolution = 530.3; //TODO Must check motor
-    private final double wheelCircumferenceInInches = (3.1) * Math.PI;
+    private final double ticksPerMotorRevolution = 288; //TODO Must check motor
+    private final double wheelCircumferenceInInches = (2.9) * Math.PI;
     private final double ticksPerInch = ticksPerMotorRevolution / wheelCircumferenceInInches;
 
 
 //TODO: This all is practical motor adjustments, as some motors cannot actually
 // reach predicted tps, and we want to be as accurate as possible
-    private final int lfMotorMaxTps = 2655;
-    private final int rfMotorMaxTps = 2650;
-    private final int lrMotorMaxTps = 2610;
-    private final int rrMotorMaxTps = 2615;
+    private final int lfMotorMaxTps = 1400;
+    private final int rfMotorMaxTps = 1400;
+    private final int lrMotorMaxTps = 1400;
+    private final int rrMotorMaxTps = 1400;
 
     private final static double HOLD_TIME = 1000; // In ms
 
@@ -236,7 +237,7 @@ public class CenterStageRobot implements iRobot {
 
         //rise-over-run code for accel/decel slope
         double accelRun = 2; //inches to accelerate up to max speed.
-        double decelRun = 4; //inches to decelerate down to stopping.
+        double decelRun = 2; //inches to decelerate down to stopping.
         System.out.println("DEBUG: Distance = " + accelRun + decelRun);
 
         double accelRise;
@@ -376,7 +377,7 @@ public class CenterStageRobot implements iRobot {
     public void rotate(double degrees) {
         System.out.println("[**]DEBUG - Entered rotate");
         System.out.println("[**]DEBUG - Degrees: " + degrees);
-        double minTurnSpeed = 0.1;
+        double minTurnSpeed = 0.2;
         double currentHeading = getIMUHeading();
         System.out.println("[**]DEBUG - Current heading: " + currentHeading);
         double leftSpeed;
@@ -390,7 +391,7 @@ public class CenterStageRobot implements iRobot {
             currentHeading = getIMUHeading();
             delta = normalizeHeading(degrees - currentHeading);
             double deltaPercentage = powerPercentage(delta);
-            double turnSpeed = 0.1;
+            double turnSpeed = 0.5;
             double currentTurnSpeed = turnSpeed * deltaPercentage + minTurnSpeed;
             if (delta < 0) {
                 currentTurnSpeed = -currentTurnSpeed;

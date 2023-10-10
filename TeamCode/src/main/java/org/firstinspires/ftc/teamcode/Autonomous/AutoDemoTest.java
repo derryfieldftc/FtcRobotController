@@ -14,12 +14,12 @@ public class AutoDemoTest extends LinearOpMode {
 
         waitForStart();
         if(opModeIsActive()) {
-            moose.drive(-20);
-            moose.drive(20);
+            moose.drive(-30);
+            moose.drive(30);
             moose.strafe(20);
             moose.strafe(-20);
-            moose.rotate(90);
-            moose.rotate(-90);
+            moose.rotate(180);
+            moose.rotate(-180);
         }
     }
 }
