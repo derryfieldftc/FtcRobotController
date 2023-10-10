@@ -60,7 +60,6 @@ public class CenterStageRobot implements iRobot {
         this.telemetry = creator.telemetry;
     }
 
-    @Override
     public void initHardware() {
         lfMotor = hardwareMap.get(DcMotorEx.class, "LFMotor");
         lrMotor = hardwareMap.get(DcMotorEx.class, "LRMotor");
@@ -181,7 +180,7 @@ public class CenterStageRobot implements iRobot {
     /**
      * @param distance Distance the robot should travel in inches, positive for forwards, negative for backwards
      */
-@Override
+
     public void drive(double distance) {
         drive(distance, MIN_ROBOT_SPEED, MAX_ROBOT_SPEED);
     }
@@ -320,7 +319,6 @@ public class CenterStageRobot implements iRobot {
 
     }
 
-    @Override
     public void strafe(double distance) {
         setMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         double strafeSlippage = 1.1;
@@ -373,7 +371,6 @@ public class CenterStageRobot implements iRobot {
 
     }
 
-    @Override
     public void rotate(double degrees) {
         System.out.println("[**]DEBUG - Entered rotate");
         System.out.println("[**]DEBUG - Degrees: " + degrees);
@@ -448,7 +445,6 @@ public class CenterStageRobot implements iRobot {
         powerTheWheels(0, 0, 0, 0);
     }
 
-    @Override
     public void driveXYRB(double x, double y, double r, double boost, double boostDirection) {
         /*
             Because we use Mecanum wheels, we can move forward, rotate, and strafe.
@@ -472,7 +468,6 @@ public class CenterStageRobot implements iRobot {
         telemetry.addData("RR", rrMotor.getPower());
     }
 
-
     /**
      * Sets the appropriate speeds for motors after acceleration of deceleration (TeleOp).
      * Confirms that speeds being set will not exceed the maximum or minimum
@@ -480,7 +475,6 @@ public class CenterStageRobot implements iRobot {
      * @param motorSpeed          the speed of a motor before acceleration or deceleration has been applied
      * @param percentAcceleration the percent of acceleration or deceleration that a motor will use. This value should be acquired from a gamepad. Positive value for acceleration, negative for deceleration.
      */
-    //these are all calcs i did over the summer, need to confirm
     private void setPowerWithAcceleration(DcMotorEx motor, double motorSpeed, double percentAcceleration, double accelerationDirection) {
         // The acceleration speed set on normal speed.
         double accelerationSpeed = 0.0;
@@ -524,7 +518,6 @@ public class CenterStageRobot implements iRobot {
         }
     }
 
-    @Override
     public void driveTank(double l, double r) {
         lfMotor.setPower(l * NORMAL_ROBOT_SPEED);
         rfMotor.setPower(r * NORMAL_ROBOT_SPEED);
@@ -552,7 +545,6 @@ public class CenterStageRobot implements iRobot {
             return motor.getCurrentPosition() < motor.getTargetPosition();
         }
     }
-    @Override
     public double getIMUHeading() {
         Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX,
                 AngleUnit.DEGREES);
@@ -573,12 +565,10 @@ public class CenterStageRobot implements iRobot {
         return motorPositionAverage / ticksPerInch;
     }
 
-    @Override
     public void driveStop() {
 
     }
 
-    @Override
     public void setMotorMode(DcMotor.RunMode mode) {
             lfMotor.setMode(mode);
             lrMotor.setMode(mode);
@@ -665,7 +655,6 @@ public class CenterStageRobot implements iRobot {
         }
     }
 
-    @Override
     public void stopAll() {
 
     }
@@ -680,7 +669,6 @@ public class CenterStageRobot implements iRobot {
         return powerPercent;
     }
 
-    @Override
     public double normalizeHeading(double heading) {
 
         while (heading >= 180.0 || heading < -180.0) {
