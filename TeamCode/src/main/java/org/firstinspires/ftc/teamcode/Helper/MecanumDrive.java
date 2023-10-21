@@ -38,10 +38,17 @@ public class MecanumDrive {
 			Math.abs(rightRearPower)
 		);
 
-		this.leftFront.setPower(  scale * leftFrontPower / magnitude );
-		this.rightFront.setPower( scale * rightFrontPower / magnitude );
-		this.leftRear.setPower(   scale * leftRearPower / magnitude );
-		this.rightRear.setPower(  scale * rightRearPower / magnitude );
+		if (magnitude > 1.0) {
+			leftFrontPower /= magnitude;
+			rightFrontPower /= magnitude;
+			leftRearPower /= magnitude;
+			rightRearPower /= magnitude;
+		}
+
+		this.leftFront.setPower(scale * leftFrontPower);
+		this.rightFront.setPower(scale * rightFrontPower);
+		this.leftRear.setPower(scale * leftRearPower);
+		this.rightRear.setPower(scale * rightRearPower);
 
 	}
 
