@@ -62,5 +62,12 @@ public class MecanumDriveTest extends LinearOpMode {
         leftFrontMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         rightRearMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         leftRearMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        rightFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightRearMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftRearMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+
     }
 }
