@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Helper;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class MecanumDrive {
 
@@ -18,6 +20,29 @@ public class MecanumDrive {
 		this.leftFront = leftFront;
 		this.rightRear = rightRear;
 		this.leftRear = leftRear;
+	}
+
+	public MecanumDrive(
+			HardwareMap hardwareMap,
+			String rightFrontMotorName,
+			String leftFrontMotorName,
+			String rightRearMotorName,
+			String leftRearMotorName
+	) {
+		rightFront = (DcMotor)hardwareMap.get(rightFrontMotorName);
+		leftFront = (DcMotor)hardwareMap.get(leftFrontMotorName);
+		rightRear = (DcMotor)hardwareMap.get(rightRearMotorName);
+		leftRear = (DcMotor)hardwareMap.get(leftRearMotorName);
+
+		rightFront.setDirection(DcMotor.Direction.FORWARD);
+		leftFront.setDirection(DcMotor.Direction.REVERSE);
+		rightRear.setDirection(DcMotor.Direction.FORWARD);
+		leftRear.setDirection(DcMotor.Direction.REVERSE);
+
+		rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+		leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+		rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+		leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 	}
 
 	public void drive(
