@@ -52,11 +52,9 @@ public class MecanumDrive {
 	}
 
 	public void drive(double forward, double strafe, double rotate, double scale) {
-
-		DriveMotorConfig config = calculateMotorPower(forward, strafe, rotate);
-		config.map(power -> power * scale);
-		config.applyTo(rightFront, leftFront, rightRear, leftRear);
-
+		calculateMotorPower(forward, strafe, rotate)
+				.map(power -> power * scale)
+				.applyTo(rightFront, leftFront, rightRear, leftRear);
 	}
 
 	public void drive(double forward, double strafe, double rotate) {
