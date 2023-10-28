@@ -3,6 +3,12 @@ package org.firstinspires.ftc.teamcode.Helper;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.Util.DriveMotorConfig;
+
+import java.util.Arrays;
+import java.util.function.DoubleSupplier;
+import java.util.stream.DoubleStream;
+
 public class MecanumDrive {
 
     DcMotor rightFront;
@@ -45,24 +51,29 @@ public class MecanumDrive {
 		leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 	}
 
-	public void drive(
-			double forward,
-			double strafe,
-			double rotate,
-			double scale
-	) {
+	public void drive(double forward, double strafe, double rotate, double scale) {
+
+		DriveMotorConfig config = calculateMotorPower(forward, strafe, rotate);
+		config.map(power -> power * scale);
+		config.applyTo(rightFront, leftFront, rightRear, leftRear);
+
+	}
+
+	private static DriveMotorConfig calculateMotorPower(double forward, double strafe, double rotate) {
+
+		// Mecanum calculations
 		double leftFrontPower = forward + strafe - rotate;
 		double rightFrontPower = forward - strafe + rotate;
 		double leftRearPower = forward - strafe - rotate;
 		double rightRearPower = forward + strafe + rotate;
 
-		double magnitude = Math.max(Math.max(Math.max(
-			Math.abs(leftFrontPower),
-			Math.abs(rightFrontPower)),
-			Math.abs(leftRearPower)),
-			Math.abs(rightRearPower)
-		);
+		// Find magnitude
+		double[] power = new double[]{rightFrontPower, leftFrontPower, rightRearPower, leftRearPower};
+		double magnitude = Arrays.stream(power)
+				.map(Math::abs).max()
+				.orElse(1.0); // unreachable branch
 
+		// Normalize if magnitude above 1.0
 		if (magnitude > 1.0) {
 			leftFrontPower /= magnitude;
 			rightFrontPower /= magnitude;
@@ -70,10 +81,7 @@ public class MecanumDrive {
 			rightRearPower /= magnitude;
 		}
 
-		this.leftFront.setPower(scale * leftFrontPower);
-		this.rightFront.setPower(scale * rightFrontPower);
-		this.leftRear.setPower(scale * leftRearPower);
-		this.rightRear.setPower(scale * rightRearPower);
+		return new DriveMotorConfig(rightFrontPower, leftFrontPower, rightRearPower, leftRearPower);
 
 	}
 
