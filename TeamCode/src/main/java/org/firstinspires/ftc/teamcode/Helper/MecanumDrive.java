@@ -61,6 +61,20 @@ public class MecanumDrive {
 		drive(forward, strafe, rotate, 1.0);
 	}
 
+	/**
+	 * British spelling because fuck you
+	 */
+	public void driveCentimetresForward(double centimetres, double power) {
+
+	}
+
+	/**
+	 * British spelling because fuck you
+	 */
+	public void driveCentimetresStrafe(double centimetres, double power) {
+
+	}
+
 	private static DriveMotorConfig calculateMotorPower(double forward, double strafe, double rotate) {
 
 		// Mecanum calculations
