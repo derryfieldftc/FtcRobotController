@@ -9,10 +9,10 @@ import java.util.function.DoubleUnaryOperator;
  */
 public class DriveMotorConfig {
 
-    double frontRight;
-    double frontLeft;
-    double backRight;
-    double backLeft;
+    public double rightFrontPower;
+    public double leftFrontPower;
+    public double rightBackPower;
+    public double leftBackPower;
 
     public DriveMotorConfig(
             double frontRight,
@@ -20,33 +20,42 @@ public class DriveMotorConfig {
             double backRight,
             double backLeft
     ) {
-        this.frontRight = frontRight;
-        this.frontLeft = frontLeft;
-        this.backRight = backRight;
-        this.backLeft = backLeft;
+        this.rightFrontPower = frontRight;
+        this.leftFrontPower = frontLeft;
+        this.rightBackPower = backRight;
+        this.leftBackPower = backLeft;
     }
 
+    /**
+     * Sets a specified power to each motor.
+     */
     public static DriveMotorConfig splat(double power) {
         return new DriveMotorConfig(power, power, power, power);
     }
 
-    public void applyTo(
+    /**
+     * Applies power to each of the motors.
+     */
+    public void applyPowerTo(
             DcMotor frontRightMotor,
             DcMotor frontLeftMotor,
             DcMotor backRightMotor,
             DcMotor backLeftMotor
     ) {
-        frontRightMotor.setPower(frontRight);
-        frontLeftMotor.setPower(frontLeft);
-        backRightMotor.setPower(backRight);
-        backLeftMotor.setPower(backLeft);
+        frontRightMotor.setPower(rightFrontPower);
+        frontLeftMotor.setPower(leftFrontPower);
+        backRightMotor.setPower(rightBackPower);
+        backLeftMotor.setPower(leftBackPower);
     }
 
+    /**
+     * Applies a function to each of the motor powers.
+     */
     public DriveMotorConfig map(DoubleUnaryOperator f) {
-        backRight = f.applyAsDouble(backRight);
-        backLeft = f.applyAsDouble(backLeft);
-        frontRight = f.applyAsDouble(frontRight);
-        frontLeft = f.applyAsDouble(frontLeft);
+        rightBackPower = f.applyAsDouble(rightBackPower);
+        leftBackPower = f.applyAsDouble(leftBackPower);
+        rightFrontPower = f.applyAsDouble(rightFrontPower);
+        leftFrontPower = f.applyAsDouble(leftFrontPower);
         return this;
     }
 
