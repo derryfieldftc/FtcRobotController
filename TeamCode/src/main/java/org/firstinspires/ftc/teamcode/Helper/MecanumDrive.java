@@ -59,6 +59,10 @@ public class MecanumDrive {
 
 	}
 
+	public void drive(double forward, double strafe, double rotate) {
+		drive(forward, strafe, rotate, 1.0);
+	}
+
 	private static DriveMotorConfig calculateMotorPower(double forward, double strafe, double rotate) {
 
 		// Mecanum calculations
