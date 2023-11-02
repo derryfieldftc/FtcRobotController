@@ -26,6 +26,7 @@ public class MecanumDrive {
 		this.leftFront = leftFront;
 		this.rightRear = rightRear;
 		this.leftRear = leftRear;
+		configureMotors();
 	}
 
 	public MecanumDrive(
@@ -39,7 +40,10 @@ public class MecanumDrive {
 		leftFront = (DcMotor)hardwareMap.get(leftFrontMotorName);
 		rightRear = (DcMotor)hardwareMap.get(rightRearMotorName);
 		leftRear = (DcMotor)hardwareMap.get(leftRearMotorName);
+		configureMotors();
+	}
 
+	private void configureMotors() {
 		rightFront.setDirection(DcMotor.Direction.FORWARD);
 		leftFront.setDirection(DcMotor.Direction.REVERSE);
 		rightRear.setDirection(DcMotor.Direction.FORWARD);
@@ -49,6 +53,11 @@ public class MecanumDrive {
 		leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 		rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 		leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+		rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 	}
 
 	public void drive(double forward, double strafe, double rotate, double scale) {
