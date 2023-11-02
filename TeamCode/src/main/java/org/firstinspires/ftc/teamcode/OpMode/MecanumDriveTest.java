@@ -2,33 +2,31 @@ package org.firstinspires.ftc.teamcode.OpMode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.Helper.MecanumDrive;
 
 @TeleOp(name="MecanumDriveTest", group="Tests")
 public class MecanumDriveTest extends LinearOpMode {
 
-    public static final String rightFrontMotorName = "motorFR";
-    public static final String leftFrontMotorName = "motorFL";
-    public static final String rightRearMotorName = "motorBR";
-    public static final String leftRearMotorName = "motorBL";
-
-    DcMotor rightFrontMotor,
-            leftFrontMotor,
-            rightRearMotor,
-            leftRearMotor;
+    public static final String RIGHT_FRONT_MOTOR_NAME = "motorFR";
+    public static final String LEFT_FRONT_MOTOR_NAME = "motorFL";
+    public static final String RIGHT_REAR_MOTOR_NAME = "motorBR";
+    public static final String LEFT_REAR_MOTOR_NAME = "motorBL";
+    public static final double ENCODER_RESOLUTION = 1120;
+    public static final double WHEEL_DIAMETER_CM = 7.4;
 
     @Override
     public void runOpMode() {
 
-        initMotors();
         MecanumDrive mecanum = new MecanumDrive(
-            rightFrontMotor,
-            leftFrontMotor,
-            rightRearMotor,
-            leftRearMotor
+            hardwareMap,
+            RIGHT_FRONT_MOTOR_NAME,
+            LEFT_FRONT_MOTOR_NAME,
+            RIGHT_REAR_MOTOR_NAME,
+            LEFT_REAR_MOTOR_NAME,
+                ENCODER_RESOLUTION,
+                WHEEL_DIAMETER_CM,
+                this
         );
 
         waitForStart();
@@ -52,22 +50,4 @@ public class MecanumDriveTest extends LinearOpMode {
 
     }
 
-    public void initMotors() {
-        rightFrontMotor = (DcMotor)hardwareMap.get(rightFrontMotorName);
-        leftFrontMotor = (DcMotor)hardwareMap.get(leftFrontMotorName);
-        rightRearMotor = (DcMotor)hardwareMap.get(rightRearMotorName);
-        leftRearMotor = (DcMotor)hardwareMap.get(leftRearMotorName);
-
-        rightFrontMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        leftFrontMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightRearMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        leftRearMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        rightFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightRearMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftRearMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-
-    }
 }
