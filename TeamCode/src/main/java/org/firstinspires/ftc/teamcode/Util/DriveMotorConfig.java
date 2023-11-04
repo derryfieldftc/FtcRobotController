@@ -48,7 +48,6 @@ public class DriveMotorConfig {
         backLeftMotor.setPower(leftBackPower);
     }
 
-
     /**
      * Applies a function to each of the motor powers.
      */

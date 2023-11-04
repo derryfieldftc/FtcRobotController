@@ -13,7 +13,7 @@ public class EncoderTest extends LinearOpMode {
     public static final String RIGHT_REAR_MOTOR_NAME = "motorBR";
     public static final String LEFT_REAR_MOTOR_NAME = "motorBL";
     public static final double ENCODER_RESOLUTION = 1120;
-    public static final double WHEEL_DIAMETER_CM = 7.4;
+    public static final double WHEEL_DIAMETER_CM = 8;
 
     @Override
     public void runOpMode() {
@@ -31,8 +31,9 @@ public class EncoderTest extends LinearOpMode {
 
         waitForStart();
 
-        mecanum.driveCentimetersForward(61, 0.8);
+        mecanum.driveCentimetersForward(61, 0.2);
         sleep(1000);
+        mecanum.driveCentimetersForward(-61, 0.2);
 
     }
 
