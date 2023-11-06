@@ -35,10 +35,10 @@ public class EncoderMotorConfig {
             DcMotor backRightMotor,
             DcMotor backLeftMotor
     ) {
-        frontRightMotor.setTargetPosition((int)rightFrontTarget);
-        frontLeftMotor.setTargetPosition((int)leftFrontTarget);
-        backRightMotor.setTargetPosition((int)rightBackTarget);
-        backLeftMotor.setTargetPosition((int)leftBackTarget);
+        frontRightMotor.setTargetPosition(frontRightMotor.getCurrentPosition() + (int)rightFrontTarget);
+        frontLeftMotor.setTargetPosition(frontLeftMotor.getCurrentPosition() + (int)leftFrontTarget);
+        backRightMotor.setTargetPosition(backRightMotor.getCurrentPosition() + (int)rightBackTarget);
+        backLeftMotor.setTargetPosition(backLeftMotor.getCurrentPosition() + (int)leftBackTarget);
     }
 
     public EncoderMotorConfig updateTargets(){

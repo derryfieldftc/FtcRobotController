@@ -12,6 +12,9 @@ public class EncoderTest extends LinearOpMode {
     public static final String LEFT_FRONT_MOTOR_NAME = "motorFL";
     public static final String RIGHT_REAR_MOTOR_NAME = "motorBR";
     public static final String LEFT_REAR_MOTOR_NAME = "motorBL";
+    /**
+     * 1 full revolution of the wheel
+     */
     public static final double ENCODER_RESOLUTION = 1120;
     public static final double WHEEL_DIAMETER_CM = 8;
 
@@ -31,9 +34,17 @@ public class EncoderTest extends LinearOpMode {
 
         waitForStart();
 
-        mecanum.driveCentimetersForward(61, 0.2);
+        double cm = 61;
+        double power = 0.2;
+        telemetry.addData("(cm, power)", "(" + cm + ", " + power + ")");
+        mecanum.driveCentimetersForward(cm, power);
         sleep(1000);
-        mecanum.driveCentimetersForward(-61, 0.2);
+
+        power = -0.4;
+        cm = -10;
+        telemetry.addData("(cm, power)", "(" + cm + ", " + power + ")");
+        mecanum.driveCentimetersForward(cm, power);
+        sleep(1000);
 
     }
 

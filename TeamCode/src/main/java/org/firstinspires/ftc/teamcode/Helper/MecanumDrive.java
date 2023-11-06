@@ -94,11 +94,11 @@ public class MecanumDrive {
 		calculateTargetPosition(encoderResolution, wheelDiameter, centimeters)
 				.updateTargets()
 				.setTargetTo(rightFront, leftFront, rightRear, leftRear);
-		opMode.telemetry.addData("Current Position!   ", leftFront.getCurrentPosition());
+		opMode.telemetry.addData("Current Position", leftFront.getCurrentPosition());
 		opMode.telemetry.addData("Target Position", leftFront.getTargetPosition());
 		opMode.telemetry.update();
 
-		if(centimeters > 0) {
+		if (centimeters > 0) {
 			while (opMode.opModeIsActive() && (leftFront.getCurrentPosition() <= leftFront.getTargetPosition())) {
 				splat(power);
 				opMode.telemetry.addData("Current Position", leftFront.getCurrentPosition());
@@ -107,7 +107,7 @@ public class MecanumDrive {
 			}
 			splat(0);
 		}
-		else if(centimeters < 0) {
+		else if (centimeters < 0) {
 			while (opMode.opModeIsActive() && (leftFront.getCurrentPosition() >= leftFront.getTargetPosition())) {
 				splat(power);
 				opMode.telemetry.addData("Current Position", leftFront.getCurrentPosition());
