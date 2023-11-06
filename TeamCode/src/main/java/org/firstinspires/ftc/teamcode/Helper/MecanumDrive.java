@@ -90,7 +90,7 @@ public class MecanumDrive {
 	/**
 	 * A blocking function that moves forward a specified number of centimeters.
 	 */
-	public void driveCentimetersForward(double centimeters, double power){
+	public void driveCentimetersForward(double centimeters, double power) {
 		calculateTargetPosition(encoderResolution, wheelDiameter, centimeters)
 				.addForwardTargetTo(rightFront, leftFront, rightRear, leftRear);
 		opMode.telemetry.addData("Current Position", leftFront.getCurrentPosition());
@@ -117,98 +117,13 @@ public class MecanumDrive {
 		}
 	}
 
-	public void driveCentimetersStrafe(double centimeters, double power){
-		calculateTargetPosition(encoderResolution, wheelDiameter, centimeters)
-				.addStrafeTargetTo(rightFront, leftFront, rightRear, leftRear);
-		opMode.telemetry.addData("Current Position", leftFront.getCurrentPosition());
-		opMode.telemetry.addData("Target Position", leftFront.getTargetPosition());
-		opMode.telemetry.update();
-
-		if (centimeters > 0) {
-			while (opMode.opModeIsActive() && (leftFront.getCurrentPosition() <= leftFront.getTargetPosition())) {
-				setMotorPowers(power, -power, power, -power);
-				opMode.telemetry.addData("Current Position", leftFront.getCurrentPosition());
-				opMode.telemetry.addData("Target Position", leftFront.getTargetPosition());
-				opMode.telemetry.update();
-			}
-			setMotorPowers(0);
-		}
-		else if (centimeters < 0) {
-			while (opMode.opModeIsActive() && (leftFront.getCurrentPosition() >= leftFront.getTargetPosition())) {
-				setMotorPowers(-power, power, -power, power);
-				opMode.telemetry.addData("Current Position", leftFront.getCurrentPosition());
-				opMode.telemetry.addData("Target Position", leftFront.getTargetPosition());
-				opMode.telemetry.update();
-			}
-			setMotorPowers(0);
-		}
-	}
-//	public void driveCentimetersForward(double centimeters, double power) {
-//		double targetEncoderTicks = (centimeters * encoderResolution)/(Math.PI * wheelDiameter);
-//		leftFront.setTargetPosition((int)(leftFront.getCurrentPosition() + targetEncoderTicks));
-//		rightFront.setTargetPosition((int)(rightFront.getCurrentPosition() + targetEncoderTicks));
-//		leftRear.setTargetPosition((int)(leftRear.getCurrentPosition() + targetEncoderTicks));
-//		rightRear.setTargetPosition((int)(rightRear.getCurrentPosition() + targetEncoderTicks));
-//		if(centimeters > 0){
-//			while(opMode.opModeIsActive() && (leftFront.getCurrentPosition() <= leftFront.getTargetPosition())) {
-//				DriveMotorConfig.splat(power);
-//
-//				opMode.telemetry.addData("Current Position", leftFront.getCurrentPosition());
-//				opMode.telemetry.addData("Target Position", leftFront.getTargetPosition());
-//				opMode.telemetry.update();
-//			}
-//			DriveMotorConfig.splat(0);
-//		}
-//		if(centimeters < 0){
-//			while(opMode.opModeIsActive() && (leftFront.getCurrentPosition() >= leftFront.getTargetPosition())) {
-//				DriveMotorConfig.splat(power);
-//
-//				opMode.telemetry.addData("Current Position", leftFront.getCurrentPosition());
-//				opMode.telemetry.addData("Target Position", leftFront.getTargetPosition());
-//				opMode.telemetry.update();
-//			}
-//			DriveMotorConfig.splat(0);
-//		}
-//
-//	}
-//
-//	/**
-//	 * A blocking function that strafes a specified number of centimeters.
-//	 */
-//	public void driveCentimetersStrafe(double centimeters, double power) {
-//		double targetEncoderTicks = (centimeters * encoderResolution)/(Math.PI * wheelDiameter);
-//		leftFront.setTargetPosition((int)(leftFront.getCurrentPosition() + targetEncoderTicks));
-//		rightFront.setTargetPosition((int)(rightFront.getCurrentPosition() + targetEncoderTicks));
-//		leftRear.setTargetPosition((int)(leftRear.getCurrentPosition() + targetEncoderTicks));
-//		rightRear.setTargetPosition((int)(rightRear.getCurrentPosition() + targetEncoderTicks));
-//
-//		if(centimeters > 0){
-//			while(opMode.opModeIsActive() && (leftFront.getCurrentPosition() <= leftFront.getTargetPosition())) {
-//				drive(0, -targetEncoderTicks, power);
-//				opMode.telemetry.addData("Current Position", leftFront.getCurrentPosition());
-//				opMode.telemetry.addData("Target Position", leftFront.getTargetPosition());
-//				opMode.telemetry.update();
-//			}
-//			drive(0, 0, 0);
-//		}
-//		if(centimeters < 0){
-//			while(opMode.opModeIsActive() && (leftFront.getCurrentPosition() >= leftFront.getTargetPosition())) {
-//				drive(0, -targetEncoderTicks, power);
-//				opMode.telemetry.addData("Current Position", leftFront.getCurrentPosition());
-//				opMode.telemetry.addData("Target Position", leftFront.getTargetPosition());
-//				opMode.telemetry.update();
-//			}
-//			drive(0, 0, 0);
-//		}
-//	}
-
-	private void setMotorPowers(double power){
+	private void setMotorPowers(double power) {
 		leftFront.setPower(power);
 		rightFront.setPower(power);
 		leftRear.setPower(power);
 		rightRear.setPower(power);
 	}
-	private void setMotorPowers(double frontRight, double frontLeft, double backRight, double backLeft){
+	private void setMotorPowers(double frontRight, double frontLeft, double backRight, double backLeft) {
 		rightFront.setPower(frontRight);
 		leftFront.setPower(frontLeft);
 		rightRear.setPower(backRight);

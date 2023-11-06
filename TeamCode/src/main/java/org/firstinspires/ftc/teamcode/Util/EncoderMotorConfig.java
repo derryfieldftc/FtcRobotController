@@ -9,21 +9,24 @@ public class EncoderMotorConfig {
     public double leftFrontTarget;
     public double rightBackTarget;
     public double leftBackTarget;
-    public double targetEncoderCount;
 
     public EncoderMotorConfig(
             double frontRightTarget,
             double frontLeftTarget,
             double backRightTarget,
-            double backLeftTarget){
+            double backLeftTarget
+    ) {
         this.rightFrontTarget = frontRightTarget;
         this.leftFrontTarget = frontLeftTarget;
         this.rightBackTarget = backRightTarget;
         this.leftBackTarget = backLeftTarget;
     }
 
-    public EncoderMotorConfig(double targetEncoderCount){
-        this.targetEncoderCount = targetEncoderCount;
+    public EncoderMotorConfig(double allTargets) {
+        this.rightFrontTarget = allTargets;
+        this.leftFrontTarget = allTargets;
+        this.rightBackTarget = allTargets;
+        this.leftBackTarget = allTargets;
     }
 
     /**
@@ -35,10 +38,12 @@ public class EncoderMotorConfig {
             DcMotor backRightMotor,
             DcMotor backLeftMotor
     ) {
-        frontRightMotor.setTargetPosition(frontRightMotor.getCurrentPosition() + (int)targetEncoderCount);
-        frontLeftMotor.setTargetPosition(frontLeftMotor.getCurrentPosition() + (int)targetEncoderCount);
-        backRightMotor.setTargetPosition(backRightMotor.getCurrentPosition() + (int)targetEncoderCount);
-        backLeftMotor.setTargetPosition(backLeftMotor.getCurrentPosition() + (int)targetEncoderCount);
+        DcMotor fr = frontRightMotor, fl = frontLeftMotor, br = backRightMotor, bl = backLeftMotor;
+
+        fr.setTargetPosition(fr.getCurrentPosition() + (int)rightFrontTarget);
+        fl.setTargetPosition(fl.getCurrentPosition() + (int)leftFrontTarget);
+        br.setTargetPosition(br.getCurrentPosition() + (int)rightBackTarget);
+        bl.setTargetPosition(bl.getCurrentPosition() + (int)leftBackTarget);
     }
 
     public void addStrafeTargetTo(
