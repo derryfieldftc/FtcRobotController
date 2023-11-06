@@ -92,29 +92,55 @@ public class MecanumDrive {
 	 */
 	public void driveCentimetersForward(double centimeters, double power){
 		calculateTargetPosition(encoderResolution, wheelDiameter, centimeters)
-				.updateTargets()
-				.setTargetTo(rightFront, leftFront, rightRear, leftRear);
+				.addForwardTargetTo(rightFront, leftFront, rightRear, leftRear);
 		opMode.telemetry.addData("Current Position", leftFront.getCurrentPosition());
 		opMode.telemetry.addData("Target Position", leftFront.getTargetPosition());
 		opMode.telemetry.update();
 
 		if (centimeters > 0) {
 			while (opMode.opModeIsActive() && (leftFront.getCurrentPosition() <= leftFront.getTargetPosition())) {
-				splat(power);
+				setMotorPowers(power);
 				opMode.telemetry.addData("Current Position", leftFront.getCurrentPosition());
 				opMode.telemetry.addData("Target Position", leftFront.getTargetPosition());
 				opMode.telemetry.update();
 			}
-			splat(0);
+			setMotorPowers(0);
 		}
 		else if (centimeters < 0) {
 			while (opMode.opModeIsActive() && (leftFront.getCurrentPosition() >= leftFront.getTargetPosition())) {
-				splat(power);
+				setMotorPowers(power);
 				opMode.telemetry.addData("Current Position", leftFront.getCurrentPosition());
 				opMode.telemetry.addData("Target Position", leftFront.getTargetPosition());
 				opMode.telemetry.update();
 			}
-			splat(0);
+			setMotorPowers(0);
+		}
+	}
+
+	public void driveCentimetersStrafe(double centimeters, double power){
+		calculateTargetPosition(encoderResolution, wheelDiameter, centimeters)
+				.addStrafeTargetTo(rightFront, leftFront, rightRear, leftRear);
+		opMode.telemetry.addData("Current Position", leftFront.getCurrentPosition());
+		opMode.telemetry.addData("Target Position", leftFront.getTargetPosition());
+		opMode.telemetry.update();
+
+		if (centimeters > 0) {
+			while (opMode.opModeIsActive() && (leftFront.getCurrentPosition() <= leftFront.getTargetPosition())) {
+				setMotorPowers(power, -power, power, -power);
+				opMode.telemetry.addData("Current Position", leftFront.getCurrentPosition());
+				opMode.telemetry.addData("Target Position", leftFront.getTargetPosition());
+				opMode.telemetry.update();
+			}
+			setMotorPowers(0);
+		}
+		else if (centimeters < 0) {
+			while (opMode.opModeIsActive() && (leftFront.getCurrentPosition() >= leftFront.getTargetPosition())) {
+				setMotorPowers(-power, power, -power, power);
+				opMode.telemetry.addData("Current Position", leftFront.getCurrentPosition());
+				opMode.telemetry.addData("Target Position", leftFront.getTargetPosition());
+				opMode.telemetry.update();
+			}
+			setMotorPowers(0);
 		}
 	}
 //	public void driveCentimetersForward(double centimeters, double power) {
@@ -176,11 +202,17 @@ public class MecanumDrive {
 //		}
 //	}
 
-	private void splat(double power){
+	private void setMotorPowers(double power){
 		leftFront.setPower(power);
 		rightFront.setPower(power);
 		leftRear.setPower(power);
 		rightRear.setPower(power);
+	}
+	private void setMotorPowers(double frontRight, double frontLeft, double backRight, double backLeft){
+		rightFront.setPower(frontRight);
+		leftFront.setPower(frontLeft);
+		rightRear.setPower(backRight);
+		leftRear.setPower(backLeft);
 	}
 
 

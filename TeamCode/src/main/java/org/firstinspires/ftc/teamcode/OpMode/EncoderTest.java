@@ -34,17 +34,14 @@ public class EncoderTest extends LinearOpMode {
 
         waitForStart();
 
-        double cm = 61;
-        double power = 0.2;
-        telemetry.addData("(cm, power)", "(" + cm + ", " + power + ")");
-        mecanum.driveCentimetersForward(cm, power);
-        sleep(1000);
 
-        power = -0.4;
-        cm = -10;
-        telemetry.addData("(cm, power)", "(" + cm + ", " + power + ")");
-        mecanum.driveCentimetersForward(cm, power);
+        mecanum.driveCentimetersForward(61, 0.5);
         sleep(1000);
+        mecanum.driveCentimetersStrafe(61, 0.5);
+        sleep(1000);
+        mecanum.driveCentimetersForward(-61, -0.5);
+        sleep(1000);
+        mecanum.driveCentimetersStrafe(-61, -0.5);
 
     }
 

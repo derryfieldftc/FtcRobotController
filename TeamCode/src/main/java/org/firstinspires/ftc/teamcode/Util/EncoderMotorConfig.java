@@ -29,23 +29,27 @@ public class EncoderMotorConfig {
     /**
      * Sets target positions for each of the motor encoders.
      */
-    public void setTargetTo(
+    public void addForwardTargetTo(
             DcMotor frontRightMotor,
             DcMotor frontLeftMotor,
             DcMotor backRightMotor,
             DcMotor backLeftMotor
     ) {
-        frontRightMotor.setTargetPosition(frontRightMotor.getCurrentPosition() + (int)rightFrontTarget);
-        frontLeftMotor.setTargetPosition(frontLeftMotor.getCurrentPosition() + (int)leftFrontTarget);
-        backRightMotor.setTargetPosition(backRightMotor.getCurrentPosition() + (int)rightBackTarget);
-        backLeftMotor.setTargetPosition(backLeftMotor.getCurrentPosition() + (int)leftBackTarget);
+        frontRightMotor.setTargetPosition(frontRightMotor.getCurrentPosition() + (int)targetEncoderCount);
+        frontLeftMotor.setTargetPosition(frontLeftMotor.getCurrentPosition() + (int)targetEncoderCount);
+        backRightMotor.setTargetPosition(backRightMotor.getCurrentPosition() + (int)targetEncoderCount);
+        backLeftMotor.setTargetPosition(backLeftMotor.getCurrentPosition() + (int)targetEncoderCount);
     }
 
-    public EncoderMotorConfig updateTargets(){
-        rightFrontTarget += targetEncoderCount;
-        leftBackTarget += targetEncoderCount;
-        rightBackTarget += targetEncoderCount;
-        leftFrontTarget += targetEncoderCount;
-        return this;
+    public void addStrafeTargetTo(
+            DcMotor frontRightMotor,
+            DcMotor frontLeftMotor,
+            DcMotor backRightMotor,
+            DcMotor backLeftMotor
+    ) {
+        frontRightMotor.setTargetPosition(frontRightMotor.getCurrentPosition() + (int)targetEncoderCount);
+        frontLeftMotor.setTargetPosition(frontLeftMotor.getCurrentPosition() - (int)targetEncoderCount);
+        backRightMotor.setTargetPosition(backRightMotor.getCurrentPosition() + (int)targetEncoderCount);
+        backLeftMotor.setTargetPosition(backLeftMotor.getCurrentPosition() - (int)targetEncoderCount);
     }
 }
