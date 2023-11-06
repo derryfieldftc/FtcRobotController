@@ -8,6 +8,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.Util.DriveMotorConfig;
 import org.firstinspires.ftc.teamcode.Util.EncoderMotorConfig;
 
+import java.util.function.Predicate;
+
 public class MecanumDrive {
 
     DcMotor rightFront;
@@ -93,28 +95,19 @@ public class MecanumDrive {
 	public void driveCentimetersForward(double centimeters, double power) {
 		calculateTargetPosition(encoderResolution, wheelDiameter, centimeters)
 				.addForwardTargetTo(rightFront, leftFront, rightRear, leftRear);
-		opMode.telemetry.addData("Current Position", leftFront.getCurrentPosition());
-		opMode.telemetry.addData("Target Position", leftFront.getTargetPosition());
-		opMode.telemetry.update();
 
-		if (centimeters > 0) {
-			while (opMode.opModeIsActive() && (leftFront.getCurrentPosition() <= leftFront.getTargetPosition())) {
-				setMotorPowers(power);
-				opMode.telemetry.addData("Current Position", leftFront.getCurrentPosition());
-				opMode.telemetry.addData("Target Position", leftFront.getTargetPosition());
-				opMode.telemetry.update();
-			}
-			setMotorPowers(0);
+		double actualPower = Math.abs(power) * ((centimeters > 0) ? 1 : -1); // Negative if backwards
+
+		Predicate<DcMotor> predicate = (centimeters > 0) ?
+				(motor -> motor.getCurrentPosition() <= motor.getTargetPosition()) :
+				(motor -> motor.getCurrentPosition() >= motor.getTargetPosition());
+
+		while (predicate.test(leftFront) && opMode.opModeIsActive()) {
+			setMotorPowers(actualPower);
+			debugEncoderPositions(leftFront);
 		}
-		else if (centimeters < 0) {
-			while (opMode.opModeIsActive() && (leftFront.getCurrentPosition() >= leftFront.getTargetPosition())) {
-				setMotorPowers(power);
-				opMode.telemetry.addData("Current Position", leftFront.getCurrentPosition());
-				opMode.telemetry.addData("Target Position", leftFront.getTargetPosition());
-				opMode.telemetry.update();
-			}
-			setMotorPowers(0);
-		}
+
+		setMotorPowers(0);
 	}
 
 	private void setMotorPowers(double power) {
@@ -158,6 +151,12 @@ public class MecanumDrive {
 	private static EncoderMotorConfig calculateTargetPosition(double resolution, double wheelDiameter, double centimeters) {
 		double targetEncoderCounts = (centimeters * resolution) / (Math.PI * wheelDiameter);
 		return new EncoderMotorConfig(targetEncoderCounts);
+	}
+
+	private void debugEncoderPositions(DcMotor motor) {
+		opMode.telemetry.addData(motor.getDeviceName() + " Current Position", motor.getCurrentPosition());
+		opMode.telemetry.addData(motor.getDeviceName() + " Target Position", motor.getTargetPosition());
+		opMode.telemetry.update();
 	}
 
 }
