@@ -104,15 +104,31 @@ public class MecanumDrive {
 			setMotorPowers(actualPower);
 			debugEncoderPositions(leftFront);
 		}
+		setMotorPowers(0);
+	}
 
+	public void driveCentimetersStrafe(double centimeters, double power) {
+		calculateTargetPosition(encoderResolution, wheelDiameter, centimeters)
+				.addStrafeTargetTo(rightFront, leftFront, rightRear, leftRear);
+
+		double actualPower = Math.abs(power) * Math.signum(centimeters); // Negative if backwards
+
+		Predicate<DcMotor> targetNotReached = (centimeters > 0) ?
+				(motor -> motor.getCurrentPosition() <= motor.getTargetPosition()) :
+				(motor -> motor.getCurrentPosition() >= motor.getTargetPosition());
+
+		while (targetNotReached.test(leftFront) && opMode.opModeIsActive()) {
+			setMotorPowers(-actualPower, actualPower, actualPower, -actualPower);
+			debugEncoderPositions(leftFront);
+		}
 		setMotorPowers(0);
 	}
 
 	private void setMotorPowers(double power) {
-		leftFront.setPower(power);
 		rightFront.setPower(power);
-		leftRear.setPower(power);
+		leftFront.setPower(power);
 		rightRear.setPower(power);
+		leftRear.setPower(power);
 	}
 	private void setMotorPowers(double frontRight, double frontLeft, double backRight, double backLeft) {
 		rightFront.setPower(frontRight);
