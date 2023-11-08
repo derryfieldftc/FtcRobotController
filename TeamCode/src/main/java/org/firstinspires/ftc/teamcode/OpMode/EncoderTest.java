@@ -12,6 +12,7 @@ public class EncoderTest extends LinearOpMode {
     public static final String LEFT_FRONT_MOTOR_NAME = "motorFL";
     public static final String RIGHT_REAR_MOTOR_NAME = "motorBR";
     public static final String LEFT_REAR_MOTOR_NAME = "motorBL";
+    public static final String IMU_NAME = "imu";
     /**
      * 1 full revolution of the wheel
      */
@@ -27,6 +28,7 @@ public class EncoderTest extends LinearOpMode {
                 LEFT_FRONT_MOTOR_NAME,
                 RIGHT_REAR_MOTOR_NAME,
                 LEFT_REAR_MOTOR_NAME,
+                IMU_NAME,
                 ENCODER_RESOLUTION,
                 WHEEL_DIAMETER_CM,
                 this
@@ -34,9 +36,10 @@ public class EncoderTest extends LinearOpMode {
 
         waitForStart();
 
-        mecanum.driveCentimetersStrafe(122, 0.3);
-        sleep(1000);
-        mecanum.driveCentimetersStrafe(-122, 0.3);
+        mecanum.turnUsingIMU(90);
+//        mecanum.driveCentimetersStrafe(122, 0.3);
+//        sleep(1000);
+//        mecanum.driveCentimetersStrafe(-122, 0.3);
 
         // If program ends immediately, motor ZeroPowerBrake doesnt work
         sleep(500);

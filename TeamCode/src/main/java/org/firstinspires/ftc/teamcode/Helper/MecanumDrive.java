@@ -1,8 +1,11 @@
 package org.firstinspires.ftc.teamcode.Helper;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.IMU;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Util.DriveMotorConfig;
 import org.firstinspires.ftc.teamcode.Util.EncoderMotorConfig;
 
@@ -14,6 +17,7 @@ public class MecanumDrive {
     DcMotor leftFront;
     DcMotor rightRear;
     DcMotor leftRear;
+	IMU imu;
 	double encoderResolution;
 	double wheelDiameter;
 	LinearOpMode opMode;
@@ -23,6 +27,7 @@ public class MecanumDrive {
 			DcMotor leftFront,
 			DcMotor rightRear,
 			DcMotor leftRear,
+			IMU imu,
 			double encoderResolution,
 			double wheelDiameter,
 			LinearOpMode opMode
@@ -31,7 +36,7 @@ public class MecanumDrive {
 		this.leftFront = leftFront;
 		this.rightRear = rightRear;
 		this.leftRear = leftRear;
-
+		this.imu = imu;
 		this.encoderResolution = encoderResolution;
 		this.wheelDiameter = wheelDiameter;
 		this.opMode = opMode;
@@ -43,6 +48,7 @@ public class MecanumDrive {
 			String leftFrontMotorName,
 			String rightRearMotorName,
 			String leftRearMotorName,
+			String imuName,
 			double encoderResolution,
 			double wheelDiameter,
 			LinearOpMode opMode
@@ -51,6 +57,7 @@ public class MecanumDrive {
 		leftFront = (DcMotor)hardwareMap.get(leftFrontMotorName);
 		rightRear = (DcMotor)hardwareMap.get(rightRearMotorName);
 		leftRear = (DcMotor)hardwareMap.get(leftRearMotorName);
+		imu = (IMU)hardwareMap.get(imuName);
 
 		rightFront.setDirection(DcMotor.Direction.FORWARD);
 		leftFront.setDirection(DcMotor.Direction.REVERSE);
@@ -72,6 +79,12 @@ public class MecanumDrive {
 		rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 		leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+		RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
+		RevHubOrientationOnRobot.UsbFacingDirection usbDirection = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
+
+		RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
+
+		imu.initialize( new IMU.Parameters(orientationOnRobot));
 		this.encoderResolution = encoderResolution;
 		this.wheelDiameter = wheelDiameter;
 		this.opMode = opMode;
@@ -123,6 +136,15 @@ public class MecanumDrive {
 		}
 		setMotorPowers(0);
 	}
+
+	public void turnUsingIMU(double degrees) {
+		imu.resetYaw();
+		while(opMode.opModeIsActive()) {
+			opMode.telemetry.addData("Yaw", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
+			opMode.telemetry.update();
+		}
+	}
+
 
 	private void setMotorPowers(double power) {
 		rightFront.setPower(power);
