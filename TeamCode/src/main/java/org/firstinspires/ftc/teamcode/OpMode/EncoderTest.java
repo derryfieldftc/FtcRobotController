@@ -37,11 +37,11 @@ public class EncoderTest extends LinearOpMode {
 
         mecanum.driveCentimetersForward(61, 0.5);
         sleep(1000);
-        mecanum.driveCentimetersStrafe(61, 0.5);
-        sleep(1000);
-        mecanum.driveCentimetersForward(-61, -0.5);
-        sleep(1000);
-        mecanum.driveCentimetersStrafe(-61, -0.5);
+        // mecanum.driveCentimetersStrafe(61, 0.5);
+        // sleep(1000);
+        mecanum.driveCentimetersForward(-61, 0.5);
+        // sleep(1000);
+        // mecanum.driveCentimetersStrafe(-61, -0.5);
 
     }
 

@@ -2,13 +2,11 @@ package org.firstinspires.ftc.teamcode.Util;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import java.util.function.DoubleUnaryOperator;
-
 public class EncoderMotorConfig {
-    public double rightFrontTarget;
-    public double leftFrontTarget;
-    public double rightBackTarget;
-    public double leftBackTarget;
+    public double frontRightTarget;
+    public double frontLeftTarget;
+    public double backRightTarget;
+    public double backLeftTarget;
 
     public EncoderMotorConfig(
             double frontRightTarget,
@@ -16,17 +14,17 @@ public class EncoderMotorConfig {
             double backRightTarget,
             double backLeftTarget
     ) {
-        this.rightFrontTarget = frontRightTarget;
-        this.leftFrontTarget = frontLeftTarget;
-        this.rightBackTarget = backRightTarget;
-        this.leftBackTarget = backLeftTarget;
+        this.frontRightTarget = frontRightTarget;
+        this.frontLeftTarget = frontLeftTarget;
+        this.backRightTarget = backRightTarget;
+        this.backLeftTarget = backLeftTarget;
     }
 
     public EncoderMotorConfig(double allTargets) {
-        this.rightFrontTarget = allTargets;
-        this.leftFrontTarget = allTargets;
-        this.rightBackTarget = allTargets;
-        this.leftBackTarget = allTargets;
+        this.frontRightTarget = allTargets;
+        this.frontLeftTarget = allTargets;
+        this.backRightTarget = allTargets;
+        this.backLeftTarget = allTargets;
     }
 
     /**
@@ -40,10 +38,10 @@ public class EncoderMotorConfig {
     ) {
         DcMotor fr = frontRightMotor, fl = frontLeftMotor, br = backRightMotor, bl = backLeftMotor;
 
-        fr.setTargetPosition(fr.getCurrentPosition() + (int)rightFrontTarget);
-        fl.setTargetPosition(fl.getCurrentPosition() + (int)leftFrontTarget);
-        br.setTargetPosition(br.getCurrentPosition() + (int)rightBackTarget);
-        bl.setTargetPosition(bl.getCurrentPosition() + (int)leftBackTarget);
+        fr.setTargetPosition(fr.getCurrentPosition() + (int) frontRightTarget);
+        fl.setTargetPosition(fl.getCurrentPosition() + (int) frontLeftTarget);
+        br.setTargetPosition(br.getCurrentPosition() + (int) backRightTarget);
+        bl.setTargetPosition(bl.getCurrentPosition() + (int) backLeftTarget);
     }
 
     public void addStrafeTargetTo(
@@ -52,9 +50,10 @@ public class EncoderMotorConfig {
             DcMotor backRightMotor,
             DcMotor backLeftMotor
     ) {
-        frontRightMotor.setTargetPosition(frontRightMotor.getCurrentPosition() + (int)targetEncoderCount);
-        frontLeftMotor.setTargetPosition(frontLeftMotor.getCurrentPosition() - (int)targetEncoderCount);
-        backRightMotor.setTargetPosition(backRightMotor.getCurrentPosition() + (int)targetEncoderCount);
-        backLeftMotor.setTargetPosition(backLeftMotor.getCurrentPosition() - (int)targetEncoderCount);
+        DcMotor fr = frontRightMotor, fl = frontLeftMotor, br = backRightMotor, bl = backLeftMotor;
+        fr.setTargetPosition(fr.getCurrentPosition() + (int) frontRightTarget);
+        fl.setTargetPosition(fl.getCurrentPosition() - (int) frontLeftTarget);
+        br.setTargetPosition(br.getCurrentPosition() + (int) backRightTarget);
+        bl.setTargetPosition(bl.getCurrentPosition() - (int) backLeftTarget);
     }
 }

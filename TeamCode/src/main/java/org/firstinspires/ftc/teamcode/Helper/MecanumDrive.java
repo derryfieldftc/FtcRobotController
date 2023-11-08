@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.Helper;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -96,13 +94,13 @@ public class MecanumDrive {
 		calculateTargetPosition(encoderResolution, wheelDiameter, centimeters)
 				.addForwardTargetTo(rightFront, leftFront, rightRear, leftRear);
 
-		double actualPower = Math.abs(power) * ((centimeters > 0) ? 1 : -1); // Negative if backwards
+		double actualPower = Math.abs(power) * Math.signum(centimeters); // Negative if backwards
 
-		Predicate<DcMotor> predicate = (centimeters > 0) ?
+		Predicate<DcMotor> targetNotReached = (centimeters > 0) ?
 				(motor -> motor.getCurrentPosition() <= motor.getTargetPosition()) :
 				(motor -> motor.getCurrentPosition() >= motor.getTargetPosition());
 
-		while (predicate.test(leftFront) && opMode.opModeIsActive()) {
+		while (targetNotReached.test(leftFront) && opMode.opModeIsActive()) {
 			setMotorPowers(actualPower);
 			debugEncoderPositions(leftFront);
 		}
