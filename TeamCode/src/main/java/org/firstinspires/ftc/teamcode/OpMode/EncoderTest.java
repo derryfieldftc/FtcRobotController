@@ -36,12 +36,11 @@ public class EncoderTest extends LinearOpMode {
 
 
         mecanum.driveCentimetersForward(61, 0.5);
-        sleep(1000);
-        // mecanum.driveCentimetersStrafe(61, 0.5);
-        // sleep(1000);
+        sleep(500);
         mecanum.driveCentimetersForward(-61, 0.5);
-        // sleep(1000);
-        // mecanum.driveCentimetersStrafe(-61, -0.5);
+
+        // If program ends immediately, motor ZeroPowerBrake doesnt work
+        sleep(500);
 
     }
 
