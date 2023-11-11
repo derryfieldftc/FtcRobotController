@@ -36,7 +36,9 @@ public class EncoderTest extends LinearOpMode {
 
         waitForStart();
 
-        mecanum.turnUsingIMU(90);
+        mecanum.turnUsingIMU(270, 0.3);
+        sleep(1000);
+        mecanum.turnUsingIMU(-270, 0.3);
 //        mecanum.driveCentimetersStrafe(122, 0.3);
 //        sleep(1000);
 //        mecanum.driveCentimetersStrafe(-122, 0.3);

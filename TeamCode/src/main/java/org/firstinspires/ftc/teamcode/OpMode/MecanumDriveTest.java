@@ -45,8 +45,8 @@ public class MecanumDriveTest extends LinearOpMode {
             mecanum.drive(forward, strafe, rotate, scale);
 
             telemetry.addData("forward", forward);
-            telemetry.addData("strafe", forward);
-            telemetry.addData("rotate", forward);
+            telemetry.addData("strafe", strafe);
+            telemetry.addData("rotate", rotate);
             telemetry.update();
         }
 

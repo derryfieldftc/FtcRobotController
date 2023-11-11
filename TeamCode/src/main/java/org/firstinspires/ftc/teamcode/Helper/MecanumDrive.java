@@ -137,12 +137,45 @@ public class MecanumDrive {
 		setMotorPowers(0);
 	}
 
-	public void turnUsingIMU(double degrees) {
+	public void turnUsingIMU(double degrees, double power) {
 		imu.resetYaw();
-		while(opMode.opModeIsActive()) {
-			opMode.telemetry.addData("Yaw", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
-			opMode.telemetry.update();
+
+		double actualPower = Math.abs(power) * Math.signum(degrees); // Negative if clockwise
+
+		if (Math.signum(degrees) == 1){
+			double degrees1 = degrees < 180 ? degrees : 180;
+			double degrees2 = degrees > 180 ? degrees - 360 : 0;
+
+			while(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) <= degrees1
+					&& imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) > 0
+					&& opMode.opModeIsActive()) {
+				setMotorPowers(actualPower, -actualPower, actualPower, -actualPower);
+				debugIMUYawDegrees(degrees1, degrees2, imu);
+			}
+			while(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) <= degrees2
+					&& opMode.opModeIsActive()){
+				setMotorPowers(actualPower, -actualPower, actualPower, -actualPower);
+				debugIMUYawDegrees(degrees1, degrees2, imu);
+			}
 		}
+		if (Math.signum(degrees) == -1){
+			double degrees1 = degrees > -180 ? degrees : -180;
+			double degrees2 = degrees < -180 ? degrees + 360 : 0;
+
+			while(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) >= degrees1
+					&& imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) < 0
+					&& opMode.opModeIsActive()) {
+				setMotorPowers(actualPower, -actualPower, actualPower, -actualPower);
+				debugIMUYawDegrees(degrees1, degrees2, imu);
+			}
+			while(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) >= degrees2
+					&& opMode.opModeIsActive()){
+				setMotorPowers(actualPower, -actualPower, actualPower, -actualPower);
+				debugIMUYawDegrees(degrees1, degrees2, imu);
+			}
+		}
+
+		setMotorPowers(0);
 	}
 
 
@@ -192,6 +225,13 @@ public class MecanumDrive {
 	private void debugEncoderPositions(DcMotor motor) {
 		opMode.telemetry.addData(motor.getDeviceName() + " Current Position", motor.getCurrentPosition());
 		opMode.telemetry.addData(motor.getDeviceName() + " Target Position", motor.getTargetPosition());
+		opMode.telemetry.update();
+	}
+
+	private void debugIMUYawDegrees(double degrees1, double degrees2, IMU imu) {
+		opMode.telemetry.addData("Degree1", degrees1);
+		opMode.telemetry.addData("Degree2", degrees2);
+		opMode.telemetry.addData("Yaw", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
 		opMode.telemetry.update();
 	}
 
