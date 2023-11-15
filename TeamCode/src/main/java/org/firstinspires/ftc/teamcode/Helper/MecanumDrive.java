@@ -214,7 +214,7 @@ public class MecanumDrive {
 			leftRearPower /= magnitude;
 			rightRearPower /= magnitude;
 		}
-		return new DriveMotorConfig(leftFrontPower, rightFrontPower, leftRearPower, rightRearPower);
+		return new DriveMotorConfig(rightFrontPower, leftFrontPower, rightRearPower, leftRearPower);
 	}
 
 	private static EncoderMotorConfig calculateTargetPosition(double resolution, double wheelDiameter, double centimeters) {
