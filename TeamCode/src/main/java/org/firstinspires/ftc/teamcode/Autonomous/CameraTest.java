@@ -42,18 +42,27 @@ public class CameraTest extends LinearOpMode {
         waitForStart();
 
         mecanum.driveCentimetersForward(65, 1);
-        if (camera.detectPixel(5, 200, 2)){
+        if (camera.detectPixel(10, 300, 2)){
             mecanum.driveCentimetersForward(40, 1);
+            sleep(100);
+            mecanum.driveCentimetersForward(-35, 1);
+            mecanum.turnUsingIMU(81, 0.5);
+            mecanum.driveCentimetersForward(200, 1);
         }
         else {
             mecanum.turnUsingIMU(-45, 0.5);
-            if (camera.detectPixel(5, 200, 2)){
+            if (camera.detectPixel(10, 300, 2)){
                 mecanum.driveCentimetersForward(40, 1);
+                sleep(100);
+                mecanum.driveCentimetersForward(-40, 1);
+                mecanum.turnUsingIMU(126, 0.5);
+                mecanum.driveCentimetersForward(200, 1);
             }
             else {
                 mecanum.turnUsingIMU(45, 0.5);
-                mecanum.driveCentimetersForward(10, 1);
                 mecanum.driveCentimetersStrafe(-40, 1);
+                mecanum.turnUsingIMU(81, 0.5);
+                mecanum.driveCentimetersForward(180, 1);
             }
         }
 
