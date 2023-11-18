@@ -141,13 +141,14 @@ public class MecanumDrive {
 		imu.resetYaw();
 
 		double actualPower = Math.abs(power) * Math.signum(degrees); // Negative if clockwise
+		double errorAroundZero = 0.5;
 
-		if (Math.signum(degrees) == 1){
+		if (degrees > 0){
 			double degrees1 = degrees < 180 ? degrees : 180;
 			double degrees2 = degrees > 180 ? degrees - 360 : 0;
 
 			while(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) <= degrees1
-					&& imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) > 0
+					&& imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) > -errorAroundZero
 					&& opMode.opModeIsActive()) {
 				setMotorPowers(actualPower, -actualPower, actualPower, -actualPower);
 				debugIMUYawDegrees(degrees1, degrees2, imu);
@@ -158,12 +159,12 @@ public class MecanumDrive {
 				debugIMUYawDegrees(degrees1, degrees2, imu);
 			}
 		}
-		if (Math.signum(degrees) == -1){
+		if (degrees < 0){
 			double degrees1 = degrees > -180 ? degrees : -180;
 			double degrees2 = degrees < -180 ? degrees + 360 : 0;
 
 			while(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) >= degrees1
-					&& imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) < 0
+					&& imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) < errorAroundZero
 					&& opMode.opModeIsActive()) {
 				setMotorPowers(actualPower, -actualPower, actualPower, -actualPower);
 				debugIMUYawDegrees(degrees1, degrees2, imu);
@@ -214,7 +215,7 @@ public class MecanumDrive {
 			leftRearPower /= magnitude;
 			rightRearPower /= magnitude;
 		}
-		return new DriveMotorConfig(leftFrontPower, rightFrontPower, leftRearPower, rightRearPower);
+		return new DriveMotorConfig(rightFrontPower, leftFrontPower, rightRearPower, leftRearPower);
 	}
 
 	private static EncoderMotorConfig calculateTargetPosition(double resolution, double wheelDiameter, double centimeters) {
