@@ -1,11 +1,11 @@
-package org.firstinspires.ftc.teamcode.OpMode;
+package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.Helper.MecanumDrive;
 
-@TeleOp(name="Encoder Test", group="Tests")
+@Autonomous(name="Encoder Test", group="Tests")
 public class EncoderTest extends LinearOpMode {
 
     public static final String RIGHT_FRONT_MOTOR_NAME = "motorFR";
@@ -36,9 +36,18 @@ public class EncoderTest extends LinearOpMode {
 
         waitForStart();
 
+        mecanum.turnUsingIMU(45, 0.3);
+        sleep(500);
+        mecanum.turnUsingIMU(-45, 0.3);
+        sleep(500);
+        mecanum.turnUsingIMU(90, 0.3);
+        sleep(500);
+        mecanum.turnUsingIMU(-90, 0.3);
+        sleep(500);
         mecanum.turnUsingIMU(270, 0.3);
-        sleep(1000);
+        sleep(500);
         mecanum.turnUsingIMU(-270, 0.3);
+
 //        mecanum.driveCentimetersStrafe(122, 0.3);
 //        sleep(1000);
 //        mecanum.driveCentimetersStrafe(-122, 0.3);

@@ -38,7 +38,7 @@ public class MecanumDriveTest extends LinearOpMode {
         while (opModeIsActive()) {
 
             forward = -gamepad1.left_stick_y; // Up is negative; we want up to be positive, so we *(-1)
-            strafe = gamepad1.left_stick_x;   // Perfect child, no flip
+            strafe = gamepad1.left_stick_x; // Perfect child, no flip
             rotate = -gamepad1.right_stick_x; // Positive is CCW; we want positive to be CW, so we *(-1)
             scale = 0.8;
 
