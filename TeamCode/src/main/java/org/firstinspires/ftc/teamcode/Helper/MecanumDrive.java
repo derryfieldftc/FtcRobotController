@@ -113,6 +113,7 @@ public class MecanumDrive {
 				(motor -> motor.getCurrentPosition() <= motor.getTargetPosition()) :
 				(motor -> motor.getCurrentPosition() >= motor.getTargetPosition());
 
+		// Check if one motor (leftFront in this case) has reached its target
 		while (targetNotReached.test(leftFront) && opMode.opModeIsActive()) {
 			setMotorPowers(actualPower);
 			debugEncoderPositions(leftFront);
@@ -130,6 +131,7 @@ public class MecanumDrive {
 				(motor -> motor.getCurrentPosition() <= motor.getTargetPosition()) :
 				(motor -> motor.getCurrentPosition() >= motor.getTargetPosition());
 
+		// Check if one motor (leftFront in this case) has reached its target
 		while (targetNotReached.test(leftFront) && opMode.opModeIsActive()) {
 			setMotorPowers(-actualPower, actualPower, actualPower, -actualPower);
 			debugEncoderPositions(leftFront);
@@ -137,11 +139,57 @@ public class MecanumDrive {
 		setMotorPowers(0);
 	}
 
+	/**
+	 * Blocking function that rotates the robot by some degrees.
+	 */
 	public void turnUsingIMU(double degrees, double power) {
 		imu.resetYaw();
 
-		double actualPower = Math.abs(power) * Math.signum(degrees); // Negative if clockwise
+		double direction = Math.signum(degrees);
+		double actualPower = Math.abs(power) * direction; // Negative if clockwise
 		double errorAroundZero = 0.5;
+
+		// if 0 < degrees < 180 --> spin until you reach that target
+		// if degrees > -180
+		// if -180 < degrees < 0
+		// if degrees > 180
+
+		//      O
+		//    + | -
+		//     180
+
+		// Handle turns = 180 degrees
+		if (Math.abs(degrees) <= 180) {
+			while(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) *
+					direction <= degrees * direction && opMode.opModeIsActive()) {
+				setMotorPowers(actualPower, -actualPower, actualPower, -actualPower);
+				debugIMUYawDegrees(direction, degrees, imu);
+			}
+		}
+
+		// Handle turns > 180 degrees)
+		else {
+			while(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) *
+					direction < 180 && opMode.opModeIsActive()) {
+				setMotorPowers(actualPower, -actualPower, actualPower, -actualPower);
+			}
+			while (imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) *
+					direction < degrees - 360 && opMode.opModeIsActive()) {
+				setMotorPowers(actualPower, -actualPower, actualPower, -actualPower);
+			}
+		}
+		setMotorPowers(0);
+
+		// Terrible, No Good, Very Bad Code
+//		else {
+//			setMotorPowers(actualPower, -actualPower, actualPower, -actualPower);
+//			double previousYaw = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+//			double currentYaw = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+//			while (currentYaw * direction < degrees * direction && opMode.opModeIsActive()) {
+//				currentYaw = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+//				if ()
+//			}
+//		}
 
 		if (degrees > 0){
 			double degrees1 = degrees < 180 ? degrees : 180;
