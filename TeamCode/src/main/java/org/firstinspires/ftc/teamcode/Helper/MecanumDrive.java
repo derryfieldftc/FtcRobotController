@@ -149,16 +149,12 @@ public class MecanumDrive {
 		double actualPower = Math.abs(power) * direction; // Negative if clockwise
 		double errorAroundZero = 0.5;
 
-		// if 0 < degrees < 180 --> spin until you reach that target
-		// if degrees > -180
-		// if -180 < degrees < 0
-		// if degrees > 180
+		// How the IMU Handles Rotations
+		//               0
+		//             + | -
+		//              180
 
-		//      O
-		//    + | -
-		//     180
-
-		// Handle turns = 180 degrees
+		// Handle turns <= 180 degrees
 		if (Math.abs(degrees) <= 180) {
 			while(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) *
 					direction <= degrees * direction && opMode.opModeIsActive()) {
