@@ -36,23 +36,39 @@ public class EncoderTest extends LinearOpMode {
 
         waitForStart();
 
-        mecanum.turnUsingIMU(45, 0.3);
+//        mecanum.turnUsingIMU(45, 0.5);
+//        sleep(500);
+//        mecanum.turnUsingIMU(-45, 0.5);
+//        sleep(500);
+//        mecanum.turnUsingIMU(90, 0.5);
+//        sleep(500);
+//        mecanum.turnUsingIMU(-90, 0.5);
+//        sleep(500);
+//        mecanum.turnUsingIMU(270, 0.5);
+//        sleep(500);
+//        mecanum.turnUsingIMU(-270, 0.5);
+//        sleep(500);
+//        mecanum.turnUsingIMU(360, 0.5);
+//        sleep(500);
+//        mecanum.turnUsingIMU(-360, 0.5);
+//        sleep(500);
+        mecanum.turnUsingIMU(450, 1);
         sleep(500);
-        mecanum.turnUsingIMU(-45, 0.3);
+        mecanum.turnUsingIMU(-450, 1);
         sleep(500);
-        mecanum.turnUsingIMU(90, 0.3);
+        mecanum.turnUsingIMU(720, 1);
         sleep(500);
-        mecanum.turnUsingIMU(-90, 0.3);
+        mecanum.turnUsingIMU(-720, 1);
         sleep(500);
-        mecanum.turnUsingIMU(270, 0.3);
+        mecanum.turnUsingIMU(1080, 1);
         sleep(500);
-        mecanum.turnUsingIMU(-270, 0.3);
+        mecanum.turnUsingIMU(-1080, 1);
 
 //        mecanum.driveCentimetersStrafe(122, 0.3);
 //        sleep(1000);
 //        mecanum.driveCentimetersStrafe(-122, 0.3);
 
-        // If program ends immediately, motor ZeroPowerBrake doesnt work
+        // If program ends immediately, motor ZeroPowerBrake doesn't work
         sleep(500);
 
     }
