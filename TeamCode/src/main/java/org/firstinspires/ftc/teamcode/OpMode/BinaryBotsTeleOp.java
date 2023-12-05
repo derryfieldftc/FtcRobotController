@@ -54,6 +54,7 @@ public class BinaryBotsTeleOp extends LinearOpMode {
                 intakeMotor.setPower(intakePower);
             else if (gamepad1.dpad_up)
                 intakeMotor.setPower(-intakePower);
+            else intakeMotor.setPower(0);
 
 
 
