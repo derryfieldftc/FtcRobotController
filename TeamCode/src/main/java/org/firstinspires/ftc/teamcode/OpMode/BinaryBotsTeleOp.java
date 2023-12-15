@@ -15,6 +15,7 @@ public class BinaryBotsTeleOp extends LinearOpMode {
     public static final String RIGHT_REAR_MOTOR_NAME = "motorBR";
     public static final String LEFT_REAR_MOTOR_NAME = "motorBL";
     public static final String INTAKE_MOTOR_NAME = "intake";
+    public static final String LINEAR_SLIDE_MOTOR_NAME = "slide";
     public static final String IMU_NAME = "imu";
     public static final double ENCODER_RESOLUTION = 1120;
     public static final double WHEEL_DIAMETER_CM = 7.4;
@@ -37,9 +38,11 @@ public class BinaryBotsTeleOp extends LinearOpMode {
         waitForStart();
 
         DcMotor intakeMotor = (DcMotor)hardwareMap.get(INTAKE_MOTOR_NAME);
+        DcMotor slideMotor = (DcMotor)hardwareMap.get(LINEAR_SLIDE_MOTOR_NAME);
 
         double forward, strafe, rotate, scale; // Drive variables
         double intakePower = 1;
+        double slidePower = 1;
 
         while (opModeIsActive()) {
 
@@ -48,15 +51,18 @@ public class BinaryBotsTeleOp extends LinearOpMode {
             rotate = -gamepad1.right_stick_x; // Positive is CCW; we want positive to be CW, so we *(-1)
             scale = 0.8;
 
+            // Drive Logic
             mecanum.drive(forward, strafe, rotate, scale);
 
+            // Slide Logic
+
+
+            // Intake Logic
             if (gamepad1.dpad_down)
                 intakeMotor.setPower(intakePower);
             else if (gamepad1.dpad_up)
                 intakeMotor.setPower(-intakePower);
             else intakeMotor.setPower(0);
-
-
 
             telemetry.addData("forward", forward);
             telemetry.addData("strafe", strafe);
