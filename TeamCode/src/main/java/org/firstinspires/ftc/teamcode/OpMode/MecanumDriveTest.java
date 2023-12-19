@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.Helper.MecanumDrive;
 
@@ -18,6 +19,8 @@ public class MecanumDriveTest extends LinearOpMode {
     public static final String IMU_NAME = "imu";
     public static final double ENCODER_RESOLUTION = 3895.9;
     public static final double WHEEL_DIAMETER_CM = 9.6;
+    public static final int MINIMUM_SLIDE_POSITION = 0;
+    public static final int MAXIMUM_SLIDE_POSITION = 2338;
 
     @Override
     public void runOpMode() {
@@ -42,8 +45,20 @@ public class MecanumDriveTest extends LinearOpMode {
         DcMotor slideMotor = (DcMotor)hardwareMap.get(LINEAR_SLIDE_MOTOR_NAME);
         DcMotor intakeMotor = (DcMotor)hardwareMap.get(INTAKE_MOTOR_NAME);
 
+        //Set motor behaviors
+        intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        slideMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        // slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        double slidePower = 0.5;
+        double intakePower = 1;
+        int slidePosition = 0;
+        int slideSpeed = 10;
+
         while (opModeIsActive()) {
 
+            // Mecanum Drive Logic
             forward = -gamepad1.left_stick_y; // Up is negative; we want up to be positive, so we *(-1)
             strafe = gamepad1.left_stick_x; // Perfect child, no flip
             rotate = -gamepad1.right_stick_x; // Positive is CCW; we want positive to be CW, so we *(-1)
@@ -51,11 +66,26 @@ public class MecanumDriveTest extends LinearOpMode {
 
             mecanum.drive(forward, strafe, rotate, scale);
 
+            // Intake Logic
+            intakeMotor.setPower(intakePower * (gamepad2.right_trigger - gamepad2.left_trigger));
 
+            // Slide Logic
+            if (gamepad2.dpad_up)
+                slidePosition = MAXIMUM_SLIDE_POSITION;
+            else if (gamepad2.dpad_down && MINIMUM_SLIDE_POSITION < slideMotor.getCurrentPosition())
+                slidePosition = MINIMUM_SLIDE_POSITION;
+            if (slideMotor.getCurrentPosition() - slideSpeed > MINIMUM_SLIDE_POSITION &&
+                slideMotor.getCurrentPosition() + slideSpeed < MAXIMUM_SLIDE_POSITION)
+                slidePosition += slideSpeed * gamepad2.left_stick_y;
+            else slidePosition += 1 * gamepad2.left_stick_y;
+            slidePosition += gamepad2.left_stick_y;
+            slideMotor.setTargetPosition(slidePosition);
+            slideMotor.setPower(slidePower);
 
             telemetry.addData("forward", forward);
             telemetry.addData("strafe", strafe);
             telemetry.addData("rotate", rotate);
+            // telemetry.addData("slide position", slideMotor.getCurrentPosition());
             telemetry.update();
         }
 
