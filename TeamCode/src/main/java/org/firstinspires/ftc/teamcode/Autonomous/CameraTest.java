@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.ConceptTensorFlowObjectDetection;
 import org.firstinspires.ftc.teamcode.Helper.Camera;
 import org.firstinspires.ftc.teamcode.Helper.MecanumDrive;
 
