@@ -10,64 +10,85 @@ import org.firstinspires.ftc.teamcode.Helper.MecanumDrive;
 @TeleOp(name="MecanumDriveTest", group="Tests")
 public class MecanumDriveTest extends LinearOpMode {
 
-    public static final String rightFrontMotorName = "motorFR";
-    public static final String leftFrontMotorName = "motorFL";
-    public static final String rightRearMotorName = "motorBR";
-    public static final String leftRearMotorName = "motorBL";
-
-    DcMotor rightFrontMotor,
-            leftFrontMotor,
-            rightRearMotor,
-            leftRearMotor;
+    public static final String RIGHT_FRONT_MOTOR_NAME = "motorFR";
+    public static final String LEFT_FRONT_MOTOR_NAME = "motorFL";
+    public static final String RIGHT_REAR_MOTOR_NAME = "motorBR";
+    public static final String LEFT_REAR_MOTOR_NAME = "motorBL";
+    public static final String LINEAR_SLIDE_MOTOR_NAME = "slide";
+    public static final String INTAKE_MOTOR_NAME = "intake";
+    public static final String IMU_NAME = "imu";
+    public static final double ENCODER_RESOLUTION = 3895.9;
+    public static final double WHEEL_DIAMETER_CM = 9.6;
+    public static final int MINIMUM_SLIDE_POSITION = 0;
+    public static final int MAXIMUM_SLIDE_POSITION = 2338;
 
     @Override
     public void runOpMode() {
 
-        initMotors();
         MecanumDrive mecanum = new MecanumDrive(
-            rightFrontMotor,
-            leftFrontMotor,
-            rightRearMotor,
-            leftRearMotor
+            hardwareMap,
+            RIGHT_FRONT_MOTOR_NAME,
+            LEFT_FRONT_MOTOR_NAME,
+            RIGHT_REAR_MOTOR_NAME,
+            LEFT_REAR_MOTOR_NAME,
+                IMU_NAME,
+                ENCODER_RESOLUTION,
+                WHEEL_DIAMETER_CM,
+                this
         );
 
         waitForStart();
 
         double forward, strafe, rotate, scale; // Drive variables
 
+        // Set motors
+        DcMotor slideMotor = (DcMotor)hardwareMap.get(LINEAR_SLIDE_MOTOR_NAME);
+        DcMotor intakeMotor = (DcMotor)hardwareMap.get(INTAKE_MOTOR_NAME);
+
+        //Set motor behaviors
+        intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        slideMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        // slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        double slidePower = 0.5;
+        double intakePower = 1;
+        int slidePosition = 0;
+        int slideSpeed = 10;
+
         while (opModeIsActive()) {
 
+            // Mecanum Drive Logic
             forward = -gamepad1.left_stick_y; // Up is negative; we want up to be positive, so we *(-1)
-            strafe = gamepad1.left_stick_x;   // Perfect child, no flip
+            strafe = gamepad1.left_stick_x; // Perfect child, no flip
             rotate = -gamepad1.right_stick_x; // Positive is CCW; we want positive to be CW, so we *(-1)
             scale = 0.8;
 
             mecanum.drive(forward, strafe, rotate, scale);
 
+            // Intake Logic
+            intakeMotor.setPower(intakePower * (gamepad2.right_trigger - gamepad2.left_trigger));
+
+            // Slide Logic
+            if (gamepad2.dpad_up)
+                slidePosition = MAXIMUM_SLIDE_POSITION;
+            else if (gamepad2.dpad_down && MINIMUM_SLIDE_POSITION < slideMotor.getCurrentPosition())
+                slidePosition = MINIMUM_SLIDE_POSITION;
+            if (slideMotor.getCurrentPosition() - slideSpeed > MINIMUM_SLIDE_POSITION &&
+                slideMotor.getCurrentPosition() + slideSpeed < MAXIMUM_SLIDE_POSITION)
+                slidePosition += slideSpeed * gamepad2.left_stick_y;
+            else slidePosition += 1 * gamepad2.left_stick_y;
+            slidePosition += gamepad2.left_stick_y;
+            slideMotor.setTargetPosition(slidePosition);
+            slideMotor.setPower(slidePower);
+
             telemetry.addData("forward", forward);
-            telemetry.addData("strafe", forward);
-            telemetry.addData("rotate", forward);
+            telemetry.addData("strafe", strafe);
+            telemetry.addData("rotate", rotate);
+            // telemetry.addData("slide position", slideMotor.getCurrentPosition());
             telemetry.update();
         }
 
     }
 
-    public void initMotors() {
-        rightFrontMotor = (DcMotor)hardwareMap.get(rightFrontMotorName);
-        leftFrontMotor = (DcMotor)hardwareMap.get(leftFrontMotorName);
-        rightRearMotor = (DcMotor)hardwareMap.get(rightRearMotorName);
-        leftRearMotor = (DcMotor)hardwareMap.get(leftRearMotorName);
-
-        rightFrontMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        leftFrontMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightRearMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        leftRearMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        rightFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftFrontMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightRearMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftRearMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-
-    }
 }
