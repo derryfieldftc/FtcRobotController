@@ -19,8 +19,8 @@ public class MecanumDriveTest extends LinearOpMode {
     public static final String IMU_NAME = "imu";
     public static final double ENCODER_RESOLUTION = 3895.9;
     public static final double WHEEL_DIAMETER_CM = 9.6;
-    public static final int MINIMUM_SLIDE_POSITION = 0;
-    public static final int MAXIMUM_SLIDE_POSITION = 2338;
+    public static final int MINIMUM_SLIDE_POSITION = -70;
+    public static final int MAXIMUM_SLIDE_POSITION = 4141;
 
     @Override
     public void runOpMode() {
@@ -43,13 +43,13 @@ public class MecanumDriveTest extends LinearOpMode {
 
         // Set motors
         DcMotor slideMotor = (DcMotor)hardwareMap.get(LINEAR_SLIDE_MOTOR_NAME);
-        DcMotor intakeMotor = (DcMotor)hardwareMap.get(INTAKE_MOTOR_NAME);
+//        DcMotor intakeMotor = (DcMotor)hardwareMap.get(INTAKE_MOTOR_NAME);
 
         //Set motor behaviors
-        intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//        intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         slideMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        // slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         double slidePower = 0.5;
         double intakePower = 1;
@@ -67,28 +67,43 @@ public class MecanumDriveTest extends LinearOpMode {
             mecanum.drive(forward, strafe, rotate, scale);
 
             // Intake Logic
-            intakeMotor.setPower(intakePower * (gamepad2.right_trigger - gamepad2.left_trigger));
+            // intakeMotor.setPower(intakePower * (gamepad2.right_trigger - gamepad2.left_trigger));
 
             // Slide Logic
-            if (gamepad2.dpad_up)
+            if (gamepad2.dpad_up) {
                 slidePosition = MAXIMUM_SLIDE_POSITION;
-            else if (gamepad2.dpad_down && MINIMUM_SLIDE_POSITION < slideMotor.getCurrentPosition())
+                slidePower = 0.5;
+            }
+            else if (gamepad2.dpad_down) {
                 slidePosition = MINIMUM_SLIDE_POSITION;
-            if (slideMotor.getCurrentPosition() - slideSpeed > MINIMUM_SLIDE_POSITION &&
-                slideMotor.getCurrentPosition() + slideSpeed < MAXIMUM_SLIDE_POSITION)
-                slidePosition += slideSpeed * gamepad2.left_stick_y;
-            else slidePosition += 1 * gamepad2.left_stick_y;
-            slidePosition += gamepad2.left_stick_y;
+                slidePower = -0.5;
+            }
+            else slidePower = 0;
+            slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             slideMotor.setTargetPosition(slidePosition);
             slideMotor.setPower(slidePower);
 
             telemetry.addData("forward", forward);
             telemetry.addData("strafe", strafe);
             telemetry.addData("rotate", rotate);
-            // telemetry.addData("slide position", slideMotor.getCurrentPosition());
+            telemetry.addData("slide position", slideMotor.getCurrentPosition());
             telemetry.update();
         }
 
     }
+
+//    /**
+//    Blocking function that uses encoders to spin a motor to a desired encoder position
+//     **/
+//    public void runToPosition(DcMotor motor, int target, int power) {
+//        motor.setTargetPosition(target);
+//        while (motor.getCurrentPosition() <= target) {
+//            motor.setPower(power);
+//        }
+//        while (motor.getCurrentPosition() >= target) {
+//            motor.setPower(-power);
+//        }
+//    }
+
 
 }
