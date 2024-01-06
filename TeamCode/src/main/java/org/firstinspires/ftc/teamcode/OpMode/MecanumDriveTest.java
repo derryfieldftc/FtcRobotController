@@ -25,31 +25,31 @@ public class MecanumDriveTest extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        MecanumDrive mecanum = new MecanumDrive(
-            hardwareMap,
-            RIGHT_FRONT_MOTOR_NAME,
-            LEFT_FRONT_MOTOR_NAME,
-            RIGHT_REAR_MOTOR_NAME,
-            LEFT_REAR_MOTOR_NAME,
-                IMU_NAME,
-                ENCODER_RESOLUTION,
-                WHEEL_DIAMETER_CM,
-                this
-        );
+//        MecanumDrive mecanum = new MecanumDrive(
+//            hardwareMap,
+//            RIGHT_FRONT_MOTOR_NAME,
+//            LEFT_FRONT_MOTOR_NAME,
+//            RIGHT_REAR_MOTOR_NAME,
+//            LEFT_REAR_MOTOR_NAME,
+//                IMU_NAME,
+//                ENCODER_RESOLUTION,
+//                WHEEL_DIAMETER_CM,
+//                this
+//        );
 
         waitForStart();
 
         double forward, strafe, rotate, scale; // Drive variables
 
         // Set motors
-        DcMotor slideMotor = (DcMotor)hardwareMap.get(LINEAR_SLIDE_MOTOR_NAME);
-//        DcMotor intakeMotor = (DcMotor)hardwareMap.get(INTAKE_MOTOR_NAME);
+        // DcMotor slideMotor = (DcMotor)hardwareMap.get(LINEAR_SLIDE_MOTOR_NAME);
+        DcMotor intakeMotor = (DcMotor)hardwareMap.get(INTAKE_MOTOR_NAME);
 
         //Set motor behaviors
 //        intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        slideMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        slideMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+//        slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         double slidePower = 0.5;
         double intakePower = 1;
@@ -58,16 +58,15 @@ public class MecanumDriveTest extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            // Mecanum Drive Logic
             forward = -gamepad1.left_stick_y; // Up is negative; we want up to be positive, so we *(-1)
             strafe = gamepad1.left_stick_x; // Perfect child, no flip
             rotate = -gamepad1.right_stick_x; // Positive is CCW; we want positive to be CW, so we *(-1)
             scale = 0.8;
 
-            mecanum.drive(forward, strafe, rotate, scale);
+            // mecanum.drive(forward, strafe, rotate, scale);
 
             // Intake Logic
-            // intakeMotor.setPower(intakePower * (gamepad2.right_trigger - gamepad2.left_trigger));
+            intakeMotor.setPower(intakePower * (gamepad2.right_trigger - gamepad2.left_trigger));
 
             // Slide Logic
             if (gamepad2.dpad_up) {
@@ -79,14 +78,14 @@ public class MecanumDriveTest extends LinearOpMode {
                 slidePower = -0.5;
             }
             else slidePower = 0;
-            slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            slideMotor.setTargetPosition(slidePosition);
-            slideMotor.setPower(slidePower);
+//            slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//            slideMotor.setTargetPosition(slidePosition);
+//            slideMotor.setPower(slidePower);
 
-            telemetry.addData("forward", forward);
-            telemetry.addData("strafe", strafe);
-            telemetry.addData("rotate", rotate);
-            telemetry.addData("slide position", slideMotor.getCurrentPosition());
+//            telemetry.addData("forward", forward);
+//            telemetry.addData("strafe", strafe);
+//            telemetry.addData("rotate", rotate);
+//            telemetry.addData("slide position", slideMotor.getCurrentPosition());
             telemetry.update();
         }
 
