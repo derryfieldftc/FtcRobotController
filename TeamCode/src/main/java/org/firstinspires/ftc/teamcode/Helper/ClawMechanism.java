@@ -1,68 +1,83 @@
 package org.firstinspires.ftc.teamcode.Helper;
 
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.checkerframework.checker.units.qual.A;
+
+import java.util.ArrayList;
 
 public class ClawMechanism {
 
-    public static final double RIGHT_CLAMPED_POSITION = 0.8;
-    public static final double RIGHT_RELEASED_POSITION = 0.2;
-
-    public static final double LEFT_CLAMPED_POSITION = 0.2;
-    public static final double LEFT_RELEASED_POSITION = 0.8;
-
-    Servo leftClaw;
-    Servo rightClaw;
-    State servoTargetState;
-
-    public ClawMechanism(Servo leftClaw, Servo rightClaw) {
-        this.leftClaw = leftClaw;
-        this.rightClaw = rightClaw;
-        release();
+    public static class State {
+        public String stateName;
+        public double servoPosition;
+        public State(String name, double pos) { stateName = name; servoPosition = pos; }
     }
 
-    public State getCurrentState() {
-        double mu = 0.01;
-        double rightPos = rightClaw.getPosition();
-        double leftPos = leftClaw.getPosition();
+    public static class Builder {
+        Servo servo;
+        ArrayList<State> states;
+        String defaultState;
+        public Builder() {
+            states = new ArrayList<>();
+        }
 
-        switch (servoTargetState) {
-            case RELEASED:
-                if (Math.abs(rightPos - RIGHT_CLAMPED_POSITION) > mu ||
-                    Math.abs(leftPos  - LEFT_CLAMPED_POSITION) > mu) {
-                    return State.CLAMPING;
-                } else {
-                    return State.CLAMPED;
-                }
-            case CLAMPED:
-                if (Math.abs(rightPos - RIGHT_RELEASED_POSITION) > mu ||
-                        Math.abs(leftPos  - LEFT_RELEASED_POSITION) > mu) {
-                    return State.RELEASING;
-                } else {
-                    return State.RELEASED;
-                }
-            default:
-                return null; // unreachable
+        public void setServo(Servo servo) { this.servo = servo; }
+        public void setServo(HardwareMap hardwareMap, String servoName) { this.servo = hardwareMap.servo.get(servoName); }
+        public void addState(String name, double servoPosition) { states.add(new State(name, servoPosition)); }
+        public void setDefaultState(String stateName) { defaultState = stateName; }
+
+        public ClawMechanism build() throws IllegalStateException {
+            ClawMechanism claw = new ClawMechanism();
+            if (servo == null) {
+                throw new IllegalStateException("ClawMechanism requires a servo");
+            } else {
+                claw.servo = servo;
+            }
+
+            if (states.size() == 0) {
+                throw new IllegalStateException("ClawMechanism needs at least one state");
+            } else {
+                claw.states = states;
+            }
+
+            if (defaultState == null) {
+                claw.currentStateIndex = 0;
+            } else {
+                claw.setStateByName(defaultState);
+            }
+
+            return claw;
         }
     }
 
-    public State getTargetState() {
-        return this.servoTargetState;
+    Servo servo;
+    ArrayList<State> states;
+    int currentStateIndex;
+
+    public State getCurrentState() {
+        return states.get(currentStateIndex);
+    }
+    public int getCurrentStateIndex() {
+        return currentStateIndex;
+    }
+    public void setState(int index) {
+        currentStateIndex = index;
+        updatePosition();
+    }
+    public void setStateByName(String stateName) {
+        for (int i = 0; i < states.size(); i++) {
+            if (states.get(i).stateName.equals(stateName)) {
+                currentStateIndex = i;
+                break;
+            }
+        }
+        updatePosition();
     }
 
-    public void release() {
-        leftClaw.setPosition(LEFT_RELEASED_POSITION);
-        rightClaw.setPosition(RIGHT_RELEASED_POSITION);
-        servoTargetState = State.RELEASED;
-    }
-    public void clamp() {
-        leftClaw.setPosition(LEFT_CLAMPED_POSITION);
-        rightClaw.setPosition(RIGHT_CLAMPED_POSITION);
-        servoTargetState = State.CLAMPED;
-    }
-
-    public enum State {
-        CLAMPED, RELEASED,
-        CLAMPING, RELEASING;
+    private void updatePosition() {
+        servo.setPosition(states.get(currentStateIndex).servoPosition);
     }
 
 }
