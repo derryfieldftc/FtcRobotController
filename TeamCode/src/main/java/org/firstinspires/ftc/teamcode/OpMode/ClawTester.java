@@ -1,31 +1,26 @@
 package org.firstinspires.ftc.teamcode.OpMode;
-import android.util.JsonReader;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.Helper.ClawMechanism;
-import org.firstinspires.ftc.teamcode.Util.MathUtil;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import org.firstinspires.ftc.teamcode.Helper.ServoMechanism;
 
 @TeleOp(name = "ClawTest", group = "Tests")
 public class ClawTester extends LinearOpMode {
 
     public void runOpMode() {
 
-        ClawMechanism.Builder builder = new ClawMechanism.Builder();
-        builder.setServo(hardwareMap, "Servo0");
-        builder.addState("clamped", 0.3);
-        builder.addState("released", 0.2);
-        ClawMechanism claw = builder.build();
+        ServoMechanism.Builder clawBuilder = new ServoMechanism.Builder();
+        clawBuilder.setServo(hardwareMap, "Servo0");
+        clawBuilder.addState("clamped", 0.22); // test and change servoPosition accordingly
+        clawBuilder.addState("released", 0.3); // test and change servoPosition accordingly
+        ServoMechanism claw = clawBuilder.build();
 
+        ServoMechanism.Builder rotatorBuilder = new ServoMechanism.Builder();
+        rotatorBuilder.setServo(hardwareMap, "Servo1");
+        rotatorBuilder.addState("collecting", 0.0); // test and change servoPosition accordingly
+        rotatorBuilder.addState("scoring", 1); // test and change servoPosition accordingly
+        ServoMechanism rotator = rotatorBuilder.build();
 
         telemetry.update();
         waitForStart();
@@ -39,6 +34,12 @@ public class ClawTester extends LinearOpMode {
                 claw.setStateByName("clamped");
             } else if (gamepad1.b) {
                 claw.setStateByName("released");
+            }
+
+            if (gamepad1.x) {
+                rotator.setStateByName("collecting");
+            } else if (gamepad1.y) {
+                rotator.setStateByName("scoring");
             }
 
         }
