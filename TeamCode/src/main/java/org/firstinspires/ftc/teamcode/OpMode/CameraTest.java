@@ -6,9 +6,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.Helper.Camera;
 import org.firstinspires.ftc.teamcode.Helper.MecanumDrive;
 
-@Autonomous(name="Camera Test", group="Tests")
-public class CameraTest extends LinearOpMode {
-
+public class CameraTest {
+/*
     public static final String RIGHT_FRONT_MOTOR_NAME = "motorFR";
     public static final String LEFT_FRONT_MOTOR_NAME = "motorFL";
     public static final String RIGHT_REAR_MOTOR_NAME = "motorBR";
@@ -18,6 +17,7 @@ public class CameraTest extends LinearOpMode {
     /**
      * 1 full revolution of the wheel
      */
+    /*
     public static final double ENCODER_RESOLUTION = 1120;
     public static final double WHEEL_DIAMETER_CM = 8;
 
@@ -78,3 +78,5 @@ public class CameraTest extends LinearOpMode {
 
 }
 
+*/
+}

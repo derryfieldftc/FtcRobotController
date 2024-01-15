@@ -18,7 +18,7 @@ public class MecanumDriveTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-
+/*
         MecanumDrive mecanum = new MecanumDrive(
             hardwareMap,
             RIGHT_FRONT_MOTOR_NAME,
@@ -49,7 +49,7 @@ public class MecanumDriveTest extends LinearOpMode {
             telemetry.addData("rotate", rotate);
             telemetry.update();
         }
-
+*/
     }
 
 }

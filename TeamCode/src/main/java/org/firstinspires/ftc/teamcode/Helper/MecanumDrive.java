@@ -16,11 +16,12 @@ import java.util.function.Predicate;
 
 public class MecanumDrive {
 
-    DcMotor rightFront;
-    DcMotor leftFront;
-    DcMotor rightRear;
-    DcMotor leftRear;
-	IMU imu;
+    public DcMotor rightFront;
+    public DcMotor leftFront;
+    public DcMotor rightRear;
+    public DcMotor leftRear;
+	public DcMotor intakeMotor;
+	public IMU imu;
 	double encoderResolution;
 	double wheelDiameter;
 	LinearOpMode opMode;
@@ -30,6 +31,7 @@ public class MecanumDrive {
 			DcMotor leftFront,
 			DcMotor rightRear,
 			DcMotor leftRear,
+			DcMotor intakeMotor,
 			IMU imu,
 			double encoderResolution,
 			double wheelDiameter,
@@ -39,6 +41,7 @@ public class MecanumDrive {
 		this.leftFront = leftFront;
 		this.rightRear = rightRear;
 		this.leftRear = leftRear;
+		this.intakeMotor = intakeMotor;
 		this.imu = imu;
 		this.encoderResolution = encoderResolution;
 		this.wheelDiameter = wheelDiameter;
@@ -51,6 +54,7 @@ public class MecanumDrive {
 			String leftFrontMotorName,
 			String rightRearMotorName,
 			String leftRearMotorName,
+			String intakeMotorName,
 			String imuName,
 			double encoderResolution,
 			double wheelDiameter,
@@ -60,6 +64,7 @@ public class MecanumDrive {
 		leftFront = (DcMotor)hardwareMap.get(leftFrontMotorName);
 		rightRear = (DcMotor)hardwareMap.get(rightRearMotorName);
 		leftRear = (DcMotor)hardwareMap.get(leftRearMotorName);
+		intakeMotor = (DcMotor)hardwareMap.get(intakeMotorName);
 		imu = (IMU)hardwareMap.get(imuName);
 
 		rightFront.setDirection(DcMotor.Direction.FORWARD);

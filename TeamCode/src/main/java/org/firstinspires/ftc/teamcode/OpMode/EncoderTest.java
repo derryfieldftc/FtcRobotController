@@ -21,7 +21,7 @@ public class EncoderTest extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-
+/*
         MecanumDrive mecanum = new MecanumDrive(
                 hardwareMap,
                 RIGHT_FRONT_MOTOR_NAME,
@@ -70,7 +70,7 @@ public class EncoderTest extends LinearOpMode {
 
         // If program ends immediately, motor ZeroPowerBrake doesn't work
         sleep(500);
-
+*/
     }
 
 }
