@@ -1,13 +1,6 @@
 package org.firstinspires.ftc.teamcode.Auto;
 
-import static org.firstinspires.ftc.teamcode.Helper.AssignMotors.ENCODER_RESOLUTION;
-import static org.firstinspires.ftc.teamcode.Helper.AssignMotors.IMU_NAME;
-import static org.firstinspires.ftc.teamcode.Helper.AssignMotors.INTAKE_MOTOR_NAME;
-import static org.firstinspires.ftc.teamcode.Helper.AssignMotors.LEFT_FRONT_MOTOR_NAME;
-import static org.firstinspires.ftc.teamcode.Helper.AssignMotors.LEFT_REAR_MOTOR_NAME;
-import static org.firstinspires.ftc.teamcode.Helper.AssignMotors.RIGHT_FRONT_MOTOR_NAME;
-import static org.firstinspires.ftc.teamcode.Helper.AssignMotors.RIGHT_REAR_MOTOR_NAME;
-import static org.firstinspires.ftc.teamcode.Helper.AssignMotors.WHEEL_DIAMETER_CM;
+import static org.firstinspires.ftc.teamcode.Helper.AssignMotors.*;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
