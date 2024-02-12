@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.Helper.MecanumDrive;
+import org.firstinspires.ftc.teamcode.Helper.ServoMechanism;
 
 @TeleOp(name="MecanumDriveTest", group="Tests")
 public class MecanumDriveTest extends LinearOpMode {
@@ -40,6 +41,21 @@ public class MecanumDriveTest extends LinearOpMode {
         waitForStart();
 
         double forward, strafe, rotate, scale; // Drive variables
+
+        boolean currentClaw, previousClaw = false; // Claw variables
+        boolean currentRotator, previousRotator = false; // Rotator variables
+
+        ServoMechanism.Builder clawBuilder = new ServoMechanism.Builder();
+        clawBuilder.setServo(hardwareMap, "claw");
+        clawBuilder.addState("collecting", 0.0);
+        clawBuilder.addState("scoring", 1.0);
+        ServoMechanism clawServo = clawBuilder.build();
+
+        ServoMechanism.Builder rotatorBuilder = new ServoMechanism.Builder();
+        rotatorBuilder.setServo(hardwareMap, "rotator");
+        rotatorBuilder.addState("collecting", 0.0);
+        rotatorBuilder.addState("scoring", 1.0);
+        ServoMechanism rotatorServo = rotatorBuilder.build();
 
         // Set motors
         // DcMotor slideMotor = (DcMotor)hardwareMap.get(LINEAR_SLIDE_MOTOR_NAME);
@@ -78,6 +94,27 @@ public class MecanumDriveTest extends LinearOpMode {
                 slidePower = -0.5;
             }
             else slidePower = 0;
+
+            // Claw State Machine
+            currentClaw = gamepad2.a;
+            if (currentClaw && !previousClaw) {
+                previousClaw = currentClaw;
+                if (clawServo.getCurrentState().stateName == "collecting") { clawServo.setStateByName("scoring"); }
+                else if (clawServo.getCurrentState().stateName == "scoring") { clawServo.setStateByName("collecting"); }
+            }
+            else if (!currentClaw && previousClaw) {
+                previousClaw = currentClaw;
+            }
+            // Rotator State Machine
+            currentRotator = gamepad2.y;
+            if (currentRotator && !previousRotator) {
+                previousRotator = currentRotator;
+                if (rotatorServo.getCurrentState().stateName == "collecting") { rotatorServo.setStateByName("scoring"); }
+                else if (rotatorServo.getCurrentState().stateName == "scoring") { rotatorServo.setStateByName("collecting"); }
+            }
+            else if (!currentRotator && previousRotator) {
+                previousRotator = currentRotator;
+            }
 //            slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 //            slideMotor.setTargetPosition(slidePosition);
 //            slideMotor.setPower(slidePower);
@@ -85,24 +122,10 @@ public class MecanumDriveTest extends LinearOpMode {
             telemetry.addData("forward", forward);
             telemetry.addData("strafe", strafe);
             telemetry.addData("rotate", rotate);
+            telemetry.addData("claw state", clawServo.getCurrentState().stateName);
+            telemetry.addData("rotator state", rotatorServo.getCurrentState().stateName);
 //            telemetry.addData("slide position", slideMotor.getCurrentPosition());
             telemetry.update();
         }
-
     }
-
-//    /**
-//    Blocking function that uses encoders to spin a motor to a desired encoder position
-//     **/
-//    public void runToPosition(DcMotor motor, int target, int power) {
-//        motor.setTargetPosition(target);
-//        while (motor.getCurrentPosition() <= target) {
-//            motor.setPower(power);
-//        }
-//        while (motor.getCurrentPosition() >= target) {
-//            motor.setPower(-power);
-//        }
-//    }
-
-
 }
