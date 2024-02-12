@@ -25,17 +25,17 @@ public class MecanumDriveTest extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-//        MecanumDrive mecanum = new MecanumDrive(
-//            hardwareMap,
-//            RIGHT_FRONT_MOTOR_NAME,
-//            LEFT_FRONT_MOTOR_NAME,
-//            RIGHT_REAR_MOTOR_NAME,
-//            LEFT_REAR_MOTOR_NAME,
-//                IMU_NAME,
-//                ENCODER_RESOLUTION,
-//                WHEEL_DIAMETER_CM,
-//                this
-//        );
+        MecanumDrive mecanum = new MecanumDrive(
+            hardwareMap,
+            RIGHT_FRONT_MOTOR_NAME,
+            LEFT_FRONT_MOTOR_NAME,
+            RIGHT_REAR_MOTOR_NAME,
+            LEFT_REAR_MOTOR_NAME,
+                IMU_NAME,
+                ENCODER_RESOLUTION,
+                WHEEL_DIAMETER_CM,
+                this
+        );
 
         waitForStart();
 
@@ -46,7 +46,7 @@ public class MecanumDriveTest extends LinearOpMode {
         DcMotor intakeMotor = (DcMotor)hardwareMap.get(INTAKE_MOTOR_NAME);
 
         //Set motor behaviors
-//        intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 //        slideMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 //        slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 //        slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -63,7 +63,7 @@ public class MecanumDriveTest extends LinearOpMode {
             rotate = -gamepad1.right_stick_x; // Positive is CCW; we want positive to be CW, so we *(-1)
             scale = 0.8;
 
-            // mecanum.drive(forward, strafe, rotate, scale);
+            mecanum.drive(forward, strafe, rotate, scale);
 
             // Intake Logic
             intakeMotor.setPower(intakePower * (gamepad2.right_trigger - gamepad2.left_trigger));
@@ -82,9 +82,9 @@ public class MecanumDriveTest extends LinearOpMode {
 //            slideMotor.setTargetPosition(slidePosition);
 //            slideMotor.setPower(slidePower);
 
-//            telemetry.addData("forward", forward);
-//            telemetry.addData("strafe", strafe);
-//            telemetry.addData("rotate", rotate);
+            telemetry.addData("forward", forward);
+            telemetry.addData("strafe", strafe);
+            telemetry.addData("rotate", rotate);
 //            telemetry.addData("slide position", slideMotor.getCurrentPosition());
             telemetry.update();
         }
