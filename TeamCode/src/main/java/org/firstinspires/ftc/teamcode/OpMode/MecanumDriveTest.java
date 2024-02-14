@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 import org.firstinspires.ftc.teamcode.Helper.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Helper.ServoMechanism;
@@ -124,6 +125,7 @@ public class MecanumDriveTest extends LinearOpMode {
             telemetry.addData("rotate", rotate);
             telemetry.addData("claw state", clawServo.getCurrentState().stateName);
             telemetry.addData("rotator state", rotatorServo.getCurrentState().stateName);
+            // telemetry.addData("limit switch state", limit.getState());
 //            telemetry.addData("slide position", slideMotor.getCurrentPosition());
             telemetry.update();
         }
