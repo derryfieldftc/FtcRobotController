@@ -6,11 +6,26 @@ import static org.firstinspires.ftc.teamcode.Helper.AssignMotors.*;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.checkerframework.checker.units.qual.C;
 import org.firstinspires.ftc.teamcode.Helper.Camera;
 import org.firstinspires.ftc.teamcode.Helper.MecanumDrive;
 @Autonomous(name = "BlueCenterStage")
 public class CameraTest extends LinearOpMode {
+
+    public static final String RIGHT_FRONT_MOTOR_NAME = "motorFR";
+    public static final String LEFT_FRONT_MOTOR_NAME = "motorFL";
+    public static final String RIGHT_REAR_MOTOR_NAME = "motorBR";
+    public static final String LEFT_REAR_MOTOR_NAME = "motorBL";
+    public static final String IMU_NAME = "imu";
+    private static final boolean USE_WEBCAM = true;
     public static final String CAMERA_NAME = "Webcam 1";
+    private static final String TFOD_MODEL_ASSET = "TeamPropDetectionModel.tflite";
+    // private static String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/myCustomModel.tflite";
+    private static final String[] LABELS = {
+            "Blue Prop",
+            "Red Prop"
+    };
+
     /**
      * 1 full revolution of the wheel
      */
@@ -34,34 +49,49 @@ public class CameraTest extends LinearOpMode {
                 this
         );
 
-        Camera camera = new Camera(hardwareMap, CAMERA_NAME, this);
+        Camera camera = new Camera(USE_WEBCAM, CAMERA_NAME, TFOD_MODEL_ASSET, LABELS, hardwareMap);
+
+        telemetry.addLine("Waiting for Start...");
+        telemetry.update();
 
         waitForStart();
 
-        ewok.driveCentimetersForward(65, 1);
-        if (camera.detectPixel(10, 300, 2)){
-            ewok.driveCentimetersForward(40, 1);
-            sleep(100);
-            ewok.driveCentimetersForward(-35, 1);
-            ewok.turnUsingIMU(81, 0.5);
-            ewok.driveCentimetersForward(200, 1);
-        }
-        else {
-            ewok.turnUsingIMU(-45, 0.5);
-            if (camera.detectPixel(10, 300, 2)){
-                ewok.driveCentimetersForward(40, 1);
-                sleep(100);
-                ewok.driveCentimetersForward(-40, 1);
-                ewok.turnUsingIMU(126, 0.5);
-                ewok.driveCentimetersForward(200, 1);
+        while (opModeIsActive()) {
+            // String label = camera.recognizeByLabel();
+            telemetry.addData("Labels: ", camera.recognizeByLabel());
+            if (camera.recognizeByBoolean("Red Prop")) {
+                telemetry.addLine("Found a RED Prop");
             }
-            else {
-                ewok.turnUsingIMU(45, 0.5);
-                ewok.driveCentimetersStrafe(-40, 1);
-                ewok.turnUsingIMU(81, 0.5);
-                ewok.driveCentimetersForward(180, 1);
+            else if (camera.recognizeByBoolean("Blue Prop")) {
+                telemetry.addLine("Found a BLUE Prop");
             }
+            telemetry.addLine("Found No Prop");
+            telemetry.update();
         }
+//        mecanum.driveCentimetersForward(65, 1);
+//        if (camera.detectPixel(10, 300, 2)){
+//            mecanum.driveCentimetersForward(40, 1);
+//            sleep(100);
+//            mecanum.driveCentimetersForward(-35, 1);
+//            mecanum.turnUsingIMU(81, 0.5);
+//            mecanum.driveCentimetersForward(200, 1);
+//        }
+//        else {
+//            mecanum.turnUsingIMU(-45, 0.5);
+//            if (camera.detectPixel(10, 300, 2)){
+//                mecanum.driveCentimetersForward(40, 1);
+//                sleep(100);
+//                mecanum.driveCentimetersForward(-40, 1);
+//                mecanum.turnUsingIMU(126, 0.5);
+//                mecanum.driveCentimetersForward(200, 1);
+//            }
+//            else {
+//                mecanum.turnUsingIMU(45, 0.5);
+//                mecanum.driveCentimetersStrafe(-40, 1);
+//                mecanum.turnUsingIMU(81, 0.5);
+//                mecanum.driveCentimetersForward(180, 1);
+//            }
+//        }
 
 
         //mecanum.driveCentimetersForward(40, 0.3);
