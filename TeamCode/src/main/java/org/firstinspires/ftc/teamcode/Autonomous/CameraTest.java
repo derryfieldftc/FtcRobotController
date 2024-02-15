@@ -15,13 +15,16 @@ public class CameraTest extends LinearOpMode {
     public static final String RIGHT_REAR_MOTOR_NAME = "motorBR";
     public static final String LEFT_REAR_MOTOR_NAME = "motorBL";
     public static final String IMU_NAME = "imu";
+    public static final boolean USE_WEBCAM = true;
     public static final String CAMERA_NAME = "Webcam 1";
-
-    /**
-     * 1 full revolution of the wheel
-     */
     public static final double ENCODER_RESOLUTION = 1120;
     public static final double WHEEL_DIAMETER_CM = 8;
+    private static final String TFOD_MODEL_ASSET = "TeamPropDetectionModel.tflite";
+    // private static String TFOD_MODEL_FILE = "/sdcard/FIRST/tflitemodels/myCustomModel.tflite";
+    private static final String[] LABELS = {
+            "Blue Prop",
+            "Red Prop"
+    };
 
     @Override
     public void runOpMode() {
@@ -38,11 +41,13 @@ public class CameraTest extends LinearOpMode {
                 this
         );
 
-
+        Camera camera = new Camera(USE_WEBCAM, CAMERA_NAME, TFOD_MODEL_ASSET, LABELS, hardwareMap);
         waitForStart();
 
         while (opModeIsActive()) {
         }
+
+
 //        mecanum.driveCentimetersForward(65, 1);
 //        if (camera.detectPixel(10, 300, 2)){
 //            mecanum.driveCentimetersForward(40, 1);

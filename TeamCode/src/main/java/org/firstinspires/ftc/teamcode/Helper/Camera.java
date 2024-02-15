@@ -96,4 +96,8 @@ public class Camera {
         }
         return labels;
     }
+
+    public List<Recognition> getRecognitions() {
+        return tfod.getRecognitions();
+    }
 }
