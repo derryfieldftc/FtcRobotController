@@ -29,10 +29,11 @@ public class BinaryBotsTeleOp extends LinearOpMode {
             LEFT_FRONT_MOTOR_NAME,
             RIGHT_REAR_MOTOR_NAME,
             LEFT_REAR_MOTOR_NAME,
-                IMU_NAME,
-                ENCODER_RESOLUTION,
-                WHEEL_DIAMETER_CM,
-                this
+            INTAKE_MOTOR_NAME,
+            IMU_NAME,
+            ENCODER_RESOLUTION,
+            WHEEL_DIAMETER_CM,
+            this
         );
 
         waitForStart();

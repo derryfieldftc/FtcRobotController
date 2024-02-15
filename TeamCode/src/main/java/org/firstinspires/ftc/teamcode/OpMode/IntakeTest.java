@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Helper.*;
 
-@TeleOp(name="IntakeTest")
+@TeleOp(name="IntakeTest", group = "Tests")
 public class IntakeTest extends LinearOpMode {
     MecanumDrive d;
     boolean intakeSlow;

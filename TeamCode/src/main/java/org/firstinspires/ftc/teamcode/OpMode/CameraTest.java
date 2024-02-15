@@ -5,11 +5,16 @@ import static org.firstinspires.ftc.teamcode.Helper.AssignMotors.*;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.checkerframework.checker.units.qual.C;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.teamcode.Helper.Camera;
 import org.firstinspires.ftc.teamcode.Helper.MecanumDrive;
-@Autonomous(name = "BlueCenterStage")
+
+import java.util.Locale;
+
+@TeleOp(name = "CameraTest", group = "Tests")
 public class CameraTest extends LinearOpMode {
 
     public static final String RIGHT_FRONT_MOTOR_NAME = "motorFR";
@@ -36,19 +41,6 @@ public class CameraTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        ewok = new MecanumDrive(
-                hardwareMap,
-                RIGHT_FRONT_MOTOR_NAME,
-                LEFT_FRONT_MOTOR_NAME,
-                RIGHT_REAR_MOTOR_NAME,
-                LEFT_REAR_MOTOR_NAME,
-                INTAKE_MOTOR_NAME,
-                IMU_NAME,
-                ENCODER_RESOLUTION,
-                WHEEL_DIAMETER_CM,
-                this
-        );
-
         Camera camera = new Camera(USE_WEBCAM, CAMERA_NAME, TFOD_MODEL_ASSET, LABELS, hardwareMap);
 
         telemetry.addLine("Waiting for Start...");
@@ -57,49 +49,13 @@ public class CameraTest extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            // String label = camera.recognizeByLabel();
-            telemetry.addData("Labels: ", camera.recognizeByLabel());
-            if (camera.recognizeByBoolean("Red Prop")) {
-                telemetry.addLine("Found a RED Prop");
+            for (Recognition rec : camera.getRecognitions()) {
+                double centerX = (rec.getLeft() + rec.getRight()) / 2.0;
+                double centerY = (rec.getTop() + rec.getBottom()) / 2.0;
+                telemetry.addLine(String.format(Locale.getDefault(), "%s at (%d, %d)", rec.getLabel(), centerX, centerY));
             }
-            else if (camera.recognizeByBoolean("Blue Prop")) {
-                telemetry.addLine("Found a BLUE Prop");
-            }
-            telemetry.addLine("Found No Prop");
-            telemetry.update();
         }
-//        mecanum.driveCentimetersForward(65, 1);
-//        if (camera.detectPixel(10, 300, 2)){
-//            mecanum.driveCentimetersForward(40, 1);
-//            sleep(100);
-//            mecanum.driveCentimetersForward(-35, 1);
-//            mecanum.turnUsingIMU(81, 0.5);
-//            mecanum.driveCentimetersForward(200, 1);
-//        }
-//        else {
-//            mecanum.turnUsingIMU(-45, 0.5);
-//            if (camera.detectPixel(10, 300, 2)){
-//                mecanum.driveCentimetersForward(40, 1);
-//                sleep(100);
-//                mecanum.driveCentimetersForward(-40, 1);
-//                mecanum.turnUsingIMU(126, 0.5);
-//                mecanum.driveCentimetersForward(200, 1);
-//            }
-//            else {
-//                mecanum.turnUsingIMU(45, 0.5);
-//                mecanum.driveCentimetersStrafe(-40, 1);
-//                mecanum.turnUsingIMU(81, 0.5);
-//                mecanum.driveCentimetersForward(180, 1);
-//            }
-//        }
 
-
-        //mecanum.driveCentimetersForward(40, 0.3);
-
-
-
-
-        // If program ends immediately, motor ZeroPowerBrake doesnt work
         sleep(500);
 
     }
