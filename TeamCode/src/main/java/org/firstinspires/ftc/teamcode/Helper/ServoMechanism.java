@@ -23,10 +23,22 @@ public class ServoMechanism {
             states = new ArrayList<>();
         }
 
-        public void setServo(Servo servo) { this.servo = servo; }
-        public void setServo(HardwareMap hardwareMap, String servoName) { this.servo = hardwareMap.servo.get(servoName); }
-        public void addState(String name, double servoPosition) { states.add(new State(name, servoPosition)); }
-        public void setDefaultState(String stateName) { defaultState = stateName; }
+        public Builder setServo(Servo servo) {
+            this.servo = servo;
+            return this;
+        }
+        public Builder setServo(HardwareMap hardwareMap, String servoName) {
+            this.servo = hardwareMap.servo.get(servoName);
+            return this;
+        }
+        public Builder addState(String name, double servoPosition) {
+            states.add(new State(name, servoPosition));
+            return this;
+        }
+        public Builder setDefaultState(String stateName) {
+            defaultState = stateName;
+            return this;
+        }
 
         public ServoMechanism build() throws IllegalStateException {
             ServoMechanism servoMechanism = new ServoMechanism();
