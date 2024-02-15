@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.checkerframework.checker.units.qual.C;
 import org.firstinspires.ftc.teamcode.Helper.Camera;
 import org.firstinspires.ftc.teamcode.Helper.MecanumDrive;
 
@@ -37,12 +38,10 @@ public class CameraTest extends LinearOpMode {
                 this
         );
 
-        Camera camera = new Camera(hardwareMap, CAMERA_NAME, this);
 
         waitForStart();
 
         while (opModeIsActive()) {
-            camera.alignUsingAprilTag(mecanum, 1);
         }
 //        mecanum.driveCentimetersForward(65, 1);
 //        if (camera.detectPixel(10, 300, 2)){
