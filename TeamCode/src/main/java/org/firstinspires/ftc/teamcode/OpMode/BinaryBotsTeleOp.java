@@ -22,7 +22,7 @@ public class BinaryBotsTeleOp extends LinearOpMode {
     public static final String IMU_NAME = "imu";
     public static final double ENCODER_RESOLUTION = 1120;
     public static final double WHEEL_DIAMETER_CM = 7.4;
-    public static final double MAX_SLIDE_POSITION = 3000;
+    public static final double MAX_SLIDE_POSITION = 2371;
 
     @Override
     public void runOpMode() {
@@ -39,33 +39,36 @@ public class BinaryBotsTeleOp extends LinearOpMode {
                 this
         );
 
-        DcMotor intakeMotor = (DcMotor)hardwareMap.get(INTAKE_MOTOR_NAME);
+        DcMotor intakeMotor = hardwareMap.dcMotor.get(INTAKE_MOTOR_NAME);
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-        DcMotor slideMotor = (DcMotor)hardwareMap.get(LINEAR_SLIDE_MOTOR_NAME);
-        slideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        DcMotor slideMotor = hardwareMap.dcMotor.get(LINEAR_SLIDE_MOTOR_NAME);
+        slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // float MINIMUM_SLIDE_POSITION = slideMotor.getCurrentPosition();
 
-        TouchSensor limit = hardwareMap.get(TouchSensor.class, LIMIT_SWITCH_NAME);
+        TouchSensor limit = hardwareMap.touchSensor.get(LIMIT_SWITCH_NAME);
 
         ServoMechanism.Builder clawBuilder = new ServoMechanism.Builder()
                 .setServo(hardwareMap, "claw")
-                .addState("released", 0.0)
-                .addState("clasped", 1.0);
+                .addState("clasped", 0.0)
+                .addState("released", 0.75);
         ServoMechanism clawServo = clawBuilder.build();
+        clawServo.setStateByName("released");
 
         ServoMechanism.Builder rotatorBuilder = new ServoMechanism.Builder()
                 .setServo(hardwareMap, "rotator")
-                .addState("scoring", 0.0)
-                .addState("collecting", 1.0);
+                .addState("scoring", 0.1)
+                .addState("collecting", 0.92);
         ServoMechanism rotatorServo = rotatorBuilder.build();
+        rotatorServo.setStateByName("collecting");
 
         double forward, strafe, rotate, scale; // Drive variables
         double intakePower = 1.0;
-        double slidePower = 1.0, slideSpeed;
-
-        int slideTarget;
+        double slidePower = 1.0; // Slide variables
+        double slideIncrement = 80.0;
 
         boolean currentClaw, previousClaw = false; // Claw variables
         boolean currentRotator, previousRotator = false; // Rotator variables
@@ -97,26 +100,27 @@ public class BinaryBotsTeleOp extends LinearOpMode {
             intakeMotor.setPower(intakePower * (gamepad2.right_trigger - gamepad2.left_trigger));
 
             // Slide Logic
-//            if (gamepad2.dpad_up && slideMotor.getCurrentPosition() < MAX_SLIDE_POSITION) {
-//                // slideTarget = slideMotor.getCurrentPosition() + 1; // 1 should be slideSpeed (or something like that)!
-//                slideSpeed = slidePower;
-//            }
-//            else if (gamepad2.dpad_down && slideMotor.getCurrentPosition() > MINIMUM_SLIDE_POSITION && !limit.isPressed()) {
-//                // slideTarget = slideMotor.getCurrentPosition() - 1;
-//                slideSpeed = -slidePower;
-//            }
-            if (gamepad2.dpad_up) { slideSpeed = slidePower; }
-            else if (gamepad2.dpad_down) { slideSpeed = -slidePower; }
-            else slideSpeed = 0;
-            // slideMotor.setTargetPosition(slideTarget);
-            slideMotor.setPower(slideSpeed);
+            double slideTarget = slideMotor.getCurrentPosition();
+            if (gamepad2.dpad_up && slideMotor.getCurrentPosition() < MAX_SLIDE_POSITION) {
+                // slideTarget = slideMotor.getCurrentPosition() + 1; // 1 should be slideSpeed (or something like that)!
+                slideTarget = slideMotor.getCurrentPosition() + slideIncrement;
+            }
+            else if (gamepad2.dpad_down && !limit.isPressed()) {
+                // slideTarget = slideMotor.getCurrentPosition() - 1;
+                slideTarget = slideMotor.getCurrentPosition() - slideIncrement;
+            }
+//            if (gamepad2.dpad_up) { slideSpeed = slidePower; }
+//            else if (gamepad2.dpad_down) { slideSpeed = -slidePower; }
+            slideMotor.setTargetPosition((int)slideTarget);
+            slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            slideMotor.setPower(slidePower);
 
             // Claw State Machine
             currentClaw = gamepad2.a;
             if (currentClaw && !previousClaw) {
                 previousClaw = currentClaw;
-                if (clawServo.getCurrentState().stateName == "clasped") { clawServo.setStateByName("released"); }
-                else if (clawServo.getCurrentState().stateName == "released") { clawServo.setStateByName("clasped"); }
+                if (clawServo.getCurrentState().stateName.equals("clasped")) { clawServo.setStateByName("released"); }
+                else if (clawServo.getCurrentState().stateName.equals("released")) { clawServo.setStateByName("clasped"); }
             }
             else if (!currentClaw && previousClaw) {
                 previousClaw = currentClaw;
@@ -126,8 +130,8 @@ public class BinaryBotsTeleOp extends LinearOpMode {
             currentRotator = gamepad2.y;
             if (currentRotator && !previousRotator) {
                 previousRotator = currentRotator;
-                if (rotatorServo.getCurrentState().stateName == "collecting") { rotatorServo.setStateByName("scoring"); }
-                else if (rotatorServo.getCurrentState().stateName == "scoring") { rotatorServo.setStateByName("collecting"); }
+                if (rotatorServo.getCurrentState().stateName.equals("collecting")) { rotatorServo.setStateByName("scoring"); }
+                else if (rotatorServo.getCurrentState().stateName.equals("scoring")) { rotatorServo.setStateByName("collecting"); }
             }
             else if (!currentRotator && previousRotator) {
                 previousRotator = currentRotator;
@@ -137,6 +141,8 @@ public class BinaryBotsTeleOp extends LinearOpMode {
             telemetry.addData("strafe", strafe);
             telemetry.addData("rotate", rotate);
             telemetry.addData("slide position", slideMotor.getCurrentPosition());
+            telemetry.addData("clawState", clawServo.getCurrentState().stateName);
+            telemetry.addData("rotatorState", rotatorServo.getCurrentState().stateName);
             telemetry.update();
         }
 
