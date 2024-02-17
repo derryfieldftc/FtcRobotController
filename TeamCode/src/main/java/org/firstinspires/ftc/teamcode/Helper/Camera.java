@@ -88,7 +88,7 @@ public class Camera {
 
         // Enable the RC preview (LiveView).  Set "false" to omit camera monitoring.
         builder.enableLiveView(true);
-        
+
         // Set and enable the processor.
         builder.addProcessor(tfod);
 
