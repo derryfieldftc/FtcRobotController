@@ -40,22 +40,25 @@ public class BinaryBotsTeleOp extends LinearOpMode {
         );
 
         DcMotor intakeMotor = (DcMotor)hardwareMap.get(INTAKE_MOTOR_NAME);
+        intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         DcMotor slideMotor = (DcMotor)hardwareMap.get(LINEAR_SLIDE_MOTOR_NAME);
-        float MINIMUM_SLIDE_POSITION = slideMotor.getCurrentPosition();
+        slideMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        // float MINIMUM_SLIDE_POSITION = slideMotor.getCurrentPosition();
 
         TouchSensor limit = hardwareMap.get(TouchSensor.class, LIMIT_SWITCH_NAME);
 
         ServoMechanism.Builder clawBuilder = new ServoMechanism.Builder()
                 .setServo(hardwareMap, "claw")
-                .addState("collecting", 0.0)
-                .addState("scoring", 1.0);
+                .addState("released", 0.0)
+                .addState("clasped", 1.0);
         ServoMechanism clawServo = clawBuilder.build();
 
         ServoMechanism.Builder rotatorBuilder = new ServoMechanism.Builder()
                 .setServo(hardwareMap, "rotator")
-                .addState("collecting", 0.0)
-                .addState("scoring", 1.0);
+                .addState("scoring", 0.0)
+                .addState("collecting", 1.0);
         ServoMechanism rotatorServo = rotatorBuilder.build();
 
         double forward, strafe, rotate, scale; // Drive variables
@@ -94,25 +97,26 @@ public class BinaryBotsTeleOp extends LinearOpMode {
             intakeMotor.setPower(intakePower * (gamepad2.right_trigger - gamepad2.left_trigger));
 
             // Slide Logic
-            if (gamepad2.dpad_up && slideMotor.getCurrentPosition() < MAX_SLIDE_POSITION) {
-                // slideTarget = slideMotor.getCurrentPosition() + 1; // 1 should be slideSpeed (or something like that)!
-                slideSpeed = slidePower;
-            }
-            else if (gamepad2.dpad_down && slideMotor.getCurrentPosition() > MINIMUM_SLIDE_POSITION && !limit.isPressed()) {
-                // slideTarget = slideMotor.getCurrentPosition() - 1;
-                slideSpeed = -slidePower;
-            }
+//            if (gamepad2.dpad_up && slideMotor.getCurrentPosition() < MAX_SLIDE_POSITION) {
+//                // slideTarget = slideMotor.getCurrentPosition() + 1; // 1 should be slideSpeed (or something like that)!
+//                slideSpeed = slidePower;
+//            }
+//            else if (gamepad2.dpad_down && slideMotor.getCurrentPosition() > MINIMUM_SLIDE_POSITION && !limit.isPressed()) {
+//                // slideTarget = slideMotor.getCurrentPosition() - 1;
+//                slideSpeed = -slidePower;
+//            }
+            if (gamepad2.dpad_up) { slideSpeed = slidePower; }
+            else if (gamepad2.dpad_down) { slideSpeed = -slidePower; }
             else slideSpeed = 0;
-            slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             // slideMotor.setTargetPosition(slideTarget);
-            slideMotor.setPower(slidePower);
+            slideMotor.setPower(slideSpeed);
 
             // Claw State Machine
             currentClaw = gamepad2.a;
             if (currentClaw && !previousClaw) {
                 previousClaw = currentClaw;
-                if (clawServo.getCurrentState().stateName == "collecting") { clawServo.setStateByName("scoring"); }
-                else if (clawServo.getCurrentState().stateName == "scoring") { clawServo.setStateByName("collecting"); }
+                if (clawServo.getCurrentState().stateName == "clasped") { clawServo.setStateByName("released"); }
+                else if (clawServo.getCurrentState().stateName == "released") { clawServo.setStateByName("clasped"); }
             }
             else if (!currentClaw && previousClaw) {
                 previousClaw = currentClaw;
