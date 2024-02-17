@@ -15,10 +15,10 @@ import java.util.function.Predicate;
 
 public class MecanumDrive {
 
-    DcMotor rightFront;
-    DcMotor leftFront;
-    DcMotor rightRear;
-    DcMotor leftRear;
+    public DcMotor rightFront;
+    public DcMotor leftFront;
+    public DcMotor rightRear;
+    public DcMotor leftRear;
 	IMU imu;
 	double encoderResolution;
 	double wheelDiameter;
