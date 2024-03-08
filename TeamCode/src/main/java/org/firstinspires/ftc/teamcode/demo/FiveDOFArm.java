@@ -38,7 +38,7 @@ public class FiveDOFArm {
 
     // Track the state of the arm.
     public enum ArmState {
-        START, NEUTRAL, PREPICK, PICK, PICKUP, TURN, EXTEND, PREPLACE, PLACE
+        START, NEUTRAL, PREPICK, PICK, PICKUP, TURN, EXTEND, PREPLACE, PLACE, POSTPLACE
     }
     private ArmState currentState;
 
@@ -161,32 +161,36 @@ public class FiveDOFArm {
     public void updateArm() {
         switch(currentState) {
             case START:
-                setPositions(0.5, 0.6, 0.5, 0.5, 0.5, 0.5);
+                setPositions(0.5, 0.7, 0.8, 0.45, 0.5, 0.5);
                 break;
             case NEUTRAL:
-                setPositions(0.5, 0.6, 1.0, 0.5, 0.8, 0.5);
+                setPositions(0.5, 0.7, 0.8, 0.45, 0.5, 0.5);
                 break;
             case PREPICK:
-                setPositions(0.5, 0.6, 1.0, 0.5, 0.2, 0.5);
+                setPositions(0.5, 0.4, 1.0, 0.45, 1.0, 0.5);
                 break;
             case PICK:
-                setPositions(0.5, 0.6, 1.0, 0.5, 0.2, 0.0);
+                setPositions(0.5, 0.4, 1.0, 0.45, 1.0, 0.1);
                 break;
             case PICKUP:
-                setPositions(0.5, 0.8, 1.0, 0.5, 0.0, 0.0);
+                setPositions(0.5, 0.8, 0.75, 0.45, 1, 0.1);
                 break;
             case TURN:
-                setPositions(1.0, 0.8, 1.0, 0.5, 0.0, 0.0);
+                setPositions(1.0, 0.8, 0.75, 0.45, 1, 0.1);
                 break;
             case EXTEND:
-                setPositions(1.0, 0.35, .5, 0.5, 0.0, 0.0);
+                setPositions(1.0, 0.35, .45, 0.45, 0.55, 0.1);
                 break;
             case PREPLACE:
-                setPositions(1.0, 0.35, .5, 0.5, 0.0, 0.0);
+                setPositions(1.0, 0.35, .8, 0.45, 0.9, 0.1);
                 break;
             case PLACE:
-                setPositions(1.0, 0.35, .5, 0.5, 0.0, 0.5);
+                setPositions(1.0, 0.35, .8, 0.45, 0.9, 0.5);
                 break;
+            case POSTPLACE:
+                setPositions(1.0, 0.5, .3, 0.45, 0.9, 0.5);
+                break;
+
         }
     }
 }

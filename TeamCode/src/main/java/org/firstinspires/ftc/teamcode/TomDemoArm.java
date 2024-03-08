@@ -35,6 +35,9 @@ public class TomDemoArm extends OpMode {
                 arm.setState(FiveDOFArm.ArmState.PLACE);
                 break;
             case PLACE:
+                arm.setState(FiveDOFArm.ArmState.POSTPLACE);
+                break;
+            case POSTPLACE:
                 arm.setState(FiveDOFArm.ArmState.NEUTRAL);
                 break;
         }
@@ -43,6 +46,9 @@ public class TomDemoArm extends OpMode {
     public void previousState() {
         FiveDOFArm.ArmState currentState = arm.getState();
         switch (currentState) {
+            case POSTPLACE:
+                arm.setState(FiveDOFArm.ArmState.PLACE);
+                break;
             case PLACE:
                 arm.setState(FiveDOFArm.ArmState.PREPLACE);
                 break;
@@ -65,7 +71,7 @@ public class TomDemoArm extends OpMode {
                 arm.setState(FiveDOFArm.ArmState.NEUTRAL);
                 break;
             case NEUTRAL:
-                arm.setState(FiveDOFArm.ArmState.PLACE);
+                arm.setState(FiveDOFArm.ArmState.POSTPLACE);
                 break;
         }
     }
