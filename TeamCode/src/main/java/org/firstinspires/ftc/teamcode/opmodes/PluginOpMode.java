@@ -19,41 +19,32 @@ public abstract class PluginOpMode extends LinearOpMode {
     public void runOpMode() {
         this.plugins = initPlugins();
 
-        ThreadPool pool = new ThreadPool();
+
         for (RobotPlugin plugin : plugins) {
-            // pool.addThread(new Thread(() -> {
-                String pluginName = plugin.getClass().getSimpleName();
-                Telemetry.Line line = telemetry.addLine("init: " + pluginName);
-                telemetry.update();
-                plugin.init();
-                telemetry.removeLine(line);
-
-                line = telemetry.addLine("init_loop: " + pluginName);
-                telemetry.update();
-                while (opModeInInit()) {
-                    plugin.init_loop();
-                }
-                waitForStart();
-                telemetry.removeLine(line);
-
-                line = telemetry.addLine("start: " + pluginName);
-                telemetry.update();
-                plugin.start();
-                telemetry.removeLine(line);
-
-                while (opModeIsActive()) {
-                    plugin.loop();
-                    telemetry.update();
-                }
-
-                line = telemetry.addLine("start: " + pluginName);
-                telemetry.update();
-                plugin.stop();
-                telemetry.removeLine(line);
-
-                telemetry.update();
-            // }));
+			plugin.init();
         }
+
+		while (opModeInInit()) {
+			for (RobotPlugin plugin : plugins) {
+				plugin.init_loop();
+			}
+		}
+
+		waitForStart();
+
+		for (RobotPlugin plugin : plugins) {
+			plugin.start();
+		}
+
+		while (opModeIsActive()) {
+			for (RobotPlugin plugin : plugins) {
+				plugin.loop();
+			}
+		}
+
+		for (RobotPlugin plugin : plugins) {
+			plugin.stop();
+		}
 
 
     }
