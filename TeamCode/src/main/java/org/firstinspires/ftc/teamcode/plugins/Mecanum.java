@@ -46,11 +46,25 @@ public class Mecanum extends RobotPlugin {
 		double y = -gamepad1.left_stick_y;
 		double x = gamepad1.left_stick_x;
 		double rx = gamepad1.right_stick_x;
+		double powerFL = y + x + rx;
+		double powerBL = y - x + rx;
+		double powerFR = y - x - rx;
+		double powerBR = y + x - rx;
 
-		motorFL.setPower(y + x + rx);
-		motorBL.setPower(y - x + rx);
-		motorFR.setPower(y - x - rx);
-		motorBR.setPower(y + x - rx);
+		motorFL.setPower(clamp(1, -1, powerFL));
+		motorBL.setPower(clamp(1, -1, powerBL));
+		motorFR.setPower(clamp(1, -1, powerFR));
+		motorBR.setPower(clamp(1, -1, powerBR));
 
+	}
+	
+	private double clamp(double max, double min, double num) {
+		if (num > max) {
+			return max;
+		} else if (num < min) {
+			return min;
+		} else {
+			return num;
+		}
 	}
 }
