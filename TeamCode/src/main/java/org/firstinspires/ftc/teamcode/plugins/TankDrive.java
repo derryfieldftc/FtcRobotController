@@ -32,7 +32,7 @@ public class TankDrive extends RobotPlugin {
         motorFL = hardwareMap.dcMotor.get("motorFL");
         motorBL = hardwareMap.dcMotor.get("motorBL");
 
-        telemetry.addLine("ITS FUCKED");
+        telemetry.addLine("ITS GOOFED");
         telemetry.update();
 
         motorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);

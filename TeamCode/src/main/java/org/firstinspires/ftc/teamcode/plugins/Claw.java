@@ -1,5 +1,4 @@
 package org.firstinspires.ftc.teamcode.plugins;
-import android.graphics.Path;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -9,7 +8,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RobotPlugin;
-
 
 /**
  * Claw
@@ -31,9 +29,18 @@ public class Claw extends RobotPlugin {
         this.telemetry = opMode.telemetry;
     }
 
-    public class config {
+    public class Builder {
 
-        public config() {}
+        String rightServoName;
+        Servo.Direction rightServoDirection;
+        double rightOpenPosition, rightClosePosition;
+        String leftServoName;
+        Servo.Direction leftServoDirection;
+        double leftOpenPosition, leftClosePosition;
+
+
+        public Builder() {}
+
         /**
          * left claw servo
          * @param name the servo name
@@ -41,9 +48,11 @@ public class Claw extends RobotPlugin {
          * @param openPosition the servo position when the claw is open
          * @param closePosition the servo position when the claw is closed
          */
-        public void leftServo(String name, Servo.Direction direction, double openPosition, double closePosition) {
-            leftServo = hardwareMap.servo.get(name);
-            leftServo.setDirection(direction);
+        public Builder rightServo(String name, Servo.Direction direction, double openPosition, double closePosition) {
+            rightServoName = name;
+            rightServoDirection = direction;
+            rightOpenPosition = openPosition;
+            return this;
         }
 
         /**
@@ -53,24 +62,30 @@ public class Claw extends RobotPlugin {
          * @param openPosition the servo position when the claw is open
          * @param closePosition the servo position when the claw is closed
          */
-        public void rightServo(String name, Servo.Direction direction, double openPosition, double closePosition) {
-            rightServo = hardwareMap.servo.get(name);
-            rightServo.setDirection(direction);
+        public Builder leftServo(String name, Servo.Direction direction, double openPosition, double closePosition) {
+            leftServoName = name;
+            leftServoDirection = direction;
+            leftOpenPosition = openPosition;
+            return this;
+        }
+
+        public Claw build(OpMode opMode) {
+            Claw claw = new Claw(opMode);
+            return null; // TODO: fix
         }
 
     }
 
-    public void init() {
-
-    }
-
+    // Code is run REPEATEDLY after the driver hits INIT, but before they hit PLAY
     public void init_loop() {}
 
+    // Code is run ONCE when the driver hits PLAY
     public void start() {}
 
+    // Code is run REPEATEDLY after the driver hits PLAY but before they hit STOP
     public void loop() {}
 
+    // Code to run ONCE after the driver hits STOP
     public void stop() {}
-
 
 }

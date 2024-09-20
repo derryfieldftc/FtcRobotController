@@ -12,6 +12,6 @@ public class MecanumDriveOpMode extends PluginOpMode {
     @Override
     public RobotPlugin[] initPlugins() {
         MecanumDrive mecanumDrive = new MecanumDrive(this);
-        return new RobotPlugin[] { mecanumDrive };
+        return new RobotPlugin[]{mecanumDrive};
     }
 }
