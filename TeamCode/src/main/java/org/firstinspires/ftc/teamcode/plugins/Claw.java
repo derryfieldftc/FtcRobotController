@@ -1,4 +1,9 @@
 package org.firstinspires.ftc.teamcode.plugins;
+<<<<<<< Updated upstream
+
+import android.annotation.SuppressLint;
+=======
+>>>>>>> Stashed changes
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -38,8 +43,13 @@ public class Claw extends RobotPlugin {
         Servo.Direction leftServoDirection;
         double leftOpenPosition, leftClosePosition;
 
+<<<<<<< Updated upstream
 
+		public Builder() {
+        }
+=======
         public Builder() {}
+>>>>>>> Stashed changes
 
         /**
          * left claw servo
@@ -71,7 +81,11 @@ public class Claw extends RobotPlugin {
 
         public Claw build(OpMode opMode) {
             Claw claw = new Claw(opMode);
+<<<<<<< Updated upstream
+            return claw; // TODO: fix
+=======
             return null; // TODO: fix
+>>>>>>> Stashed changes
         }
 
     }

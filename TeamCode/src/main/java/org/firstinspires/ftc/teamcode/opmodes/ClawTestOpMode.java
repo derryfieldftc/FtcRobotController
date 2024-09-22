@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.plugins.MecanumDrive;
 public class ClawTestOpMode extends PluginOpMode {
         @Override
         public RobotPlugin[] initPlugins() {
-            Claw claw = new Claw(this);
+			Claw claw = new Claw();
             return new RobotPlugin[]{ claw };
         }
 }
