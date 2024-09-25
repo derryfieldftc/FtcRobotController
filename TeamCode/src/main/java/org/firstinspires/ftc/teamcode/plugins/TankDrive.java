@@ -32,9 +32,12 @@ public class TankDrive extends RobotPlugin {
         motorFL = hardwareMap.dcMotor.get("motorFL");
         motorBL = hardwareMap.dcMotor.get("motorBL");
 
+<<<<<<< HEAD
         telemetry.addLine("ITS GOOFED");
         telemetry.update();
 
+=======
+>>>>>>> f43d706380fc67e2849f98eb6d22a69fe604aa93
         motorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -48,11 +51,11 @@ public class TankDrive extends RobotPlugin {
 
     @Override
     public void loop() {
-        double forward = -gamepad1.left_stick_y;
-        double turn = gamepad1.right_stick_x;
-        motorFR.setPower(forward + turn);
-        motorFL.setPower(forward - turn);
-        motorBR.setPower(forward + turn);
-        motorBL.setPower(forward - turn);
+        double left = -gamepad1.left_stick_y;
+        double right = -gamepad1.right_stick_y;
+        motorFL.setPower(left);
+        motorBL.setPower(left);
+        motorFR.setPower(right);
+        motorBR.setPower(right);
     }
 }
