@@ -3,6 +3,7 @@ import android.graphics.Path;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -22,6 +23,7 @@ public class ServoDebug extends RobotPlugin {
     OpMode opMode;
     Telemetry telemetry;
     ArrayList<Servo> servos = new ArrayList<>();
+    Gamepad gamepad;
 
     /**
      * creates a new ServoDebug
@@ -30,6 +32,7 @@ public class ServoDebug extends RobotPlugin {
         this.hardwareMap = opMode.hardwareMap;
         this.opMode = opMode;
         this.telemetry = opMode.telemetry;
+        this.gamepad = opMode.gamepad1;
     }
 
     /**
@@ -53,6 +56,19 @@ public class ServoDebug extends RobotPlugin {
 
     @Override
     public void loop() {
+        if (Math.abs(gamepad.right_stick_y) > .3) {
+            for (int i = 0; i < servos.size(); i++) {
+                servos.get(i).setPosition(servos.get(i).getPosition()-gamepad.right_stick_y);
+            }
+
+        }
+        for (int i = 0; i < servos.size(); i++) {
+            Servo servo = servos.get(i);
+            Servo.Direction servoDirection = servo.getDirection();
+            double servoPosition = servo.getPosition();
+            String line = "servo " + i + " direction: " + servoDirection + " position: " + servoPosition;
+            telemetry.addLine(line);
+        }
         telemetry.update();
     }
 }
