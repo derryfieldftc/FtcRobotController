@@ -18,6 +18,8 @@ public class ExampleTask extends RobotTask {
 	DcMotor motorFR;
 	DcMotor motorBL;
 	DcMotor motorBR;
+	double speed;
+	double seconds;
 
 	public ExampleTask(OpMode opMode) {
 		this.opMode = opMode;
@@ -38,8 +40,13 @@ public class ExampleTask extends RobotTask {
 		motorFL.setDirection(DcMotorSimple.Direction.REVERSE);
 	}
 
-	public RobotTask run(double speed, double seconds) {
-		//float speed, double seconds
+	public RobotTask parameters(double speed, double seconds) {
+		this.speed = speed;
+		this.seconds = seconds;
+		return this;
+	}
+
+	public void run() {
 		double initalTime = opMode.getRuntime();
 		double elapsedTime = 0;
 		while (elapsedTime < initalTime + seconds) {
@@ -53,6 +60,5 @@ public class ExampleTask extends RobotTask {
 		motorFL.setPower(0);
 		motorBR.setPower(0);
 		motorFR.setPower(0);
-		return this;
 	}
 }
