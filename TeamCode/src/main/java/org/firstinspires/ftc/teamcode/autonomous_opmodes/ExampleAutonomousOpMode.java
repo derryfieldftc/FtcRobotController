@@ -10,8 +10,9 @@ import org.firstinspires.ftc.teamcode.tasks.ExampleTask;
 @Autonomous(name="ExampleAutonomousOpMode", group = OpModeGroups.SAMPLES)
 public class ExampleAutonomousOpMode extends AutonomousOpMode {
 	public RobotTask[] createTasksList() {
-		ExampleTask exampleTask = new ExampleTask(this);
-		DelayTask delayTask = new DelayTask(this);
-		return new RobotTask[] { exampleTask.parameters(0.5, 1), delayTask.paramaters(1000), exampleTask.parameters(0.5, 1) };
+		return new RobotTask[] {
+				new ExampleTask(this).parameters(0.5, 1),
+				new DelayTask(this).paramaters(1000),
+				new ExampleTask(this).parameters(0.5, 1) };
 	}
 }
