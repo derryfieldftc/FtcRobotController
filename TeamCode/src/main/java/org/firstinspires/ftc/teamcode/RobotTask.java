@@ -16,12 +16,15 @@ public abstract class RobotTask {
 	public void init_loop() {}
 
 	/**
+	 * Must be overloaded
+	 * @return
+	 */
+	public RobotTask paramaters() {return this;}
+	/**
 	 * Code is ran each time RUN is called in the RobotTask array
 	 * @return
 	 */
-	public RobotTask run() {
-		return this;
-	}
+	public void run() {}
 
 	/**
 	 * Code to run ONCE after the OPMODE stops
