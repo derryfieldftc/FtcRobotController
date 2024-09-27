@@ -7,18 +7,12 @@ import org.firstinspires.ftc.teamcode.RobotTask;
 public class DelayTask extends RobotTask {
 	OpMode opMode;
 	long waitMillis;
-	public DelayTask(OpMode opMode) {
+	public DelayTask(OpMode opMode, long waitMillis) {
 		this.opMode = opMode;
-	}
-	public RobotTask paramaters(long waitMillis) {
 		this.waitMillis = waitMillis;
-		return this;
 	}
 	public void run() {
-		try {
-			opMode.wait(waitMillis);
-		} catch (Exception e) {
-			opMode.telemetry.addLine("Exception while waiting: " + e);
-		}
+		double initalTime = opMode.getRuntime();
+		while (opMode.getRuntime() < initalTime + waitMillis / 1000) {};
 	}
 }

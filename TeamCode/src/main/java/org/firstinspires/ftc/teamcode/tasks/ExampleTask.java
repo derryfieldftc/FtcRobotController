@@ -21,29 +21,37 @@ public class ExampleTask extends RobotTask {
 	double speed;
 	double seconds;
 
-	public ExampleTask(OpMode opMode) {
+	public ExampleTask(OpMode opMode, double speed, double seconds) {
 		this.opMode = opMode;
 		this.telemetry = opMode.telemetry;
 		this.hardwareMap = opMode.hardwareMap;
+		this.speed = speed;
+		this.seconds = seconds;
 	}
 
 	public void init() {
 		telemetry.addLine("This is an example autonomous task");
 		telemetry.update();
 
-		motorBL = hardwareMap.dcMotor.get("motorBL");
 		motorFL = hardwareMap.dcMotor.get("motorFL");
-		motorBR = hardwareMap.dcMotor.get("motorBL");
+		motorBL = hardwareMap.dcMotor.get("motorBL");
 		motorFR = hardwareMap.dcMotor.get("motorFR");
+		motorBR = hardwareMap.dcMotor.get("motorBR");
 
-		motorBL.setDirection(DcMotorSimple.Direction.REVERSE);
+		motorFL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+		motorBL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+		motorFR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+		motorBR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+		motorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+		motorBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+		motorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+		motorBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
 		motorFL.setDirection(DcMotorSimple.Direction.REVERSE);
-	}
-
-	public RobotTask parameters(double speed, double seconds) {
-		this.speed = speed;
-		this.seconds = seconds;
-		return this;
+		motorBL.setDirection(DcMotorSimple.Direction.REVERSE);
+		motorFR.setDirection(DcMotorSimple.Direction.FORWARD);
+		motorBR.setDirection(DcMotorSimple.Direction.FORWARD);
 	}
 
 	public void run() {

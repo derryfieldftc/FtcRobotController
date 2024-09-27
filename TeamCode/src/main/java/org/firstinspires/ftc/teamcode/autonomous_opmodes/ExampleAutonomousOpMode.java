@@ -11,9 +11,9 @@ import org.firstinspires.ftc.teamcode.tasks.ExampleTask;
 public class ExampleAutonomousOpMode extends AutonomousOpMode {
 	public RobotTask[] createTasksList() {
 		return new RobotTask[] {
-				new ExampleTask(this).parameters(0.3, 1),
-				new DelayTask(this).paramaters(1000),
-				new ExampleTask(this).parameters(0.5, 1)
+				new ExampleTask(this, .3, 1),
+				new DelayTask(this, 2000),
+				new ExampleTask(this, .6, 1),
 		};
 	}
 }
