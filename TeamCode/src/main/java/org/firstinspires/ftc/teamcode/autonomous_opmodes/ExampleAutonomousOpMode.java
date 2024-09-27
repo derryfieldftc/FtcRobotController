@@ -13,7 +13,7 @@ public class ExampleAutonomousOpMode extends AutonomousOpMode {
 		return new RobotTask[] {
 				new ExampleTask(this, .3, 1),
 				new DelayTask(this, 2000),
-				new ExampleTask(this, .6, 1),
+				new ExampleTask(this, -.3, 1),
 		};
 	}
 }

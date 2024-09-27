@@ -16,11 +16,6 @@ public abstract class RobotTask {
 	public void init_loop() {}
 
 	/**
-	 * Must be overloaded
-	 * @return
-	 */
-	public RobotTask paramaters() {return this;}
-	/**
 	 * Code is ran each time RUN is called in the RobotTask array
 	 * @return
 	 */

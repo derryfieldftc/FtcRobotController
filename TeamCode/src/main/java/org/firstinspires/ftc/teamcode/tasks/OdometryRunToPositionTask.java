@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.tasks;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -25,27 +26,30 @@ public class OdometryRunToPositionTask extends RobotTask {
 	DcMotor motorBR;
 	DcMotor motorFL;
 	DcMotor motorBL;
+	OpMode opMode;
+
+	double targetX;
+	double targetY;
+	double r;
+
 
 	IMU imu = null;
 	RevHubOrientationOnRobot orientationOnRobot;
 
 	//for encoders
-	double countsPerMotorRev = 0; //TODO!
-	double wheelDiameterInches = 2;
-	double countsPerInch = countsPerMotorRev / (wheelDiameterInches * 3.1415);
+	double countsPerMotorRev = 8192;
+	double wheelDiameterInches = 2.3;
+	double countsPerInch = countsPerMotorRev / (wheelDiameterInches * Math.PI);
 
-	// for actual spinny motors
-	double wheelSize;
-	double rpm;
-	double driveSpeed = .6;
-	double turnSpeed = .5;
+	double desiredErrorInches = 1.5;
 
-
-
-	public OdometryRunToPositionTask(OpMode opMode) {
+	public OdometryRunToPositionTask(OpMode opMode, int xInches, int yInches, int r) {
+		this.opMode = opMode;
+		this.targetX = xInches * countsPerInch;
+		this.targetY = yInches * countsPerInch;
+		this.r = r;
 		this.hardwareMap = opMode.hardwareMap;
 		this.telemetry = opMode.telemetry;
-
 		RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
 		RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
 		RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
@@ -57,6 +61,8 @@ public class OdometryRunToPositionTask extends RobotTask {
 		this.driveEncoder = hardwareMap.dcMotor.get("drive");
 		this.imu = hardwareMap.get(IMU.class, "imu");
 		imu.resetYaw();
+		driveEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+		strafeEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
 		motorFL = hardwareMap.dcMotor.get("motorFL");
 		motorBL = hardwareMap.dcMotor.get("motorBL");
@@ -77,15 +83,77 @@ public class OdometryRunToPositionTask extends RobotTask {
 		motorBL.setDirection(DcMotorSimple.Direction.REVERSE);
 		motorFR.setDirection(DcMotorSimple.Direction.FORWARD);
 		motorBR.setDirection(DcMotorSimple.Direction.FORWARD);
+
+		updateTelemetry();
 	}
 
 	// Code is run REPEATEDLY after the driver hits PLAY but before they hit STOP
-	public RobotTask run(int x, int y, int r) {
-		telemetry.addLine("strafe: " + strafeEncoder.getCurrentPosition());
-		telemetry.addLine("drive: " + driveEncoder.getCurrentPosition());
-		telemetry.addLine("heading? " + imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
+	public void run() {
+		double errorDistance;
+		do {
+			double x = strafeEncoder.getCurrentPosition();
+			double y = driveEncoder.getCurrentPosition();
+
+			double dx = targetX - x;
+			double dy = targetY - y;
+
+			double magnitude = Math.sqrt(dx * dx + dy * dy);
+
+			double unitX = 1 * dx / magnitude;
+			double unitY = 1 * dy / magnitude;
+
+			double powerFL = unitY + unitX;
+			double powerBL = unitY - unitX;
+			double powerFR = unitY - unitX;
+			double powerBR = unitY + unitX;
+
+			double maxPower = Math.max(Math.max(Math.max(powerFL, powerBL), powerBR), powerFR);
+			double motorPower = 0.5 / maxPower;
+
+			motorFL.setPower(powerFL * motorPower);
+			motorBL.setPower(powerBL * motorPower);
+			motorFR.setPower(powerFR * motorPower);
+			motorBR.setPower(powerBR * motorPower);
+
+			errorDistance = calcErrorSquared(x, y, targetX, targetY);
+
+			telemetry.addData("powerBL", powerBL);
+			telemetry.addData("powerBR", powerBR);
+			telemetry.addData("powerFL", powerFL);
+			telemetry.addData("powerFR", powerFR);
+			updateTelemetry();
+
+			if (!((LinearOpMode) opMode).opModeIsActive()) {break;}
+
+		} while (errorDistance > Math.pow(countsPerInch * desiredErrorInches, 2));
+
+	}
+
+	public double calcErrorSquared(double x, double y, double targetX, double targetY) {
+		double deltaX = Math.abs(targetX - x);
+		double deltaY = Math.abs(targetY - y);
+		return deltaX * deltaX + deltaY * deltaY;
+	}
+
+	public void updateTelemetry() {
+		double x = strafeEncoder.getCurrentPosition();
+		double y = driveEncoder.getCurrentPosition();
+		telemetry.addData("xpos", x);
+		telemetry.addData("xtar", targetX);
+		telemetry.addData("ypos", y);
+		telemetry.addData("ytar", targetY);
+		// telemetry.addLine("heading? " + imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
 		telemetry.update();
-		return this;
+	}
+
+	private double clamp(double max, double min, double num) {
+		if (num > max) {
+			return max;
+		} else if (num < min) {
+			return min;
+		} else {
+			return num;
+		}
 	}
 }
 
