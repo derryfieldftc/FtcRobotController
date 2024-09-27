@@ -4,7 +4,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.OpModeGroups;
 import org.firstinspires.ftc.teamcode.RobotPlugin;
-import org.firstinspires.ftc.teamcode.plugins.Claw;
 import org.firstinspires.ftc.teamcode.plugins.MecanumDrive;
 import org.firstinspires.ftc.teamcode.plugins.Odometry;
 

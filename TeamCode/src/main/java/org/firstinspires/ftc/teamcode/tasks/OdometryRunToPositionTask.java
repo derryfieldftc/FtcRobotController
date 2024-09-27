@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.plugins;
+package org.firstinspires.ftc.teamcode.tasks;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -9,14 +9,14 @@ import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.teamcode.RobotPlugin;
+import org.firstinspires.ftc.teamcode.RobotTask;
 
 /**
  * Odometry
  */
 
 
-public class OdometryRunToPosition extends RobotPlugin {
+public class OdometryRunToPositionTask extends RobotTask {
 	Telemetry telemetry;
 	HardwareMap hardwareMap;
 	DcMotor driveEncoder;
@@ -42,7 +42,7 @@ public class OdometryRunToPosition extends RobotPlugin {
 
 
 
-	public OdometryRunToPosition(OpMode opMode) {
+	public OdometryRunToPositionTask(OpMode opMode) {
 		this.hardwareMap = opMode.hardwareMap;
 		this.telemetry = opMode.telemetry;
 
@@ -80,27 +80,12 @@ public class OdometryRunToPosition extends RobotPlugin {
 	}
 
 	// Code is run REPEATEDLY after the driver hits PLAY but before they hit STOP
-	public void loop() {
+	public RobotTask run(int x, int y, int r) {
 		telemetry.addLine("strafe: " + strafeEncoder.getCurrentPosition());
 		telemetry.addLine("drive: " + driveEncoder.getCurrentPosition());
 		telemetry.addLine("heading? " + imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
 		telemetry.update();
-	}
-
-	public void runToPosition(double x, double y, double speed) {
-
-
-	}
-
-	class Position {
-		public int y;
-		public int r;
-		public int x;
-		public Position(int x, int y, int r) {
-			this.y = y;
-			this.x = x;
-			this.r = r;
-		}
+		return this;
 	}
 }
 
