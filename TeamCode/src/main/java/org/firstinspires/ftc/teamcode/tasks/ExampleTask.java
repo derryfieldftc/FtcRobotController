@@ -18,13 +18,24 @@ public class ExampleTask extends RobotTask {
 	DcMotor motorFR;
 	DcMotor motorBL;
 	DcMotor motorBR;
-	double speed;
-	double seconds;
+
 
 	public ExampleTask(OpMode opMode) {
 		this.opMode = opMode;
 		this.telemetry = opMode.telemetry;
 		this.hardwareMap = opMode.hardwareMap;
+	}
+
+	double speed = 0.0;
+	public ExampleTask speed(double speed) {
+		this.speed = speed;
+		return this;
+	}
+
+	double seconds = 0.0;
+	public ExampleTask seconds(double seconds) {
+		this.seconds = seconds;
+		return this;
 	}
 
 	public void init() {
@@ -38,23 +49,21 @@ public class ExampleTask extends RobotTask {
 
 		motorBL.setDirection(DcMotorSimple.Direction.REVERSE);
 		motorFL.setDirection(DcMotorSimple.Direction.REVERSE);
-	}
 
-	public RobotTask parameters(double speed, double seconds) {
-		this.speed = speed;
-		this.seconds = seconds;
-		return this;
+		motorBL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+		motorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+		motorBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+		motorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 	}
 
 	public void run() {
 		double initalTime = opMode.getRuntime();
 		double elapsedTime = 0;
-		while (elapsedTime < initalTime + seconds) {
+		for (; elapsedTime < initalTime + seconds; elapsedTime = opMode.getRuntime()) {
 			motorBL.setPower(speed);
 			motorFL.setPower(speed);
 			motorBR.setPower(speed);
 			motorFR.setPower(speed);
-			elapsedTime = opMode.getRuntime();
 		}
 		motorBL.setPower(0);
 		motorFL.setPower(0);
