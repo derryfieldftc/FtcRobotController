@@ -8,13 +8,10 @@ import org.firstinspires.ftc.teamcode.tasks.ExampleTask;
 @Autonomous(name = "ExampleAutonomous", group = OpModeGroups.AUTO)
 public class ExampleAutonomous extends TaskAutonomous {
 	public RobotTask[] createTasksList() {
-		RobotTask moveForward = new ExampleTask(this).speed(0.3).seconds(1);
-		RobotTask moveBackward = new ExampleTask(this).speed(-0.3).seconds(1);
-
-		return new RobotTask[] {
-				moveForward,
-				new DelayTask(this).waitMillis(1000),
-				moveBackward,
+        return new RobotTask[] {
+                new ExampleTask(this).speed(0.3).seconds(1),
+				new DelayTask(this).waitMillis(2000),
+                new ExampleTask(this).speed(-0.3).seconds(1),
 		};
 	}
 }

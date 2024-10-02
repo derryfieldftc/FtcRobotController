@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.tasks;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -8,11 +9,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RobotTask;
 
-import java.time.Duration;
-
 public class ExampleTask extends RobotTask {
 	Telemetry telemetry;
-	OpMode opMode;
+	LinearOpMode opMode;
 	HardwareMap hardwareMap;
 	DcMotor motorFL;
 	DcMotor motorFR;
@@ -20,7 +19,7 @@ public class ExampleTask extends RobotTask {
 	DcMotor motorBR;
 
 
-	public ExampleTask(OpMode opMode) {
+	public ExampleTask(LinearOpMode opMode) {
 		this.opMode = opMode;
 		this.telemetry = opMode.telemetry;
 		this.hardwareMap = opMode.hardwareMap;
@@ -32,9 +31,9 @@ public class ExampleTask extends RobotTask {
 		return this;
 	}
 
-	double seconds = 0.0;
-	public ExampleTask seconds(double seconds) {
-		this.seconds = seconds;
+	long millis = 0;
+	public ExampleTask seconds(long seconds) {
+		this.millis = seconds;
 		return this;
 	}
 
@@ -57,14 +56,13 @@ public class ExampleTask extends RobotTask {
 	}
 
 	public void run() {
-		double initalTime = opMode.getRuntime();
-		double elapsedTime = 0;
-		for (; elapsedTime < initalTime + seconds; elapsedTime = opMode.getRuntime()) {
-			motorBL.setPower(speed);
-			motorFL.setPower(speed);
-			motorBR.setPower(speed);
-			motorFR.setPower(speed);
-		}
+		motorBL.setPower(speed);
+		motorFL.setPower(speed);
+		motorBR.setPower(speed);
+		motorFR.setPower(speed);
+
+		opMode.sleep(millis);
+
 		motorBL.setPower(0);
 		motorFL.setPower(0);
 		motorBR.setPower(0);
