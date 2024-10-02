@@ -45,11 +45,11 @@ public class TankDrive extends RobotPlugin {
 
     @Override
     public void loop() {
-        double forward = -gamepad1.left_stick_y;
-        double turn = gamepad1.right_stick_x;
-        motorFR.setPower(forward + turn);
-        motorFL.setPower(forward - turn);
-        motorBR.setPower(forward + turn);
-        motorBL.setPower(forward - turn);
+        double left = -gamepad1.left_stick_y;
+        double right = -gamepad1.right_stick_y;
+        motorFL.setPower(left);
+        motorBL.setPower(left);
+        motorFR.setPower(right);
+        motorBR.setPower(right);
     }
 }
