@@ -16,8 +16,6 @@ public class MecanumDrive extends RobotPlugin {
 	Telemetry telemetry;
 	HardwareMap hardwareMap;
 	Gamepad gamepad1;
-	boolean addTelemetry = false;
-
 	DcMotor motorFL;
 	DcMotor motorBL;
 	DcMotor motorFR;
@@ -74,17 +72,6 @@ public class MecanumDrive extends RobotPlugin {
 		motorBL.setPower(powerBL);
 		motorFR.setPower(powerFR);
 		motorBR.setPower(powerBR);
-
-		if (addTelemetry) {
-			telemetry.addLine("motorFL power: " + powerFL);
-			telemetry.addLine("motorBL power: " + powerBL);
-			telemetry.addLine("motorFR power: " + powerFR);
-			telemetry.addLine("motorBR power: " + powerBR);
-		}
-		motorFL.setPower(clamp(1, -1, powerFL));
-		motorBL.setPower(clamp(1, -1, powerBL));
-		motorFR.setPower(clamp(1, -1, powerFR));
-		motorBR.setPower(clamp(1, -1, powerBR));
 
 	}
 
