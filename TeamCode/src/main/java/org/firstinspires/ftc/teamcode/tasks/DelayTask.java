@@ -1,24 +1,26 @@
 package org.firstinspires.ftc.teamcode.tasks;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RobotTask;
 
 public class DelayTask extends RobotTask {
-	OpMode opMode;
+
+	LinearOpMode opMode;
 	long waitMillis;
-	public DelayTask(OpMode opMode) {
+
+	public DelayTask(LinearOpMode opMode) {
 		this.opMode = opMode;
 	}
-	public RobotTask paramaters(long waitMillis) {
+
+	public DelayTask waitMillis(long waitMillis) {
 		this.waitMillis = waitMillis;
 		return this;
 	}
+
 	public void run() {
-		try {
-			opMode.wait(waitMillis);
-		} catch (Exception e) {
-			opMode.telemetry.addLine("Exception while waiting: " + e);
-		}
+		opMode.sleep(waitMillis);
 	}
 }
