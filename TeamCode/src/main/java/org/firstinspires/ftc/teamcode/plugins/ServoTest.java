@@ -48,30 +48,32 @@ public class ServoTest extends RobotPlugin {
 			}
 			dpadPressed = true;
 		} else if (gamepad.dpad_right && !dpadPressed) {
-			if (targetServo < servos.length) {
+			if (targetServo < servos.length - 1) {
 				targetServo++;
 			}
 			dpadPressed = true;
-		} else if (dpadPressed) {
+		}
+		if (gamepad.a) {
 			dpadPressed = false;
 		}
 
 		if (gamepad.right_bumper) {
-			targetServo = servos.length;
+			targetServo = servos.length - 1;
 		} else if (gamepad.left_bumper) {
 			targetServo = 0;
 		}
 
 		if (gamepad.dpad_up) {
-			targetPos += .01;
+			targetPos += .005;
 		} else if (gamepad.dpad_down) {
-			targetPos -= .01;
+			targetPos -= .005;
 		}
 		servos[targetServo].setPosition(targetPos);
 
 		for (int i = 0; i < servos.length; i++) {
 			Servo servo = servos[i];
-			telemetry.addData(targetServo == i ? "=>" : "  " + servo.getDeviceName(), servo.getPosition());
+			telemetry.addData((targetServo == i ? "=>" : "  ") + servo.getDeviceName(), servo.getPosition());
 		}
+		telemetry.update();
 	}
 }
