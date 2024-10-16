@@ -63,9 +63,9 @@ public class ServoTest extends RobotPlugin {
 			targetServo = 0;
 		}
 
-		if (gamepad.dpad_up) {
+		if (gamepad.dpad_up && targetPos < 1) {
 			targetPos += .005;
-		} else if (gamepad.dpad_down) {
+		} else if (gamepad.dpad_down && targetPos > 0) {
 			targetPos -= .005;
 		}
 		servos[targetServo].setPosition(targetPos);
