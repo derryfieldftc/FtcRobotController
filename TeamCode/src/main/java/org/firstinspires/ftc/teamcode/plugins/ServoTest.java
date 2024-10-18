@@ -72,7 +72,7 @@ public class ServoTest extends RobotPlugin {
 
 		for (int i = 0; i < servos.length; i++) {
 			Servo servo = servos[i];
-			telemetry.addData((targetServo == i ? "=>" : "  ") + servo.getDeviceName(), servo.getPosition());
+			telemetry.addData((targetServo == i ? "=>" : "  ") + servoNames.get(i), servo.getPosition());
 		}
 		telemetry.update();
 	}
