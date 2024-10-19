@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RobotTask;
@@ -12,6 +13,7 @@ public class SimpleDriveTask extends RobotTask {
 	LinearOpMode opMode;
 	HardwareMap hardwareMap;
 	Telemetry telemetry;
+	IMU imu;
 	DcMotor motorBL;
 	DcMotor motorFL;
 	DcMotor motorBR;
@@ -19,12 +21,14 @@ public class SimpleDriveTask extends RobotTask {
 	long millis;
 	double y = 0;
 	double x = 0;
+	double r = 0;
 
 
 	public SimpleDriveTask(LinearOpMode opMode) {
 		this.opMode = opMode;
 		this.hardwareMap = opMode.hardwareMap;
 		this.telemetry = opMode.telemetry;
+		this.imu = hardwareMap.get(IMU.class, "imu");
 	}
 
 	public SimpleDriveTask time(long millis) {
@@ -37,6 +41,10 @@ public class SimpleDriveTask extends RobotTask {
 	}
 	public SimpleDriveTask strafe(double speed) {
 		x = speed;
+		return this;
+	}
+	public SimpleDriveTask turn(double degrees) {
+
 		return this;
 	}
 
@@ -58,10 +66,10 @@ public class SimpleDriveTask extends RobotTask {
 
 	@Override
 	public void run() {
-		double motorBLSpeed = y - x;
-		double motorFLSpeed = y + x;
-		double motorBRSpeed = y + x;
-		double motorFRSpeed = y - x;
+		double motorBLSpeed = y - x + r;
+		double motorFLSpeed = y + x + r;
+		double motorBRSpeed = y + x - r;
+		double motorFRSpeed = y - x - r;
 
 		motorBL.setPower(motorBLSpeed);
 		motorFL.setPower(motorFLSpeed);
