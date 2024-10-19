@@ -12,7 +12,7 @@ public class MecanumDrive extends RobotPlugin {
 	OpMode opMode;
 	Telemetry telemetry;
 	HardwareMap hardwareMap;
-	Gamepad gamepad1;
+	Gamepad gamepad;
 
 	DcMotor motorFL;
 	DcMotor motorBL;
@@ -25,7 +25,12 @@ public class MecanumDrive extends RobotPlugin {
 	public MecanumDrive(OpMode opMode) {
 		this.opMode = opMode;
 		this.hardwareMap = opMode.hardwareMap;
-		this.gamepad1 = opMode.gamepad1;
+		this.gamepad = opMode.gamepad1;
+	}
+
+	public MecanumDrive gamepad(Gamepad gamepad) {
+		this.gamepad = gamepad;
+		return this;
 	}
 
 	@Override
@@ -52,9 +57,9 @@ public class MecanumDrive extends RobotPlugin {
 	}
 
 	public void loop() {
-		double y = -gamepad1.left_stick_y;
-		double x = gamepad1.left_stick_x;
-		double rx = gamepad1.right_stick_x;
+		double y = -gamepad.left_stick_y;
+		double x = gamepad.left_stick_x;
+		double rx = gamepad.right_stick_x;
 		double powerFL = y + x + rx;
 		double powerBL = y - x + rx;
 		double powerFR = y - x - rx;
