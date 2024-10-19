@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.tasks;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -18,8 +17,8 @@ public class SimpleDriveTask extends RobotTask {
 	DcMotor motorBR;
 	DcMotor motorFR;
 	long millis;
-	double y;
-	double x;
+	double y = 0;
+	double x = 0;
 
 
 	public SimpleDriveTask(LinearOpMode opMode) {
@@ -44,7 +43,7 @@ public class SimpleDriveTask extends RobotTask {
 	public void init() {
 		motorBL = hardwareMap.dcMotor.get("motorBL");
 		motorFL = hardwareMap.dcMotor.get("motorFL");
-		motorBR = hardwareMap.dcMotor.get("motorBL");
+		motorBR = hardwareMap.dcMotor.get("motorBR");
 		motorFR = hardwareMap.dcMotor.get("motorFR");
 
 		motorBL.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -59,9 +58,9 @@ public class SimpleDriveTask extends RobotTask {
 
 	@Override
 	public void run() {
-		double motorBLSpeed = y + x;
+		double motorBLSpeed = y - x;
 		double motorFLSpeed = y + x;
-		double motorBRSpeed = y - x;
+		double motorBRSpeed = y + x;
 		double motorFRSpeed = y - x;
 
 		motorBL.setPower(motorBLSpeed);
