@@ -1,79 +1,104 @@
 package org.firstinspires.ftc.teamcode.plugins;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.GamepadManager;
 import org.firstinspires.ftc.teamcode.RobotPlugin;
+import org.firstinspires.ftc.teamcode.ServoStateMachine;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ServoTest extends RobotPlugin {
 	private Servo[] servos;
-	private ArrayList<String> servoNames = new ArrayList<>();
+	private List<String> servoNames = new ArrayList<>();
 	OpMode opMode;
-	HardwareMap hardwareMap;
-	Gamepad gamepad;
+	ServoStateMachine stateMachine;
+	GamepadManager gamepad;
 	Telemetry telemetry;
 
 	public ServoTest(OpMode opMode) {
 		this.opMode = opMode;
-		this.hardwareMap = opMode.hardwareMap;
-		this.gamepad = opMode.gamepad1;
+		this.gamepad = new GamepadManager(opMode.gamepad1);
 		this.telemetry = opMode.telemetry;
 	}
 
-	public ServoTest addServo(String name) {
-		servoNames.add(name);
-		return this;
+	public void init() {
+		ServoStateMachine.Builder builder = new ServoStateMachine.Builder();
+		servoNames = Arrays.asList("base", "shoulder", "elbow", "wrist", "bend", "claw");
+
+		for (String servoName : servoNames) {
+			builder.addServo(servoName, servo -> {});
+		}
+
+		stateMachine = builder.build(opMode);
 	}
 
-	public void init() {
-		servos = new Servo[servoNames.size()];
-		for (int i = 0; i < servoNames.size(); i++) {
-			servos[i] = hardwareMap.servo.get(servoNames.get(i));
+	int servo = 0;
+	Servo current;
+
+	@Override
+	public void start() {
+		telemetry.setDisplayFormat(Telemetry.DisplayFormat.MONOSPACE);
+		stateMachine.setCurrentState("none");
+		current = stateMachine.getServo(servoNames.get(servo));
+	}
+
+	private void inc() {
+		if (servo == servoNames.size() - 1) {
+			servo = 0;
+		} else {
+			servo++;
 		}
 	}
 
-	boolean dpadPressed = false;
-	int targetServo = 0;
-	double targetPos = 0;
+	private void dec() {
+		if (servo == 0) {
+			servo = servoNames.size() - 1;
+		} else {
+			servo--;
+		}
+	}
 
 	public void loop() {
-		if (gamepad.dpad_left && !dpadPressed) {
-			if (targetServo > 0) {
-				targetServo--;
-			}
-			dpadPressed = true;
-		} else if (gamepad.dpad_right && !dpadPressed) {
-			if (targetServo < servos.length - 1) {
-				targetServo++;
-			}
-			dpadPressed = true;
-		}
-		if (gamepad.a) {
-			dpadPressed = false;
+		gamepad.poll();
+		
+		if (gamepad.justPressed(GamepadManager.Button.RIGHT_BUMPER)) {
+			inc();
+			current = stateMachine.getServo(servoNames.get(servo));
 		}
 
-		if (gamepad.right_bumper) {
-			targetServo = servos.length - 1;
-		} else if (gamepad.left_bumper) {
-			targetServo = 0;
+		if (gamepad.justPressed(GamepadManager.Button.LEFT_BUMPER)) {
+			dec();
+			current = stateMachine.getServo(servoNames.get(servo));
 		}
 
-		if (gamepad.dpad_up && targetPos < 1) {
-			targetPos += .005;
-		} else if (gamepad.dpad_down && targetPos > 0) {
-			targetPos -= .005;
-		}
-		servos[targetServo].setPosition(targetPos);
 
-		for (int i = 0; i < servos.length; i++) {
-			Servo servo = servos[i];
-			telemetry.addData((targetServo == i ? "=>" : "  ") + servoNames.get(i), servo.getPosition());
+		if (gamepad.justPressed(GamepadManager.Button.DPAD_RIGHT)) {
+			current.setPosition(current.getPosition() + 0.1);
 		}
+		else if (gamepad.justPressed(GamepadManager.Button.DPAD_LEFT)) {
+			current.setPosition(current.getPosition() - 0.1);
+		}
+		else if (gamepad.justPressed(GamepadManager.Button.A)) {
+			current.setPosition(0.5);
+		}
+
+
+		telemetry.addData("Servos", fmt());
+		telemetry.addData("Current Servo", servoNames.get(servo));
+		telemetry.addData("Current Servo Position", current.getPosition());
 		telemetry.update();
 	}
+
+	private String fmt() {
+		return servoNames.stream()
+			.map(n -> String.format(n.equals(servoNames.get(servo)) ? "(%s)" : " %s ", n))
+			.collect(Collectors.joining(", "));
+	}
+
 }
