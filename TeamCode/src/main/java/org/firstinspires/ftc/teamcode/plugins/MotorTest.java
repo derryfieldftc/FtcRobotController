@@ -35,9 +35,6 @@ public class MotorTest extends RobotPlugin {
 		for (int i = 0; i < motorNames.size(); i++) {
 			motors[i] = new Motor();
 			motors[i].motor = hardwareMap.dcMotor.get(motorNames.get(i));
-			motors[i].motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-			motors[i].motor.setTargetPosition(0);
-			motors[i].motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 			motors[i].motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 			motors[i].power = 0;
 		}
@@ -53,16 +50,17 @@ public class MotorTest extends RobotPlugin {
 			targetMotor--;
 		}
 		if (gamepad.justPressed(GamepadManager.Button.B)) {
-			motors[targetMotor].power += 5;
+			motors[targetMotor].power += .05;
 		}
-		if (gamepad.justPressed(GamepadManager.Button.X)) {
-			motors[targetMotor].power -= 5;
+		if (gamepad.justPressed(GamepadManager.Button.X) && motors[targetMotor].power > -1) {
+			motors[targetMotor].power -= .05;
 		}
 
+		motors[targetMotor].motor.setPower(motors[targetMotor].power);
+
 		for (int i = 0; i < motors.length; i++) {
-			motors[i].motor.setTargetPosition(motors[i].power);
-			telemetry.addData("", motors[i].power);
-			telemetry.addData((i == targetMotor) ? "=>" : "  " + motorNames.get(i), motors[i].motor.getCurrentPosition());
+			telemetry.addData((i == targetMotor) ? "=>" : "  " + motorNames.get(i), motors[i].motor.getPower());
+			telemetry.addData("i:", i);
 		}
 		telemetry.update();
 
@@ -71,10 +69,10 @@ public class MotorTest extends RobotPlugin {
 
 	class Motor {
 		public Motor() {
-			power = 0;
+			power = 0.0;
 			motor = null;
 		}
-		public int power;
+		public double power;
 		public DcMotor motor;
 	}
 }

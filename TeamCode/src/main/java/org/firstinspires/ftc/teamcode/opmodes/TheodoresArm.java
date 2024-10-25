@@ -12,11 +12,14 @@ public class TheodoresArm extends PluginOpMode {
 	@Override
 	public RobotPlugin[] initPlugins() {
 		MotorTest motorTest = new MotorTest(this)
-				.addMotor("angleB");
+				.addMotor("lift");
+		/*
 		ServoTest servoTest = new ServoTest(this)
 				.addServo("angleH")
 				.addServo("rotate")
 				.addServo("claw");
-		return new RobotPlugin[] { servoTest, motorTest };
+
+		 */
+		return new RobotPlugin[] { motorTest };
 	}
 }
