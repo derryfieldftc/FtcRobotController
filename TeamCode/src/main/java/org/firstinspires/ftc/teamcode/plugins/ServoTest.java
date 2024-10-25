@@ -21,21 +21,18 @@ public class ServoTest extends RobotPlugin {
 	GamepadManager gamepad;
 	Telemetry telemetry;
 
-	public ServoTest(OpMode opMode) {
+	public ServoTest(OpMode opMode, String ...servoNames) {
 		this.opMode = opMode;
 		this.gamepad = new GamepadManager(opMode.gamepad1);
 		this.telemetry = opMode.telemetry;
+		this.servoNames = Arrays.asList(servoNames);
 	}
 
 	public void init() {
 		ServoStateMachine.Builder builder = new ServoStateMachine.Builder();
-		servoNames = Arrays.asList("base", "shoulder", "elbow", "wrist", "bend", "claw");
-
-		for (String servoName : servoNames) {
-			builder.addServo(servoName, servo -> {});
-		}
-
+		servoNames.forEach(name -> builder.addServo(name, s -> {}));
 		stateMachine = builder.build(opMode);
+
 	}
 
 	int servo = 0;
@@ -66,7 +63,9 @@ public class ServoTest extends RobotPlugin {
 
 	public void loop() {
 		gamepad.poll();
-		
+
+		double incrementValue = gamepad.pressed(GamepadManager.Button.A) ? 0.01 : 0.1;
+
 		if (gamepad.justPressed(GamepadManager.Button.RIGHT_BUMPER)) {
 			inc();
 			current = stateMachine.getServo(servoNames.get(servo));
@@ -77,14 +76,13 @@ public class ServoTest extends RobotPlugin {
 			current = stateMachine.getServo(servoNames.get(servo));
 		}
 
-
 		if (gamepad.justPressed(GamepadManager.Button.DPAD_RIGHT)) {
-			current.setPosition(current.getPosition() + 0.1);
+			current.setPosition(current.getPosition() + incrementValue);
 		}
 		else if (gamepad.justPressed(GamepadManager.Button.DPAD_LEFT)) {
-			current.setPosition(current.getPosition() - 0.1);
+			current.setPosition(current.getPosition() - incrementValue);
 		}
-		else if (gamepad.justPressed(GamepadManager.Button.A)) {
+		else if (gamepad.justPressed(GamepadManager.Button.B)) {
 			current.setPosition(0.5);
 		}
 
