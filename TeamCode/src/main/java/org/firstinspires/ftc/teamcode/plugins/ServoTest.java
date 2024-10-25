@@ -14,8 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ServoTest extends RobotPlugin {
-	private Servo[] servos;
-	private List<String> servoNames = new ArrayList<>();
+	List<String> servoNames;
 	OpMode opMode;
 	ServoStateMachine stateMachine;
 	GamepadManager gamepad;
