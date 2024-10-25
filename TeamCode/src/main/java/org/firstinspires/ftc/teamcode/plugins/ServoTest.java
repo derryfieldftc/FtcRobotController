@@ -30,8 +30,8 @@ public class ServoTest extends RobotPlugin {
 	public void init() {
 		ServoStateMachine.Builder builder = new ServoStateMachine.Builder();
 		servoNames.forEach(name -> builder.addServo(name, s -> {}));
+		builder.addState("none", new String[0], new float[0]);
 		stateMachine = builder.build(opMode);
-
 	}
 
 	int servo = 0;
