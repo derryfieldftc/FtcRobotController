@@ -5,4 +5,5 @@ public class OpModeGroups {
     public static final String TESTS = "tests";
     public static final String SAMPLES = "samples";
     public static final String AUTO = "auto";
+    public static final String COMP = "comp";
 }
