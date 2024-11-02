@@ -62,20 +62,28 @@ public class ITDclaw extends RobotPlugin {
 
 	public void loop() {
 		if (gamepad.justPressed(GamepadManager.Button.LEFT_BUMPER)) clawOpen = !clawOpen; //bad
-		if (clawOpen) { claw.setPosition(.83); } else { claw.setPosition(.7); }
+		if (clawOpen) { claw.setPosition(.9); } else { claw.setPosition(.6); }
+
+		telemetry.addData("claw open", clawOpen);
 
 		if (gamepad.justPressed(GamepadManager.Button.A)) { //nabbing time
-			pitch.setTargetPosition(-26); //unc onviable nbad
-			elbow.setPosition(.8);
-			rotate.setPosition(0);
+			pitchTarget = -26;
+			pitch.setTargetPosition(pitchTarget); //unc onviable nbad
+			elbow.setPosition(1);
+			rotate.setPosition(1);
 		}
 		if (gamepad.justPressed(GamepadManager.Button.X)) { //placing
-			pitch.setTargetPosition(121);
-			elbow.setPosition(1);//wrong
+			pitchTarget = 121;
+			pitch.setTargetPosition(pitchTarget);
+			elbow.setPosition(.8);//wrong
 			rotate.setPosition(1); //wrong
 		}
+		if (gamepad.pressed(GamepadManager.Button.DPAD_RIGHT)) pitchTarget++;
+		if (gamepad.pressed(GamepadManager.Button.DPAD_LEFT)) pitchTarget--;
+		telemetry.addData("pitch target", pitchTarget);
+
 		if (gamepad.justPressed(GamepadManager.Button.DPAD_UP)) {
-			slide.setTargetPosition(-6509);
+			slide.setTargetPosition(-3000);
 		}
 		if (gamepad.justPressed(GamepadManager.Button.DPAD_DOWN)) {
 			slide.setTargetPosition(0);
