@@ -65,6 +65,10 @@ public class GamepadManager {
         axes[Axis.RIGHT_TRIGGER.ordinal()] = gamepad.right_trigger;
     }
 
+    public double axis(Axis axis) {
+        return this.axes[axis.ordinal()];
+    }
+
 
     public enum Button {
         A, B, X, Y,
