@@ -15,8 +15,8 @@ public class ITDClaw extends RobotPlugin {
     DcMotor pitch, slide;
     Telemetry telemetry;
 
-    public ITDClaw(OpMode opMode) {
-        gamepad = opMode.gamepad2;
+    public ITDClaw(OpMode opMode, Gamepad gamepad) {
+        this.gamepad = gamepad;
         hardwareMap = opMode.hardwareMap;
         telemetry = opMode.telemetry;
     }

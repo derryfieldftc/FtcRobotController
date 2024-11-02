@@ -13,7 +13,7 @@ public class ITDRobotOpMode extends PluginOpMode {
     public RobotPlugin[] initPlugins() {
         return new RobotPlugin[] {
                 new MecanumDrive(this).gamepad(gamepad1),
-                new ITDClaw(this)
+                new ITDClaw(this, gamepad2)
         };
     }
 }
