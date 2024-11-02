@@ -8,12 +8,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class ServoStateMachine {
 
-    public Map<String, Servo> servos;
+    Map<String, Servo> servos;
     Map<String, Map<Servo, Float>> states;
     String currentState;
 
@@ -72,8 +73,20 @@ public class ServoStateMachine {
         }
     }
 
-    public void setCurrentState(String stateName) {
-        this.states.get(stateName).forEach(Servo::setPosition);
+    AtomicInteger count = new AtomicInteger();
+    public int setCurrentState(String stateName) {
+        Map<Servo, Float> stateMap = this.states.get(stateName);
+
+        if (stateMap == null) { return -1; };
+
+        this.currentState = stateName;
+
+        stateMap.forEach((servo, val) -> {
+            servo.setPosition(val);
+            count.addAndGet(1);
+        });
+
+        return count.get();
     }
 
     public String getCurrentState() {
