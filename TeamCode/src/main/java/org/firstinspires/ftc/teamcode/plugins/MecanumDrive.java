@@ -1,19 +1,22 @@
 package org.firstinspires.ftc.teamcode.plugins;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RobotPlugin;
 
+import java.util.function.Function;
 
 public class MecanumDrive extends RobotPlugin {
 	OpMode opMode;
 	Telemetry telemetry;
 	HardwareMap hardwareMap;
-	Gamepad gamepad;
-
+	Gamepad gamepad1;
+	Gamepad gamepad2;
 	DcMotor motorFL;
 	DcMotor motorBL;
 	DcMotor motorFR;
@@ -24,13 +27,10 @@ public class MecanumDrive extends RobotPlugin {
 	 */
 	public MecanumDrive(OpMode opMode) {
 		this.opMode = opMode;
+		this.telemetry = opMode.telemetry;
 		this.hardwareMap = opMode.hardwareMap;
-		this.gamepad = opMode.gamepad1;
-	}
-
-	public MecanumDrive gamepad(Gamepad gamepad) {
-		this.gamepad = gamepad;
-		return this;
+		this.gamepad1 = opMode.gamepad1;
+		this.gamepad2 = opMode.gamepad2;
 	}
 
 	@Override
@@ -57,18 +57,39 @@ public class MecanumDrive extends RobotPlugin {
 	}
 
 	public void loop() {
-		double y = -gamepad.left_stick_y;
-		double x = gamepad.left_stick_x;
-		double rx = gamepad.right_stick_x;
+		double y = -gamepad1.left_stick_y;
+		double x = gamepad1.left_stick_x;
+		double rx = gamepad1.right_stick_x;
+		double scale_factor = 0.50;
+		if (gamepad2.left_bumper) {
+			y = -gamepad2.left_stick_y;
+			x = gamepad2.left_stick_x;
+			rx = gamepad2.right_stick_x;
+
+			// scale output
+			x = scale_factor * x;
+			y = scale_factor * y;
+			rx = scale_factor * rx;
+		} else {
+			y = -gamepad1.left_stick_y;
+			x = gamepad1.left_stick_x;
+			rx = gamepad1.right_stick_x;
+		}
+
 		double powerFL = y + x + rx;
 		double powerBL = y - x + rx;
 		double powerFR = y - x - rx;
 		double powerBR = y + x - rx;
 
-		motorFL.setPower(clamp(1, -1, powerFL));
-		motorBL.setPower(clamp(1, -1, powerBL));
-		motorFR.setPower(clamp(1, -1, powerFR));
-		motorBR.setPower(clamp(1, -1, powerBR));
+		powerFL = clamp(1, -1, powerFL);
+		powerBL = clamp(1, -1, powerBL);
+		powerFR = clamp(1, -1, powerFR);
+		powerBR = clamp(1, -1, powerBR);
+
+		motorFL.setPower(powerFL);
+		motorBL.setPower(powerBL);
+		motorFR.setPower(powerFR);
+		motorBR.setPower(powerBR);
 
 	}
 
