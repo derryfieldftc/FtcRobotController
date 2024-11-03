@@ -12,6 +12,11 @@ import com.qualcomm.robotcore.hardware.ServoImplEx;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.GamepadManager;
 import org.firstinspires.ftc.teamcode.RobotPlugin;
+import org.firstinspires.ftc.teamcode.plugins.Devices.DcMotorHandler;
+import org.firstinspires.ftc.teamcode.plugins.Devices.DeviceHandler;
+import org.firstinspires.ftc.teamcode.plugins.Devices.ServoHandler;
+
+import java.util.logging.Handler;
 
 public class DeviceTest extends RobotPlugin {
 	OpMode opMode;
@@ -20,10 +25,8 @@ public class DeviceTest extends RobotPlugin {
 	String[] names;
 	Part[] parts;
 	GamepadManager gamepad;
-	int enabled = 0;
-	boolean errored = false;
 
-	enum Device {
+	public enum Device {
 		Servo,
 		Motor,
 		//add more when necessary
@@ -44,33 +47,19 @@ public class DeviceTest extends RobotPlugin {
 		for (int i = 0; i < parts.length; i++) {
 			try {
 				HardwareDevice obj = hardwareMap.get(names[i]);
-				Part part = new Part();
+				DeviceHandler handler;
 
 				if (obj.getClass() == DcMotorImplEx.class) {
-					part.targetPos = 0;
-					DcMotor motor = hardwareMap.dcMotor.get(names[i]);
-					motor.setTargetPosition((int)part.targetPos);
-					motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-					motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-					part.power = .3;
-					part.device = motor;
-					part.type = Device.Motor;
-					telemetry.addLine("Motor: " + names[i]);
+					handler = new DcMotorHandler( (LinearOpMode) opMode);
 				} else if (obj.getClass() == ServoImplEx.class) {
-					Servo servo = hardwareMap.servo.get(names[i]);
-					part.targetPos = servo.getPosition();
-					servo.setPosition(part.targetPos);
-					part.type = Device.Servo;
-					part.device = servo;
-					telemetry.addLine("Servo: " + names[i]);
+					handler = new ServoHandler( (LinearOpMode) opMode);
 				} else {
-					telemetry.addData("somthings messed up", obj.getDeviceName());
-					errored = true;
+					throw new RuntimeException("Device " + names[i] + " is not found");
 				}
 
-				parts[i] = part;
+				parts[i] = handler.init(obj, names[i], hardwareMap);
 			} catch (Exception e) {
-				telemetry.addData("ERROR", e);
+				throw  new RuntimeException("ERROR" + e);
 			}
 			telemetry.update();
 		}
@@ -78,7 +67,7 @@ public class DeviceTest extends RobotPlugin {
 
 	@Override
 	public void start() {
-		if (!errored) telemetry.clearAll();
+		telemetry.clearAll();
 	}
 
 	int currentPartIndex = 0;
@@ -88,84 +77,57 @@ public class DeviceTest extends RobotPlugin {
 		Part currentDevice = parts[currentPartIndex];
 		if (gamepad.justPressed(GamepadManager.Button.DPAD_LEFT)) {
 			currentPartIndex = (currentPartIndex == 0) ? parts.length - 1 : currentPartIndex - 1;
-			telemetry.clearAll();
 		}
 		if (gamepad.justPressed(GamepadManager.Button.DPAD_RIGHT)) {
 			currentPartIndex = (currentPartIndex == parts.length - 1) ? 0 : currentPartIndex + 1;
-			telemetry.clearAll();
 		}
 
-		update(currentDevice);
+		telemetry.clearAll();
 
-		for (Part part: parts) {
-			if (part == null) continue;
-			if (part.targetPos == Double.NaN) continue;
-			switch (part.type) {
-				case Motor:
-					DcMotor motor = (DcMotor) part.device;
-					motor.setTargetPosition( (int) part.targetPos);
-					motor.setPower(part.power);
-					break;
-				case Servo:
-					Servo servo = (Servo) part.device;
-					servo.setPosition(part.targetPos);
-					break;
-				default:
-					break;
+		if (gamepad.pressed(GamepadManager.Button.START)) {
+			showHelp(currentDevice);
+		} else {
+			telemetry.addLine(list());
+			update(currentDevice);
+
+			for (Part part : parts) {
+				if (part == null) continue;
+				if (part.targetPos == Double.NaN) continue;
+				DeviceHandler handler = getDevice(part);
+				handler.updateValues(part);
 			}
-		}
 
-		telemetry.addLine(list());
-		dumpInfo(currentDevice);
+		}
+	}
+
+	private void showHelp(Part currentDevice) {
+		telemetry.addLine("General:");
+		telemetry.addLine(">: increment current device");
+		telemetry.addLine("<: decrement current device");
+		telemetry.addLine("START: show help");
+		telemetry.addLine();
+		telemetry.addLine(currentDevice.type.toString() + ":");
+		DeviceHandler handler = getDevice(currentDevice);
+		handler.helpMenu();
 	}
 
 	private void update(Part currentDevice) {
 		if (currentDevice == null) return;
-		double scale = 0;
-		switch (currentDevice.type) {
-			case Motor:
-				DcMotor motor = (DcMotor) currentDevice.device;
-				if (motor.getMode() == DcMotor.RunMode.RUN_TO_POSITION) {
-					scale = 5;
-				} else {
-					scale = .05;
-				}
-				if (gamepad.pressed(GamepadManager.Button.B)) {
-					DcMotor.RunMode prev = motor.getMode();
-					motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-					motor.setMode(prev);
-				}
-				if (gamepad.justPressed(GamepadManager.Button.X)) currentDevice.power *= -1;
-				if (gamepad.justPressed(GamepadManager.Button.A))
-					motor.setMode((motor.getMode() == DcMotor.RunMode.RUN_TO_POSITION) ? DcMotor.RunMode.RUN_USING_ENCODER : DcMotor.RunMode.RUN_TO_POSITION);
-				break;
-			case Servo:
-				scale = (gamepad.justPressed(GamepadManager.Button.DPAD_UP) || gamepad.justPressed(GamepadManager.Button.DPAD_DOWN)) ? .05 : 0;
-				break;
-		}
-		if (gamepad.pressed(GamepadManager.Button.DPAD_UP)) currentDevice.targetPos += scale;
-		if (gamepad.pressed(GamepadManager.Button.DPAD_DOWN)) currentDevice.targetPos -= scale;
+		DeviceHandler handler = getDevice(currentDevice);
+		handler.info(currentDevice);
+		handler.editValues(currentDevice, gamepad);
 	}
 
-	private void dumpInfo(Part currentDevice) {
-		if (currentDevice == null) return;
-		switch (currentDevice.type) {
+	private DeviceHandler getDevice(Part part) {
+		switch (part.type) {
 			case Motor:
-				DcMotor motor = (DcMotor) currentDevice.device;
-				telemetry.addData("Position", motor.getCurrentPosition());
-				telemetry.addData("Target Position", motor.getTargetPosition());
-				telemetry.addData("Power", motor.getPower());
-				telemetry.addData("Port", motor.getPortNumber());
-				telemetry.addData("Mode", motor.getMode());
-				break;
+				return new DcMotorHandler( (LinearOpMode) opMode);
 			case Servo:
-				Servo servo = (Servo) currentDevice.device;
-				telemetry.addData("Position", servo.getPosition());
-				telemetry.addData("Port", servo.getPortNumber());
-				break;
+				return new ServoHandler( (LinearOpMode) opMode);
 			default:
-				telemetry.addLine("Please add implementation for this device");
+				throw new RuntimeException("Please add implementation for this device");
 		}
+
 	}
 
 	private String list() {
@@ -177,10 +139,10 @@ public class DeviceTest extends RobotPlugin {
 		return stringBuilder.toString();
 	}
 
-	private class Part {
-		Device type;
-		HardwareDevice device;
-		double power;
-		double targetPos;
+	public static class Part {
+		public Device type;
+		public HardwareDevice device;
+		public double power;
+		public double targetPos;
 	}
 }
