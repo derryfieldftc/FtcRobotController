@@ -1,4 +1,5 @@
 package org.firstinspires.ftc.teamcode.plugins;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -7,13 +8,11 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RobotPlugin;
 
-
 public class MecanumDrive extends RobotPlugin {
 	OpMode opMode;
 	Telemetry telemetry;
 	HardwareMap hardwareMap;
 	Gamepad gamepad;
-
 	DcMotor motorFL;
 	DcMotor motorBL;
 	DcMotor motorFR;
@@ -26,11 +25,6 @@ public class MecanumDrive extends RobotPlugin {
 		this.opMode = opMode;
 		this.hardwareMap = opMode.hardwareMap;
 		this.gamepad = opMode.gamepad1;
-	}
-
-	public MecanumDrive gamepad(Gamepad gamepad) {
-		this.gamepad = gamepad;
-		return this;
 	}
 
 	@Override
@@ -64,12 +58,15 @@ public class MecanumDrive extends RobotPlugin {
 		double powerBL = y - x + rx;
 		double powerFR = y - x - rx;
 		double powerBR = y + x - rx;
+		powerFL = clamp(1, -1, powerFL);
+		powerBL = clamp(1, -1, powerBL);
+		powerFR = clamp(1, -1, powerFR);
+		powerBR = clamp(1, -1, powerBR);
 
-		motorFL.setPower(clamp(1, -1, powerFL));
-		motorBL.setPower(clamp(1, -1, powerBL));
-		motorFR.setPower(clamp(1, -1, powerFR));
-		motorBR.setPower(clamp(1, -1, powerBR));
-
+		motorFL.setPower(powerFL);
+		motorBL.setPower(powerBL);
+		motorFR.setPower(powerFR);
+		motorBR.setPower(powerBR);
 	}
 
 	private double clamp(double max, double min, double num) {
