@@ -83,7 +83,7 @@ public class ITDclaw extends RobotPlugin {
 		telemetry.addData("pitch target", pitchTarget);
 
 		if (gamepad.justPressed(GamepadManager.Button.DPAD_UP)) {
-			slide.setTargetPosition(-3000);
+			slide.setTargetPosition(-6509);
 		}
 		if (gamepad.justPressed(GamepadManager.Button.DPAD_DOWN)) {
 			slide.setTargetPosition(0);

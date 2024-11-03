@@ -21,6 +21,7 @@ public abstract class PluginOpMode extends LinearOpMode {
 
         for (RobotPlugin plugin : plugins) {
 			plugin.init();
+			telemetry.update();
         }
 
 		while (opModeInInit()) {
