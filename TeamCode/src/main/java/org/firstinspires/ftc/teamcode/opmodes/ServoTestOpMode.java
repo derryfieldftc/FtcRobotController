@@ -9,13 +9,7 @@ import org.firstinspires.ftc.teamcode.plugins.ServoTest;
 @TeleOp(name = "Servo Test", group = OpModeGroups.TESTS)
 public class ServoTestOpMode extends PluginOpMode {
 	public RobotPlugin[] initPlugins() {
-		ServoTest servoTest = new ServoTest(this)
-				.addServo("base")
-				.addServo("shoulder")
-				.addServo("elbow")
-				.addServo("bend")
-				.addServo("wrist")
-				.addServo("claw");
+		ServoTest servoTest = new ServoTest(this);
 		return new RobotPlugin[] { servoTest };
 	}
 }
