@@ -10,9 +10,18 @@ import org.firstinspires.ftc.teamcode.plugins.DeviceTest;
 public class DeviceTestOpMode extends PluginOpMode {
 	@Override
 	public RobotPlugin[] initPlugins() {
-		DeviceTest deviceTest = new DeviceTest(this, "motorFR", "motorFL", "motorBR", "motorBL", "pitch", "claw", "clawP", "rotate", "bucket");
+		DeviceTest deviceTest = new DeviceTest(this,
+				"motorFR",
+				"motorFL",
+				"motorBR",
+				"motorBL",
+				"pitch",
+				"claw",
+				"clawP",
+				"rotate",
+				"bucket");
 
 
-		return new RobotPlugin[] {deviceTest};
+		return new RobotPlugin[] { deviceTest };
 	}
 }
