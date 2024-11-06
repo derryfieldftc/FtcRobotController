@@ -2,21 +2,17 @@ package org.firstinspires.ftc.teamcode.plugins;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorImplEx;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.GamepadManager;
 import org.firstinspires.ftc.teamcode.RobotPlugin;
-import org.firstinspires.ftc.teamcode.plugins.Devices.DcMotorHandler;
-import org.firstinspires.ftc.teamcode.plugins.Devices.DeviceHandler;
-import org.firstinspires.ftc.teamcode.plugins.Devices.ServoHandler;
-
-import java.util.logging.Handler;
+import org.firstinspires.ftc.teamcode.plugins.devices.DcMotorHandler;
+import org.firstinspires.ftc.teamcode.plugins.devices.DeviceHandler;
+import org.firstinspires.ftc.teamcode.plugins.devices.ServoHandler;
 
 public class DeviceTest extends RobotPlugin {
 	OpMode opMode;

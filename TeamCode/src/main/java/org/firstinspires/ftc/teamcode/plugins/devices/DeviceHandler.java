@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.plugins.Devices;
+package org.firstinspires.ftc.teamcode.plugins.devices;
 
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;

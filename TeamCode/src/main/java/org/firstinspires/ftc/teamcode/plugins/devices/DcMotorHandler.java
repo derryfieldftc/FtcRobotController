@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.plugins.Devices;
+package org.firstinspires.ftc.teamcode.plugins.devices;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
