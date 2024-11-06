@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RobotPlugin;
-import org.firstinspires.ftc.teamcode.ThreadPool;
 
 import java.util.ArrayList;
 
@@ -22,6 +21,7 @@ public abstract class PluginOpMode extends LinearOpMode {
 
         for (RobotPlugin plugin : plugins) {
 			plugin.init();
+			telemetry.update();
         }
 
 		while (opModeInInit()) {
@@ -39,6 +39,7 @@ public abstract class PluginOpMode extends LinearOpMode {
 		while (opModeIsActive()) {
 			for (RobotPlugin plugin : plugins) {
 				plugin.loop();
+				telemetry.update();
 			}
 		}
 

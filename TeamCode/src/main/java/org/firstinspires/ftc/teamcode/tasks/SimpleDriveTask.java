@@ -1,49 +1,57 @@
 package org.firstinspires.ftc.teamcode.tasks;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RobotTask;
 
-public class ExampleTask extends RobotTask {
-	Telemetry telemetry;
+public class SimpleDriveTask extends RobotTask {
 	LinearOpMode opMode;
 	HardwareMap hardwareMap;
-	DcMotor motorFL;
-	DcMotor motorFR;
+	Telemetry telemetry;
+	IMU imu;
 	DcMotor motorBL;
+	DcMotor motorFL;
 	DcMotor motorBR;
+	DcMotor motorFR;
+	long millis;
+	double y = 0;
+	double x = 0;
+	double r = 0;
 
 
-	public ExampleTask(LinearOpMode opMode) {
+	public SimpleDriveTask(LinearOpMode opMode) {
 		this.opMode = opMode;
-		this.telemetry = opMode.telemetry;
 		this.hardwareMap = opMode.hardwareMap;
+		this.telemetry = opMode.telemetry;
+		this.imu = hardwareMap.get(IMU.class, "imu");
 	}
 
-	double speed = 0.0;
-	public ExampleTask speed(double speed) {
-		this.speed = speed;
+	public SimpleDriveTask time(long millis) {
+		this.millis = millis;
 		return this;
 	}
+	public SimpleDriveTask forward(double speed) {
+		y = speed;
+		return this;
+	}
+	public SimpleDriveTask strafe(double speed) {
+		x = speed;
+		return this;
+	}
+	public SimpleDriveTask turn(double degrees) {
 
-	long millis = 0;
-	public ExampleTask seconds(long seconds) {
-		this.millis = seconds;
 		return this;
 	}
 
 	public void init() {
-		telemetry.addLine("This is an example autonomous task");
-		telemetry.update();
-
 		motorBL = hardwareMap.dcMotor.get("motorBL");
 		motorFL = hardwareMap.dcMotor.get("motorFL");
-		motorBR = hardwareMap.dcMotor.get("motorBL");
+		motorBR = hardwareMap.dcMotor.get("motorBR");
 		motorFR = hardwareMap.dcMotor.get("motorFR");
 
 		motorBL.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -53,13 +61,20 @@ public class ExampleTask extends RobotTask {
 		motorFL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 		motorBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 		motorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
 	}
 
+	@Override
 	public void run() {
-		motorBL.setPower(speed);
-		motorFL.setPower(speed);
-		motorBR.setPower(speed);
-		motorFR.setPower(speed);
+		double motorBLSpeed = y - x + r;
+		double motorFLSpeed = y + x + r;
+		double motorBRSpeed = y + x - r;
+		double motorFRSpeed = y - x - r;
+
+		motorBL.setPower(motorBLSpeed);
+		motorFL.setPower(motorFLSpeed);
+		motorBR.setPower(motorBRSpeed);
+		motorFR.setPower(motorFRSpeed);
 
 		opMode.sleep(millis);
 

@@ -14,8 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ServoTest extends RobotPlugin {
-	private Servo[] servos;
-	private List<String> servoNames = new ArrayList<>();
+	List<String> servoNames;
 	OpMode opMode;
 	ServoStateMachine stateMachine;
 	GamepadManager gamepad;
@@ -31,8 +30,8 @@ public class ServoTest extends RobotPlugin {
 	public void init() {
 		ServoStateMachine.Builder builder = new ServoStateMachine.Builder();
 		servoNames.forEach(name -> builder.addServo(name, s -> {}));
+		builder.addState("none", new String[0], new float[0]);
 		stateMachine = builder.build(opMode);
-
 	}
 
 	int servo = 0;

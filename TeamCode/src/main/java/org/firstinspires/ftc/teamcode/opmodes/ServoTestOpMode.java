@@ -9,7 +9,8 @@ import org.firstinspires.ftc.teamcode.plugins.ServoTest;
 @TeleOp(name = "Servo Test", group = OpModeGroups.TESTS)
 public class ServoTestOpMode extends PluginOpMode {
 	public RobotPlugin[] initPlugins() {
-		ServoTest servoTest = new ServoTest(this);
+		String[] servos = new String[] { "angleH", "rotate", "claw" };
+		ServoTest servoTest = new ServoTest(this, servos);
 		return new RobotPlugin[] { servoTest };
 	}
 }
