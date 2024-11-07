@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.plugins;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -10,7 +9,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.GamepadManager;
 import org.firstinspires.ftc.teamcode.RobotPlugin;
 
-public class ITDclaw extends RobotPlugin {
+public class ITDClaw extends RobotPlugin {
 	LinearOpMode opMode;
 	HardwareMap hardwareMap;
 	Telemetry telemetry;
@@ -31,7 +30,7 @@ public class ITDclaw extends RobotPlugin {
 	 * elbow 1 closed / drop, nab .8
 	 */
 
-	public ITDclaw(LinearOpMode opMode) {
+	public ITDClaw(LinearOpMode opMode) {
 		this.opMode = opMode;
 		this.telemetry = opMode.telemetry;
 		this.hardwareMap = opMode.hardwareMap;

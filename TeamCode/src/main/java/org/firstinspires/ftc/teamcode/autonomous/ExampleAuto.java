@@ -6,7 +6,7 @@ import org.firstinspires.ftc.teamcode.tasks.DelayTask;
 import org.firstinspires.ftc.teamcode.tasks.ExampleTask;
 
 @Autonomous(name = "ExampleAutonomous", group = OpModeGroups.AUTO)
-public class ExampleAutonomous extends TaskAutonomous {
+public class ExampleAuto extends TaskAutonomous {
 	public RobotTask[] createTasksList() {
         return new RobotTask[] {
                 new ExampleTask(this).speed(0.3).seconds(1),
