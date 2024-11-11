@@ -8,9 +8,9 @@ import org.firstinspires.ftc.teamcode.plugins.TankDrive;
 
 @TeleOp(name = "TankDriveOpMode", group = OpModeGroups.SAMPLES)
 public class TankDriveOpMode extends PluginOpMode {
-    @Override
-    public RobotPlugin[] initPlugins() {
-        TankDrive tankDrive = new TankDrive(this);
-        return new RobotPlugin[]{ tankDrive };
-    }
+	@Override
+	public RobotPlugin[] initPlugins() {
+		TankDrive tankDrive = new TankDrive(this);
+		return new RobotPlugin[]{ tankDrive };
+	}
 }
