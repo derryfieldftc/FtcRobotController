@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.RobotTask;
 
 /**
@@ -89,7 +90,7 @@ public class OdometryRunToPositionTask extends RobotTask {
 		do {
 			double x = strafeEncoder.getCurrentPosition();
 			double y = driveEncoder.getCurrentPosition();
-			double r = imu.getRobotYawPitchRollAngles().getYaw();
+			double r = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
 
 			double deltaX = targetX;
 			double deltaY = targetY;
@@ -135,7 +136,7 @@ public class OdometryRunToPositionTask extends RobotTask {
 		telemetry.addData("xtar", targetX);
 		telemetry.addData("ypos", y);
 		telemetry.addData("ytar", targetY);
-		// telemetry.addLine("heading? " + imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
+		telemetry.addLine("heading? " + imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
 		telemetry.update();
 	}
 }
