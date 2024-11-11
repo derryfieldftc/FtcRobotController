@@ -11,7 +11,7 @@ public class StrafeTestAutonomous extends TaskAutonomous {
 	public RobotTask[] createTasksList() {
 		OdomStrafe odomStrafe = new OdomStrafe(this);
 		return new RobotTask[] {
-			odomStrafe.speed(.5).target(24).error(1)
+			odomStrafe
 		};
 	}
 }

@@ -45,10 +45,17 @@ public class OdometryRunToPositionTask extends RobotTask {
 	public OdometryRunToPositionTask(LinearOpMode opMode, int xInches, int yInches) {
 		this.opMode = opMode;
 		this.targetX = xInches * countsPerInch;
-		this.targetY = -1 * yInches * countsPerInch;
-		this.targetR = 0;
+		this.targetY = yInches * countsPerInch;
 		this.hardwareMap = opMode.hardwareMap;
 		this.telemetry = opMode.telemetry;
+
+		imu = hardwareMap.get(IMU.class, "imu");
+		RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
+		RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
+		RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
+		imu.initialize(new IMU.Parameters(orientationOnRobot));
+
+		this.targetR = Math.cos(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
 	}
 
 	// Code is run ONCE when the driver hits INIT
@@ -85,42 +92,50 @@ public class OdometryRunToPositionTask extends RobotTask {
 	// Code is run REPEATEDLY after the driver hits PLAY but before they hit STOP
 	public void run() {
 		double errorDistance = 0;
-		double acceptableRange = 1 * countsPerInch;
+		double acceptableRange = .3 * countsPerInch;
 
 		do {
 			double x = strafeEncoder.getCurrentPosition();
-			double y = driveEncoder.getCurrentPosition();
-			double r = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+			double y = -driveEncoder.getCurrentPosition();
+			double r = Math.cos(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
 
-			double deltaX = targetX;
-			double deltaY = targetY;
-			double deltaR = targetR;
+			double deltaX = targetX - x;
+			double deltaY = targetY - y;
+			double deltaR = targetR - r;
 
 			double magnitude = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 			deltaX = deltaX / magnitude;
 			deltaY = deltaY / magnitude;
 
-			deltaR = 0; // temp
 			double powerFL = deltaY + deltaX + deltaR;
 			double powerBL = deltaY - deltaX + deltaR;
 			double powerFR = deltaY - deltaX - deltaR;
 			double powerBR = deltaY + deltaX - deltaR;
 
-			powerFL = clamp(1, -1, powerFL);
-			powerBL = clamp(1, -1, powerBL);
-			powerFR = clamp(1, -1, powerFR);
-			powerBR = clamp(1, -1, powerBR);
+			double scale = errorDistance / acceptableRange;
+
+			powerFL = clamp(1, -1, powerFL) * .3;
+			powerBL = clamp(1, -1, powerBL) * .3;
+			powerFR = clamp(1, -1, powerFR) * .3;
+			powerBR = clamp(1, -1, powerBR) * .3;
 
 			motorFL.setPower(powerFL);
 			motorBL.setPower(powerBL);
 			motorFR.setPower(powerFR);
 			motorBR.setPower(powerBR);
+			/*
+			telemetry.addData("powerFR", powerFR);
+			telemetry.addData("powerBR", powerBR);
+			telemetry.addData("powerBL", powerBL);
+			telemetry.addData("powerFL", powerFL);
+			telemetry.update();
+			 */
 
 			updateTelemetry();
 			telemetry.addData("error", errorDistance);
 
 			errorDistance = magnitude;
-		} while (errorDistance > acceptableRange);
+		} while (errorDistance > acceptableRange && opMode.opModeIsActive());
 	}
 
 	public double calcError(double x, double y, double targetX, double targetY) {

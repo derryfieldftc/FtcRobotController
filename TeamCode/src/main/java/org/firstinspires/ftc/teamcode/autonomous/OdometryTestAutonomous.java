@@ -11,7 +11,7 @@ public class OdometryTestAutonomous extends TaskAutonomous {
 	@Override
 	public RobotTask[] createTasksList() {
 		return new RobotTask[] {
-				new OdometryRunToPositionTask(this, 24, 24)
+				new OdometryRunToPositionTask(this, 24, 0)
 		};
 	}
 }
