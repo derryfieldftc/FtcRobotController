@@ -2,17 +2,16 @@ package org.firstinspires.ftc.teamcode.plugins;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorImplEx;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.GamepadManager;
 import org.firstinspires.ftc.teamcode.RobotPlugin;
-import org.firstinspires.ftc.teamcode.plugins.devices.DcMotorHandler;
-import org.firstinspires.ftc.teamcode.plugins.devices.DeviceHandler;
-import org.firstinspires.ftc.teamcode.plugins.devices.ServoHandler;
 
 public class DeviceTest extends RobotPlugin {
 	OpMode opMode;
@@ -140,5 +139,154 @@ public class DeviceTest extends RobotPlugin {
 		public HardwareDevice device;
 		public double power;
 		public double targetPos;
+	}
+
+	public static interface DeviceHandler {
+		void info(Part part);
+		Part init(HardwareDevice device, String name, HardwareMap hardwareMap);
+		void editValues(Part part, GamepadManager gamepad);
+		void updateValues(Part part);
+		void helpMenu();
+
+	}
+
+	public static class DcMotorHandler implements DeviceHandler {
+		OpMode opMode;
+		Telemetry telemetry;
+		public DcMotorHandler(LinearOpMode opMode) {
+			this.opMode = opMode;
+			this.telemetry = opMode.telemetry;
+
+		}
+
+		@Override
+		public Part init(HardwareDevice device, String name, HardwareMap hardwareMap) {
+			Part part = new Part();
+			part.targetPos = 0;
+			DcMotor motor = hardwareMap.dcMotor.get(name);
+			motor.setTargetPosition((int)part.targetPos);
+			motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+			motor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+			part.power = .3;
+			part.device = motor;
+			part.type = Device.Motor;
+			telemetry.addLine("Motor: " + name);
+
+			return part;
+		}
+
+		@Override
+		public void info(Part part) {
+			DcMotor motor = (DcMotor) part.device;
+			telemetry.addData("Position", motor.getCurrentPosition());
+			telemetry.addData("Target Position", motor.getTargetPosition());
+			telemetry.addData("Power", motor.getPower());
+			telemetry.addData("Port", motor.getPortNumber());
+			telemetry.addData("Mode", motor.getMode());
+			telemetry.addData("0 Power Behavior", motor.getZeroPowerBehavior());
+		}
+
+		@Override
+		public void editValues(Part part, GamepadManager gamepad) {
+			double scale;
+			DcMotor motor = (DcMotor) part.device;
+			if (motor.getMode() == DcMotor.RunMode.RUN_TO_POSITION) {
+				scale = 5;
+			} else {
+				scale = .05;
+			}
+			if (gamepad.pressed(GamepadManager.Button.Y)) {
+				DcMotor.RunMode prev = motor.getMode();
+				motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+				motor.setMode(prev);
+			}
+			if (gamepad.pressed(GamepadManager.Button.B)) {
+				part.power = 0;
+				part.targetPos = ( (DcMotor) part.device).getCurrentPosition();
+			}
+			if (gamepad.justPressed(GamepadManager.Button.X))
+				motor.setZeroPowerBehavior((motor.getZeroPowerBehavior() == DcMotor.ZeroPowerBehavior.BRAKE) ? DcMotor.ZeroPowerBehavior.FLOAT : DcMotor.ZeroPowerBehavior.BRAKE);
+			if (gamepad.justPressed(GamepadManager.Button.A))
+				motor.setMode((motor.getMode() == DcMotor.RunMode.RUN_TO_POSITION) ? DcMotor.RunMode.RUN_USING_ENCODER : DcMotor.RunMode.RUN_TO_POSITION);
+
+			if (motor.getMode() == DcMotor.RunMode.RUN_TO_POSITION) {
+				if (gamepad.pressed(GamepadManager.Button.DPAD_UP)) part.targetPos += scale;
+				if (gamepad.pressed(GamepadManager.Button.DPAD_DOWN)) part.targetPos -= scale;
+			} else {
+				if (gamepad.pressed(GamepadManager.Button.DPAD_UP)) part.power += (part.power < 1) ? scale : 0;
+				if (gamepad.pressed(GamepadManager.Button.DPAD_DOWN)) part.power -= (part.power > 0) ? scale : 0;
+
+			}
+		}
+
+		@Override
+		public void updateValues(Part part) {
+			DcMotor motor = (DcMotor) part.device;
+			if (motor.getMode() == DcMotor.RunMode.RUN_TO_POSITION)
+				motor.setTargetPosition( (int) part.targetPos);
+			else
+				motor.setPower(part.power);
+		}
+
+		@Override
+		public void helpMenu() {
+			telemetry.addLine("A: toggles mode of motor");
+			telemetry.addLine("X: toggles 0 power mode");
+			telemetry.addLine("B: kills motor, must restart OpMode after this");
+			telemetry.addLine("Y: resets the encoders of the current motor");
+			telemetry.addLine("^: raises target position or power by 5 or .5");
+			telemetry.addLine("v: lowers target position or power by 5 or .5");
+
+		}
+	}
+
+	public static class ServoHandler implements DeviceHandler {
+		OpMode opMode;
+		Telemetry telemetry;
+		public ServoHandler(LinearOpMode opMode) {
+			this.opMode = opMode;
+			this.telemetry = opMode.telemetry;
+
+		}
+
+		@Override
+		public void info(Part part) {
+			Servo servo = (Servo) part.device;
+			telemetry.addData("Position", servo.getPosition());
+			telemetry.addData("Port", servo.getPortNumber());
+
+		}
+
+		@Override
+		public Part init(HardwareDevice device, String name, HardwareMap hardwareMap) {
+			Part part = new Part();
+			Servo servo = hardwareMap.servo.get(name);
+			part.targetPos = servo.getPosition();
+			servo.setPosition(part.targetPos);
+			part.type = Device.Servo;
+			part.device = servo;
+			telemetry.addLine("Servo: " + name);
+			return part;
+		}
+
+		@Override
+		public void editValues(Part part, GamepadManager gamepad) {
+			double scale = (gamepad.justPressed(GamepadManager.Button.DPAD_UP) || gamepad.justPressed(GamepadManager.Button.DPAD_DOWN)) ? .05 : 0;
+			if (gamepad.pressed(GamepadManager.Button.DPAD_UP)) part.targetPos += scale;
+			if (gamepad.pressed(GamepadManager.Button.DPAD_DOWN)) part.targetPos -= scale;
+
+		}
+
+		public void updateValues(Part part) {
+			Servo servo = (Servo) part.device;
+			servo.setPosition(part.targetPos);
+		}
+
+		@Override
+		public void helpMenu() {
+			telemetry.addLine("^: raises target position by .05");
+			telemetry.addLine("v: lowers target position by .05");
+
+		}
 	}
 }
