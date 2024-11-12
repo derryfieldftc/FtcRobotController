@@ -95,7 +95,7 @@ public class OdometryRunToPositionTask extends RobotTask {
 		double acceptableRange = .3 * countsPerInch;
 
 		do {
-			double x = strafeEncoder.getCurrentPosition();
+			double x = -strafeEncoder.getCurrentPosition();
 			double y = -driveEncoder.getCurrentPosition();
 			double r = Math.cos(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
 
