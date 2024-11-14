@@ -6,11 +6,12 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import org.firstinspires.ftc.robotcore.external.ExportClassToBlocks;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RobotPlugin;
 
 import java.util.function.Function;
-
+@ExportClassToBlocks
 public class MecanumDrive extends RobotPlugin {
 	OpMode opMode;
 	Telemetry telemetry;
