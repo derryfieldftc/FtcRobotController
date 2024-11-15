@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.plugins.ArmBot;
 import org.firstinspires.ftc.teamcode.plugins.MecanumDrive;
 import org.firstinspires.ftc.teamcode.plugins.prevArmBot;
 
-@TeleOp(name="ArmBotTest", group = OpModeGroups.TESTS)
+@TeleOp(name="Fighting Cougars OpMode", group = OpModeGroups.TESTS)
 public class ArmBotTest extends PluginOpMode {
 	public RobotPlugin[] initPlugins() {
 		prevArmBot armBot = new prevArmBot(this);
@@ -16,3 +16,4 @@ public class ArmBotTest extends PluginOpMode {
 		return new RobotPlugin[] { armBot, mecanumDrive };
 	}
 }
+1
