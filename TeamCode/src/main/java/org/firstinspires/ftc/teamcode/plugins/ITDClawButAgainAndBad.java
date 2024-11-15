@@ -43,16 +43,20 @@ public class ITDClawButAgainAndBad extends RobotPlugin {
 		horizontalSlide = hardwareMap.dcMotor.get("slideH"); // like i know it follows the style but like
 		claw = hardwareMap.servo.get("claw");
 		wrist = hardwareMap.servo.get("rotate");
-		elbow = hardwareMap.servo.get("elbow");
+		elbow = hardwareMap.servo.get("hinge");
 		bucket = hardwareMap.servo.get("bucket");
 
 		slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+		slide.setTargetPosition(0);
 		slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 		slide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+		slide.setPower(.5);
 
 		horizontalSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+		horizontalSlide.setTargetPosition(0);
 		horizontalSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 		horizontalSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+		horizontalSlide.setPower(1);
 
 	}
 
@@ -69,42 +73,54 @@ public class ITDClawButAgainAndBad extends RobotPlugin {
 		if (gamepad.justPressed(GamepadManager.Button.X)) grabbed();
 
 		if (gamepad.justPressed(GamepadManager.Button.LEFT_STICK)) horizontalSlideTargetPos = 0; // like its weeiiirrrddd
-		horizontalSlideTargetPos += (int) (realGamepad.left_stick_y * 50);
+		horizontalSlideTargetPos += (int) (-realGamepad.left_stick_y * 30);
 
 		horizontalSlide.setTargetPosition(horizontalSlideTargetPos); // IT CANNOT JUST BE ME
 
 		if (gamepad.justPressed(GamepadManager.Button.DPAD_UP)) slideTargetPos = 5000;
 		if (gamepad.justPressed(GamepadManager.Button.DPAD_DOWN)) slideTargetPos = 0;
-		slideTargetPos += (int) (realGamepad.right_stick_y * 10);
+		slideTargetPos += (int) (-realGamepad.right_stick_y * 10);
 
 		slide.setTargetPosition(slideTargetPos);
+
+		telemetry.addData("slide pos", slide.getCurrentPosition());
+		telemetry.addData("slide tar", slideTargetPos);
+		telemetry.addData("horizontalSlide pos", horizontalSlide.getCurrentPosition());
+		telemetry.addData("horizontalSlide tar", horizontalSlideTargetPos);
+		gamepad.poll();
 	}
 
 	boolean clawOpen = false;
 	public void toggleClaw() {
+		telemetry.addLine("toggle claw");
 		claw.setPosition((clawOpen) ? .9 : .35);
 		clawOpen = !clawOpen;
 	}
 
 	boolean wristOut = false;
 	public void toggleWrist() {
+		telemetry.addLine("toggle wrist");
 		wrist.setPosition((wristOut) ? .9 : .2);
 		wristOut = !wristOut;
 	}
 
 	public void grabbing() {
+		telemetry.addLine("grabbin");
 		wrist.setPosition(.9);
 		elbow.setPosition(.9);
 	}
 	public void grabbed() {
+		telemetry.addLine("grabbed");
 		wrist.setPosition(.9);
 		elbow.setPosition(.75);
 	}
 	public void aboutToDrop() {
+		telemetry.addLine("abt to drop");
 		wrist.setPosition(.2);
 		elbow.setPosition(.55);
 	}
 	public void outOfBucketWay() {
+		telemetry.addLine("out of bukt way");
 		elbow.setPosition(.7);
 	}
 
