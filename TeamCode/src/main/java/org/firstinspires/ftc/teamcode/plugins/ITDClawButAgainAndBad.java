@@ -50,7 +50,7 @@ public class ITDClawButAgainAndBad extends RobotPlugin {
 		slide.setTargetPosition(0);
 		slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 		slide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-		slide.setPower(.5);
+		slide.setPower(1);
 
 		horizontalSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		horizontalSlide.setTargetPosition(0);
@@ -73,7 +73,7 @@ public class ITDClawButAgainAndBad extends RobotPlugin {
 		if (gamepad.justPressed(GamepadManager.Button.X)) grabbed();
 
 		if (gamepad.justPressed(GamepadManager.Button.LEFT_STICK)) horizontalSlideTargetPos = 0; // like its weeiiirrrddd
-		horizontalSlideTargetPos += (int) (-realGamepad.left_stick_y * 30);
+		horizontalSlideTargetPos += (int) (-realGamepad.left_stick_y * 20);
 
 		horizontalSlide.setTargetPosition(horizontalSlideTargetPos); // IT CANNOT JUST BE ME
 
@@ -100,14 +100,14 @@ public class ITDClawButAgainAndBad extends RobotPlugin {
 	boolean wristOut = false;
 	public void toggleWrist() {
 		telemetry.addLine("toggle wrist");
-		wrist.setPosition((wristOut) ? .9 : .2);
+		wrist.setPosition((wristOut) ? .3 : .97);
 		wristOut = !wristOut;
 	}
 
 	public void grabbing() {
 		telemetry.addLine("grabbin");
-		wrist.setPosition(.9);
-		elbow.setPosition(.9);
+		wrist.setPosition(.3);
+		elbow.setPosition(.4);
 	}
 	public void grabbed() {
 		telemetry.addLine("grabbed");
@@ -116,8 +116,8 @@ public class ITDClawButAgainAndBad extends RobotPlugin {
 	}
 	public void aboutToDrop() {
 		telemetry.addLine("abt to drop");
-		wrist.setPosition(.2);
-		elbow.setPosition(.55);
+		wrist.setPosition(.97);
+		elbow.setPosition(.9);
 	}
 	public void outOfBucketWay() {
 		telemetry.addLine("out of bukt way");
@@ -127,13 +127,13 @@ public class ITDClawButAgainAndBad extends RobotPlugin {
 	/*
 	1 grabbing
 	claw = .9
-	rotate = .9
-	hinge = .9
+	rotate = .9 // .3
+	hinge = .9 // .4
 	2 just grabbed
 	hinge = .75
 	3 abt to bucket
-	rotate = .2
-	hinge = .55
+	rotate = .2 // .97
+	hinge = .55 //.9
 	4 buket
 	hinge = .6
 	rotate = .2
