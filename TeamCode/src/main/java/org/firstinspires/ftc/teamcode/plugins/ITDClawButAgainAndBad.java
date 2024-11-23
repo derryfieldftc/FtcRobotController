@@ -1,8 +1,12 @@
 package org.firstinspires.ftc.teamcode.plugins;
 
+import android.media.audiofx.DynamicsProcessing;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -24,16 +28,18 @@ public class ITDClawButAgainAndBad extends RobotPlugin {
 	Servo bucket;
 	Gamepad realGamepad;
 	GamepadManager gamepad;
+	DigitalChannel slideSwitch;
 
 	int horizontalSlideTargetPos = 0; // this looks weird for the same reasons
 	int slideTargetPos = 0;
 
 	public ITDClawButAgainAndBad(LinearOpMode opMode) {
-		this.opMode = opMode;
+	this.opMode = opMode;
 		this.hardwareMap = opMode.hardwareMap;
 		this.telemetry = opMode.telemetry;
 		realGamepad = opMode.gamepad2;
 		gamepad = new GamepadManager(opMode.gamepad2);
+
 
 		telemetry.addData("loaded", this.getClass().toString());
 	}
@@ -45,6 +51,7 @@ public class ITDClawButAgainAndBad extends RobotPlugin {
 		wrist = hardwareMap.servo.get("rotate");
 		elbow = hardwareMap.servo.get("hinge");
 		bucket = hardwareMap.servo.get("bucket");
+		slideSwitch = hardwareMap.digitalChannel.get("slideLimit");
 
 		slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		slide.setTargetPosition(0);
@@ -65,23 +72,30 @@ public class ITDClawButAgainAndBad extends RobotPlugin {
 		if (gamepad.justPressed(GamepadManager.Button.RIGHT_BUMPER)) toggleClaw();
 		if (gamepad.justPressed(GamepadManager.Button.LEFT_BUMPER)) toggleWrist();
 
-		bucket.setPosition((realGamepad.right_trigger > .5) ? 1 : 0);
+		bucket.setPosition(realGamepad.right_trigger);
 
 		if (gamepad.justPressed(GamepadManager.Button.A)) grabbing();
 		if (gamepad.justPressed(GamepadManager.Button.B)) outOfBucketWay();
 		if (gamepad.justPressed(GamepadManager.Button.Y)) aboutToDrop();
 		if (gamepad.justPressed(GamepadManager.Button.X)) grabbed();
 
+//		horizontalSlide.setPower(realGamepad.left_stick_y / 10);
+		if (gamepad.justPressed(GamepadManager.Button.DPAD_RIGHT)) horizontalSlideTargetPos = -3400;
+		if (gamepad.justPressed(GamepadManager.Button.DPAD_LEFT)) horizontalSlideTargetPos = 3000;
 		if (gamepad.justPressed(GamepadManager.Button.LEFT_STICK)) horizontalSlideTargetPos = 0; // like its weeiiirrrddd
 		horizontalSlideTargetPos += (int) (-realGamepad.left_stick_y * 20);
 
 		horizontalSlide.setTargetPosition(horizontalSlideTargetPos); // IT CANNOT JUST BE ME
+																	 // actually i think past me was just going crazy, it looks normal now
 
 		if (gamepad.justPressed(GamepadManager.Button.DPAD_UP)) slideTargetPos = 5000;
 		if (gamepad.justPressed(GamepadManager.Button.DPAD_DOWN)) slideTargetPos = 0;
 		slideTargetPos += (int) (-realGamepad.right_stick_y * 10);
 
-		slide.setTargetPosition(slideTargetPos);
+		elbow.setPosition(elbow.getPosition() + realGamepad.left_stick_x / 100);
+
+		slide.setTargetPosition((slideSwitch.getState()) ? slide.getCurrentPosition() : slideTargetPos);
+		if (slideSwitch.getState()) telemetry.addLine("Slide is down");
 
 		telemetry.addData("slide pos", slide.getCurrentPosition());
 		telemetry.addData("slide tar", slideTargetPos);
@@ -93,7 +107,7 @@ public class ITDClawButAgainAndBad extends RobotPlugin {
 	boolean clawOpen = false;
 	public void toggleClaw() {
 		telemetry.addLine("toggle claw");
-		claw.setPosition((clawOpen) ? .9 : .35);
+		claw.setPosition((clawOpen) ? .85 : .57);
 		clawOpen = !clawOpen;
 	}
 
@@ -107,17 +121,17 @@ public class ITDClawButAgainAndBad extends RobotPlugin {
 	public void grabbing() {
 		telemetry.addLine("grabbin");
 		wrist.setPosition(.3);
-		elbow.setPosition(.4);
+		elbow.setPosition(.27);
 	}
 	public void grabbed() {
 		telemetry.addLine("grabbed");
 		wrist.setPosition(.9);
-		elbow.setPosition(.75);
+		elbow.setPosition(.35);
 	}
 	public void aboutToDrop() {
 		telemetry.addLine("abt to drop");
 		wrist.setPosition(.97);
-		elbow.setPosition(.9);
+		elbow.setPosition(1);
 	}
 	public void outOfBucketWay() {
 		telemetry.addLine("out of bukt way");
@@ -140,5 +154,12 @@ public class ITDClawButAgainAndBad extends RobotPlugin {
 	5 clear
 	hinge = .7 / maybe go back to 1
 	& slide = 5k
+	 */
+
+	/*
+	horizontal slide pos (dw i know where to start it`)
+	out = 3000
+	back -3400
+
 	 */
 }

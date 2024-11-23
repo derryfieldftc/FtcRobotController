@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorImplEx;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -24,6 +25,7 @@ public class DeviceTest extends RobotPlugin {
 	public enum Device {
 		Servo,
 		Motor,
+		DigitalSwitch
 		//add more when necessary
 	}
 
@@ -48,6 +50,8 @@ public class DeviceTest extends RobotPlugin {
 					handler = new DcMotorHandler( (LinearOpMode) opMode);
 				} else if (obj.getClass() == ServoImplEx.class) {
 					handler = new ServoHandler( (LinearOpMode) opMode);
+				} else if (obj.getClass() == DigitalChannel.class) {
+					handler = new DigitalChannelHandler( (LinearOpMode) opMode);
 				} else {
 					throw new RuntimeException("Device " + names[i] + " is not found");
 				}
@@ -287,6 +291,46 @@ public class DeviceTest extends RobotPlugin {
 			telemetry.addLine("^: raises target position by .05");
 			telemetry.addLine("v: lowers target position by .05");
 
+		}
+	}
+
+	public class DigitalChannelHandler implements DeviceHandler {
+		OpMode opMode;
+		Telemetry telemetry;
+		public DigitalChannelHandler(LinearOpMode opMode) {
+			this.opMode = opMode;
+			this.telemetry = opMode.telemetry;
+
+		}
+
+		@Override
+		public void info(Part part) {
+			DigitalChannel channel = (DigitalChannel) part.device;
+			telemetry.addData("State", channel.getState());
+		}
+
+		@Override
+		public Part init(HardwareDevice device, String name, HardwareMap hardwareMap) {
+			Part part = new Part();
+			DigitalChannel channel = hardwareMap.digitalChannel.get(name);
+			part.device = channel;
+			part.type = Device.DigitalSwitch;
+			return part;
+		}
+
+		@Override
+		public void editValues(Part part, GamepadManager gamepad) {
+
+		}
+
+		@Override
+		public void updateValues(Part part) {
+
+		}
+
+		@Override
+		public void helpMenu() {
+			telemetry.addLine("Takes no input, just shows a switches state");
 		}
 	}
 }

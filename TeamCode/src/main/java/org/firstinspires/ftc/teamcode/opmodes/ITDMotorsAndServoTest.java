@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.plugins.MecanumDrive;
 public class ITDMotorsAndServoTest extends PluginOpMode {
 	@Override
 	public RobotPlugin[] initPlugins() {
-		DeviceTest deviceTest = new DeviceTest(this, "slideH", "claw", "bucket", "rotate", "hinge", "slide");
+		DeviceTest deviceTest = new DeviceTest(this, "slideH", "claw", "bucket", "rotate", "hinge", "slide", "slideLimit");
 		MecanumDrive mecanumDrive = new MecanumDrive(this);
 		return new RobotPlugin[] { deviceTest, mecanumDrive };
 	}
