@@ -29,6 +29,8 @@ public class ITDClawButAgainAndBad extends RobotPlugin {
 	Gamepad realGamepad;
 	GamepadManager gamepad;
 	DigitalChannel slideSwitch;
+	DigitalChannel horizontalSlideLimit;
+	boolean bucketActive = false;
 
 	int horizontalSlideTargetPos = 0; // this looks weird for the same reasons
 	int slideTargetPos = 0;
@@ -51,7 +53,8 @@ public class ITDClawButAgainAndBad extends RobotPlugin {
 		wrist = hardwareMap.servo.get("rotate");
 		elbow = hardwareMap.servo.get("hinge");
 		bucket = hardwareMap.servo.get("bucket");
-		slideSwitch = hardwareMap.digitalChannel.get("slideLimit");
+		slideSwitch = hardwareMap.digitalChannel.get("limitSlide");
+		horizontalSlideLimit = hardwareMap.digitalChannel.get("limitH");
 
 		slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		slide.setTargetPosition(0);
@@ -72,7 +75,7 @@ public class ITDClawButAgainAndBad extends RobotPlugin {
 		if (gamepad.justPressed(GamepadManager.Button.RIGHT_BUMPER)) toggleClaw();
 		if (gamepad.justPressed(GamepadManager.Button.LEFT_BUMPER)) toggleWrist();
 
-		bucket.setPosition(realGamepad.right_trigger);
+		if (gamepad.justPressed(GamepadManager.Button.START)) { bucketActive = true; bucket.setPosition(.95);} else {bucket.setPosition((bucketActive) ? .95 : realGamepad.right_trigger - .15); }
 
 		if (gamepad.justPressed(GamepadManager.Button.A)) grabbing();
 		if (gamepad.justPressed(GamepadManager.Button.B)) outOfBucketWay();
@@ -85,7 +88,7 @@ public class ITDClawButAgainAndBad extends RobotPlugin {
 		if (gamepad.justPressed(GamepadManager.Button.LEFT_STICK)) horizontalSlideTargetPos = 0; // like its weeiiirrrddd
 		horizontalSlideTargetPos += (int) (-realGamepad.left_stick_y * 20);
 
-		horizontalSlide.setTargetPosition(horizontalSlideTargetPos); // IT CANNOT JUST BE ME
+		horizontalSlide.setTargetPosition((!horizontalSlideLimit.getState()) ? (horizontalSlideTargetPos < horizontalSlide.getCurrentPosition()) ? horizontalSlideTargetPos : horizontalSlide.getCurrentPosition() : horizontalSlideTargetPos); // IT CANNOT JUST BE ME
 																	 // actually i think past me was just going crazy, it looks normal now
 
 		if (gamepad.justPressed(GamepadManager.Button.DPAD_UP)) slideTargetPos = 5000;
@@ -94,13 +97,15 @@ public class ITDClawButAgainAndBad extends RobotPlugin {
 
 		elbow.setPosition(elbow.getPosition() + realGamepad.left_stick_x / 100);
 
-		slide.setTargetPosition((slideSwitch.getState()) ? slide.getCurrentPosition() : slideTargetPos);
+		slide.setTargetPosition((!slideSwitch.getState()) ? (slideTargetPos > slide.getCurrentPosition()) ? slideTargetPos : slide.getCurrentPosition() : slideTargetPos);
 		if (slideSwitch.getState()) telemetry.addLine("Slide is down");
+
 
 		telemetry.addData("slide pos", slide.getCurrentPosition());
 		telemetry.addData("slide tar", slideTargetPos);
 		telemetry.addData("horizontalSlide pos", horizontalSlide.getCurrentPosition());
 		telemetry.addData("horizontalSlide tar", horizontalSlideTargetPos);
+		telemetry.addData("switchhed", slideSwitch.getState());
 		gamepad.poll();
 	}
 
