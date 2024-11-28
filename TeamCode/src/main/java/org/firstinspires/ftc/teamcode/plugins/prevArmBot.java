@@ -150,43 +150,43 @@ public class prevArmBot extends RobotPlugin {
 
 		if (mode == Positions.RETRACTED) {
 			base.setPosition(.50);
-			shoulder.setPosition(1);
+			shoulder.setPosition(.3);
 			elbow.setPosition(1);
 			bend.setPosition(.5);
 			wrist.setPosition(.00);
 		} else if (mode == Positions.PREPICK) {
 			base.setPosition(.50);
-			shoulder.setPosition(.21);
+			shoulder.setPosition(.31);
 			elbow.setPosition(.18);
 			bend.setPosition(.5);
 			wrist.setPosition(.2);
 		} else if (mode == Positions.PICK) {
 			base.setPosition(.50);
-			shoulder.setPosition(.12);
+			shoulder.setPosition(.22);
 			elbow.setPosition(.32);
 			bend.setPosition(.5);
 			wrist.setPosition(.2);
 		} else if (mode == Positions.PREPICK2) {
 			base.setPosition(.50);
-			shoulder.setPosition(.12);
+			shoulder.setPosition(.22);
 			elbow.setPosition(.32);
 			bend.setPosition(.5);
 			wrist.setPosition(.2);
 		} else if (mode == Positions.POSTPICK1) {
 			base.setPosition(.50);
-			shoulder.setPosition(.35);
+			shoulder.setPosition(.45);
 			elbow.setPosition(.32);
 			bend.setPosition(.5);
 			wrist.setPosition(.2);
 		} else if (mode == Positions.POSTPICK2) {
 			base.setPosition(.50);
-			shoulder.setPosition(.65);
+			shoulder.setPosition(.75);
 			elbow.setPosition(.75);
 			bend.setPosition(.5);
 			wrist.setPosition(.2);
 		} else if (mode == Positions.DROP) {
 			base.setPosition(.50);
-			shoulder.setPosition(.65);
+			shoulder.setPosition(.75);
 			elbow.setPosition(.80);
 			bend.setPosition(.5);
 			wrist.setPosition(.00);
