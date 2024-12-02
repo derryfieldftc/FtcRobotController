@@ -34,6 +34,7 @@ public abstract class AutonomousOpMode extends LinearOpMode {
 		for (RobotTask task : tasks) {
 			task.stop();
 		}
+		this.stop();
 
 
 	}
