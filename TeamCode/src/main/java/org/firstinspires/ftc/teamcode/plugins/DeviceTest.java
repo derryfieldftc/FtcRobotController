@@ -313,7 +313,6 @@ public class DeviceTest extends RobotPlugin {
 			Part part = new Part();
 			DigitalChannel channel = hardwareMap.digitalChannel.get(name);
 			part.device = channel;
-			part.type = Device.DigitalSwitch;
 			return part;
 		}
 
