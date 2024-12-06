@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.blocks;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion;
@@ -13,6 +14,26 @@ import java.util.ArrayList;
 @ExportClassToBlocks
 public class Plugins extends BlocksOpModeCompanion {
 	private static ArrayList<RobotPlugin> plugins = new ArrayList<>();
+	private static Thread thread = new Thread() {
+		public void run() {
+			while (!((LinearOpMode) opMode).opModeIsActive() && ((LinearOpMode) opMode).isStopRequested()) {
+				for (RobotPlugin plugin: plugins) {
+					plugin.init_loop();
+				}
+			}
+		for (RobotPlugin plugin : plugins) {
+				plugin.start();
+			}
+			while (((LinearOpMode) opMode).opModeIsActive()) {
+				for (RobotPlugin plugin : plugins) {
+					plugin.loop();
+				}
+			}
+			for (RobotPlugin plugin : plugins) {
+				plugin.stop();
+			}
+		}
+	};
 
 	@ExportToBlocks
 	public static void usePlugin(String name) {
@@ -25,6 +46,10 @@ public class Plugins extends BlocksOpModeCompanion {
 			addedPlugin.init();
 		} catch (Exception e) {
 			telemetry.addLine("Uh Oh, The plugin " + name + " was not found or had some other error\n" + e.getMessage());
+		}
+
+		if (!thread.isAlive()) {
+			thread.start();
 		}
 	}
 
