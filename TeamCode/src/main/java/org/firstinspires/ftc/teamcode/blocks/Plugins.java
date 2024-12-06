@@ -21,7 +21,7 @@ public class Plugins extends BlocksOpModeCompanion {
 			addedPlugin = (RobotPlugin) Class.forName("org.firstinspires.ftc.teamcode.plugins." + name).getConstructor(OpMode.class).newInstance(opMode);;
 
 			plugins.add(addedPlugin);
-			telemetry.addLine("Init: " + name + ((addedPlugin == null) ? "null" : addedPlugin.toString()));
+			telemetry.addLine("Init: " + name + addedPlugin);
 			addedPlugin.init();
 		} catch (Exception e) {
 			telemetry.addLine("Uh Oh, The plugin " + name + " was not found or had some other error\n" + e.getMessage());
@@ -54,6 +54,7 @@ public class Plugins extends BlocksOpModeCompanion {
 		for (RobotPlugin plugin : plugins) {
 			plugin.stop();
 		}
+		plugins = new ArrayList<>(); //reset plugins, needed because plugins somehow persists
 	}
 
 	@ExportToBlocks
