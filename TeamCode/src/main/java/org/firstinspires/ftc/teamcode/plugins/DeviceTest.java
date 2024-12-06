@@ -25,7 +25,6 @@ public class DeviceTest extends RobotPlugin {
 	public enum Device {
 		Servo,
 		Motor,
-		DigitalSwitch
 		//add more when necessary
 	}
 

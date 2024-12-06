@@ -5,12 +5,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-
-import org.firstinspires.ftc.robotcore.external.ExportClassToBlocks;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RobotPlugin;
 
-@ExportClassToBlocks
+
 public class MecanumDrive extends RobotPlugin {
 	OpMode opMode;
 	Telemetry telemetry;
@@ -80,7 +78,6 @@ public class MecanumDrive extends RobotPlugin {
 		double powerBL = y - x + rx;
 		double powerFR = y - x - rx;
 		double powerBR = y + x - rx;
-
 		powerFL = clamp(1, -1, powerFL);
 		powerBL = clamp(1, -1, powerBL);
 		powerFR = clamp(1, -1, powerFR);
@@ -90,7 +87,6 @@ public class MecanumDrive extends RobotPlugin {
 		motorBL.setPower(powerBL);
 		motorFR.setPower(powerFR);
 		motorBR.setPower(powerBR);
-
 	}
 //HELLO ALEX
 	private double clamp(double max, double min, double num) {
