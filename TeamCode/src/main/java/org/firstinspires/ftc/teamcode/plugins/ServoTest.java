@@ -6,20 +6,19 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.GamepadManager;
 import org.firstinspires.ftc.teamcode.RobotPlugin;
-import org.firstinspires.ftc.teamcode.ServoStateMachine;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ServoTest extends RobotPlugin {
-	private Servo[] servos;
-	private List<String> servoNames = new ArrayList<>();
 	OpMode opMode;
-	ServoStateMachine stateMachine;
 	GamepadManager gamepad;
 	Telemetry telemetry;
+
+	Map<String, Servo> servos;
+	List<String> servoNames;
 
 	public ServoTest(OpMode opMode, String ...servoNames) {
 		this.opMode = opMode;
@@ -29,21 +28,14 @@ public class ServoTest extends RobotPlugin {
 	}
 
 	public void init() {
-		ServoStateMachine.Builder builder = new ServoStateMachine.Builder();
-		servoNames.forEach(name -> builder.addServo(name, s -> {}));
-		stateMachine = builder.build(opMode);
-
+		telemetry.setDisplayFormat(Telemetry.DisplayFormat.MONOSPACE);
+		for (String servoName : servoNames) {
+			Servo servo = opMode.hardwareMap.servo.get(servoName);
+			servos.put(servoName, servo);
+		}
 	}
 
 	int servo = 0;
-	Servo current;
-
-	@Override
-	public void start() {
-		telemetry.setDisplayFormat(Telemetry.DisplayFormat.MONOSPACE);
-		stateMachine.setCurrentState("none");
-		current = stateMachine.getServo(servoNames.get(servo));
-	}
 
 	private void inc() {
 		if (servo == servoNames.size() - 1) {
@@ -68,13 +60,14 @@ public class ServoTest extends RobotPlugin {
 
 		if (gamepad.justPressed(GamepadManager.Button.RIGHT_BUMPER)) {
 			inc();
-			current = stateMachine.getServo(servoNames.get(servo));
 		}
 
 		if (gamepad.justPressed(GamepadManager.Button.LEFT_BUMPER)) {
 			dec();
-			current = stateMachine.getServo(servoNames.get(servo));
 		}
+
+		String currentName = servoNames.get(servo);
+		Servo current = servos.get(servoNames.get(servo));
 
 		if (gamepad.justPressed(GamepadManager.Button.DPAD_RIGHT)) {
 			current.setPosition(current.getPosition() + incrementValue);
@@ -88,7 +81,7 @@ public class ServoTest extends RobotPlugin {
 
 
 		telemetry.addData("Servos", fmt());
-		telemetry.addData("Current Servo", servoNames.get(servo));
+		telemetry.addData("Current Servo", currentName);
 		telemetry.addData("Current Servo Position", current.getPosition());
 		telemetry.update();
 	}
