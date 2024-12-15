@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.GamepadManager;
 import org.firstinspires.ftc.teamcode.RobotPlugin;
 
@@ -14,6 +15,7 @@ public class ITDClaw extends RobotPlugin {
 	public OpMode opMode;
 	public GamepadManager gamepad;
 	public Gamepad realGamepad;
+	public Telemetry telemetry;
 
 	private DcMotor shoulder;
 	private DcMotor slide;
@@ -21,8 +23,10 @@ public class ITDClaw extends RobotPlugin {
 	private Servo bucket;
 	private Servo wrist;
 	private Servo tilt;
-	private int shouldpos = 0;
 	private Servo elbow;
+
+	private int shouldPos;
+	private int slidePos;
 
 	public void init() {
 		shoulder = hardwareMap.dcMotor.get("shoulder");
@@ -36,16 +40,18 @@ public class ITDClaw extends RobotPlugin {
 		shoulder.setTargetPosition(shoulder.getCurrentPosition());
 		shoulder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		shoulder.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-		shoulder.setPower(.75);
+		shoulder.setPower(0);
 
 		slide.setTargetPosition(slide.getCurrentPosition());
 		slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-		slide.setPower(1);
+		slide.setPower(0);
+
+		shouldPos = shoulder.getCurrentPosition();
+		slidePos = slide.getCurrentPosition();
 
 
-
-		tuck();
+//		tuck();
 		bucketUp();
 		halfFold();
 
@@ -53,10 +59,10 @@ public class ITDClaw extends RobotPlugin {
 
 	public void loop() {
 		if (gamepad.justPressed(GamepadManager.Button.DPAD_UP)) {
-			slide.setTargetPosition(-6509);
+			slidePos = -6509;
 		}
 		if (gamepad.justPressed(GamepadManager.Button.DPAD_DOWN)) {
-			slide.setTargetPosition(0);
+			slidePos = 0;
 		}
 
 
@@ -66,20 +72,31 @@ public class ITDClaw extends RobotPlugin {
 		if (gamepad.justPressed(GamepadManager.Button.LEFT_BUMPER))
 			toggleClaw();
 
+		shouldPos += -realGamepad.right_stick_y * 5;
+		slidePos += -realGamepad.left_stick_y * 5;
+		telemetry.addData("shoulderPos", shouldPos);
 
-		if (gamepad.pressed(GamepadManager.Button.X))
-			shouldpos += (int) (realGamepad.right_stick_y * 10);
-
-		if (gamepad.pressed(GamepadManager.Button.Y))
-			shoulder.setTargetPosition(shoulder.getCurrentPosition());
-
-		bucket.setPosition(realGamepad.right_trigger + .2);
+		bucket.setPosition(realGamepad.right_trigger + .55);
 
 		if (gamepad.justPressed(GamepadManager.Button.A))
 			fullFold();
 		if (gamepad.justPressed(GamepadManager.Button.B))
 			transfer();
 		gamepad.poll();
+
+		if (gamepad.justPressed(GamepadManager.Button.DPAD_LEFT))
+			tilt.setPosition(.8);
+		if (gamepad.justPressed(GamepadManager.Button.DPAD_RIGHT))
+			tilt.setPosition(1);
+
+		if (gamepad.justPressed(GamepadManager.Button.LEFT_STICK)) {
+			shoulder.setPower(.75);
+			slide.setPower(1);
+		}
+
+
+		shoulder.setTargetPosition(shouldPos);
+		slide.setTargetPosition(slidePos);
 
 	}
 
@@ -88,12 +105,13 @@ public class ITDClaw extends RobotPlugin {
 		this.hardwareMap = opMode.hardwareMap;
 		realGamepad = opMode.gamepad2;
 		this.gamepad = new GamepadManager(realGamepad);
+		this.telemetry = opMode.telemetry;
 
 	}
 
 	public void tuck() {
 		bucket.setPosition(.55);
-		shoulder.setTargetPosition(0);
+		shouldPos = 0;
 		tilt.setPosition(.16);
 		wrist.setPosition(0);
 		elbow.setPosition(0);
@@ -105,11 +123,11 @@ public class ITDClaw extends RobotPlugin {
 	}
 
 	public void halfFold() {
-		shoulder.setTargetPosition(-2900);
+		shouldPos = -2900;
 	}
 
 	public void fullFold() {
-		shoulder.setTargetPosition(-5800);
+		shouldPos = -5800;
 		elbow.setPosition(1);
 		tilt.setPosition(.75);
 		wrist.setPosition(0);
@@ -117,9 +135,9 @@ public class ITDClaw extends RobotPlugin {
 
 	public void transfer() {
 		bucket.setPosition(.55);
-		tilt.setPosition(0.25);
+		tilt.setPosition(0);
 		wrist.setPosition(.25);
-		shoulder.setTargetPosition(-2325);
+		shouldPos = -2325;
 	}
 
 	boolean clawOpen = false;
