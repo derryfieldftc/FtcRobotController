@@ -45,7 +45,7 @@ public class OdometryRunToPositionTask extends RobotTask {
 	public OdometryRunToPositionTask(LinearOpMode opMode, int xInches, int yInches) {
 		this.opMode = opMode;
 		this.targetX = xInches * countsPerInch;
-		this.targetY = yInches * countsPerInch;
+		this.targetY = -yInches * countsPerInch;
 		this.hardwareMap = opMode.hardwareMap;
 		this.telemetry = opMode.telemetry;
 
@@ -96,7 +96,7 @@ public class OdometryRunToPositionTask extends RobotTask {
 
 		do {
 			double x = -strafeEncoder.getCurrentPosition();
-			double y = -driveEncoder.getCurrentPosition();
+			double y = driveEncoder.getCurrentPosition();
 			double r = Math.cos(imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
 
 			double deltaX = targetX - x;

@@ -21,6 +21,7 @@ public class ITDClaw extends RobotPlugin {
 	private Servo bucket;
 	private Servo wrist;
 	private Servo tilt;
+	private int shouldpos = 0;
 	private Servo elbow;
 
 	public void init() {
@@ -32,13 +33,17 @@ public class ITDClaw extends RobotPlugin {
 		tilt = hardwareMap.servo.get("tilt");
 		elbow = hardwareMap.servo.get("elbow");
 
+		shoulder.setTargetPosition(shoulder.getCurrentPosition());
 		shoulder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		shoulder.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-		shoulder.setPower(.5);
+		shoulder.setPower(.75);
 
+		slide.setTargetPosition(slide.getCurrentPosition());
 		slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-		slide.setPower(.1);
+		slide.setPower(1);
+
+
 
 		tuck();
 		bucketUp();
@@ -54,17 +59,27 @@ public class ITDClaw extends RobotPlugin {
 			slide.setTargetPosition(0);
 		}
 
+
+
 		if (gamepad.justPressed(GamepadManager.Button.RIGHT_BUMPER))
 			toggleWrist();
 		if (gamepad.justPressed(GamepadManager.Button.LEFT_BUMPER))
 			toggleClaw();
 
-		bucket.setPosition(realGamepad.right_trigger);
+
+		if (gamepad.pressed(GamepadManager.Button.X))
+			shouldpos += (int) (realGamepad.right_stick_y * 10);
+
+		if (gamepad.pressed(GamepadManager.Button.Y))
+			shoulder.setTargetPosition(shoulder.getCurrentPosition());
+
+		bucket.setPosition(realGamepad.right_trigger + .2);
 
 		if (gamepad.justPressed(GamepadManager.Button.A))
 			fullFold();
 		if (gamepad.justPressed(GamepadManager.Button.B))
 			transfer();
+		gamepad.poll();
 
 	}
 
@@ -96,20 +111,20 @@ public class ITDClaw extends RobotPlugin {
 	public void fullFold() {
 		shoulder.setTargetPosition(-5800);
 		elbow.setPosition(1);
-		tilt.setPosition(.65);
+		tilt.setPosition(.75);
 		wrist.setPosition(0);
 	}
 
 	public void transfer() {
 		bucket.setPosition(.55);
-		tilt.setPosition(0);
+		tilt.setPosition(0.25);
 		wrist.setPosition(.25);
-		shoulder.setPower(-2325);
+		shoulder.setTargetPosition(-2325);
 	}
 
 	boolean clawOpen = false;
 	public void toggleClaw() {
-		claw.setPosition((clawOpen) ? .77 : 0);
+		claw.setPosition((clawOpen) ? .77 : 1);
 		clawOpen = !clawOpen;
 	}
 
