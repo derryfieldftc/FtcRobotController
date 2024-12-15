@@ -91,8 +91,7 @@ public class TeleBinaryBot extends LinearOpMode {
                 bot.manipulator.extendSlide();
             }
 
-            if (epad2.justPressed(DPAD_DOWN))
-            {
+            if (epad2.justPressed(DPAD_DOWN)) {
                 bot.manipulator.retractSlide();
             }
 
@@ -134,7 +133,6 @@ public class TeleBinaryBot extends LinearOpMode {
             if (epad2.justPressed(LEFT_STICK)) {
                 bot.manipulator.activateShoulder();
             }
-
         }
     }
 }
