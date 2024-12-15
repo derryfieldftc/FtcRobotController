@@ -13,7 +13,7 @@ public class ITDTeleOp extends PluginOpMode {
 	@Override
 	public RobotPlugin[] initPlugins() {
 		MecanumDrive drive = new MecanumDrive(this);
-		ITDClawButAgainAndBad claw = new ITDClawButAgainAndBad(this);
+		ITDClaw claw = new ITDClaw(this);
 		return new RobotPlugin[] { drive, claw };
 	}
 }
