@@ -113,14 +113,19 @@ public class TeleBinaryBot extends LinearOpMode {
             }
 
             // trim the shoulder using the right joystick (y direction).
-            bot.manipulator.trimShoulder(-epad2.gamepad.right_stick_y);
+            //bot.manipulator.trimShoulder(-epad2.gamepad.right_stick_y);
 
             // turn on shoulder motor?
             // should we make this that they have to push both joystick buttons
             // (to avoid accidental shoulder movement)?
-            if (epad2.justPressed(LEFT_STICK)) {
-                bot.manipulator.activateShoulder();
-            }
+//            if (epad2.justPressed(LEFT_STICK)) {
+//                bot.manipulator.activateShoulder();
+//            }
+
+            //teleoptelemetry.addData("shoulder curr pos", bot.manipulator.shoulder.getCurrentPosition());
+            telemetry.addData("slide curr pos", bot.manipulator.slide.getCurrentPosition());
+            telemetry.addData("slide tgt pos", bot.manipulator.slide.getTargetPosition());
+            telemetry.update();
         }
     }
 }
