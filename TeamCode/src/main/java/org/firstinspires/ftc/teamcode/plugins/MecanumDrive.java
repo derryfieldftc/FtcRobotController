@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RobotPlugin;
+import org.firstinspires.ftc.teamcode.helpers.MotorHandler;
 
 
 public class MecanumDrive extends RobotPlugin {
@@ -14,7 +15,7 @@ public class MecanumDrive extends RobotPlugin {
 	HardwareMap hardwareMap;
 	Gamepad gamepad;
 
-	DcMotor motorFL;
+	MotorHandler motorFL;
 	DcMotor motorBL;
 	DcMotor motorFR;
 	DcMotor motorBR;
@@ -35,7 +36,7 @@ public class MecanumDrive extends RobotPlugin {
 
 	@Override
 	public void init() {
-		motorFL = hardwareMap.dcMotor.get("motorFL");
+		motorFL = new MotorHandler(hardwareMap.dcMotor.get("motorFL"));
 		motorBL = hardwareMap.dcMotor.get("motorBL");
 		motorFR = hardwareMap.dcMotor.get("motorFR");
 		motorBR = hardwareMap.dcMotor.get("motorBR");
