@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 public class Manipulator {
     // constamnts.
-    public static final int MAX_SLIDE_EXTENDED_POSITION = 4600;
+    public static final int MAX_SLIDE_EXTENDED_POSITION = 4700;
     public static final int MIN_SLIDE_RETRACTED_POSITION = 0;
     public static final int SLIDE_EXTENDED_POSITION = 4250;
     public static final int SLIDE_RETRACTED_POSITION = 0;
@@ -15,32 +15,42 @@ public class Manipulator {
     public static final double SHOULDER_POWER = 0.5;
     public static final double SLIDE_POWER = 0.85;
 
+    public static final int MAX_SHOULDER_POSITION = 6000;
+    public static final int MIN_SHOULDER_POSITION = 0;
     public static final int SLIDE_DELTA = 10;
+    public static final int SHOULDER_DELTA = 10;
+
+    public static final double BUCKET_NEUTRAL_POSITION = 0.55;
 
     // private member variables.
-   // public DcMotor shoulder;
+    public DcMotor shoulder;
     public DcMotor slide;
     private Servo claw;
     private Servo bucket;
     private Servo wrist;
     private Servo tilt;
-    private int shouldpos = 0;
     private Servo elbow;
 
     // construction
     public Manipulator(HardwareMap hardwareMap) {
         // claw
-       // shoulder = hardwareMap.dcMotor.get("shoulder");
+        shoulder = hardwareMap.dcMotor.get("shoulder");
         slide = hardwareMap.dcMotor.get("slide");
         claw = hardwareMap.servo.get("claw");
         wrist = hardwareMap.servo.get("wrist");
         tilt = hardwareMap.servo.get("tilt");
         elbow = hardwareMap.servo.get("elbow");
 
-//        shoulder.setTargetPosition(shoulder.getCurrentPosition());
-//        shoulder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        shoulder.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        shoulder.setPower(SHOULDER_POWER);
+        // reverse the shoulder motor so positive position corresponds to deployed arm.
+        shoulder.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        // zero encoder.
+        shoulder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        // put into run to position mode.
+        shoulder.setTargetPosition(shoulder.getCurrentPosition());
+        shoulder.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        shoulder.setPower(SHOULDER_POWER);
 
         // reverse the slide motor so positive position corresponds to elevated slide.
         slide.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -52,9 +62,16 @@ public class Manipulator {
         // bucket.
         bucket = hardwareMap.servo.get("bucket");
 
+        // test servo.
+        bucket.setPosition(BUCKET_NEUTRAL_POSITION);
+
 //        // initialize positions.
 //        bucketUp();
 //        halfFold();
+    }
+
+    public void tiltBucket (float input) {
+        bucket.setPosition(input*0.45 + BUCKET_NEUTRAL_POSITION);
     }
 
     // reset the slide encoder to zero.
@@ -81,11 +98,11 @@ public class Manipulator {
     }
 
     public void halfFold() {
-        //shoulder.setTargetPosition(-2900);
+        shoulder.setTargetPosition(-2900);
     }
 
     public void fullFold() {
-        //shoulder.setTargetPosition(-5800);
+        shoulder.setTargetPosition(-5800);
         elbow.setPosition(1);
         tilt.setPosition(.75);
         wrist.setPosition(0);
@@ -95,7 +112,7 @@ public class Manipulator {
         bucket.setPosition(.55);
         tilt.setPosition(0.25);
         wrist.setPosition(.25);
-        //shoulder.setTargetPosition(-2325);
+        shoulder.setTargetPosition(-2325);
     }
 
     boolean clawOpen = false;
@@ -153,9 +170,42 @@ public class Manipulator {
     }
 
     public void trimShoulder(float input) {
-        int shoulderPos = slide.getTargetPosition();
-        shoulderPos = (int)(shoulderPos + input * 5);
-        //shoulder.setTargetPosition(shoulderPos);
+//        int shoulderPos = slide.getTargetPosition();
+//        shoulderPos = (int)(shoulderPos + input * 5);
+//        //shoulder.setTargetPosition(shoulderPos);
+
+
+        // get current target position.
+        int pos = shoulder.getTargetPosition();
+
+        if (Math.abs(input) < 0.25) {
+            // dead zone. ignore input.
+            return;
+        }
+
+        if (input >= 0.75) {
+            pos = pos + 3 * SHOULDER_DELTA;
+        } else if (input >= 0.5) {
+            pos = pos + 2 * SHOULDER_DELTA;
+        } else if (input >= 0.25) {
+            pos = pos + SHOULDER_DELTA;
+        } else if (input <= -0.75) {
+            pos = pos - 3 * SHOULDER_DELTA;
+        } else if (input <= -0.5) {
+            pos = pos - 2 * SHOULDER_DELTA;
+        } else if (input <= -0.25) {
+            pos = pos - SHOULDER_DELTA;
+        }
+
+        // don't exceed limits.
+        if (pos > MAX_SHOULDER_POSITION) {
+            pos = MAX_SHOULDER_POSITION;
+        } else if (pos < MIN_SHOULDER_POSITION) {
+            pos = MIN_SHOULDER_POSITION;
+        }
+
+        // adjust target position.
+        shoulder.setTargetPosition(pos);
     }
 
     public void tiltLeft() {
@@ -168,7 +218,7 @@ public class Manipulator {
 
     public void activateShoulder() {
         // should this method be named something else???
-        //shoulder.setPower(SHOULDER_POWER);
+        shoulder.setPower(SHOULDER_POWER);
         slide.setPower(SLIDE_POWER);
     }
 

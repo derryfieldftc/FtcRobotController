@@ -84,6 +84,12 @@ public class TeleBinaryBot extends LinearOpMode {
             // trim the slide using the left joystick (y direction).
             bot.manipulator.trimSlide(-epad2.gamepad.left_stick_y);
 
+            // figure out tilt of bucket.
+            bot.manipulator.tiltBucket(epad2.gamepad.right_trigger);
+
+            // trim the shoulder.
+            bot.manipulator.trimShoulder(-epad2.gamepad.right_stick_y);
+
             // toggle the wrist?
             if (epad2.justPressed(RIGHT_BUMPER)) {
                 bot.manipulator.toggleWrist();
