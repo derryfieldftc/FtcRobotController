@@ -36,20 +36,6 @@ import org.firstinspires.ftc.teamcode.binarybot.BinaryBot;
 import org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad;
 import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.*;
 
-
-/*
- * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
- * the autonomous or the teleop period of an FTC match. The names of OpModes appear on the menu
- * of the FTC Driver Station. When a selection is made from the menu, the corresponding OpMode
- * class is instantiated on the Robot Controller and executed.
- *
- * This particular OpMode just executes a basic Tank Drive Teleop for a two wheeled robot
- * It includes all the skeletal structure that all linear OpModes contain.
- *
- * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
- */
-
 @TeleOp(name="TeleOp Binary Bot", group="BinaryBot")
 //@Disabled
 public class TeleBinaryBot extends LinearOpMode {
@@ -130,6 +116,8 @@ public class TeleBinaryBot extends LinearOpMode {
             bot.manipulator.trimShoulder(-epad2.gamepad.right_stick_y);
 
             // turn on shoulder motor?
+            // should we make this that they have to push both joystick buttons
+            // (to avoid accidental shoulder movement)?
             if (epad2.justPressed(LEFT_STICK)) {
                 bot.manipulator.activateShoulder();
             }
