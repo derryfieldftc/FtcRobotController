@@ -15,12 +15,22 @@ public class Manipulator {
     public static final double SHOULDER_POWER = 0.5;
     public static final double SLIDE_POWER = 0.85;
 
-    public static final int MAX_SHOULDER_POSITION = 6000;
+    public static final int MAX_SHOULDER_POSITION = 6150;
     public static final int MIN_SHOULDER_POSITION = 0;
     public static final int SLIDE_DELTA = 10;
     public static final int SHOULDER_DELTA = 10;
 
     public static final double BUCKET_NEUTRAL_POSITION = 0.55;
+
+    public static int SHOULDER_ELBOW_BOUNDARY = 4200;
+    public static double ELBOW_DEPLOYED = 1.0;
+    public static double ELBOW_RETRACTED = 0.0;
+
+    public static int SHOULDER_TILT_BOUNDARY = 4200;
+    public static double TILT_DEPLOYED = 0;
+    public static double TILT_RETRACTED = 0.75;
+
+
 
     // private member variables.
     public DcMotor shoulder;
@@ -28,7 +38,7 @@ public class Manipulator {
     private Servo claw;
     private Servo bucket;
     private Servo wrist;
-    private Servo tilt;
+    public Servo tilt;
     private Servo elbow;
 
     // construction
@@ -65,6 +75,12 @@ public class Manipulator {
         // test servo.
         bucket.setPosition(BUCKET_NEUTRAL_POSITION);
 
+        // tuck elbow.
+        elbow.setPosition(ELBOW_RETRACTED);
+
+        // retract tilt
+        tilt.setPosition(TILT_RETRACTED);
+
 //        // initialize positions.
 //        bucketUp();
 //        halfFold();
@@ -93,6 +109,27 @@ public class Manipulator {
         claw.setPosition(.77);
     }
 
+    public void updateElbow() {
+        // the elbow position depends on shoulder position.
+        int pos = shoulder.getCurrentPosition();
+
+        if (pos > SHOULDER_ELBOW_BOUNDARY) {
+            elbow.setPosition(ELBOW_DEPLOYED);
+        } else {
+            elbow.setPosition(ELBOW_RETRACTED);
+        }
+    }
+
+    public void updateTilt() {
+        // the elbow position depends on shoulder position.
+        int pos = shoulder.getCurrentPosition();
+
+        if (pos > SHOULDER_TILT_BOUNDARY) {
+            tilt.setPosition(TILT_DEPLOYED);
+        } else {
+            tilt.setPosition(TILT_RETRACTED);
+        }
+    }
     public void bucketUp() {
         bucket.setPosition(1);
     }
@@ -206,6 +243,12 @@ public class Manipulator {
 
         // adjust target position.
         shoulder.setTargetPosition(pos);
+
+        // automatically update elbow (based on shoulder position).
+        updateElbow();
+
+        // automatically update tilt (based on shoulder position).
+        updateTilt();
     }
 
     public void tiltLeft() {

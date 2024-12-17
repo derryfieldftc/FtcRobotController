@@ -118,6 +118,11 @@ public class TeleBinaryBot extends LinearOpMode {
                 bot.manipulator.tiltRight();
             }
 
+            if (epad2.justPressed(DPAD_LEFT))
+                bot.manipulator.tilt.setPosition(0.75);
+            if (epad2.justPressed(DPAD_RIGHT))
+                bot.manipulator.tilt.setPosition(0);
+
             // trim the shoulder using the right joystick (y direction).
             //bot.manipulator.trimShoulder(-epad2.gamepad.right_stick_y);
 
@@ -128,7 +133,8 @@ public class TeleBinaryBot extends LinearOpMode {
 //                bot.manipulator.activateShoulder();
 //            }
 
-            //teleoptelemetry.addData("shoulder curr pos", bot.manipulator.shoulder.getCurrentPosition());
+            telemetry.addData("shoulder curr pos", bot.manipulator.shoulder.getCurrentPosition());
+            telemetry.addData("shoulder tgt pos", bot.manipulator.shoulder.getTargetPosition());
             telemetry.addData("slide curr pos", bot.manipulator.slide.getCurrentPosition());
             telemetry.addData("slide tgt pos", bot.manipulator.slide.getTargetPosition());
             telemetry.update();
