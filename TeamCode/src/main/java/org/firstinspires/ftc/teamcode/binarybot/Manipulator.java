@@ -8,7 +8,10 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class Manipulator {
+    // ******************************************************************
     // constants.
+    // ******************************************************************
+
     // ******************************************************************
     // slide-related constants
     // ******************************************************************
@@ -16,7 +19,7 @@ public class Manipulator {
     public static final double SLIDE_POWER = 0.95;
 
     // slide motor positions.
-    public static final int MAX_SLIDE_EXTENDED_POSITION = 4700;
+    public static final int MAX_SLIDE_EXTENDED_POSITION = 4900;
     public static final int MIN_SLIDE_RETRACTED_POSITION = 0;
     public static final int SLIDE_EXTENDED_POSITION = 4250;
     public static final int SLIDE_RETRACTED_POSITION = 0;
@@ -96,10 +99,14 @@ public class Manipulator {
     private OpMode opMode;
     private HardwareMap hardwareMap;
 
+    // ******************************************************************
     // state variables.
+    // ******************************************************************
     private boolean  clawOpen = false;
 
+    // ******************************************************************
     // construction
+    // ******************************************************************
     public Manipulator(HardwareMap hardwareMap, OpMode opMode) {
         this.opMode = opMode;
         this.hardwareMap = hardwareMap;
@@ -173,6 +180,9 @@ public class Manipulator {
         }
     }
 
+    // ******************************************************************
+    // public methods
+    // ******************************************************************
     public void tiltBucket (float input) {
         bucket.setPosition(input*0.45 + BUCKET_NEUTRAL_POSITION);
     }
