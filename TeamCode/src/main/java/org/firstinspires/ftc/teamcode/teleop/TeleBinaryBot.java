@@ -50,7 +50,7 @@ public class TeleBinaryBot extends LinearOpMode {
         telemetry.update();
 
         // create a new robot object.
-        bot = new BinaryBot(hardwareMap);
+        bot = new BinaryBot(hardwareMap, this);
 
         // get an enhanced gamepad for driver #2.
         epad2 = new EnhancedGamepad(gamepad2);
@@ -100,14 +100,15 @@ public class TeleBinaryBot extends LinearOpMode {
                 bot.manipulator.toggleClaw();
             }
 
-            // do a full fold?
-            if (epad2.justPressed(A)) {
-                bot.manipulator.fullFold();
-            }
+//            // do a full fold?
+//            if (epad2.justPressed(A)) {
+//                bot.manipulator.fullFold();
+//            }
 
             // transfer sample?
-            if (epad2.justPressed(B))
+            if (epad2.justPressed(B)) {
                 bot.manipulator.transfer();
+            }
 
             // tilt left or right?
             if (epad2.justPressed(DPAD_LEFT)) {
@@ -118,10 +119,25 @@ public class TeleBinaryBot extends LinearOpMode {
                 bot.manipulator.tiltRight();
             }
 
-            if (epad2.justPressed(DPAD_LEFT))
+            if (epad2.justPressed(DPAD_LEFT)) {
+                //bot.manipulator.tilt.setPosition(0.75);
+                bot.manipulator.elbow.setPosition(0);
+            }
+
+            if (epad2.justPressed(DPAD_RIGHT)) {
+                //bot.manipulator.tilt.setPosition(0);
+                bot.manipulator.elbow.setPosition(1.0);
+            }
+
+            if (epad2.justPressed(LEFT_STICK)) {
                 bot.manipulator.tilt.setPosition(0.75);
-            if (epad2.justPressed(DPAD_RIGHT))
+                //bot.manipulator.elbow.setPosition(0);
+            }
+
+            if (epad2.justPressed(RIGHT_STICK)) {
                 bot.manipulator.tilt.setPosition(0);
+                //bot.manipulator.elbow.setPosition(1.0);
+            }
 
             // trim the shoulder using the right joystick (y direction).
             //bot.manipulator.trimShoulder(-epad2.gamepad.right_stick_y);

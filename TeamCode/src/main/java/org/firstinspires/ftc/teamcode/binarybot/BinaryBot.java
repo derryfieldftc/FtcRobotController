@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.binarybot;
 
 import static androidx.core.math.MathUtils.clamp;
 
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -12,14 +13,19 @@ public class BinaryBot {
     private DcMotor motorFR;
     private DcMotor motorBR;
 
+    private OpMode opMode;
+    private HardwareMap hardwareMap;
+
     // ITD arm.
     // make it publicly visible.
     public Manipulator manipulator;
 
-    public BinaryBot(HardwareMap hardwareMap) {
-        initHardware(hardwareMap);
+    public BinaryBot(HardwareMap hardwareMap, OpMode opMode) {
+        this.opMode = opMode;
+        this.hardwareMap = hardwareMap;
+        initHardware();
     }
-    public void initHardware(HardwareMap hardwareMap) {
+    public void initHardware() {
         motorFL = hardwareMap.get(DcMotor.class, "motorFL");
         motorBL = hardwareMap.get(DcMotor.class, "motorBL");
         motorFR = hardwareMap.get(DcMotor.class, "motorFR");
@@ -41,7 +47,7 @@ public class BinaryBot {
         motorBR.setDirection(DcMotorSimple.Direction.FORWARD);
 
         // init the arm.
-        manipulator = new Manipulator(hardwareMap);
+        manipulator = new Manipulator(hardwareMap, opMode);
     }
 
     public void drive(double drive,  double strafe, double twist) {

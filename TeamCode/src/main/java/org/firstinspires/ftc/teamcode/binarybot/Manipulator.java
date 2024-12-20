@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.binarybot;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -12,8 +14,8 @@ public class Manipulator {
     public static final int SLIDE_EXTENDED_POSITION = 4250;
     public static final int SLIDE_RETRACTED_POSITION = 0;
 
-    public static final double SHOULDER_POWER = 0.5;
-    public static final double SLIDE_POWER = 0.85;
+    public static final double SHOULDER_POWER = 0.75;
+    public static final double SLIDE_POWER = 0.95;
 
     public static final int MAX_SHOULDER_POSITION = 6150;
     public static final int MIN_SHOULDER_POSITION = 0;
@@ -23,14 +25,29 @@ public class Manipulator {
     public static final double BUCKET_NEUTRAL_POSITION = 0.55;
 
     public static int SHOULDER_ELBOW_BOUNDARY = 4200;
+    public static int SHOULDER_CLEAR_BAR = 200;
     public static double ELBOW_DEPLOYED = 1.0;
+
+    public static double ELBOW_TRANSFER = 0.85;
+    public static double ELBOW_CLEAR_BAR = 0.55;
     public static double ELBOW_RETRACTED = 0.0;
 
     public static int SHOULDER_TILT_BOUNDARY = 4200;
     public static double TILT_DEPLOYED = 0;
     public static double TILT_RETRACTED = 0.75;
 
+    public static int TRANSFER_SHOULDER = 2600;
+    public static int SHOULDER_AFTER_TRANSFER = 2900;
 
+    public static int TRANSFER_SLIDE = 400;
+
+    public static int TRANSFER_DELAY = 500;
+
+    public static double CLAW_OPENED = 1;
+    public static double CLAW_CLOSED = 0.77;
+
+    public static double WRIST_ROTATED_POSITION = 0.75;
+    public static double WRIST_UNROTATED_POSITION = 0;
 
     // private member variables.
     public DcMotor shoulder;
@@ -39,10 +56,14 @@ public class Manipulator {
     private Servo bucket;
     private Servo wrist;
     public Servo tilt;
-    private Servo elbow;
+    public Servo elbow;
+
+    private OpMode opMode;
 
     // construction
-    public Manipulator(HardwareMap hardwareMap) {
+    public Manipulator(HardwareMap hardwareMap, OpMode opMode) {
+        this.opMode = opMode;
+
         // claw
         shoulder = hardwareMap.dcMotor.get("shoulder");
         slide = hardwareMap.dcMotor.get("slide");
@@ -50,6 +71,10 @@ public class Manipulator {
         wrist = hardwareMap.servo.get("wrist");
         tilt = hardwareMap.servo.get("tilt");
         elbow = hardwareMap.servo.get("elbow");
+
+        // set zero power brake mode for motors.
+        shoulder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        slide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // reverse the shoulder motor so positive position corresponds to deployed arm.
         shoulder.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -75,15 +100,11 @@ public class Manipulator {
         // test servo.
         bucket.setPosition(BUCKET_NEUTRAL_POSITION);
 
-        // tuck elbow.
+        // retract elbow.
         elbow.setPosition(ELBOW_RETRACTED);
 
         // retract tilt
         tilt.setPosition(TILT_RETRACTED);
-
-//        // initialize positions.
-//        bucketUp();
-//        halfFold();
     }
 
     public void tiltBucket (float input) {
@@ -100,21 +121,16 @@ public class Manipulator {
         slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         slide.setPower(SLIDE_POWER);
     }
-    public void tuck() {
-        bucket.setPosition(.55);
-        //shoulder.setTargetPosition(0);
-        tilt.setPosition(.16);
-        wrist.setPosition(0);
-        elbow.setPosition(0);
-        claw.setPosition(.77);
-    }
 
     public void updateElbow() {
         // the elbow position depends on shoulder position.
         int pos = shoulder.getCurrentPosition();
 
+
         if (pos > SHOULDER_ELBOW_BOUNDARY) {
             elbow.setPosition(ELBOW_DEPLOYED);
+        } else if (pos > SHOULDER_CLEAR_BAR) {
+            elbow.setPosition(ELBOW_CLEAR_BAR);
         } else {
             elbow.setPosition(ELBOW_RETRACTED);
         }
@@ -134,34 +150,94 @@ public class Manipulator {
         bucket.setPosition(1);
     }
 
-    public void halfFold() {
-        shoulder.setTargetPosition(-2900);
-    }
-
-    public void fullFold() {
-        shoulder.setTargetPosition(-5800);
-        elbow.setPosition(1);
-        tilt.setPosition(.75);
-        wrist.setPosition(0);
-    }
-
     public void transfer() {
-        bucket.setPosition(.55);
-        tilt.setPosition(0.25);
-        wrist.setPosition(.25);
-        shoulder.setTargetPosition(-2325);
+        // make sure shoulder is not too close to the slide.
+        if (shoulder.getCurrentPosition() < TRANSFER_SHOULDER - 25) {
+            return;
+        }
+
+        // lower slide.
+        slide.setTargetPosition(TRANSFER_SLIDE);
+
+        // tilt claw.
+        tilt.setPosition(TILT_RETRACTED);
+
+        // make sure elbow extended.
+        elbow.setPosition(ELBOW_DEPLOYED);
+
+        // move wrist to unrotated position.
+        unrotateWrist();
+
+        // delay until slide is in place
+        LinearOpMode linear_op_mode = (LinearOpMode)opMode;
+        long sleepTime = 40;
+        while (slide.isBusy()) {
+            if (linear_op_mode.opModeIsActive() == false) {
+                return;
+            }
+            linear_op_mode.sleep(sleepTime);
+        }
+
+        // move shoulder.
+        shoulder.setTargetPosition(TRANSFER_SHOULDER);
+
+        // wait until shoulder is in place
+        int shoulderPos = shoulder.getCurrentPosition();
+        while (shoulderPos > TRANSFER_SHOULDER) {
+            shoulderPos = shoulder.getCurrentPosition();
+            if (linear_op_mode.opModeIsActive() == false) {
+                // quit.
+                return;
+            }
+            opMode.telemetry.addData("shoulder curr pos", shoulderPos);
+            opMode.telemetry.addData("shoulder tgt pos", shoulder.getTargetPosition());
+            opMode.telemetry.update();
+            linear_op_mode.sleep(sleepTime);
+        }
+
+        opMode.telemetry.addData("shoulder curr pos", shoulderPos);
+        opMode.telemetry.addData("shoulder tgt pos", shoulder.getTargetPosition());
+        opMode.telemetry.update();
+        linear_op_mode.sleep(sleepTime);
+
+        // release element.
+        openClaw();
+
+        // move shoulder out of the way.
+        linear_op_mode.sleep(TRANSFER_DELAY);
+        shoulder.setTargetPosition(SHOULDER_AFTER_TRANSFER);
     }
 
     boolean clawOpen = false;
     public void toggleClaw() {
-        claw.setPosition((clawOpen) ? .77 : 1);
+        claw.setPosition((clawOpen) ? CLAW_CLOSED : CLAW_OPENED);
         clawOpen = !clawOpen;
     }
 
-    boolean wristRotated = false;
+    public void openClaw() {
+        clawOpen = true;
+        claw.setPosition(CLAW_OPENED);
+    }
+
+    public void closeClaw() {
+        clawOpen = false;
+        claw.setPosition(CLAW_CLOSED);
+    }
+
+    boolean wristRotated = true;
     public void toggleWrist() {
-        wrist.setPosition((wristRotated) ? 0 : .75);
+        wrist.setPosition((wristRotated) ? WRIST_ROTATED_POSITION : WRIST_UNROTATED_POSITION);
         wristRotated = !wristRotated;
+    }
+
+    public void rotateWrist() {
+        wrist.setPosition(WRIST_ROTATED_POSITION);
+        wristRotated = true;
+    }
+
+    public void unrotateWrist() {
+        wrist.setPosition(WRIST_UNROTATED_POSITION);
+        wristRotated = false;
     }
 
     public void extendSlide() {
@@ -207,11 +283,6 @@ public class Manipulator {
     }
 
     public void trimShoulder(float input) {
-//        int shoulderPos = slide.getTargetPosition();
-//        shoulderPos = (int)(shoulderPos + input * 5);
-//        //shoulder.setTargetPosition(shoulderPos);
-
-
         // get current target position.
         int pos = shoulder.getTargetPosition();
 
@@ -258,12 +329,4 @@ public class Manipulator {
     public void tiltRight() {
         tilt.setPosition(1);
     }
-
-    public void activateShoulder() {
-        // should this method be named something else???
-        shoulder.setPower(SHOULDER_POWER);
-        slide.setPower(SLIDE_POWER);
-    }
-
-    // DO WE NEED A WAY TO TURN OFF SHOULDER?
 }
