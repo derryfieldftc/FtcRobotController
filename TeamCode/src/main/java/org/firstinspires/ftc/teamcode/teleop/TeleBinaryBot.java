@@ -100,11 +100,6 @@ public class TeleBinaryBot extends LinearOpMode {
                 bot.manipulator.toggleClaw();
             }
 
-//            // do a full fold?
-//            if (epad2.justPressed(A)) {
-//                bot.manipulator.fullFold();
-//            }
-
             // transfer sample?
             if (epad2.justPressed(B)) {
                 bot.manipulator.transfer();

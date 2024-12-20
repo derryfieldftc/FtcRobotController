@@ -8,24 +8,42 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class BinaryBot {
+    // ******************************************************************
+    // private member variables
+    // ******************************************************************
+    // drive system
     private DcMotor motorFL;
     private DcMotor motorBL;
     private DcMotor motorFR;
     private DcMotor motorBR;
 
+    // op mode related items.
     private OpMode opMode;
     private HardwareMap hardwareMap;
 
+    // ******************************************************************
+    // public member variables.
+    // ******************************************************************
     // ITD arm.
     // make it publicly visible.
     public Manipulator manipulator;
 
+    // ******************************************************************
+    // construction
+    // ******************************************************************
     public BinaryBot(HardwareMap hardwareMap, OpMode opMode) {
         this.opMode = opMode;
         this.hardwareMap = hardwareMap;
         initHardware();
     }
-    public void initHardware() {
+
+    // ******************************************************************
+    // private / helper methods.
+    // ******************************************************************
+    /**
+     * Init robot hardware.
+     */
+    private void initHardware() {
         motorFL = hardwareMap.get(DcMotor.class, "motorFL");
         motorBL = hardwareMap.get(DcMotor.class, "motorBL");
         motorFR = hardwareMap.get(DcMotor.class, "motorFR");
@@ -50,6 +68,16 @@ public class BinaryBot {
         manipulator = new Manipulator(hardwareMap, opMode);
     }
 
+    // ******************************************************************
+    // public methods
+    // ******************************************************************
+    /**
+     * mecanum drive function.
+     *
+     * @param drive forward / backward (negative) power
+     * @param strafe rightwards / leftwards (negative) power
+     * @param twist clockwise / counterclockwise (negative) power
+     */
     public void drive(double drive,  double strafe, double twist) {
         double powerFL = drive + strafe + twist;
         double powerBL = drive - strafe + twist;
@@ -67,6 +95,9 @@ public class BinaryBot {
         motorBR.setPower(powerBR);
     }
 
+    /**
+     * Stop the robot.
+     */
     public void stop() {
         drive(0, 0, 0);
     }

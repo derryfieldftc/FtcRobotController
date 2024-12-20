@@ -8,48 +8,83 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class Manipulator {
-    // constamnts.
+    // constants.
+    // ******************************************************************
+    // slide-related constants
+    // ******************************************************************
+    // motor power
+    public static final double SLIDE_POWER = 0.95;
+
+    // slide motor positions.
     public static final int MAX_SLIDE_EXTENDED_POSITION = 4700;
     public static final int MIN_SLIDE_RETRACTED_POSITION = 0;
     public static final int SLIDE_EXTENDED_POSITION = 4250;
     public static final int SLIDE_RETRACTED_POSITION = 0;
+    public static int SLIDE_TRANSFER_POSITION = 400;
 
+    // step size for adjusting position.
+    public static final int SLIDE_DELTA = 10;
+
+    // ******************************************************************
+    // shoulder-related constants
+    // ******************************************************************
+    // shoulder motor power
     public static final double SHOULDER_POWER = 0.75;
-    public static final double SLIDE_POWER = 0.95;
+
+    // shoulder motor positions
+    public static int SHOULDER_ELBOW_BOUNDARY = 4200;
+    public static int SHOULDER_CLEAR_BAR = 200;
 
     public static final int MAX_SHOULDER_POSITION = 6150;
     public static final int MIN_SHOULDER_POSITION = 0;
-    public static final int SLIDE_DELTA = 10;
+    public static int SHOULDER_TILT_BOUNDARY = 4200;
+    public static int SHOULDER_TRANSFER = 2600;
+    public static int SHOULDER_AFTER_TRANSFER = 2900;
+
+    // step size for adjusting positioN
     public static final int SHOULDER_DELTA = 10;
 
+    // ******************************************************************
+    // bucket-related constants
+    // ******************************************************************
     public static final double BUCKET_NEUTRAL_POSITION = 0.55;
 
-    public static int SHOULDER_ELBOW_BOUNDARY = 4200;
-    public static int SHOULDER_CLEAR_BAR = 200;
+    // ******************************************************************
+    // elbow-related constants
+    // ******************************************************************
     public static double ELBOW_DEPLOYED = 1.0;
-
     public static double ELBOW_TRANSFER = 0.85;
     public static double ELBOW_CLEAR_BAR = 0.55;
     public static double ELBOW_RETRACTED = 0.0;
 
-    public static int SHOULDER_TILT_BOUNDARY = 4200;
+    // ******************************************************************
+    // tilt-related constants
+    // ******************************************************************
     public static double TILT_DEPLOYED = 0;
     public static double TILT_RETRACTED = 0.75;
 
-    public static int TRANSFER_SHOULDER = 2600;
-    public static int SHOULDER_AFTER_TRANSFER = 2900;
-
-    public static int TRANSFER_SLIDE = 400;
-
-    public static int TRANSFER_DELAY = 500;
-
+    // ******************************************************************
+    // claw-related constants
+    // ******************************************************************
     public static double CLAW_OPENED = 1;
     public static double CLAW_CLOSED = 0.77;
 
+    // ******************************************************************
+    // wrist-related constants
+    // ******************************************************************
     public static double WRIST_ROTATED_POSITION = 0.75;
     public static double WRIST_UNROTATED_POSITION = 0;
 
+    // ******************************************************************
+    // timing-related constants
+    // ******************************************************************
+
+    // time (msec) before moving the shoulder after the block has been released.
+    public static int TRANSFER_DELAY = 500;
+
+    // ******************************************************************
     // private member variables.
+    // ******************************************************************
     public DcMotor shoulder;
     public DcMotor slide;
     private Servo claw;
@@ -59,12 +94,17 @@ public class Manipulator {
     public Servo elbow;
 
     private OpMode opMode;
+    private HardwareMap hardwareMap;
+
+    // state variables.
+    private boolean  clawOpen = false;
 
     // construction
     public Manipulator(HardwareMap hardwareMap, OpMode opMode) {
         this.opMode = opMode;
+        this.hardwareMap = hardwareMap;
 
-        // claw
+        // get references to the manipulator hardware.
         shoulder = hardwareMap.dcMotor.get("shoulder");
         slide = hardwareMap.dcMotor.get("slide");
         claw = hardwareMap.servo.get("claw");
@@ -107,10 +147,9 @@ public class Manipulator {
         tilt.setPosition(TILT_RETRACTED);
     }
 
-    public void tiltBucket (float input) {
-        bucket.setPosition(input*0.45 + BUCKET_NEUTRAL_POSITION);
-    }
-
+    // ******************************************************************
+    // private/helper methods
+    // ******************************************************************
     // reset the slide encoder to zero.
     private void resetSlide() {
         // reset encoder to zero.
@@ -120,6 +159,22 @@ public class Manipulator {
         slide.setTargetPosition(slide.getCurrentPosition());
         slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         slide.setPower(SLIDE_POWER);
+    }
+
+    // update the tilt position depending on current shoulder position.
+    private void updateTilt() {
+        // the elbow position depends on shoulder position.
+        int pos = shoulder.getCurrentPosition();
+
+        if (pos > SHOULDER_TILT_BOUNDARY) {
+            tilt.setPosition(TILT_DEPLOYED);
+        } else {
+            tilt.setPosition(TILT_RETRACTED);
+        }
+    }
+
+    public void tiltBucket (float input) {
+        bucket.setPosition(input*0.45 + BUCKET_NEUTRAL_POSITION);
     }
 
     public void updateElbow() {
@@ -136,28 +191,14 @@ public class Manipulator {
         }
     }
 
-    public void updateTilt() {
-        // the elbow position depends on shoulder position.
-        int pos = shoulder.getCurrentPosition();
-
-        if (pos > SHOULDER_TILT_BOUNDARY) {
-            tilt.setPosition(TILT_DEPLOYED);
-        } else {
-            tilt.setPosition(TILT_RETRACTED);
-        }
-    }
-    public void bucketUp() {
-        bucket.setPosition(1);
-    }
-
     public void transfer() {
         // make sure shoulder is not too close to the slide.
-        if (shoulder.getCurrentPosition() < TRANSFER_SHOULDER - 25) {
+        if (shoulder.getCurrentPosition() < SHOULDER_TRANSFER - 25) {
             return;
         }
 
         // lower slide.
-        slide.setTargetPosition(TRANSFER_SLIDE);
+        slide.setTargetPosition(SLIDE_TRANSFER_POSITION);
 
         // tilt claw.
         tilt.setPosition(TILT_RETRACTED);
@@ -179,11 +220,11 @@ public class Manipulator {
         }
 
         // move shoulder.
-        shoulder.setTargetPosition(TRANSFER_SHOULDER);
+        shoulder.setTargetPosition(SHOULDER_TRANSFER);
 
         // wait until shoulder is in place
         int shoulderPos = shoulder.getCurrentPosition();
-        while (shoulderPos > TRANSFER_SHOULDER) {
+        while (shoulderPos > SHOULDER_TRANSFER) {
             shoulderPos = shoulder.getCurrentPosition();
             if (linear_op_mode.opModeIsActive() == false) {
                 // quit.
@@ -208,7 +249,6 @@ public class Manipulator {
         shoulder.setTargetPosition(SHOULDER_AFTER_TRANSFER);
     }
 
-    boolean clawOpen = false;
     public void toggleClaw() {
         claw.setPosition((clawOpen) ? CLAW_CLOSED : CLAW_OPENED);
         clawOpen = !clawOpen;
