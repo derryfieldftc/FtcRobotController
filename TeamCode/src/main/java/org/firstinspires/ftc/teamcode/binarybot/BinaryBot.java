@@ -2,12 +2,22 @@ package org.firstinspires.ftc.teamcode.binarybot;
 
 import static androidx.core.math.MathUtils.clamp;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.IMU;
+
+
+import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 public class BinaryBot {
     // ******************************************************************
@@ -46,12 +56,19 @@ public class BinaryBot {
 
     DcMotor driveEncoder;
     DcMotor strafeEncoder;
-    IMU imu = null;
+//    IMU imu = null;
     RevHubOrientationOnRobot orientationOnRobot;
 
     // op mode related items.
     private OpMode opMode;
     private HardwareMap hardwareMap;
+
+    private BNO055IMU imu;
+    Orientation angles;
+    Acceleration gravity;
+    double previousAngle = 0;
+    double integratedAngle = 0;
+    double correction_pivot = 0;
 
     // ******************************************************************
     // public member variables.
@@ -105,13 +122,62 @@ public class BinaryBot {
         // odometry.
         driveEncoder = hardwareMap.get(DcMotor.class, "drive");
         strafeEncoder = hardwareMap.get(DcMotor.class, "strafe");
-        imu = hardwareMap.get(IMU.class, "imu");
 
-        // set orientation on our robot.
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
-        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
-        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
-        imu.initialize(new IMU.Parameters(orientationOnRobot));
+        // IMU
+        initIMU();
+    }
+
+    private void initIMU() {
+        // Set up the parameters with which we will use our IMU. Note that integration
+        // algorithm here just reports accelerations to the logcat log; it doesn't actually
+        // provide positional information.
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled = false;
+        parameters.loggingTag = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
+        // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
+        // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
+        // and named "imu".
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+    }
+
+    private void updateAngles() {
+        float currAngle;
+        double deltaAngle;
+
+
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        currAngle = angles.firstAngle;
+        deltaAngle = currAngle - previousAngle;
+        if (deltaAngle < -180) {
+            // Went from +180 to -180 (direction).
+            deltaAngle = deltaAngle + 360;
+        } else if (deltaAngle > 180) {
+            // Went from -180 to +180 (direction).
+            deltaAngle = deltaAngle - 360;
+        }
+        integratedAngle = integratedAngle + deltaAngle;
+        previousAngle = currAngle;
+    }
+
+    private void resetAngles() {
+        integratedAngle = 0;
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        previousAngle = angles.firstAngle;
+    }
+
+    private double getCurrentAngle() {
+        return integratedAngle;
+    }
+
+    private double getPreviousAngle() {
+        return previousAngle;
+
     }
 
     // ******************************************************************
@@ -155,8 +221,8 @@ public class BinaryBot {
     public int currPos = 0;
     public int initPos = 0;
     public int tgtPos = 0;
+    public double tgtAngle = 0;
     public float measuredPower = 0;
-
 
     /**
      * drive forward/backwards using odometery a measured distance.
@@ -212,26 +278,17 @@ public class BinaryBot {
     }
 
     public void measuredTurn(double power, double angle)  {
+        // reset angles.
+        resetAngles();
 
-//        // get init distance.
-//        // NOTE: we assume the encoder will not rollover (which it shouldn't)
-//        // and don't bother to check for this condition.
-//        initStrafePos = strafeEncoder.getCurrentPosition();
-//
-//        // calculate target position.
-//        // number of wheel rotations.
-//        double wheelRev = angle / WHEEL_DIAMETER_INCHES;
-//
-//        // offset in encoder ticks.
-//        double offset = wheelRev / COUNTS_PER_MOTOR_REV;
-//        tgtStrafePos = (int)offset + initStrafePos;
-//        if (offset < 0) {
-//            strafePower = -(float)Math.abs(power);
-//            measuredState = MeasuredState.LEFTWARD;
-//        } else {
-//            strafePower = (float)Math.abs(power);
-//            measuredState = MeasuredState.RIGHTWARD;
-//        }
+        tgtAngle = angle;
+        if (tgtAngle < 0) {
+            measuredPower = -(float)Math.abs(power);
+            measuredState = MeasuredState.COUNTERCLOCKWISE;
+        } else {
+            measuredPower = (float)Math.abs(power);
+            measuredState = MeasuredState.CLOCKWISE;
+        }
     }
 
     /**
@@ -285,6 +342,28 @@ public class BinaryBot {
                     return false;
                 } else {
                     drive(0, measuredPower, 0);
+                    return true;
+                }
+            case CLOCKWISE:
+                // update angles
+                updateAngles();
+
+                if (integratedAngle > tgtAngle) {
+                    measuredState = MeasuredState.IDLE;
+                    return false;
+                } else {
+                    drive(0, 0, measuredPower);
+                    return true;
+                }
+            case COUNTERCLOCKWISE:
+                // update angles
+                updateAngles();
+
+                if (integratedAngle < tgtAngle) {
+                    measuredState = MeasuredState.IDLE;
+                    return false;
+                } else {
+                    drive(0, 0, measuredPower);
                     return true;
                 }
             default:
