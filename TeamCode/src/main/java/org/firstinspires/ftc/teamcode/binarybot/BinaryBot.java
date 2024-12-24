@@ -308,6 +308,11 @@ public class BinaryBot {
         }
     }
 
+    /**
+     * calculate the correction power.
+     * proportional to the angle error.
+     * @return correction power.
+     */
     private float propCorrection() {
         float value;
         double error;
