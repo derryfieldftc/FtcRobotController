@@ -16,8 +16,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 public class BinaryBot {
     // ******************************************************************
@@ -37,13 +35,13 @@ public class BinaryBot {
     // ******************************************************************
     // Constants
     // ******************************************************************
-    // Configured the two motor ports as Tetrix motors so I can specify COUNTS_PER_MOTOR_REV.
-    // by default, Tetrix motors (with 60:1 gearboxes) have 1440 encoder pulses per rev.
-    static final double     COUNTS_PER_MOTOR_REV    = 1440;
+    // The bot uses REV Robotics thru bore encoders which have a resolution of
+    // 2048 cycles per revolution
+    static final double     COUNTS_PER_MOTOR_REV    = 2048;
     static final double     DRIVE_GEAR_REDUCTION    = 1;
     static final double     WHEEL_DIAMETER_INCHES   = 2;
-    static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-            (WHEEL_DIAMETER_INCHES * 3.1415);
+    static final double     COUNTS_PER_INCH         =   (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
+                                                        (WHEEL_DIAMETER_INCHES * 3.1415);
 
     // ******************************************************************
     // private member variables
@@ -56,7 +54,6 @@ public class BinaryBot {
 
     DcMotor driveEncoder;
     DcMotor strafeEncoder;
-//    IMU imu = null;
     RevHubOrientationOnRobot orientationOnRobot;
 
     // op mode related items.
@@ -64,11 +61,15 @@ public class BinaryBot {
     private HardwareMap hardwareMap;
 
     private BNO055IMU imu;
-    Orientation angles;
-    Acceleration gravity;
-    double previousAngle = 0;
-    double integratedAngle = 0;
-    double correction_pivot = 0;
+    private Orientation angles;
+    private Acceleration gravity;
+    private double previousAngle = 0;
+    private double integratedAngle = 0;
+
+    private boolean useAutoCorrect = true;
+//    private float autocorrectPower = 0;
+//    private double autocorrectError = 0;
+    private final double AUTOCORRECT_P_COEFFICIENT = 1.0;
 
     // ******************************************************************
     // public member variables.
@@ -243,7 +244,7 @@ public class BinaryBot {
         double wheelRev = distance / WHEEL_DIAMETER_INCHES;
 
         // offset in encoder ticks.
-        double offset = wheelRev / COUNTS_PER_MOTOR_REV;
+        double offset = wheelRev / COUNTS_PER_INCH;
         tgtPos = (int)offset + initPos;
         if (offset < 0) {
             measuredPower = -(float)Math.abs(power);
@@ -251,6 +252,14 @@ public class BinaryBot {
         } else {
             measuredPower = (float)Math.abs(power);
             measuredState = MeasuredState.FORWARD;
+        }
+
+        // is auto correct enabled (which helps keep the bot drive straight)?
+        if (useAutoCorrect) {
+            // reset angles.
+            resetAngles();
+            // set the target angle equal to the current angle.
+            tgtAngle = integratedAngle;
         }
     }
 
@@ -266,7 +275,7 @@ public class BinaryBot {
         double wheelRev = distance / WHEEL_DIAMETER_INCHES;
 
         // offset in encoder ticks.
-        double offset = wheelRev / COUNTS_PER_MOTOR_REV;
+        double offset = wheelRev / COUNTS_PER_INCH;
         tgtPos   = (int)offset + tgtPos;
         if (offset < 0) {
             measuredPower = -(float)Math.abs(power);
@@ -274,6 +283,14 @@ public class BinaryBot {
         } else {
             measuredPower = (float)Math.abs(power);
             measuredState = MeasuredState.RIGHTWARD;
+        }
+
+        // is auto correct enabled (which helps keep the bot drive straight)?
+        if (useAutoCorrect) {
+            // reset angles.
+            resetAngles();
+            // set the target angle equal to the current angle.
+            tgtAngle = integratedAngle;
         }
     }
 
@@ -291,11 +308,32 @@ public class BinaryBot {
         }
     }
 
+    private float propCorrection() {
+        float value;
+        double error;
+        // are we using auto correct?
+        if (useAutoCorrect) {
+            // update angles.
+            updateAngles();
+
+            // calculate error (degrees).
+            error = integratedAngle - tgtAngle;
+
+            // corrective "twist" power is proportional to error.
+            // should be applied in opposite direction.
+            value = -(float)(AUTOCORRECT_P_COEFFICIENT * error);
+        } else {
+            // no autocorrect power will be applied.
+            value = 0;
+        }
+        return value;
+    }
     /**
      *
      * @return true if still in measured mode.
      */
     public boolean measuredUpdate() {
+        float correction = 0;
         switch(measuredState) {
             case IDLE:
                 // done.
@@ -308,7 +346,8 @@ public class BinaryBot {
                     measuredState = MeasuredState.IDLE;
                     return false;
                 } else {
-                    drive(measuredPower, 0, 0);
+                    correction = propCorrection();
+                    drive(measuredPower, 0, correction);
                     return true;
                 }
             case BACKWARD:
@@ -319,7 +358,8 @@ public class BinaryBot {
                     measuredState = MeasuredState.IDLE;
                     return false;
                 } else {
-                    drive(measuredPower, 0, 0);
+                    correction = propCorrection();
+                    drive(measuredPower, 0, correction);
                     return true;
                 }
             case RIGHTWARD:
@@ -330,7 +370,8 @@ public class BinaryBot {
                     measuredState = MeasuredState.IDLE;
                     return false;
                 } else {
-                    drive(0, measuredPower, 0);
+                    correction = propCorrection();
+                    drive(measuredPower, 0, correction);
                     return true;
                 }
             case LEFTWARD:
@@ -341,7 +382,8 @@ public class BinaryBot {
                     measuredState = MeasuredState.IDLE;
                     return false;
                 } else {
-                    drive(0, measuredPower, 0);
+                    correction = propCorrection();
+                    drive(measuredPower, 0, correction);
                     return true;
                 }
             case CLOCKWISE:
