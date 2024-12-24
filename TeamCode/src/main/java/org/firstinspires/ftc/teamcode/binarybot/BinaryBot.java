@@ -2,12 +2,39 @@ package org.firstinspires.ftc.teamcode.binarybot;
 
 import static androidx.core.math.MathUtils.clamp;
 
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.IMU;
 
 public class BinaryBot {
+    // ******************************************************************
+    // enumerations.
+    // ******************************************************************
+    // odometry system state.
+    public enum MeasuredState {
+        IDLE,
+        FORWARD,
+        BACKWARD,
+        RIGHTWARD,
+        LEFTWARD,
+        CLOCKWISE,
+        COUNTERCLOCKWISE
+    }
+
+    // ******************************************************************
+    // Constants
+    // ******************************************************************
+    // Configured the two motor ports as Tetrix motors so I can specify COUNTS_PER_MOTOR_REV.
+    // by default, Tetrix motors (with 60:1 gearboxes) have 1440 encoder pulses per rev.
+    static final double     COUNTS_PER_MOTOR_REV    = 1440;
+    static final double     DRIVE_GEAR_REDUCTION    = 1;
+    static final double     WHEEL_DIAMETER_INCHES   = 2;
+    static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
+            (WHEEL_DIAMETER_INCHES * 3.1415);
+
     // ******************************************************************
     // private member variables
     // ******************************************************************
@@ -16,6 +43,11 @@ public class BinaryBot {
     private DcMotor motorBL;
     private DcMotor motorFR;
     private DcMotor motorBR;
+
+    DcMotor driveEncoder;
+    DcMotor strafeEncoder;
+    IMU imu = null;
+    RevHubOrientationOnRobot orientationOnRobot;
 
     // op mode related items.
     private OpMode opMode;
@@ -27,6 +59,9 @@ public class BinaryBot {
     // ITD arm.
     // make it publicly visible.
     public Manipulator manipulator;
+
+    // current odometry state.
+    public MeasuredState measuredState = MeasuredState.IDLE;
 
     // ******************************************************************
     // construction
@@ -66,6 +101,17 @@ public class BinaryBot {
 
         // init the arm.
         manipulator = new Manipulator(hardwareMap, opMode);
+
+        // odometry.
+        driveEncoder = hardwareMap.get(DcMotor.class, "drive");
+        strafeEncoder = hardwareMap.get(DcMotor.class, "strafe");
+        imu = hardwareMap.get(IMU.class, "imu");
+
+        // set orientation on our robot.
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.UP;
+        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
+        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
+        imu.initialize(new IMU.Parameters(orientationOnRobot));
     }
 
     // ******************************************************************
@@ -100,5 +146,152 @@ public class BinaryBot {
      */
     public void stop() {
         drive(0, 0, 0);
+
+        // set state to idle.
+        measuredState = MeasuredState.IDLE;
+    }
+
+    // drive a specified distance in inches.
+    public int currDrivePos = 0;
+    public int initDrivePos = 0;
+    public float drivePower = 0;
+    public int tgtDrivePos = 0;
+    public int currStrafePos = 0;
+    public int initStrafePos = 0;
+    public float strafePower = 0;
+    public int tgtStrafePos = 0;
+
+    /**
+     * drive forward/backwards using odometery a measured distance.
+     * use negative distance to go backwards.
+     *
+     * @param power - forward drive power.
+     * @param distance - distance to drive (inches).
+     */
+    public void measuredDrive(double power, double distance)  {
+
+        // get init distance.
+        // NOTE: we assume the encoder will not rollover (which it shouldn't)
+        // and don't bother to check for this condition.
+        initDrivePos = driveEncoder.getCurrentPosition();
+
+        // calculate target position.
+        // number of wheel rotations.
+        double wheelRev = distance / WHEEL_DIAMETER_INCHES;
+
+        // offset in encoder ticks.
+        double offset = wheelRev / COUNTS_PER_MOTOR_REV;
+        tgtDrivePos = (int)offset + initDrivePos;
+        if (offset < 0) {
+            drivePower = -(float)Math.abs(power);
+            measuredState = MeasuredState.BACKWARD;
+        } else {
+            drivePower = (float)Math.abs(power);
+            measuredState = MeasuredState.FORWARD;
+        }
+    }
+
+    public void measuredStrafe(double power, double distance)  {
+
+        // get init distance.
+        // NOTE: we assume the encoder will not rollover (which it shouldn't)
+        // and don't bother to check for this condition.
+        initStrafePos = strafeEncoder.getCurrentPosition();
+
+        // calculate target position.
+        // number of wheel rotations.
+        double wheelRev = distance / WHEEL_DIAMETER_INCHES;
+
+        // offset in encoder ticks.
+        double offset = wheelRev / COUNTS_PER_MOTOR_REV;
+        tgtStrafePos = (int)offset + initStrafePos;
+        if (offset < 0) {
+            strafePower = -(float)Math.abs(power);
+            measuredState = MeasuredState.LEFTWARD;
+        } else {
+            strafePower = (float)Math.abs(power);
+            measuredState = MeasuredState.RIGHTWARD;
+        }
+    }
+
+    public void measuredTurn(double power, double angle)  {
+
+        // get init distance.
+        // NOTE: we assume the encoder will not rollover (which it shouldn't)
+        // and don't bother to check for this condition.
+        initStrafePos = strafeEncoder.getCurrentPosition();
+
+        // calculate target position.
+        // number of wheel rotations.
+        double wheelRev = angle / WHEEL_DIAMETER_INCHES;
+
+        // offset in encoder ticks.
+        double offset = wheelRev / COUNTS_PER_MOTOR_REV;
+        tgtStrafePos = (int)offset + initStrafePos;
+        if (offset < 0) {
+            strafePower = -(float)Math.abs(power);
+            measuredState = MeasuredState.LEFTWARD;
+        } else {
+            strafePower = (float)Math.abs(power);
+            measuredState = MeasuredState.RIGHTWARD;
+        }
+    }
+
+    /**
+     *
+     * @return true if still in measured mode.
+     */
+    public boolean measuredUpdate() {
+        switch(measuredState) {
+            case IDLE:
+                // done.
+                return false;
+            case FORWARD:
+                // update current position
+                currDrivePos = driveEncoder.getCurrentPosition();
+                // are we there yet?
+                if (currDrivePos > tgtDrivePos) {
+                    measuredState = MeasuredState.IDLE;
+                    return false;
+                } else {
+                    drive(drivePower, 0, 0);
+                    return true;
+                }
+            case BACKWARD:
+                // update current position
+                currDrivePos = driveEncoder.getCurrentPosition();
+                // are we there yet?
+                if (currDrivePos < tgtDrivePos) {
+                    measuredState = MeasuredState.IDLE;
+                    return false;
+                } else {
+                    drive(drivePower, 0, 0);
+                    return true;
+                }
+            case RIGHTWARD:
+                // update current position
+                currStrafePos = strafeEncoder.getCurrentPosition();
+                // are we there yet?
+                if (currStrafePos > tgtStrafePos) {
+                    measuredState = MeasuredState.IDLE;
+                    return false;
+                } else {
+                    drive(0, strafePower, 0);
+                    return true;
+                }
+            case LEFTWARD:
+                // update current position
+                currStrafePos = strafeEncoder.getCurrentPosition();
+                // are we there yet?
+                if (currStrafePos < tgtStrafePos) {
+                    measuredState = MeasuredState.IDLE;
+                    return false;
+                } else {
+                    drive(0, strafePower, 0);
+                    return true;
+                }
+            default:
+                return false;
+        }
     }
 }
