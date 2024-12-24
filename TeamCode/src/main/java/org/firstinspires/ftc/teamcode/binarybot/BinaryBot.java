@@ -152,14 +152,11 @@ public class BinaryBot {
     }
 
     // drive a specified distance in inches.
-    public int currDrivePos = 0;
-    public int initDrivePos = 0;
-    public float drivePower = 0;
-    public int tgtDrivePos = 0;
-    public int currStrafePos = 0;
-    public int initStrafePos = 0;
-    public float strafePower = 0;
-    public int tgtStrafePos = 0;
+    public int currPos = 0;
+    public int initPos = 0;
+    public int tgtPos = 0;
+    public float measuredPower = 0;
+
 
     /**
      * drive forward/backwards using odometery a measured distance.
@@ -173,7 +170,7 @@ public class BinaryBot {
         // get init distance.
         // NOTE: we assume the encoder will not rollover (which it shouldn't)
         // and don't bother to check for this condition.
-        initDrivePos = driveEncoder.getCurrentPosition();
+        initPos = driveEncoder.getCurrentPosition();
 
         // calculate target position.
         // number of wheel rotations.
@@ -181,12 +178,12 @@ public class BinaryBot {
 
         // offset in encoder ticks.
         double offset = wheelRev / COUNTS_PER_MOTOR_REV;
-        tgtDrivePos = (int)offset + initDrivePos;
+        tgtPos = (int)offset + initPos;
         if (offset < 0) {
-            drivePower = -(float)Math.abs(power);
+            measuredPower = -(float)Math.abs(power);
             measuredState = MeasuredState.BACKWARD;
         } else {
-            drivePower = (float)Math.abs(power);
+            measuredPower = (float)Math.abs(power);
             measuredState = MeasuredState.FORWARD;
         }
     }
@@ -196,7 +193,7 @@ public class BinaryBot {
         // get init distance.
         // NOTE: we assume the encoder will not rollover (which it shouldn't)
         // and don't bother to check for this condition.
-        initStrafePos = strafeEncoder.getCurrentPosition();
+        initPos = strafeEncoder.getCurrentPosition();
 
         // calculate target position.
         // number of wheel rotations.
@@ -204,37 +201,37 @@ public class BinaryBot {
 
         // offset in encoder ticks.
         double offset = wheelRev / COUNTS_PER_MOTOR_REV;
-        tgtStrafePos = (int)offset + initStrafePos;
+        tgtPos   = (int)offset + tgtPos;
         if (offset < 0) {
-            strafePower = -(float)Math.abs(power);
+            measuredPower = -(float)Math.abs(power);
             measuredState = MeasuredState.LEFTWARD;
         } else {
-            strafePower = (float)Math.abs(power);
+            measuredPower = (float)Math.abs(power);
             measuredState = MeasuredState.RIGHTWARD;
         }
     }
 
     public void measuredTurn(double power, double angle)  {
 
-        // get init distance.
-        // NOTE: we assume the encoder will not rollover (which it shouldn't)
-        // and don't bother to check for this condition.
-        initStrafePos = strafeEncoder.getCurrentPosition();
-
-        // calculate target position.
-        // number of wheel rotations.
-        double wheelRev = angle / WHEEL_DIAMETER_INCHES;
-
-        // offset in encoder ticks.
-        double offset = wheelRev / COUNTS_PER_MOTOR_REV;
-        tgtStrafePos = (int)offset + initStrafePos;
-        if (offset < 0) {
-            strafePower = -(float)Math.abs(power);
-            measuredState = MeasuredState.LEFTWARD;
-        } else {
-            strafePower = (float)Math.abs(power);
-            measuredState = MeasuredState.RIGHTWARD;
-        }
+//        // get init distance.
+//        // NOTE: we assume the encoder will not rollover (which it shouldn't)
+//        // and don't bother to check for this condition.
+//        initStrafePos = strafeEncoder.getCurrentPosition();
+//
+//        // calculate target position.
+//        // number of wheel rotations.
+//        double wheelRev = angle / WHEEL_DIAMETER_INCHES;
+//
+//        // offset in encoder ticks.
+//        double offset = wheelRev / COUNTS_PER_MOTOR_REV;
+//        tgtStrafePos = (int)offset + initStrafePos;
+//        if (offset < 0) {
+//            strafePower = -(float)Math.abs(power);
+//            measuredState = MeasuredState.LEFTWARD;
+//        } else {
+//            strafePower = (float)Math.abs(power);
+//            measuredState = MeasuredState.RIGHTWARD;
+//        }
     }
 
     /**
@@ -248,46 +245,46 @@ public class BinaryBot {
                 return false;
             case FORWARD:
                 // update current position
-                currDrivePos = driveEncoder.getCurrentPosition();
+                currPos = driveEncoder.getCurrentPosition();
                 // are we there yet?
-                if (currDrivePos > tgtDrivePos) {
+                if (currPos > tgtPos) {
                     measuredState = MeasuredState.IDLE;
                     return false;
                 } else {
-                    drive(drivePower, 0, 0);
+                    drive(measuredPower, 0, 0);
                     return true;
                 }
             case BACKWARD:
                 // update current position
-                currDrivePos = driveEncoder.getCurrentPosition();
+                currPos = driveEncoder.getCurrentPosition();
                 // are we there yet?
-                if (currDrivePos < tgtDrivePos) {
+                if (currPos < tgtPos) {
                     measuredState = MeasuredState.IDLE;
                     return false;
                 } else {
-                    drive(drivePower, 0, 0);
+                    drive(measuredPower, 0, 0);
                     return true;
                 }
             case RIGHTWARD:
                 // update current position
-                currStrafePos = strafeEncoder.getCurrentPosition();
+                currPos = strafeEncoder.getCurrentPosition();
                 // are we there yet?
-                if (currStrafePos > tgtStrafePos) {
+                if (currPos > tgtPos) {
                     measuredState = MeasuredState.IDLE;
                     return false;
                 } else {
-                    drive(0, strafePower, 0);
+                    drive(0, measuredPower, 0);
                     return true;
                 }
             case LEFTWARD:
                 // update current position
-                currStrafePos = strafeEncoder.getCurrentPosition();
+                currPos = strafeEncoder.getCurrentPosition();
                 // are we there yet?
-                if (currStrafePos < tgtStrafePos) {
+                if (currPos < tgtPos) {
                     measuredState = MeasuredState.IDLE;
                     return false;
                 } else {
-                    drive(0, strafePower, 0);
+                    drive(0, measuredPower, 0);
                     return true;
                 }
             default:
