@@ -68,8 +68,10 @@ public class Manipulator {
     // ******************************************************************
     // tilt-related constants
     // ******************************************************************
-    public static double TILT_DEPLOYED = 0;
-    public static double TILT_RETRACTED = 0.75;
+    private static double TILT_DEPLOYED = 0;
+    private static double TILT_RETRACTED = 0.75;
+    private static double TILT_LEFT = 0.8;
+    private static double TILT_RIGHT = 1;
 
     // ******************************************************************
     // claw-related constants
@@ -300,6 +302,7 @@ public class Manipulator {
     /**
      * This is a blocking version of the transfer method.
      * When you invoke it, the manipulator is busy and unresponsive until process is done.
+     * This method should only be used in a LinearOpMode (because of the opModeIsActivr() check).
      *
      */
     public void transfer() {
@@ -474,10 +477,10 @@ public class Manipulator {
     }
 
     public void tiltLeft() {
-        tilt.setPosition(.8);
+        tilt.setPosition(TILT_LEFT);
     }
 
     public void tiltRight() {
-        tilt.setPosition(1);
+        tilt.setPosition(TILT_RIGHT);
     }
 }
