@@ -9,6 +9,11 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 public class Manipulator {
     // ******************************************************************
+    // enumerations
+    // ******************************************************************
+    public enum ManipulatorState {AVAILABLE, WAIT_FOR_SLIDE, WAIT_FOR_SHOULDER, OPEN_CLAW}
+
+    // ******************************************************************
     // constants.
     // ******************************************************************
 
@@ -96,6 +101,8 @@ public class Manipulator {
     public Servo tilt;
     public Servo elbow;
 
+    private ManipulatorState manipulatorState = ManipulatorState.AVAILABLE;
+    private long startTime = 0;
     private OpMode opMode;
     private HardwareMap hardwareMap;
 
@@ -183,6 +190,13 @@ public class Manipulator {
     // ******************************************************************
     // public methods
     // ******************************************************************
+    public boolean isAvailable() {
+        if (manipulatorState == ManipulatorState.AVAILABLE) {
+            return true;
+        } else {
+            return false;
+        }
+    }
     public void tiltBucket (float input) {
         bucket.setPosition(input*0.45 + BUCKET_NEUTRAL_POSITION);
     }
@@ -201,6 +215,93 @@ public class Manipulator {
         }
     }
 
+    public void startTransfer() {
+        // make sure shoulder is not too close to the slide.
+        if (shoulder.getCurrentPosition() < SHOULDER_TRANSFER - 25) {
+            return;
+        } if (manipulatorState != ManipulatorState.AVAILABLE) {
+            // already busy.
+            return;
+        } else {
+                // start the transfer.
+                manipulatorState = ManipulatorState.WAIT_FOR_SLIDE;
+
+                // lower slide
+                // lower slide.
+                slide.setTargetPosition(SLIDE_TRANSFER_POSITION);
+
+                // tilt claw.
+                tilt.setPosition(TILT_RETRACTED);
+
+                // make sure elbow extended.
+                elbow.setPosition(ELBOW_DEPLOYED);
+
+                // move wrist to unrotated position.
+                unrotateWrist();
+        }
+    }
+
+    /**
+     * If the manipulator is busy, update its state.
+     * @return true if still busy, false if available.
+     */
+    public boolean update() {
+        switch(manipulatorState) {
+            case AVAILABLE:
+                return false;
+            case WAIT_FOR_SLIDE:
+                if (slide.isBusy() == false) {
+                    // slide is done.
+                    // start moving shoulder.
+                    manipulatorState = ManipulatorState.WAIT_FOR_SHOULDER;
+                    // move shoulder.
+                    shoulder.setTargetPosition(SHOULDER_TRANSFER);
+                    // indicate that we are still busy.
+                    return true;
+                } else {
+                    // slide is still moving.
+                    // indicate that we are still busy.
+                    return true;
+                }
+            case WAIT_FOR_SHOULDER:
+                if (shoulder.isBusy() == false) {
+                    // shoulder is done.
+                    manipulatorState = ManipulatorState.OPEN_CLAW;
+                    openClaw();
+                    // get the start time for our wait period.
+                    startTime = System.currentTimeMillis();
+                    // indicate that we're still busy.
+                    return true;
+                } else {
+                    // indicate that we are still busy.
+                    return true;
+                }
+            case OPEN_CLAW:
+                // check the elapsed time.
+                long current = System.currentTimeMillis();
+                long elapsed = current - startTime;
+                if (elapsed > TRANSFER_DELAY) {
+                    // move shoulder out of the way.
+                    shoulder.setTargetPosition(SHOULDER_AFTER_TRANSFER);
+                    // manipulator is available.
+                    manipulatorState = ManipulatorState.AVAILABLE;
+                    // we're done.
+                    return false;
+                } else {
+                    // enough time has not yet elapsed.
+                    // we're still busy.
+                    return true;
+                }
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * This is a blocking version of the transfer method.
+     * When you invoke it, the manipulator is busy and unresponsive until process is done.
+     *
+     */
     public void transfer() {
         // make sure shoulder is not too close to the slide.
         if (shoulder.getCurrentPosition() < SHOULDER_TRANSFER - 25) {
