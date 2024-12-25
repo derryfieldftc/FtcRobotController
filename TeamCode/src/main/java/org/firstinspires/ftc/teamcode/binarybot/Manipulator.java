@@ -288,7 +288,7 @@ public class Manipulator {
                     // we're done.
                     return false;
                 } else {
-                    // enough time has not yet elapsed.
+                    // not enough time has elapsed.
                     // we're still busy.
                     return true;
                 }
