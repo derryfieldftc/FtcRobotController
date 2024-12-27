@@ -69,10 +69,8 @@ public class BinaryBot {
     private double previousAngle = 0;
     public double integratedAngle = 0;
 
-    private boolean useAutoCorrect = false;
-//    private float autocorrectPower = 0;
-//    private double autocorrectError = 0;
-    private final double AUTOCORRECT_P_COEFFICIENT = 1.0;
+    private boolean useAutoCorrect = true;
+    private final double AUTOCORRECT_P_COEFFICIENT = 0.1;
 
     // ******************************************************************
     // public member variables.
@@ -257,9 +255,7 @@ public class BinaryBot {
      * @param distance - distance to drive (inches).
      */
     public void measuredDrive(double power, double distance)  {
-        RobotLog.d(String.format("TIE: distance = %.2f", distance));
-
-        // get init distance.
+        // get init position.
         // NOTE: we assume the encoder will not rollover (which it shouldn't)
         // and don't bother to check for this condition.
         initPos = driveEncoder.getCurrentPosition();
@@ -267,7 +263,6 @@ public class BinaryBot {
         // offset in encoder ticks.
         double offset = distance * COUNTS_PER_INCH;
         tgtPos = (int)Math.round(offset + initPos);
-        RobotLog.d(String.format("TIE: COUNTS_PER_INCH = %.2f, offset = %.2f, tgtPos = %d", COUNTS_PER_INCH, offset, tgtPos));
         if (offset < 0) {
             measuredPower = -(float)Math.abs(power);
             measuredState = MeasuredState.BACKWARD;
