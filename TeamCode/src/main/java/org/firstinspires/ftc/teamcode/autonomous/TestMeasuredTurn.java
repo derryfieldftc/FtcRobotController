@@ -36,9 +36,9 @@ import org.firstinspires.ftc.teamcode.binarybot.BinaryBot;
 import org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad;
 import org.firstinspires.ftc.teamcode.binarybot.Manipulator;
 
-@Autonomous(name="ITD Test Measured Drive", group="BinaryBot")
+@Autonomous(name="ITD Test Measured Turn", group="BinaryBot")
 //@Disabled
-public class TestMeasuredDrive extends LinearOpMode {
+public class TestMeasuredTurn extends LinearOpMode {
 
     // Declare OpMode members.
     private BinaryBot bot = null;
@@ -62,15 +62,14 @@ public class TestMeasuredDrive extends LinearOpMode {
         waitForStart();
 
         if (opModeIsActive()) {
-            // drive forward 2 feet.
-            bot.measuredDrive(0.2, 48);
+            // turn clockwise 90 degrees.
+            bot.measuredTurn(0.2, 90);
 
-            // loop until done traveling 2 feet.
+            // loop until done turning.
             while(opModeIsActive() &&  bot.measuredUpdate()) {
                 // send telemetry.
                 telemetry.addData("state", bot.measuredState);
-                telemetry.addData("tgt pos", bot.tgtPos);
-                telemetry.addData("curr pos", bot.currPos);
+                telemetry.addData("integrated angle", bot.integratedAngle);
                 telemetry.update();
             }
         }
