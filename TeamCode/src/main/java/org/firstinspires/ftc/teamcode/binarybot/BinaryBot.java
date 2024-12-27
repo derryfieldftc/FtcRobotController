@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.RobotLog;
 
 
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
@@ -36,12 +37,14 @@ public class BinaryBot {
     // Constants
     // ******************************************************************
     // The bot uses REV Robotics thru bore encoders which have a resolution of
-    // 2048 cycles per revolution
-    static final double     COUNTS_PER_MOTOR_REV    = 2048;
+    // 8192 counts per revolution
+    static final double     COUNTS_PER_MOTOR_REV    = 8192;
     static final double     DRIVE_GEAR_REDUCTION    = 1;
-    static final double     WHEEL_DIAMETER_INCHES   = 2;
+    // REV robotics smaller omni wheels are 60mm in diameter.
+    static final double     WHEEL_DIAMETER_INCHES   = 2.36;
+    static final double     WHEEL_CIRCUM_INCHES = Math.PI * WHEEL_DIAMETER_INCHES;
     static final double     COUNTS_PER_INCH         =   (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-                                                        (WHEEL_DIAMETER_INCHES * 3.1415);
+                                                            (WHEEL_CIRCUM_INCHES);
 
     // ******************************************************************
     // private member variables
@@ -52,8 +55,8 @@ public class BinaryBot {
     private DcMotor motorFR;
     private DcMotor motorBR;
 
-    DcMotor driveEncoder;
-    DcMotor strafeEncoder;
+    public DcMotor driveEncoder;
+    public DcMotor strafeEncoder;
     RevHubOrientationOnRobot orientationOnRobot;
 
     // op mode related items.
@@ -64,9 +67,9 @@ public class BinaryBot {
     private Orientation angles;
     private Acceleration gravity;
     private double previousAngle = 0;
-    private double integratedAngle = 0;
+    public double integratedAngle = 0;
 
-    private boolean useAutoCorrect = true;
+    private boolean useAutoCorrect = false;
 //    private float autocorrectPower = 0;
 //    private double autocorrectError = 0;
     private final double AUTOCORRECT_P_COEFFICIENT = 1.0;
@@ -124,6 +127,18 @@ public class BinaryBot {
         driveEncoder = hardwareMap.get(DcMotor.class, "drive");
         strafeEncoder = hardwareMap.get(DcMotor.class, "strafe");
 
+        // reverse drive encoder values.
+        driveEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        // reset encoders.
+        driveEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        strafeEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        // put "motors" into run without encoder mode.
+        // we only need the encoder ports.  no motor should be attached.
+        driveEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        strafeEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         // IMU
         initIMU();
     }
@@ -147,13 +162,18 @@ public class BinaryBot {
         imu.initialize(parameters);
     }
 
-    private void updateAngles() {
+    public void updateAngles() {
         float currAngle;
         double deltaAngle;
 
 
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         currAngle = angles.firstAngle;
+
+        // the binary bot team uses the convention that a positive angle is a clockwise rotation.
+        // we need to flip the currAngle to work with this convention.
+        currAngle = - currAngle;
+
         deltaAngle = currAngle - previousAngle;
         if (deltaAngle < -180) {
             // Went from +180 to -180 (direction).
@@ -166,17 +186,21 @@ public class BinaryBot {
         previousAngle = currAngle;
     }
 
-    private void resetAngles() {
+    public void resetAngles() {
         integratedAngle = 0;
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         previousAngle = angles.firstAngle;
+
+        // the binary bot team uses the convention that a positive angle is a clockwise rotation.
+        // we need to flip the currAngle to work with this convention.
+        previousAngle = - previousAngle;
     }
 
-    private double getCurrentAngle() {
+    public double getCurrentAngle() {
         return integratedAngle;
     }
 
-    private double getPreviousAngle() {
+    public double getPreviousAngle() {
         return previousAngle;
 
     }
@@ -233,19 +257,17 @@ public class BinaryBot {
      * @param distance - distance to drive (inches).
      */
     public void measuredDrive(double power, double distance)  {
+        RobotLog.d(String.format("TIE: distance = %.2f", distance));
 
         // get init distance.
         // NOTE: we assume the encoder will not rollover (which it shouldn't)
         // and don't bother to check for this condition.
         initPos = driveEncoder.getCurrentPosition();
 
-        // calculate target position.
-        // number of wheel rotations.
-        double wheelRev = distance / WHEEL_DIAMETER_INCHES;
-
         // offset in encoder ticks.
-        double offset = wheelRev / COUNTS_PER_INCH;
-        tgtPos = (int)offset + initPos;
+        double offset = distance * COUNTS_PER_INCH;
+        tgtPos = (int)Math.round(offset + initPos);
+        RobotLog.d(String.format("TIE: COUNTS_PER_INCH = %.2f, offset = %.2f, tgtPos = %d", COUNTS_PER_INCH, offset, tgtPos));
         if (offset < 0) {
             measuredPower = -(float)Math.abs(power);
             measuredState = MeasuredState.BACKWARD;
@@ -348,7 +370,7 @@ public class BinaryBot {
                 currPos = driveEncoder.getCurrentPosition();
                 // are we there yet?
                 if (currPos > tgtPos) {
-                    measuredState = MeasuredState.IDLE;
+                    stop();
                     return false;
                 } else {
                     correction = propCorrection();
@@ -360,7 +382,7 @@ public class BinaryBot {
                 currPos = driveEncoder.getCurrentPosition();
                 // are we there yet?
                 if (currPos < tgtPos) {
-                    measuredState = MeasuredState.IDLE;
+                    stop();
                     return false;
                 } else {
                     correction = propCorrection();

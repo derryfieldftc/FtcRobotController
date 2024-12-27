@@ -67,6 +67,7 @@ public class ProtoTeleBinaryBot extends LinearOpMode {
 
         // get an enhanced gamepad for driver #2.
         epad2 = new EnhancedGamepad(gamepad2);
+        bot.resetAngles();
 
         // wait for start command from driver hub.
         waitForStart();
@@ -156,6 +157,11 @@ public class ProtoTeleBinaryBot extends LinearOpMode {
                 manipulator.update();
             }
 
+            telemetry.addData("drive encoder", bot.driveEncoder.getCurrentPosition());
+            telemetry.addData("strafe encoder", bot.strafeEncoder.getCurrentPosition());
+
+            bot.updateAngles();
+            telemetry.addData("integrated angle", bot.integratedAngle);
             telemetry.addData("manipulator available?", manipulator.isAvailable());
             telemetry.addData("shoulder curr pos", bot.manipulator.shoulder.getCurrentPosition());
             telemetry.addData("shoulder tgt pos", bot.manipulator.shoulder.getTargetPosition());
