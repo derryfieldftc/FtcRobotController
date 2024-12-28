@@ -22,7 +22,7 @@ public class BinaryBot {
     // ******************************************************************
     // enumerations.
     // ******************************************************************
-    // odometry system state.
+    // measured movement system state.
     public enum MeasuredState {
         IDLE,
         FORWARD,
@@ -200,7 +200,6 @@ public class BinaryBot {
 
     public double getPreviousAngle() {
         return previousAngle;
-
     }
 
     // ******************************************************************
@@ -251,7 +250,7 @@ public class BinaryBot {
      * drive forward/backwards using odometery a measured distance.
      * use negative distance to go backwards.
      *
-     * @param power - forward drive power.
+     * @param power - magnitude of forward drive power (from 0 to 1).
      * @param distance - distance to drive (inches).
      */
     public void measuredDrive(double power, double distance)  {
@@ -280,20 +279,20 @@ public class BinaryBot {
         }
     }
 
+    /**
+     * Strafe a measured distance.  Positive power is to the right.
+     * @param power the magnitude of the strafe power (0 to 1).
+     * @param distance the measured distance in inches.
+     */
     public void measuredStrafe(double power, double distance)  {
-
-        // get init distance.
+        // get init position.
         // NOTE: we assume the encoder will not rollover (which it shouldn't)
         // and don't bother to check for this condition.
         initPos = strafeEncoder.getCurrentPosition();
 
-        // calculate target position.
-        // number of wheel rotations.
-        double wheelRev = distance / WHEEL_DIAMETER_INCHES;
-
         // offset in encoder ticks.
-        double offset = wheelRev / COUNTS_PER_INCH;
-        tgtPos   = (int)offset + tgtPos;
+        double offset = distance * COUNTS_PER_INCH;
+        tgtPos = (int)Math.round(offset + initPos);
         if (offset < 0) {
             measuredPower = -(float)Math.abs(power);
             measuredState = MeasuredState.LEFTWARD;
@@ -309,8 +308,23 @@ public class BinaryBot {
             // set the target angle equal to the current angle.
             tgtAngle = integratedAngle;
         }
+
+        // get init distance.
+        // NOTE: we assume the encoder will not rollover (which it shouldn't)
+        // and don't bother to check for this condition.
+        initPos = strafeEncoder.getCurrentPosition();
+
+        // calculate target position.
+        // number of wheel rotations.
+        double wheelRev = distance / WHEEL_DIAMETER_INCHES;
     }
 
+    /**
+     * Turn a specified number of degrees.
+     * Positive angles imply clockwise turn.
+     * @param power magnitude of turn power (0 to 1)
+     * @param angle turn angle (degrees)
+     */
     public void measuredTurn(double power, double angle)  {
         // reset angles.
         resetAngles();
@@ -365,6 +379,7 @@ public class BinaryBot {
                 currPos = driveEncoder.getCurrentPosition();
                 // are we there yet?
                 if (currPos > tgtPos) {
+                    // note that stop() should put it in IDLE mode.
                     stop();
                     return false;
                 } else {
@@ -377,6 +392,7 @@ public class BinaryBot {
                 currPos = driveEncoder.getCurrentPosition();
                 // are we there yet?
                 if (currPos < tgtPos) {
+                    // note that stop() should put it in IDLE mode.
                     stop();
                     return false;
                 } else {
@@ -389,7 +405,8 @@ public class BinaryBot {
                 currPos = strafeEncoder.getCurrentPosition();
                 // are we there yet?
                 if (currPos > tgtPos) {
-                    measuredState = MeasuredState.IDLE;
+                    // note that stop() should put it in IDLE mode.
+                    stop();
                     return false;
                 } else {
                     correction = propCorrection();
@@ -401,7 +418,8 @@ public class BinaryBot {
                 currPos = strafeEncoder.getCurrentPosition();
                 // are we there yet?
                 if (currPos < tgtPos) {
-                    measuredState = MeasuredState.IDLE;
+                    // note that stop() should put it in IDLE mode.
+                    stop();
                     return false;
                 } else {
                     correction = propCorrection();
@@ -413,7 +431,8 @@ public class BinaryBot {
                 updateAngles();
 
                 if (integratedAngle > tgtAngle) {
-                    measuredState = MeasuredState.IDLE;
+                    // note that stop() should put it in IDLE mode.
+                    stop();
                     return false;
                 } else {
                     drive(0, 0, measuredPower);
@@ -424,7 +443,8 @@ public class BinaryBot {
                 updateAngles();
 
                 if (integratedAngle < tgtAngle) {
-                    measuredState = MeasuredState.IDLE;
+                    // note that stop() should put it in IDLE mode.
+                    stop();
                     return false;
                 } else {
                     drive(0, 0, measuredPower);

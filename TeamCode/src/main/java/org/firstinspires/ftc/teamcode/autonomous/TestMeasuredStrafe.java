@@ -36,9 +36,9 @@ import org.firstinspires.ftc.teamcode.binarybot.BinaryBot;
 import org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad;
 import org.firstinspires.ftc.teamcode.binarybot.Manipulator;
 
-@Autonomous(name="ITD Test Measured Drive", group="BinaryBot")
+@Autonomous(name="ITD Test Measured Strafe", group="BinaryBot")
 //@Disabled
-public class TestMeasuredDrive extends LinearOpMode {
+public class TestMeasuredStrafe extends LinearOpMode {
 
     // Declare OpMode members.
     private BinaryBot bot = null;
@@ -62,8 +62,8 @@ public class TestMeasuredDrive extends LinearOpMode {
         waitForStart();
 
         if (opModeIsActive()) {
-            // drive forward 4 feet.
-            bot.measuredDrive(0.2, 48);
+            // strafe to the right 2 feet.
+            bot.measuredStrafe(0.2, 24);
 
             // loop until done traveling 2 feet.
             while(opModeIsActive() &&  bot.measuredUpdate()) {
