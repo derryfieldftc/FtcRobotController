@@ -125,8 +125,10 @@ public class BinaryBot {
         driveEncoder = hardwareMap.get(DcMotor.class, "drive");
         strafeEncoder = hardwareMap.get(DcMotor.class, "strafe");
 
-        // reverse drive encoder values.
+        // reverse drive and strafe encoder values
+        // so that positive changes corresponds to forward and rightward motion.
         driveEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
+        strafeEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // reset encoders.
         driveEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -163,7 +165,6 @@ public class BinaryBot {
     public void updateAngles() {
         float currAngle;
         double deltaAngle;
-
 
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         currAngle = angles.firstAngle;
