@@ -309,15 +309,6 @@ public class BinaryBot {
             // set the target angle equal to the current angle.
             tgtAngle = integratedAngle;
         }
-
-        // get init distance.
-        // NOTE: we assume the encoder will not rollover (which it shouldn't)
-        // and don't bother to check for this condition.
-        initPos = strafeEncoder.getCurrentPosition();
-
-        // calculate target position.
-        // number of wheel rotations.
-        double wheelRev = distance / WHEEL_DIAMETER_INCHES;
     }
 
     /**
@@ -411,7 +402,7 @@ public class BinaryBot {
                     return false;
                 } else {
                     correction = propCorrection();
-                    drive(measuredPower, 0, correction);
+                    drive(0, measuredPower, correction);
                     return true;
                 }
             case LEFTWARD:
@@ -424,7 +415,7 @@ public class BinaryBot {
                     return false;
                 } else {
                     correction = propCorrection();
-                    drive(measuredPower, 0, correction);
+                    drive(0, measuredPower, correction);
                     return true;
                 }
             case CLOCKWISE:
