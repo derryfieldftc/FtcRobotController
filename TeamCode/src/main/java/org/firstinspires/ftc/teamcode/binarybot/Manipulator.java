@@ -483,4 +483,12 @@ public class Manipulator {
     public void tiltRight() {
         tilt.setPosition(TILT_RIGHT);
     }
+
+    public void tipBucket() {
+        tiltBucket(1);
+    }
+
+    public void untipBucket() {
+        tiltBucket(0);
+    }
 }

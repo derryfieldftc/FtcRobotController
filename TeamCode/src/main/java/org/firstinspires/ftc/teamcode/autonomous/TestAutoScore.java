@@ -36,9 +36,9 @@ import org.firstinspires.ftc.teamcode.binarybot.BinaryBot;
 import org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad;
 import org.firstinspires.ftc.teamcode.binarybot.Manipulator;
 
-@Autonomous(name="ITD Test Measured Drive", group="BinaryBot")
+@Autonomous(name="ITD Test Auto Score", group="BinaryBot")
 //@Disabled
-public class TestMeasuredDrive extends LinearOpMode {
+public class TestAutoScore extends LinearOpMode {
 
     // Declare OpMode members.
     private BinaryBot bot = null;
@@ -61,11 +61,11 @@ public class TestMeasuredDrive extends LinearOpMode {
         // wait for start command from driver hub.
         waitForStart();
 
+        // move off the wall by strafing to the left.
         if (opModeIsActive()) {
-            // drive forward 4 feet.
-            bot.measuredDrive(0.3, 48);
+            bot.measuredStrafe(0.3, -6);
 
-            // loop until done traveling 2 feet.
+            // loop until done.
             while(opModeIsActive() &&  bot.measuredUpdate()) {
                 // send telemetry.
                 telemetry.addData("state", bot.measuredState);
@@ -73,6 +73,48 @@ public class TestMeasuredDrive extends LinearOpMode {
                 telemetry.addData("curr pos", bot.currPos);
                 telemetry.update();
             }
+        }
+
+        // go backwards to approach goal.
+        if (opModeIsActive()) {
+            bot.measuredDrive(0.3, -55);
+
+            // loop until done.
+            while(opModeIsActive() &&  bot.measuredUpdate()) {
+                // send telemetry.
+                telemetry.addData("state", bot.measuredState);
+                telemetry.addData("tgt pos", bot.tgtPos);
+                telemetry.addData("curr pos", bot.currPos);
+                telemetry.update();
+            }
+        }
+
+        // turn CCW.
+        if (opModeIsActive()) {
+            bot.measuredTurn(0.3, -40);
+
+            // loop until done.
+            while(opModeIsActive() &&  bot.measuredUpdate()) {
+                // send telemetry.
+                telemetry.addData("state", bot.measuredState);
+                telemetry.addData("tgt angle", bot.tgtAngle);
+                telemetry.addData("curr angle", bot.integratedAngle);
+                telemetry.update();
+            }
+        }
+
+
+        // raise slide and dump.
+        if (opModeIsActive()) {
+            bot.manipulator.extendSlide();
+            sleep(1500);
+            bot.manipulator.tipBucket();
+            sleep(1000);
+            bot.manipulator.untipBucket();
+            sleep (1000);
+
+            //retract slide
+            bot.manipulator.retractSlide();
         }
     }
 }

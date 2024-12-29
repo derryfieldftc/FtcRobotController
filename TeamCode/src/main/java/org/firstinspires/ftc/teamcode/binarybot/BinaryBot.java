@@ -70,7 +70,8 @@ public class BinaryBot {
     public double integratedAngle = 0;
 
     private boolean useAutoCorrect = true;
-    private final double AUTOCORRECT_P_COEFFICIENT = 0.1;
+    private final double P_COEFFICIENT_DRIVE = 0.1;
+    private final double P_COEFFICIENT_STRAFE = 0.05;
 
     // ******************************************************************
     // public member variables.
@@ -336,7 +337,7 @@ public class BinaryBot {
      * proportional to the angle error.
      * @return correction power.
      */
-    private float propCorrection() {
+    private float propCorrection(double p_coefficient) {
         float value;
         double error;
         // are we using auto correct?
@@ -349,7 +350,7 @@ public class BinaryBot {
 
             // corrective "twist" power is proportional to error.
             // should be applied in opposite direction.
-            value = -(float)(AUTOCORRECT_P_COEFFICIENT * error);
+            value = -(float)(p_coefficient * error);
         } else {
             // no autocorrect power will be applied.
             value = 0;
@@ -375,7 +376,7 @@ public class BinaryBot {
                     stop();
                     return false;
                 } else {
-                    correction = propCorrection();
+                    correction = propCorrection(P_COEFFICIENT_DRIVE);
                     drive(measuredPower, 0, correction);
                     return true;
                 }
@@ -388,7 +389,7 @@ public class BinaryBot {
                     stop();
                     return false;
                 } else {
-                    correction = propCorrection();
+                    correction = propCorrection(P_COEFFICIENT_DRIVE);
                     drive(measuredPower, 0, correction);
                     return true;
                 }
@@ -401,7 +402,7 @@ public class BinaryBot {
                     stop();
                     return false;
                 } else {
-                    correction = propCorrection();
+                    correction = propCorrection(P_COEFFICIENT_STRAFE);
                     drive(0, measuredPower, correction);
                     return true;
                 }
@@ -414,7 +415,7 @@ public class BinaryBot {
                     stop();
                     return false;
                 } else {
-                    correction = propCorrection();
+                    correction = propCorrection(P_COEFFICIENT_STRAFE);
                     drive(0, measuredPower, correction);
                     return true;
                 }

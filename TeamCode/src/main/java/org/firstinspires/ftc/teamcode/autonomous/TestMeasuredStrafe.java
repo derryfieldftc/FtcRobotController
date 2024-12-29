@@ -63,7 +63,7 @@ public class TestMeasuredStrafe extends LinearOpMode {
 
         if (opModeIsActive()) {
             // strafe to the right 2 feet.
-            bot.measuredStrafe(0.2, 24);
+            bot.measuredStrafe(0.3, 24);
 
             // loop until done traveling 2 feet.
             while(opModeIsActive() &&  bot.measuredUpdate()) {
