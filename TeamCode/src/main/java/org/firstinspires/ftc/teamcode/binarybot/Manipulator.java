@@ -11,7 +11,15 @@ public class Manipulator {
     // ******************************************************************
     // enumerations
     // ******************************************************************
-    public enum ManipulatorState {AVAILABLE, WAIT_FOR_SLIDE, WAIT_FOR_SHOULDER, OPEN_CLAW}
+    public enum ManipulatorState {
+        AVAILABLE,
+        TRANSFER_WAIT_FOR_SLIDE,
+        TRANSFER_WAIT_FOR_SHOULDER,
+        TRANSFER_OPEN_CLAW,
+        DUMP_HIGH_WAIT_FOR_SLIDE,
+        DUMP_HIGH_TIP_BUCKET,
+        DUMP_HIGH_UNTIP_BUCKET
+    }
 
     // ******************************************************************
     // constants.
@@ -29,6 +37,7 @@ public class Manipulator {
     public static final int SLIDE_EXTENDED_POSITION = 4250;
     public static final int SLIDE_RETRACTED_POSITION = 0;
     public static int SLIDE_TRANSFER_POSITION = 400;
+    public static int SLIDE_HIGH_DUMP_POSITION = 4900;
 
     // step size for adjusting position.
     public static final int SLIDE_DELTA = 10;
@@ -91,6 +100,8 @@ public class Manipulator {
 
     // time (msec) before moving the shoulder after the block has been released.
     public static int TRANSFER_DELAY = 500;
+    public static int DUMP_HIGH_TIP_DELAY = 1250;
+    public static int DUMP_HIGH_UNTIP_DELAY = 1250;
 
     // ******************************************************************
     // private member variables.
@@ -226,7 +237,7 @@ public class Manipulator {
             return;
         } else {
                 // start the transfer.
-                manipulatorState = ManipulatorState.WAIT_FOR_SLIDE;
+                manipulatorState = ManipulatorState.TRANSFER_WAIT_FOR_SLIDE;
 
                 // lower slide
                 // lower slide.
@@ -244,18 +255,34 @@ public class Manipulator {
     }
 
     /**
+     * Dump a sample into high corner goal.
+     */
+    public void startHighDump() {
+        if (manipulatorState != ManipulatorState.AVAILABLE) {
+            // already busy.
+            return;
+        } else {
+            // start high dump.
+            manipulatorState = ManipulatorState.DUMP_HIGH_WAIT_FOR_SLIDE;
+            slide.setTargetPosition(SLIDE_HIGH_DUMP_POSITION);
+        }
+    }
+
+    /**
      * If the manipulator is busy, update its state.
      * @return true if still busy, false if available.
      */
     public boolean update() {
+        long current = 0;
+        long elapsed = 0;
         switch(manipulatorState) {
             case AVAILABLE:
                 return false;
-            case WAIT_FOR_SLIDE:
+            case TRANSFER_WAIT_FOR_SLIDE:
                 if (slide.isBusy() == false) {
                     // slide is done.
                     // start moving shoulder.
-                    manipulatorState = ManipulatorState.WAIT_FOR_SHOULDER;
+                    manipulatorState = ManipulatorState.TRANSFER_WAIT_FOR_SHOULDER;
                     // move shoulder.
                     shoulder.setTargetPosition(SHOULDER_TRANSFER);
                     // indicate that we are still busy.
@@ -265,10 +292,10 @@ public class Manipulator {
                     // indicate that we are still busy.
                     return true;
                 }
-            case WAIT_FOR_SHOULDER:
+            case TRANSFER_WAIT_FOR_SHOULDER:
                 if (shoulder.isBusy() == false) {
                     // shoulder is done.
-                    manipulatorState = ManipulatorState.OPEN_CLAW;
+                    manipulatorState = ManipulatorState.TRANSFER_OPEN_CLAW;
                     openClaw();
                     // get the start time for our wait period.
                     startTime = System.currentTimeMillis();
@@ -278,16 +305,61 @@ public class Manipulator {
                     // indicate that we are still busy.
                     return true;
                 }
-            case OPEN_CLAW:
+            case TRANSFER_OPEN_CLAW:
                 // check the elapsed time.
-                long current = System.currentTimeMillis();
-                long elapsed = current - startTime;
+                current = System.currentTimeMillis();
+                elapsed = current - startTime;
                 if (elapsed > TRANSFER_DELAY) {
                     // move shoulder out of the way.
                     shoulder.setTargetPosition(SHOULDER_AFTER_TRANSFER);
                     // manipulator is available.
                     manipulatorState = ManipulatorState.AVAILABLE;
                     // we're done.
+                    return false;
+                } else {
+                    // not enough time has elapsed.
+                    // we're still busy.
+                    return true;
+                }
+            case DUMP_HIGH_WAIT_FOR_SLIDE:
+                if(slide.isBusy() == false) {
+                    // slide is done and should be in position.
+                    // tip bucket.
+                    manipulatorState = ManipulatorState.DUMP_HIGH_TIP_BUCKET;
+                    tipBucket();
+                    // get start time (to keep track of elapsed time while we wait).
+                    startTime = System.currentTimeMillis();
+                    // indicate that we're still busy.
+                    return true;
+                } else {
+                    // manipulator is still busy.
+                    return true;
+                }
+            case DUMP_HIGH_TIP_BUCKET:
+                // check the elapsed time.
+                current = System.currentTimeMillis();
+                elapsed = current - startTime;
+                if (elapsed > DUMP_HIGH_TIP_DELAY) {
+                    // untip bucket.
+                    untipBucket();
+                    manipulatorState = ManipulatorState.DUMP_HIGH_UNTIP_BUCKET;
+                    // get start time (to keep track of elapsed time while we wait).
+                    startTime = System.currentTimeMillis();
+                    // indicate that we're still busy.
+                    return true;
+                } else {
+                    // not enough time has elapsed.
+                    // we're still busy.
+                    return true;
+                }
+            case DUMP_HIGH_UNTIP_BUCKET:
+                // check the elapsed time.
+                current = System.currentTimeMillis();
+                elapsed = current - startTime;
+                if (elapsed > DUMP_HIGH_UNTIP_DELAY) {
+                    // we're done.
+                    manipulatorState = ManipulatorState.AVAILABLE;
+                    // indicate that we are done.
                     return false;
                 } else {
                     // not enough time has elapsed.

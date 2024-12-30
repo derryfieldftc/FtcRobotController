@@ -55,9 +55,6 @@ public class TestAutoScore extends LinearOpMode {
         // get a reference to the manipulator.
         Manipulator manipulator = bot.manipulator;
 
-        // get an enhanced gamepad for driver #2.
-        epad2 = new EnhancedGamepad(gamepad2);
-
         // wait for start command from driver hub.
         waitForStart();
 
@@ -106,15 +103,14 @@ public class TestAutoScore extends LinearOpMode {
 
         // raise slide and dump.
         if (opModeIsActive()) {
-            bot.manipulator.extendSlide();
-            sleep(1500);
-            bot.manipulator.tipBucket();
-            sleep(1000);
-            bot.manipulator.untipBucket();
-            sleep (1000);
+            bot.manipulator.startHighDump();
 
-            //retract slide
-            bot.manipulator.retractSlide();
+            // loop until high dump is done.
+            while(opModeIsActive() &&  bot.manipulator.update()) {
+                // send telemetry.
+                telemetry.addData("Status", "Doing high goal dump...");
+                telemetry.update();
+            }
         }
     }
 }
