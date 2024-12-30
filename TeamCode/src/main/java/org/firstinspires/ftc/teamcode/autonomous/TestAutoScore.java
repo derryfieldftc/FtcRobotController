@@ -99,8 +99,7 @@ public class TestAutoScore extends LinearOpMode {
                 telemetry.update();
             }
         }
-
-
+        
         // raise slide and dump.
         if (opModeIsActive()) {
             bot.manipulator.startHighDump();
