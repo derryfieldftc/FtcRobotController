@@ -46,9 +46,9 @@ import org.firstinspires.ftc.teamcode.binarybot.BinaryBot;
 import org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad;
 import org.firstinspires.ftc.teamcode.binarybot.Manipulator;
 
-@TeleOp(name="Prototype ITD Binary Bot", group="BinaryBot")
+@TeleOp(name="ITD Binary Bot", group="BinaryBot")
 //@Disabled
-public class ProtoTeleBinaryBot extends LinearOpMode {
+public class TeleITDBinaryBot extends LinearOpMode {
 
     // Declare OpMode members.
     private BinaryBot bot = null;
