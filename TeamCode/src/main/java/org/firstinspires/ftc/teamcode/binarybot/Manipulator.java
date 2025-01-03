@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -18,7 +19,8 @@ public class Manipulator {
         TRANSFER_OPEN_CLAW,
         DUMP_HIGH_WAIT_FOR_SLIDE,
         DUMP_HIGH_TIP_BUCKET,
-        DUMP_HIGH_UNTIP_BUCKET
+        DUMP_HIGH_UNTIP_BUCKET,
+        GRABBING_FROM_FLOOR,
     }
 
     // ******************************************************************
@@ -57,8 +59,9 @@ public class Manipulator {
     public static int SHOULDER_TILT_BOUNDARY = 4200;
     public static int SHOULDER_TRANSFER = 2600;
     public static int SHOULDER_AFTER_TRANSFER = 2900;
+    public static int SHOULDER_GRABBING_GROUND = 5800;
 
-    // step size for adjusting positioN
+    // step size for adjusting position
     public static final int SHOULDER_DELTA = 10;
 
     // ******************************************************************
@@ -366,6 +369,12 @@ public class Manipulator {
                     // we're still busy.
                     return true;
                 }
+            case GRABBING_FROM_FLOOR:
+                if (shoulder.isBusy())
+                    return false;
+
+                manipulatorState = ManipulatorState.AVAILABLE;
+
             default:
                 return false;
         }
@@ -374,7 +383,7 @@ public class Manipulator {
     /**
      * This is a blocking version of the transfer method.
      * When you invoke it, the manipulator is busy and unresponsive until process is done.
-     * This method should only be used in a LinearOpMode (because of the opModeIsActivr() check).
+     * This method should only be used in a LinearOpMode (because of the opModeIsActive() check).
      *
      */
     public void transfer() {
@@ -562,5 +571,21 @@ public class Manipulator {
 
     public void untipBucket() {
         tiltBucket(0);
+    }
+
+    // moves the shoulder to a low position
+    public void grabFromFloor() {
+        // check if the manipulator is already in use
+        if (manipulatorState != ManipulatorState.AVAILABLE)
+            return;
+
+        // set target positions
+        shoulder.setTargetPosition(SHOULDER_GRABBING_GROUND);
+        elbow.setPosition(ELBOW_DEPLOYED);
+        tilt.setPosition(TILT_DEPLOYED);
+        openClaw();
+
+        // update state
+        manipulatorState = ManipulatorState.GRABBING_FROM_FLOOR;
     }
 }

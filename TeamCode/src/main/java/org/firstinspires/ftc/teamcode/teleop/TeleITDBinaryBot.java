@@ -29,15 +29,7 @@
 
 package org.firstinspires.ftc.teamcode.teleop;
 
-import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.B;
-import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.DPAD_DOWN;
-import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.DPAD_LEFT;
-import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.DPAD_RIGHT;
-import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.DPAD_UP;
-import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.LEFT_BUMPER;
-import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.LEFT_STICK;
-import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.RIGHT_BUMPER;
-import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.RIGHT_STICK;
+import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.*;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -118,6 +110,10 @@ public class TeleITDBinaryBot extends LinearOpMode {
                     manipulator.toggleClaw();
                 }
 
+                // go to grabbing position?
+               if (epad2.justPressed(A)) {
+                manipulator.grabFromFloor();
+               }
                 // transfer sample?
                 if (epad2.justPressed(B)) {
                     // start the transfer.
