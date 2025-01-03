@@ -105,8 +105,8 @@ public class TTScoreHighGoal extends LinearOpMode {
             while(opModeIsActive() &&  bot.measuredUpdate()) {
                 // send telemetry.
                 telemetry.addData("state", bot.measuredState);
-                telemetry.addData("tgt angle", bot.tgtAngle);
-                telemetry.addData("curr angle", bot.integratedAngle);
+                telemetry.addData("tgt pos", bot.tgtPos);
+                telemetry.addData("curr pos", bot.currPos);
                 telemetry.update();
             }
         }
@@ -121,17 +121,38 @@ public class TTScoreHighGoal extends LinearOpMode {
                 telemetry.update();
             }
         }
-        // lower slide
+        // lower slide half way
         if (opModeIsActive()){
-            manipulator.retractSlide();
+            manipulator.slide.setTargetPosition(manipulator.SLIDE_MID_POSITION);
 
-            //loop until slide is at bottom
-            while(opModeIsActive() &&  manipulator.update()) {
+            while(opModeIsActive() &&  manipulator.slide.isBusy()) {
                 // send telemetry.
-                telemetry.addData("Status", "Doing high goal dump...");
+                telemetry.addData("Status", "Moving to slide to mid position...");
                 telemetry.update();
             }
         }
+
+        if (opModeIsActive()){
+            manipulator.deploy();
+            while(opModeIsActive() &&  manipulator.update()) {
+                //send telemetry
+                telemetry.addData("Status", "Moving slide to mid position...");
+                telemetry.update();
+            }
+        }
+        if (opModeIsActive()){
+            manipulator.slide.setTargetPosition(manipulator.SLIDE_RETRACTED_POSITION);
+            while(opModeIsActive()&& manipulator.slide.isBusy()){
+                telemetry.addData("Status","Moving to slide bottom position...");
+                telemetry.update();
+            }
+        }
+
+        while (opModeIsActive()){
+            telemetry.addData("Status", "Waiting for stop.......");
+        }
+
+
 
     }
 }

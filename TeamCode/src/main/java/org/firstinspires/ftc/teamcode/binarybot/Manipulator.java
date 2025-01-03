@@ -18,7 +18,9 @@ public class Manipulator {
         TRANSFER_OPEN_CLAW,
         DUMP_HIGH_WAIT_FOR_SLIDE,
         DUMP_HIGH_TIP_BUCKET,
-        DUMP_HIGH_UNTIP_BUCKET
+        DUMP_HIGH_UNTIP_BUCKET,
+        DEPLOY_MOVE_SLIDE,
+        DEPLOY_MOVE_SHOULDER
     }
 
     // ******************************************************************
@@ -33,6 +35,7 @@ public class Manipulator {
 
     // slide motor positions.
     public static final int MAX_SLIDE_EXTENDED_POSITION = 4900;
+    public static final int SLIDE_MID_POSITION = 3000;
     public static final int MIN_SLIDE_RETRACTED_POSITION = 0;
     public static final int SLIDE_EXTENDED_POSITION = 4250;
     public static final int SLIDE_RETRACTED_POSITION = 0;
@@ -366,6 +369,31 @@ public class Manipulator {
                     // we're still busy.
                     return true;
                 }
+            case DEPLOY_MOVE_SLIDE:
+                //Is it done moving?
+                if(slide.isBusy() == false) {
+                    //slide is done
+                    manipulatorState = manipulatorState.DEPLOY_MOVE_SHOULDER;
+                    shoulder.setTargetPosition(SHOULDER_TILT_BOUNDARY);
+                    //indicate still busy
+                    return true;
+                } else {
+                    //indicate still busy
+                    return true;
+                }
+            case DEPLOY_MOVE_SHOULDER:
+                //Done moving?
+                if (shoulder.isBusy()==false) {
+                    //shoulder is done moving
+                    //rotate wrist
+                    rotateWrist();
+                    //set state back to available
+                    manipulatorState = ManipulatorState.AVAILABLE;
+                    //return false because not moving
+                    return false;
+                }else {
+                    return true;
+                }
             default:
                 return false;
         }
@@ -562,5 +590,18 @@ public class Manipulator {
 
     public void untipBucket() {
         tiltBucket(0);
+    }
+    public void deploy(){
+
+        if (manipulatorState != ManipulatorState.AVAILABLE){
+            //manipulator is busy.
+            return;
+        }
+        //moves slide to mid position
+        slide.setTargetPosition(SLIDE_MID_POSITION);
+
+        //set state to DEPLOY_MOVE_SLIDE
+        manipulatorState = ManipulatorState.AVAILABLE.DEPLOY_MOVE_SLIDE;
+
     }
 }
