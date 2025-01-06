@@ -49,10 +49,13 @@ public class TTScoreHighGoal extends LinearOpMode {
 
         // create a new robot object.
         bot = new BinaryBot(hardwareMap, this);
+        //    calibrate encoders for robot
+        bot.calibrate();
 
         // get a reference to the manipulator.
         Manipulator manipulator = bot.manipulator;
-
+        //calibrate encoders for manipulator
+        manipulator.calibrate();
         // wait for start command from driver hub.
         waitForStart();
 
@@ -136,10 +139,11 @@ public class TTScoreHighGoal extends LinearOpMode {
             manipulator.deploy();
             while(opModeIsActive() &&  manipulator.update()) {
                 //send telemetry
-                telemetry.addData("Status", "Moving slide to mid position...");
+                telemetry.addData("Status", "Deploying manipulator...");
                 telemetry.update();
             }
         }
+//        retract slide
         if (opModeIsActive()){
             manipulator.slide.setTargetPosition(manipulator.SLIDE_RETRACTED_POSITION);
             while(opModeIsActive()&& manipulator.slide.isBusy()){
@@ -147,7 +151,71 @@ public class TTScoreHighGoal extends LinearOpMode {
                 telemetry.update();
             }
         }
+        if(opModeIsActive()){
 
+            // moves elbow
+            manipulator.updateElbow();
+            manipulator.tilt.setPosition(manipulator.TILT_DEPLOYED);
+            while(opModeIsActive() && manipulator.update()){
+                telemetry.addData("Status","Deploying stuff...");
+                telemetry.update();
+            }
+        }
+        if(opModeIsActive()){
+            bot.measuredTurn(.3,-50);
+            while(opModeIsActive() && bot.measuredUpdate()){
+                // send telemetry.
+                telemetry.addData("state", bot.measuredState);
+                telemetry.addData("tgt angle", bot.tgtAngle);
+                telemetry.addData("curr angle", bot.integratedAngle);
+                telemetry.update();
+            }
+        }
+
+        if (opModeIsActive()) {
+            bot.measuredDrive(0.3, 5.5);
+            // loop until done.
+            while(opModeIsActive() &&  bot.measuredUpdate()) {
+                // send telemetry.
+                telemetry.addData("state", bot.measuredState);
+                telemetry.addData("tgt pos", bot.tgtPos);
+                telemetry.addData("curr pos", bot.currPos);
+                telemetry.update();
+            }
+        }
+        if (opModeIsActive()) {
+            bot.measuredStrafe(0.3, 6.5);
+            // loop until done.
+            while(opModeIsActive() &&  bot.measuredUpdate()) {
+                // send telemetry.
+                telemetry.addData("state", bot.measuredState);
+                telemetry.addData("tgt pos", bot.tgtPos);
+                telemetry.addData("curr pos", bot.currPos);
+                telemetry.update();
+            }
+        }
+        if(opModeIsActive()){
+            manipulator.unrotateWrist();
+
+            while(opModeIsActive() && bot.measuredUpdate()){
+                telemetry.addData("Status","idk...");
+                telemetry.update();
+            }
+        }
+        if(opModeIsActive()){
+            manipulator.openClaw();
+            while(opModeIsActive() && bot.measuredUpdate()){
+                telemetry.addData("Status","idk...");
+                telemetry.update();
+            }
+        }
+        if(opModeIsActive()){
+            manipulator.shoulder.setTargetPosition(manipulator.PICK_SHOULDER_POSITION);
+            while(opModeIsActive() && manipulator.update()){
+                telemetry.addData("Status","Deploying stuff...");
+                telemetry.update();
+            }
+        }
         while (opModeIsActive()){
             telemetry.addData("Status", "Waiting for stop.......");
         }

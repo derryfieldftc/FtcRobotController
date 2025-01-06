@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -57,6 +58,7 @@ public class Manipulator {
 
     public static final int MAX_SHOULDER_POSITION = 6150;
     public static final int MIN_SHOULDER_POSITION = 0;
+    public static final int PICK_SHOULDER_POSITION = 6150;
     public static int SHOULDER_TILT_BOUNDARY = 4200;
     public static int SHOULDER_TRANSFER = 2600;
     public static int SHOULDER_AFTER_TRANSFER = 2900;
@@ -80,7 +82,7 @@ public class Manipulator {
     // ******************************************************************
     // tilt-related constants
     // ******************************************************************
-    private static double TILT_DEPLOYED = 0;
+    public static double TILT_DEPLOYED = 0;
     private static double TILT_RETRACTED = 0.75;
     private static double TILT_LEFT = 0.8;
     private static double TILT_RIGHT = 1;
@@ -116,6 +118,8 @@ public class Manipulator {
     private Servo wrist;
     public Servo tilt;
     public Servo elbow;
+    public DigitalChannel limitSlide;
+    public DigitalChannel limitShoulder;
 
     private ManipulatorState manipulatorState = ManipulatorState.AVAILABLE;
     private long startTime = 0;
@@ -141,6 +145,9 @@ public class Manipulator {
         wrist = hardwareMap.servo.get("wrist");
         tilt = hardwareMap.servo.get("tilt");
         elbow = hardwareMap.servo.get("elbow");
+        //get references to the limit switches
+        limitShoulder = hardwareMap.get(DigitalChannel.class, "limitShoulder");
+        limitSlide = hardwareMap.get(DigitalChannel.class, "limitSlide");
 
         // set zero power brake mode for motors.
         shoulder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -149,8 +156,7 @@ public class Manipulator {
         // reverse the shoulder motor so positive position corresponds to deployed arm.
         shoulder.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        // zero encoder.
-        shoulder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
 
         // put into run to position mode.
         shoulder.setTargetPosition(shoulder.getCurrentPosition());
@@ -162,6 +168,7 @@ public class Manipulator {
 
         // TODO: team should develop proper calibration procedure.
         // slide must be pushed all of the way down when initialized.
+        //put into run to position mode
         resetSlide();
 
         // bucket.
@@ -175,8 +182,22 @@ public class Manipulator {
 
         // retract tilt
         tilt.setPosition(TILT_RETRACTED);
-    }
 
+    }
+    public void calibrate(){
+        if (limitShoulder.getState() == false){
+            //limit switch is pressed
+            // zero encoder.
+            shoulder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+            //set back to run to position mode
+            shoulder.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        }
+        if (limitSlide.getState()==false){
+            slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        }
+    }
     // ******************************************************************
     // private/helper methods
     // ******************************************************************
@@ -602,6 +623,5 @@ public class Manipulator {
 
         //set state to DEPLOY_MOVE_SLIDE
         manipulatorState = ManipulatorState.AVAILABLE.DEPLOY_MOVE_SLIDE;
-
     }
 }

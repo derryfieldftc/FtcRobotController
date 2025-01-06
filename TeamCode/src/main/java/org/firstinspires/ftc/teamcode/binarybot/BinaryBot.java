@@ -8,6 +8,7 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -131,9 +132,7 @@ public class BinaryBot {
         driveEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
         strafeEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        // reset encoders.
-        driveEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        strafeEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
 
         // put "motors" into run without encoder mode.
         // we only need the encoder ports.  no motor should be attached.
@@ -144,6 +143,16 @@ public class BinaryBot {
         initIMU();
     }
 
+    /**
+     * calibrate encoder
+     * reset the strafing and drive encoders
+     */
+    public void calibrate(){
+        // for now, reset the encoders
+        // reset encoders.
+        driveEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        strafeEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
     private void initIMU() {
         // Set up the parameters with which we will use our IMU. Note that integration
         // algorithm here just reports accelerations to the logcat log; it doesn't actually
