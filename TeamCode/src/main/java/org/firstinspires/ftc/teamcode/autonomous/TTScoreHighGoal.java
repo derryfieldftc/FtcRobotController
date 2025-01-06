@@ -209,6 +209,7 @@ public class TTScoreHighGoal extends LinearOpMode {
                 telemetry.update();
             }
         }
+//        pick position
         if(opModeIsActive()){
             manipulator.shoulder.setTargetPosition(manipulator.PICK_SHOULDER_POSITION);
             while(opModeIsActive() && manipulator.update()){
