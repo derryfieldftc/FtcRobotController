@@ -204,7 +204,7 @@ public class TTScoreHighGoal extends LinearOpMode {
         }
         if(opModeIsActive()){
             manipulator.openClaw();
-            while(opModeIsActive() && bot.measuredUpdate()){
+            while(opModeIsActive() && manipulator.update()){
                 telemetry.addData("Status","idk...");
                 telemetry.update();
             }
