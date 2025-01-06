@@ -90,8 +90,10 @@ public class Manipulator {
     // ******************************************************************
     // claw-related constants
     // ******************************************************************
-    public static double CLAW_OPENED = 1;
-    public static double CLAW_CLOSED = 0.77;
+    //public static double CLAW_OPENED = 1;
+    public static double CLAW_OPENED = .3;
+    //public static double CLAW_CLOSED = 0.77;
+    public static double CLAW_CLOSED = 0.5;
 
     // ******************************************************************
     // wrist-related constants
@@ -156,8 +158,6 @@ public class Manipulator {
         // reverse the shoulder motor so positive position corresponds to deployed arm.
         shoulder.setDirection(DcMotorSimple.Direction.REVERSE);
 
-
-
         // put into run to position mode.
         shoulder.setTargetPosition(shoulder.getCurrentPosition());
         shoulder.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -166,13 +166,15 @@ public class Manipulator {
         // reverse the slide motor so positive position corresponds to elevated slide.
         slide.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        // TODO: team should develop proper calibration procedure.
-        // slide must be pushed all of the way down when initialized.
-        //put into run to position mode
-        resetSlide();
-
         // bucket.
         bucket = hardwareMap.servo.get("bucket");
+    }
+
+    /**
+     * reset servo and slide positions for initial state.
+     */
+    public void resetPositions() {
+        resetSlide();
 
         // test servo.
         bucket.setPosition(BUCKET_NEUTRAL_POSITION);
@@ -182,7 +184,6 @@ public class Manipulator {
 
         // retract tilt
         tilt.setPosition(TILT_RETRACTED);
-
     }
     public void calibrate(){
         if (limitShoulder.getState() == false){

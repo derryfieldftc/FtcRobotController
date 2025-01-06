@@ -49,8 +49,12 @@ public class TTScoreHighGoal extends LinearOpMode {
 
         // create a new robot object.
         bot = new BinaryBot(hardwareMap, this);
+
         //    calibrate encoders for robot
         bot.calibrate();
+
+        // reset positions on manipulator.
+        bot.manipulator.resetPositions();
 
         // get a reference to the manipulator.
         Manipulator manipulator = bot.manipulator;
