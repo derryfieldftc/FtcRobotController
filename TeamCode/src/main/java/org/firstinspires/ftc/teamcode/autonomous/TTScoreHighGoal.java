@@ -221,6 +221,12 @@ public class TTScoreHighGoal extends LinearOpMode {
                 telemetry.update();
             }
         }
+        if(opModeIsActive()){
+            manipulator.closeClaw();
+        }
+        if(opModeIsActive()){
+            manipulator.startTransfer();
+        }
         while (opModeIsActive()){
             telemetry.addData("Status", "Waiting for stop.......");
         }

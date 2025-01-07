@@ -58,7 +58,7 @@ public class Manipulator {
 
     public static final int MAX_SHOULDER_POSITION = 6150;
     public static final int MIN_SHOULDER_POSITION = 0;
-    public static final int PICK_SHOULDER_POSITION = 6000;
+    public static final int PICK_SHOULDER_POSITION = 5800;
     public static int SHOULDER_TILT_BOUNDARY = 4200;
     public static int SHOULDER_TRANSFER = 2600;
     public static int SHOULDER_AFTER_TRANSFER = 2900;
