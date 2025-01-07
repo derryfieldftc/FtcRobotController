@@ -206,32 +206,26 @@ public class TTScoreHighGoal extends LinearOpMode {
                 telemetry.update();
             }
         }
-        if(opModeIsActive()){
-            manipulator.openClaw();
-            while(opModeIsActive() && manipulator.update()){
-                telemetry.addData("Status","idk...");
+
+        // pick from the floor.
+        if (opModeIsActive()) {
+            manipulator.pickFromFloor();
+            while (opModeIsActive() && manipulator.update()) {
+                telemetry.addData("Status", "picking from floor");
                 telemetry.update();
             }
         }
-//        pick position
-        if(opModeIsActive()){
-            manipulator.shoulder.setTargetPosition(manipulator.PICK_SHOULDER_POSITION);
-            while(opModeIsActive() && manipulator.update()){
-                telemetry.addData("Status","Deploying stuff...");
-                telemetry.update();
-            }
-        }
-        if(opModeIsActive()){
-            manipulator.closeClaw();
-        }
+
         if(opModeIsActive()){
             manipulator.startTransfer();
+            while (opModeIsActive() && manipulator.update()) {
+                telemetry.addData("Status", "transferring to bucket");
+                telemetry.update();
+            }
         }
+
         while (opModeIsActive()){
             telemetry.addData("Status", "Waiting for stop.......");
         }
-
-
-
     }
 }

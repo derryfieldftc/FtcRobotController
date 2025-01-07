@@ -21,7 +21,9 @@ public class Manipulator {
         DUMP_HIGH_TIP_BUCKET,
         DUMP_HIGH_UNTIP_BUCKET,
         DEPLOY_MOVE_SLIDE,
-        DEPLOY_MOVE_SHOULDER
+        DEPLOY_MOVE_SHOULDER,
+        PICK_FROM_FLOOR_MOVE_SHOULDER,
+        PICK_FROM_FLOOR_CLOSE_CLAW
     }
 
     // ******************************************************************
@@ -58,8 +60,9 @@ public class Manipulator {
 
     public static final int MAX_SHOULDER_POSITION = 6150;
     public static final int MIN_SHOULDER_POSITION = 0;
-    public static final int PICK_SHOULDER_POSITION = 5800;
+    public static final int SHOULDER_PICK_POSITION = 5800;
     public static int SHOULDER_TILT_BOUNDARY = 4200;
+
     public static int SHOULDER_TRANSFER = 2600;
     public static int SHOULDER_AFTER_TRANSFER = 2900;
 
@@ -109,6 +112,7 @@ public class Manipulator {
     public static int TRANSFER_DELAY = 500;
     public static int DUMP_HIGH_TIP_DELAY = 1250;
     public static int DUMP_HIGH_UNTIP_DELAY = 1250;
+    public static int PICK_CLOSING_CLAW_DELAY = 1250;
 
     // ******************************************************************
     // private member variables.
@@ -168,6 +172,23 @@ public class Manipulator {
 
         // bucket.
         bucket = hardwareMap.servo.get("bucket");
+    }
+
+    public void pickFromFloor() {
+        if (manipulatorState != ManipulatorState.AVAILABLE) {
+            // already busy.
+            // can't pick right now.
+            return;
+        }
+
+        // open the claw
+        openClaw();
+
+        // set shoulder target position.
+        shoulder.setTargetPosition(SHOULDER_PICK_POSITION);
+
+        // set state.
+        manipulatorState = ManipulatorState.PICK_FROM_FLOOR_MOVE_SHOULDER;
     }
 
     /**
@@ -414,6 +435,32 @@ public class Manipulator {
                     //return false because not moving
                     return false;
                 }else {
+                    return true;
+                }
+            case PICK_FROM_FLOOR_MOVE_SHOULDER:
+                if (shoulder.isBusy()) {
+                    // shoulder is still moving.
+                    return true;
+                } else {
+                    // close the claw.
+                    closeClaw();
+                    manipulatorState = ManipulatorState.PICK_FROM_FLOOR_CLOSE_CLAW;
+
+                    // reset timing variables.
+                    startTime = System.currentTimeMillis();
+
+                    // indicate that we're still busy.
+                    return true;
+                }
+            case PICK_FROM_FLOOR_CLOSE_CLAW:
+                current = System.currentTimeMillis();
+                elapsed = current - startTime;
+                if (elapsed > PICK_CLOSING_CLAW_DELAY) {
+                    // done waiting.
+                    manipulatorState = ManipulatorState.AVAILABLE;
+                    return false;
+                } else {
+                    // we're still waiting.
                     return true;
                 }
             default:
