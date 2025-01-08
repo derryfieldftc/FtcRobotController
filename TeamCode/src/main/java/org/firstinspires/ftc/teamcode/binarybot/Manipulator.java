@@ -30,7 +30,7 @@ public class Manipulator {
     // constants.
     // ******************************************************************
     //default motor speed
-    public static final double MOTOR_SPEED = .3;
+    public static final double MOTOR_SPEED = .4;
     // ******************************************************************
     // slide-related constants
     // ******************************************************************
@@ -61,8 +61,8 @@ public class Manipulator {
 
     public static final int MAX_SHOULDER_POSITION = 6150;
     public static final int MIN_SHOULDER_POSITION = 0;
-    public static final int SHOULDER_PICK_POSITION = 5900;
-    public static int SHOULDER_TILT_BOUNDARY = 4200;
+    public static final int SHOULDER_PICK_POSITION = 5875;
+    public static int SHOULDER_TILT_BOUNDARY = 4100;
 
     public static int SHOULDER_TRANSFER = 2600;
     public static int SHOULDER_AFTER_TRANSFER = 2900;
@@ -96,7 +96,7 @@ public class Manipulator {
     // claw-related constants
     // ******************************************************************
     //public static double CLAW_OPENED = 1;
-    public static double CLAW_OPENED = .3;
+    public static double CLAW_OPENED = .35;
     //public static double CLAW_CLOSED = 0.77;
     public static double CLAW_CLOSED = 0.5;
 
@@ -114,7 +114,7 @@ public class Manipulator {
     public static int TRANSFER_DELAY = 500;
     public static int DUMP_HIGH_TIP_DELAY = 1250;
     public static int DUMP_HIGH_UNTIP_DELAY = 1250;
-    public static int PICK_CLOSING_CLAW_DELAY = 1250;
+    public static int PICK_CLOSING_CLAW_DELAY = 1000;
 
     // ******************************************************************
     // private member variables.

@@ -38,6 +38,7 @@ import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.LE
 import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.LEFT_STICK;
 import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.RIGHT_BUMPER;
 import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.RIGHT_STICK;
+import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.START;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -119,7 +120,7 @@ public class TeleITDBinaryBot extends LinearOpMode {
                 }
 
                 // transfer sample?
-                if (epad2.justPressed(B)) {
+                if (epad2.justPressed(B) && !epad2.pressed(START)) {
                     // start the transfer.
                     manipulator.startTransfer();
                 }
