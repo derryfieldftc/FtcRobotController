@@ -66,7 +66,7 @@ public class TTScoreHighGoal extends LinearOpMode {
         // move off the wall by strafing to the left.
         if (opModeIsActive()) {
 //            moves 6 inches to the left at power .3
-            bot.measuredStrafe(0.3, -6);
+            bot.measuredStrafe(Manipulator.MOTOR_SPEED, -6);
 
             // loop until done.
             while(opModeIsActive() &&  bot.measuredUpdate()) {
@@ -80,7 +80,7 @@ public class TTScoreHighGoal extends LinearOpMode {
 
         // go backwards to approach goal.
         if (opModeIsActive()) {
-            bot.measuredDrive(0.3, -55);
+            bot.measuredDrive(Manipulator.MOTOR_SPEED, -55);
 
             // loop until done.
             while(opModeIsActive() &&  bot.measuredUpdate()) {
@@ -94,7 +94,7 @@ public class TTScoreHighGoal extends LinearOpMode {
 
         // turn CCW.
         if (opModeIsActive()) {
-            bot.measuredTurn(0.3, -40);
+            bot.measuredTurn(Manipulator.MOTOR_SPEED, -40);
 
             // loop until done.
             while(opModeIsActive() &&  bot.measuredUpdate()) {
@@ -107,7 +107,7 @@ public class TTScoreHighGoal extends LinearOpMode {
         }
         // moves 2 inches back to buckets
         if (opModeIsActive()) {
-            bot.measuredDrive(0.3, -2);
+            bot.measuredDrive(Manipulator.MOTOR_SPEED, -2);
             // loop until done.
             while(opModeIsActive() &&  bot.measuredUpdate()) {
                 // send telemetry.
@@ -177,7 +177,7 @@ public class TTScoreHighGoal extends LinearOpMode {
         }
 
         if (opModeIsActive()) {
-            bot.measuredDrive(0.3, 3.5);
+            bot.measuredDrive(Manipulator.MOTOR_SPEED, 3.5);
             // loop until done.
             while(opModeIsActive() &&  bot.measuredUpdate()) {
                 // send telemetry.
@@ -188,7 +188,7 @@ public class TTScoreHighGoal extends LinearOpMode {
             }
         }
         if (opModeIsActive()) {
-            bot.measuredStrafe(0.3, 6.5);
+            bot.measuredStrafe(Manipulator.MOTOR_SPEED, 6.5);
             // loop until done.
             while(opModeIsActive() &&  bot.measuredUpdate()) {
                 // send telemetry.
@@ -234,7 +234,7 @@ public class TTScoreHighGoal extends LinearOpMode {
             }
         }
         if (opModeIsActive()) {
-            bot.measuredStrafe(0.3, -6.5);
+            bot.measuredStrafe(Manipulator.MOTOR_SPEED, -6.5);
             // loop until done.
             while(opModeIsActive() &&  bot.measuredUpdate()) {
                 // send telemetry.
@@ -247,7 +247,7 @@ public class TTScoreHighGoal extends LinearOpMode {
 
 
         if (opModeIsActive()) {
-            bot.measuredDrive(0.3, -3.5);
+            bot.measuredDrive(Manipulator.MOTOR_SPEED, -3.5);
             // loop until done.
             while(opModeIsActive() &&  bot.measuredUpdate()) {
                 // send telemetry.
