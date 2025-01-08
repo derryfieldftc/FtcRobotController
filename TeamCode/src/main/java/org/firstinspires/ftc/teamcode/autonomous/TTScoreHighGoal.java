@@ -224,6 +224,57 @@ public class TTScoreHighGoal extends LinearOpMode {
                 telemetry.update();
             }
         }
+        if(opModeIsActive()){
+            manipulator.elbow.setPosition(Manipulator.ELBOW_DEPLOYED);
+            manipulator.deploy();
+
+            while(opModeIsActive() && manipulator.update()){
+                telemetry.addData("Status","Deploying stuff...");
+                telemetry.update();
+            }
+        }
+        if (opModeIsActive()) {
+            bot.measuredStrafe(0.3, -6.5);
+            // loop until done.
+            while(opModeIsActive() &&  bot.measuredUpdate()) {
+                // send telemetry.
+                telemetry.addData("state", bot.measuredState);
+                telemetry.addData("tgt pos", bot.tgtPos);
+                telemetry.addData("curr pos", bot.currPos);
+                telemetry.update();
+            }
+        }
+
+
+        if (opModeIsActive()) {
+            bot.measuredDrive(0.3, -3.5);
+            // loop until done.
+            while(opModeIsActive() &&  bot.measuredUpdate()) {
+                // send telemetry.
+                telemetry.addData("state", bot.measuredState);
+                telemetry.addData("tgt pos", bot.tgtPos);
+                telemetry.addData("curr pos", bot.currPos);
+                telemetry.update();
+            }
+        }
+        if(opModeIsActive()){
+            bot.measuredTurn(.3,50);
+            while(opModeIsActive() && bot.measuredUpdate()){
+                // send telemetry.
+                telemetry.addData("state", bot.measuredState);
+                telemetry.addData("tgt angle", bot.tgtAngle);
+                telemetry.addData("curr angle", bot.integratedAngle);
+                telemetry.update();
+            }
+        }
+        if(opModeIsActive()){
+        manipulator.startHighDump();
+            while(opModeIsActive() && manipulator.update()){
+                telemetry.addData("Status","Deploying stuff...");
+                telemetry.update();
+            }
+        }
+
 
         while (opModeIsActive()){
             telemetry.addData("Status", "Waiting for stop.......");
