@@ -60,7 +60,7 @@ public class Manipulator {
 
     public static final int MAX_SHOULDER_POSITION = 6150;
     public static final int MIN_SHOULDER_POSITION = 0;
-    public static final int SHOULDER_PICK_POSITION = 5800;
+    public static final int SHOULDER_PICK_POSITION = 5900;
     public static int SHOULDER_TILT_BOUNDARY = 4200;
 
     public static int SHOULDER_TRANSFER = 2600;
@@ -78,7 +78,8 @@ public class Manipulator {
     // elbow-related constants
     // ******************************************************************
     public static double ELBOW_DEPLOYED = 1.0;
-    public static double ELBOW_TRANSFER = 0.85;
+    public static double ELBOW_AFTER_TRANSFER;
+    public static double ELBOW_TRANSFER = 0.8;
     public static double ELBOW_CLEAR_BAR = 0.55;
     public static double ELBOW_RETRACTED = 0.0;
 
@@ -101,8 +102,8 @@ public class Manipulator {
     // ******************************************************************
     // wrist-related constants
     // ******************************************************************
-    public static double WRIST_ROTATED_POSITION = 0.75;
-    public static double WRIST_UNROTATED_POSITION = 0;
+    public static double WRIST_ROTATED_POSITION = 0.8;
+    public static double WRIST_UNROTATED_POSITION = 0.05;
 
     // ******************************************************************
     // timing-related constants
@@ -292,11 +293,12 @@ public class Manipulator {
                 // tilt claw.
                 tilt.setPosition(TILT_RETRACTED);
 
-                // make sure elbow extended.
-                elbow.setPosition(ELBOW_DEPLOYED);
+                // make sure elbow is retracted.
+                elbow.setPosition(ELBOW_RETRACTED);
 
                 // move wrist to unrotated position.
                 unrotateWrist();
+
         }
     }
 
@@ -475,22 +477,23 @@ public class Manipulator {
      *
      */
     public void transfer() {
+        startTransfer();
         // make sure shoulder is not too close to the slide.
-        if (shoulder.getCurrentPosition() < SHOULDER_TRANSFER - 25) {
-            return;
-        }
+//        if (shoulder.getCurrentPosition() < SHOULDER_TRANSFER - 25) {
+//            return;
+//        }
 
         // lower slide.
-        slide.setTargetPosition(SLIDE_TRANSFER_POSITION);
+//        slide.setTargetPosition(SLIDE_TRANSFER_POSITION);
 
         // tilt claw.
-        tilt.setPosition(TILT_RETRACTED);
+//        tilt.setPosition(TILT_RETRACTED);
 
         // make sure elbow extended.
-        elbow.setPosition(ELBOW_DEPLOYED);
+//        elbow.setPosition(ELBOW_DEPLOYED);
 
         // move wrist to unrotated position.
-        unrotateWrist();
+//        unrotateWrist();
 
         // delay until slide is in place
         LinearOpMode linear_op_mode = (LinearOpMode)opMode;
@@ -526,9 +529,10 @@ public class Manipulator {
 
         // release element.
         openClaw();
-
+        slide.setTargetPosition(SLIDE_RETRACTED_POSITION);
         // move shoulder out of the way.
         linear_op_mode.sleep(TRANSFER_DELAY);
+        elbow.setPosition(ELBOW_AFTER_TRANSFER);
         shoulder.setTargetPosition(SHOULDER_AFTER_TRANSFER);
     }
 

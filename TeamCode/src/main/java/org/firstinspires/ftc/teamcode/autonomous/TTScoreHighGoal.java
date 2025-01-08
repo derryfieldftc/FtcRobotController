@@ -138,7 +138,7 @@ public class TTScoreHighGoal extends LinearOpMode {
                 telemetry.update();
             }
         }
-
+        //deploys shoulder
         if (opModeIsActive()){
             manipulator.deploy();
             while(opModeIsActive() &&  manipulator.update()) {
@@ -177,7 +177,7 @@ public class TTScoreHighGoal extends LinearOpMode {
         }
 
         if (opModeIsActive()) {
-            bot.measuredDrive(0.3, 5.5);
+            bot.measuredDrive(0.3, 3.5);
             // loop until done.
             while(opModeIsActive() &&  bot.measuredUpdate()) {
                 // send telemetry.
@@ -217,7 +217,8 @@ public class TTScoreHighGoal extends LinearOpMode {
         }
 
         if(opModeIsActive()){
-            manipulator.startTransfer();
+
+            manipulator.transfer();
             while (opModeIsActive() && manipulator.update()) {
                 telemetry.addData("Status", "transferring to bucket");
                 telemetry.update();
