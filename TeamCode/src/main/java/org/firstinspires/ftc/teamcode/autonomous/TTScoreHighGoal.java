@@ -80,7 +80,7 @@ public class TTScoreHighGoal extends LinearOpMode {
 
         // go backwards to approach goal.
         if (opModeIsActive()) {
-            bot.measuredDrive(.3, -55);
+            bot.measuredDrive(Manipulator.MOTOR_SPEED, -55);
 
             // loop until done.
             while(opModeIsActive() &&  bot.measuredUpdate()) {
@@ -181,7 +181,7 @@ public class TTScoreHighGoal extends LinearOpMode {
         }
 
         if (opModeIsActive()) {
-            bot.measuredDrive(Manipulator.MOTOR_SPEED, 1.5);
+            bot.measuredDrive(Manipulator.MOTOR_SPEED, 3);
             // loop until done.
             while(opModeIsActive() &&  bot.measuredUpdate()) {
                 // send telemetry.
@@ -251,7 +251,7 @@ public class TTScoreHighGoal extends LinearOpMode {
 
 
         if (opModeIsActive()) {
-            bot.measuredDrive(Manipulator.MOTOR_SPEED, -1.5);
+            bot.measuredDrive(Manipulator.MOTOR_SPEED, -3);
             // loop until done.
             while(opModeIsActive() &&  bot.measuredUpdate()) {
                 // send telemetry.

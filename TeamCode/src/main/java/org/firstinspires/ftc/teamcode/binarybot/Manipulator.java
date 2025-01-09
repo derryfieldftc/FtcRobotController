@@ -35,7 +35,7 @@ public class Manipulator {
     // slide-related constants
     // ******************************************************************
     // motor power
-    public static final double SLIDE_POWER = 0.95;
+    public static final double SLIDE_POWER = 1;
 
     // slide motor positions.
     public static final int MAX_SLIDE_EXTENDED_POSITION = 4900;
