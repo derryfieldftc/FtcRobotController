@@ -171,6 +171,11 @@ public class Manipulator {
         shoulder.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         shoulder.setPower(SHOULDER_POWER);
 
+        // put slide into run to position mode.
+        slide.setTargetPosition(slide.getCurrentPosition());
+        slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        slide.setPower(SLIDE_POWER);
+        
         // reverse the slide motor so positive position corresponds to elevated slide.
         slide.setDirection(DcMotorSimple.Direction.REVERSE);
 
