@@ -5,8 +5,10 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.configuration.DeviceConfiguration;
 
 public class Manipulator {
     // ******************************************************************
@@ -30,7 +32,7 @@ public class Manipulator {
     // constants.
     // ******************************************************************
     //default motor speed
-    public static final double MOTOR_SPEED = .4;
+    public static final double MOTOR_SPEED = .5;
     // ******************************************************************
     // slide-related constants
     // ******************************************************************
@@ -61,7 +63,7 @@ public class Manipulator {
 
     public static final int MAX_SHOULDER_POSITION = 6150;
     public static final int MIN_SHOULDER_POSITION = 0;
-    public static final int SHOULDER_PICK_POSITION = 5875;
+    public static final int SHOULDER_PICK_POSITION = 5900;
     public static int SHOULDER_TILT_BOUNDARY = 4100;
 
     public static int SHOULDER_TRANSFER = 2600;
@@ -103,18 +105,18 @@ public class Manipulator {
     // ******************************************************************
     // wrist-related constants
     // ******************************************************************
-    public static double WRIST_ROTATED_POSITION = 0.8;
-    public static double WRIST_UNROTATED_POSITION = 0.05;
+    public static double WRIST_ROTATED_POSITION = 0.9;
+    public static double WRIST_UNROTATED_POSITION = 0.1;
 
     // ******************************************************************
     // timing-related constants
     // ******************************************************************
 
     // time (msec) before moving the shoulder after the block has been released.
-    public static int TRANSFER_DELAY = 500;
-    public static int DUMP_HIGH_TIP_DELAY = 1250;
-    public static int DUMP_HIGH_UNTIP_DELAY = 1250;
-    public static int PICK_CLOSING_CLAW_DELAY = 1000;
+    public static int TRANSFER_DELAY = 300;
+    public static int DUMP_HIGH_TIP_DELAY = 300;
+    public static int DUMP_HIGH_UNTIP_DELAY = 300;
+    public static int PICK_CLOSING_CLAW_DELAY = 300;
 
     // ******************************************************************
     // private member variables.
@@ -128,7 +130,7 @@ public class Manipulator {
     public Servo elbow;
     public DigitalChannel limitSlide;
     public DigitalChannel limitShoulder;
-
+//    public DistanceSensor sensorDistance;
     private ManipulatorState manipulatorState = ManipulatorState.AVAILABLE;
     private long startTime = 0;
     private OpMode opMode;

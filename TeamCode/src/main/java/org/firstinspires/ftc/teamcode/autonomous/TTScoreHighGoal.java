@@ -32,6 +32,7 @@ package org.firstinspires.ftc.teamcode.autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.binarybot.BinaryBot;
 import org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad;
 import org.firstinspires.ftc.teamcode.binarybot.Manipulator;
@@ -65,7 +66,7 @@ public class TTScoreHighGoal extends LinearOpMode {
 
         // move off the wall by strafing to the left.
         if (opModeIsActive()) {
-//            moves 6 inches to the left at power .3
+//            moves 6 inches to the left at power .4
             bot.measuredStrafe(Manipulator.MOTOR_SPEED, -6);
 
             // loop until done.
@@ -84,7 +85,14 @@ public class TTScoreHighGoal extends LinearOpMode {
 
             // loop until done.
             while(opModeIsActive() &&  bot.measuredUpdate()) {
+
+
+//                if (manipulator.sensorDistance.getDistance(DistanceUnit.INCH) < 15){
+//                break;
+//            }
                 // send telemetry.
+//                telemetry.addData("deviceName", manipulator.sensorDistance.getDeviceName());
+//                telemetry.addData("range", String.format("%.01f in", manipulator.sensorDistance.getDistance(DistanceUnit.INCH)));
                 telemetry.addData("state", bot.measuredState);
                 telemetry.addData("tgt pos", bot.tgtPos);
                 telemetry.addData("curr pos", bot.currPos);
@@ -105,9 +113,9 @@ public class TTScoreHighGoal extends LinearOpMode {
                 telemetry.update();
             }
         }
-        // moves 2 inches back to buckets
+        // moves 1 inch back to buckets
         if (opModeIsActive()) {
-            bot.measuredDrive(Manipulator.MOTOR_SPEED, -2);
+            bot.measuredDrive(Manipulator.MOTOR_SPEED, -1);
             // loop until done.
             while(opModeIsActive() &&  bot.measuredUpdate()) {
                 // send telemetry.
@@ -142,46 +150,25 @@ public class TTScoreHighGoal extends LinearOpMode {
         if (opModeIsActive()){
             manipulator.deploy();
 
+            bot.measuredTurn(Manipulator.MOTOR_SPEED,-45);
+            while(opModeIsActive() && bot.measuredUpdate()){
+                // send telemetry.
+                telemetry.addData("state", bot.measuredState);
+                telemetry.addData("tgt `angle", bot.tgtAngle);
+                telemetry.addData("curr angle", bot.integratedAngle);
+                telemetry.update();}
             while(opModeIsActive() &&  manipulator.update()) {
                 //send telemetry
                 telemetry.addData("Status", "Deploying manipulator...");
                 telemetry.update();
             }
-//             moves elbow/////////////////////////////////////////
             manipulator.updateElbow();
         }
 //        retract slide
         if (opModeIsActive()){
             manipulator.tilt.setPosition(manipulator.TILT_DEPLOYED);
             manipulator.slide.setTargetPosition(manipulator.SLIDE_RETRACTED_POSITION);
-            while(opModeIsActive()&& manipulator.slide.isBusy()){
-                telemetry.addData("Status","Moving to slide bottom position...");
-                telemetry.update();
-            }
-        }
-//        if(opModeIsActive()){
-//
-//            // moves elbow
-//            manipulator.updateElbow();
-//            manipulator.tilt.setPosition(manipulator.TILT_DEPLOYED);
-//            while(opModeIsActive() && manipulator.update()){
-//                telemetry.addData("Status","Deploying stuff...");
-//                telemetry.update();
-//            }
-//        }
-        if(opModeIsActive()){
-            bot.measuredTurn(Manipulator.MOTOR_SPEED,-55);
-            while(opModeIsActive() && bot.measuredUpdate()){
-                // send telemetry.
-                telemetry.addData("state", bot.measuredState);
-                telemetry.addData("tgt angle", bot.tgtAngle);
-                telemetry.addData("curr angle", bot.integratedAngle);
-                telemetry.update();
-            }
-        }
-
-        if (opModeIsActive()) {
-            bot.measuredDrive(Manipulator.MOTOR_SPEED, 3);
+            bot.measuredDrive(Manipulator.MOTOR_SPEED, 2.25);
             // loop until done.
             while(opModeIsActive() &&  bot.measuredUpdate()) {
                 // send telemetry.
@@ -190,9 +177,13 @@ public class TTScoreHighGoal extends LinearOpMode {
                 telemetry.addData("curr pos", bot.currPos);
                 telemetry.update();
             }
+            while(opModeIsActive()&& manipulator.slide.isBusy()){
+                telemetry.addData("Status","Moving to slide bottom position...");
+                telemetry.update();
+            }
         }
         if (opModeIsActive()) {
-            bot.measuredStrafe(Manipulator.MOTOR_SPEED, 7.5);
+            bot.measuredStrafe(Manipulator.MOTOR_SPEED, 6.5);
             // loop until done.
             while(opModeIsActive() &&  bot.measuredUpdate()) {
                 // send telemetry.
@@ -238,7 +229,7 @@ public class TTScoreHighGoal extends LinearOpMode {
             }
         }
         if (opModeIsActive()) {
-            bot.measuredStrafe(Manipulator.MOTOR_SPEED, -7.5);
+            bot.measuredStrafe(Manipulator.MOTOR_SPEED, -6.5);
             // loop until done.
             while(opModeIsActive() &&  bot.measuredUpdate()) {
                 // send telemetry.
@@ -251,7 +242,7 @@ public class TTScoreHighGoal extends LinearOpMode {
 
 
         if (opModeIsActive()) {
-            bot.measuredDrive(Manipulator.MOTOR_SPEED, -3);
+            bot.measuredDrive(Manipulator.MOTOR_SPEED, -2.25);
             // loop until done.
             while(opModeIsActive() &&  bot.measuredUpdate()) {
                 // send telemetry.
@@ -262,7 +253,7 @@ public class TTScoreHighGoal extends LinearOpMode {
             }
         }
         if(opModeIsActive()){
-            bot.measuredTurn(Manipulator.MOTOR_SPEED,55);
+            bot.measuredTurn(Manipulator.MOTOR_SPEED,45);
             while(opModeIsActive() && bot.measuredUpdate()){
                 // send telemetry.
                 telemetry.addData("state", bot.measuredState);
@@ -278,6 +269,27 @@ public class TTScoreHighGoal extends LinearOpMode {
                 telemetry.update();
             }
         }
+        if (opModeIsActive()) {
+            bot.measuredDrive(Manipulator.MOTOR_SPEED, 3.25);
+            // loop until done.
+            while(opModeIsActive() &&  bot.measuredUpdate()) {
+                // send telemetry.
+                telemetry.addData("state", bot.measuredState);
+                telemetry.addData("tgt pos", bot.tgtPos);
+                telemetry.addData("curr pos", bot.currPos);
+                telemetry.update();
+            }
+        }
+        //        retract slide
+        if (opModeIsActive()){
+            manipulator.tilt.setPosition(manipulator.TILT_DEPLOYED);
+            manipulator.slide.setTargetPosition(manipulator.SLIDE_RETRACTED_POSITION);
+            while(opModeIsActive()&& manipulator.slide.isBusy()){
+                telemetry.addData("Status","Moving to slide bottom position...");
+                telemetry.update();
+            }
+        }
+
 
 
         while (opModeIsActive()){
