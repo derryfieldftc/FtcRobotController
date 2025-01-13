@@ -39,13 +39,24 @@ public class BinaryBot {
     // ******************************************************************
     // The bot uses REV Robotics thru bore encoders which have a resolution of
     // 8192 counts per revolution
-    static final double     COUNTS_PER_MOTOR_REV    = 8192;
-    static final double     DRIVE_GEAR_REDUCTION    = 1;
+    static final double     POD_COUNTS_PER_MOTOR_REV    = 8192;
+    static final double     POD_DRIVE_GEAR_REDUCTION    = 1;
     // REV robotics smaller omni wheels are 60mm in diameter.
-    static final double     WHEEL_DIAMETER_INCHES   = 2.36;
-    static final double     WHEEL_CIRCUM_INCHES = Math.PI * WHEEL_DIAMETER_INCHES;
-    static final double     COUNTS_PER_INCH         =   (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-                                                            (WHEEL_CIRCUM_INCHES);
+    static final double     POD_WHEEL_DIAMETER_INCHES   = 2.36;
+    static final double     POD_WHEEL_CIRCUM_INCHES = Math.PI * POD_WHEEL_DIAMETER_INCHES;
+    static final double     POD_COUNTS_PER_INCH         =   (POD_COUNTS_PER_MOTOR_REV * POD_DRIVE_GEAR_REDUCTION) /
+                                                            (POD_WHEEL_CIRCUM_INCHES);
+
+    static final double     DRIVE_COUNTS_PER_MOTOR_REV    = 537.7;
+    static final double     DRIVE_DRIVE_GEAR_REDUCTION    = 1;
+
+    // GoBilda new mecanum wheels have 104mm diameter (4.094 inches)
+    static final double     DRIVE_WHEEL_DIAMETER_INCHES   = 4.094;
+    static final double     DRIVE_WHEEL_CIRCUM_INCHES = Math.PI * DRIVE_WHEEL_DIAMETER_INCHES;
+    static final double     DRIVE_COUNTS_PER_INCH         =   (DRIVE_COUNTS_PER_MOTOR_REV * DRIVE_DRIVE_GEAR_REDUCTION) /
+            (DRIVE_WHEEL_CIRCUM_INCHES);
+
+    static final boolean USE_ODOMETRY_POD = false;
 
     // ******************************************************************
     // private member variables
@@ -124,20 +135,29 @@ public class BinaryBot {
         manipulator = new Manipulator(hardwareMap, opMode);
 
         // odometry.
-        driveEncoder = hardwareMap.get(DcMotor.class, "drive");
         strafeEncoder = hardwareMap.get(DcMotor.class, "strafe");
+
+        // should we use odometry pod or the built in motor.
+        if (USE_ODOMETRY_POD) {
+            driveEncoder = hardwareMap.get(DcMotor.class, "drive");
+        } else {
+            // use the front left drive motor.
+            driveEncoder = motorFL;
+        }
 
         // reverse drive and strafe encoder values
         // so that positive changes corresponds to forward and rightward motion.
-        driveEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
         strafeEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
-
-
+        if (USE_ODOMETRY_POD) {
+            driveEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
+        }
 
         // put "motors" into run without encoder mode.
         // we only need the encoder ports.  no motor should be attached.
-        driveEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         strafeEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        if (USE_ODOMETRY_POD) {
+            driveEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        }
 
         // IMU
         initIMU();
@@ -271,7 +291,12 @@ public class BinaryBot {
         initPos = driveEncoder.getCurrentPosition();
 
         // offset in encoder ticks.
-        double offset = distance * COUNTS_PER_INCH;
+        double offset = 0;
+        if (USE_ODOMETRY_POD) {
+            offset = distance * POD_COUNTS_PER_INCH;
+        } else {
+            offset = distance * DRIVE_COUNTS_PER_INCH;
+        }
         tgtPos = (int)Math.round(offset + initPos);
         if (offset < 0) {
             measuredPower = -(float)Math.abs(power);
@@ -302,7 +327,7 @@ public class BinaryBot {
         initPos = strafeEncoder.getCurrentPosition();
 
         // offset in encoder ticks.
-        double offset = distance * COUNTS_PER_INCH;
+        double offset = distance * POD_COUNTS_PER_INCH;
         tgtPos = (int)Math.round(offset + initPos);
         if (offset < 0) {
             measuredPower = -(float)Math.abs(power);
