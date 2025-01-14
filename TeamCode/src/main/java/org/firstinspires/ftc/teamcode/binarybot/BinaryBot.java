@@ -57,6 +57,7 @@ public class BinaryBot {
             (DRIVE_WHEEL_CIRCUM_INCHES);
 
     static final boolean USE_ODOMETRY_POD = false;
+    static final double STRAFE_ENCODER_FUDGE_FACTOR = 1.0;
 
     // ******************************************************************
     // private member variables
@@ -135,7 +136,12 @@ public class BinaryBot {
         manipulator = new Manipulator(hardwareMap, opMode);
 
         // odometry.
-        strafeEncoder = hardwareMap.get(DcMotor.class, "strafe");
+        if (USE_ODOMETRY_POD) {
+            strafeEncoder = hardwareMap.get(DcMotor.class, "strafe");
+        } else {
+            // use the front left drive motor.
+            strafeEncoder = motorFL;
+        }
 
         // should we use odometry pod or the built in motor.
         if (USE_ODOMETRY_POD) {
@@ -147,15 +153,15 @@ public class BinaryBot {
 
         // reverse drive and strafe encoder values
         // so that positive changes corresponds to forward and rightward motion.
-        strafeEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
         if (USE_ODOMETRY_POD) {
+            strafeEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
             driveEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
         }
 
         // put "motors" into run without encoder mode.
         // we only need the encoder ports.  no motor should be attached.
-        strafeEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         if (USE_ODOMETRY_POD) {
+            strafeEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             driveEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
 
@@ -327,7 +333,13 @@ public class BinaryBot {
         initPos = strafeEncoder.getCurrentPosition();
 
         // offset in encoder ticks.
-        double offset = distance * POD_COUNTS_PER_INCH;
+        double offset = 0;
+        if (USE_ODOMETRY_POD) {
+            offset = distance * POD_COUNTS_PER_INCH;
+        } else {
+            offset = distance * DRIVE_COUNTS_PER_INCH * STRAFE_ENCODER_FUDGE_FACTOR;
+        }
+
         tgtPos = (int)Math.round(offset + initPos);
         if (offset < 0) {
             measuredPower = -(float)Math.abs(power);
