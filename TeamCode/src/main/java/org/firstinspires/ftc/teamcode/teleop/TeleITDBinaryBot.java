@@ -80,6 +80,12 @@ public class TeleITDBinaryBot extends LinearOpMode {
             double strafe = gamepad1.left_stick_x;
             double twist = gamepad1.right_stick_x;
 
+            // scale power?
+            double scale = Math.abs(1 - gamepad1.right_trigger);
+            drive = scale * drive;
+            strafe = scale * strafe;
+            twist = scale * twist;
+
             // update the mecanum drive.
             bot.drive(drive, strafe, twist);
 
