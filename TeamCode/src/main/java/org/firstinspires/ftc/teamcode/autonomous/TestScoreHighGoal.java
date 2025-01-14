@@ -33,17 +33,14 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.binarybot.BinaryBot;
-import org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad;
 import org.firstinspires.ftc.teamcode.binarybot.Manipulator;
 
-@Autonomous(name="ITD Test Measured Strafe", group="BinaryBot")
+@Autonomous(name="Test auto High Goal", group="BinaryBot")
 //@Disabled
-public class TestMeasuredStrafe extends LinearOpMode {
+public class TestScoreHighGoal extends LinearOpMode {
 
     // Declare OpMode members.
     private BinaryBot bot = null;
-    private EnhancedGamepad epad2 = null;
-
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
@@ -52,20 +49,25 @@ public class TestMeasuredStrafe extends LinearOpMode {
         // create a new robot object.
         bot = new BinaryBot(hardwareMap, this);
 
+        //    calibrate encoders for robot
+        bot.calibrate();
+
+        // reset positions on manipulator.
+        bot.manipulator.resetPositions();
+
         // get a reference to the manipulator.
         Manipulator manipulator = bot.manipulator;
-
-        // get an enhanced gamepad for driver #2.
-        epad2 = new EnhancedGamepad(gamepad2);
-
+        //calibrate encoders for manipulator
+        manipulator.calibrate();
         // wait for start command from driver hub.
         waitForStart();
 
+        // move off the wall by strafing to the left.
         if (opModeIsActive()) {
-            // strafe to the right 2 feet.
-            bot.measuredStrafe(0.3, 24);
+//            moves 6 inches to the left at power .4
+            bot.measuredStrafe(0.3, -6);
 
-            // loop until done traveling 2 feet.
+            // loop until done.
             while(opModeIsActive() &&  bot.measuredUpdate()) {
                 // send telemetry.
                 telemetry.addData("state", bot.measuredState);
@@ -75,20 +77,8 @@ public class TestMeasuredStrafe extends LinearOpMode {
             }
         }
 
-        sleep(1000);
-
-        if (opModeIsActive()) {
-            // strafe to the right 2 feet.
-            bot.measuredStrafe(0.3, -24);
-
-            // loop until done traveling 2 feet.
-            while(opModeIsActive() &&  bot.measuredUpdate()) {
-                // send telemetry.
-                telemetry.addData("state", bot.measuredState);
-                telemetry.addData("tgt pos", bot.tgtPos);
-                telemetry.addData("curr pos", bot.currPos);
-                telemetry.update();
-            }
+        while (opModeIsActive()){
+            telemetry.addData("Status", "Waiting for stop.......");
         }
     }
 }

@@ -53,7 +53,7 @@ public class TTScoreHighGoal extends LinearOpMode {
 
         //    calibrate encoders for robot
 //        BREAKS AUTO WITHOUT ODOMETRY
-//        bot.calibrate();
+        bot.calibrate();
 
         // reset positions on manipulator.
         bot.manipulator.resetPositions();

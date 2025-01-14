@@ -178,6 +178,8 @@ public class BinaryBot {
         // reset encoders.
         driveEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         strafeEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        driveEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        strafeEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
     private void initIMU() {
         // Set up the parameters with which we will use our IMU. Note that integration
