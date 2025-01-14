@@ -52,7 +52,8 @@ public class TTScoreHighGoal extends LinearOpMode {
         bot = new BinaryBot(hardwareMap, this);
 
         //    calibrate encoders for robot
-        bot.calibrate();
+//        BREAKS AUTO WITHOUT ODOMETRY
+//        bot.calibrate();
 
         // reset positions on manipulator.
         bot.manipulator.resetPositions();
@@ -115,7 +116,7 @@ public class TTScoreHighGoal extends LinearOpMode {
         }
         // moves 1 inch back to buckets
         if (opModeIsActive()) {
-            bot.measuredDrive(Manipulator.MOTOR_SPEED, -1);
+            bot.measuredDrive(Manipulator.MOTOR_SPEED, -1.5);
             // loop until done.
             while(opModeIsActive() &&  bot.measuredUpdate()) {
                 // send telemetry.

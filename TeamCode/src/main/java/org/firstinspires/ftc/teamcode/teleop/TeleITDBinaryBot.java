@@ -113,7 +113,10 @@ public class TeleITDBinaryBot extends LinearOpMode {
                 if (epad2.justPressed(RIGHT_BUMPER)) {
                     manipulator.toggleWrist();
                 }
-
+//                Resets the encoders for the slide and the shoulder
+                if (epad2.justPressed((START))&& epad2.justPressed(RIGHT_STICK)){
+                    bot.manipulator.resetPositions();
+                }
                 // toggle the claw?
                 if (epad2.justPressed(LEFT_BUMPER)) {
                     manipulator.toggleClaw();
