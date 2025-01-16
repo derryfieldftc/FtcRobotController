@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 public class EnhancedGamepad {
 
-    public final int BUTTONS = 13;
+    public final int BUTTONS = 14;
     public final int AXES = 6;
 
     public Gamepad gamepad;
@@ -54,6 +54,7 @@ public class EnhancedGamepad {
         pressed[Button.LEFT_STICK.ordinal()] = gamepad.left_stick_button;
         pressed[Button.RIGHT_STICK.ordinal()] = gamepad.right_stick_button;
         pressed[Button.START.ordinal()] = gamepad.start;
+        pressed[Button.BACK.ordinal()] = gamepad.back;
 
         axes[Axis.LEFT_STICK_X.ordinal()] = gamepad.left_stick_x;
         axes[Axis.LEFT_STICK_Y.ordinal()] = gamepad.left_stick_y;
@@ -69,7 +70,8 @@ public class EnhancedGamepad {
         DPAD_UP, DPAD_DOWN, DPAD_LEFT, DPAD_RIGHT,
         LEFT_BUMPER, RIGHT_BUMPER,
         LEFT_STICK, RIGHT_STICK,
-        START;
+        START,
+        BACK;
     }
 
     public enum Axis {

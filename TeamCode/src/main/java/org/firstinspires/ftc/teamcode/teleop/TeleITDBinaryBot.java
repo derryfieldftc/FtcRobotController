@@ -29,19 +29,21 @@
 
 package org.firstinspires.ftc.teamcode.teleop;
 
-import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.B;
-import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.DPAD_DOWN;
-import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.DPAD_LEFT;
-import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.DPAD_RIGHT;
-import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.DPAD_UP;
-import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.LEFT_BUMPER;
-import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.LEFT_STICK;
-import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.RIGHT_BUMPER;
-import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.RIGHT_STICK;
-import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.START;
+//import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.B;
+//import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.DPAD_DOWN;
+//import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.DPAD_LEFT;
+//import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.DPAD_RIGHT;
+//import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.DPAD_UP;
+//import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.LEFT_BUMPER;
+//import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.LEFT_STICK;
+//import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.RIGHT_BUMPER;
+//import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.RIGHT_STICK;
+//import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.START;
+import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.*;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.binarybot.BinaryBot;
 import org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad;
@@ -116,7 +118,7 @@ public class TeleITDBinaryBot extends LinearOpMode {
                 manipulator.trimShoulder(-epad2.gamepad.right_stick_y);
 
                 // toggle the wrist?
-                if (epad2.justPressed(RIGHT_BUMPER)) {
+                if (epad2.justPressed(LEFT_BUMPER)) {
                     manipulator.toggleWrist();
                 }
 //                Resets the encoders for the slide and the shoulder
@@ -124,7 +126,7 @@ public class TeleITDBinaryBot extends LinearOpMode {
                     bot.manipulator.resetPositions();
                 }
                 // toggle the claw?
-                if (epad2.justPressed(LEFT_BUMPER)) {
+                if (epad2.justPressed(RIGHT_BUMPER)) {
                     manipulator.toggleClaw();
                 }
 
@@ -163,8 +165,13 @@ public class TeleITDBinaryBot extends LinearOpMode {
                     //bot.manipulator.elbow.setPosition(1.0);
                 }
             } else {
-                // update the manipulator state.
-                manipulator.update();
+                if (epad2.justPressed(BACK)) {
+                    // stop the bot.
+                    manipulator.stop();
+                } else {
+                    // update the manipulator state.
+                    manipulator.update();
+                }
             }
 
             telemetry.addData("drive encoder", bot.driveEncoder.getCurrentPosition());

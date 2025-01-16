@@ -61,9 +61,9 @@ public class Manipulator {
     public static int SHOULDER_ELBOW_BOUNDARY = 4200;
     public static int SHOULDER_CLEAR_BAR = 200;
 
-    public static final int MAX_SHOULDER_POSITION = 6150;
+    public static final int MAX_SHOULDER_POSITION = 8000;
     public static final int MIN_SHOULDER_POSITION = 0;
-    public static final int SHOULDER_PICK_POSITION = 5900;
+    public static final int SHOULDER_PICK_POSITION = 6000;
     public static int SHOULDER_TILT_BOUNDARY = 4100;
 
     public static int SHOULDER_TRANSFER = 2600;
@@ -115,7 +115,7 @@ public class Manipulator {
     // time (msec) before moving the shoulder after the block has been released.
     public static int TRANSFER_DELAY = 300;
     public static int DUMP_HIGH_TIP_DELAY = 300;
-    public static int DUMP_HIGH_UNTIP_DELAY = 300;
+    public static int DUMP_HIGH_UNTIP_DELAY = 600;
     public static int PICK_CLOSING_CLAW_DELAY = 300;
 
     // ******************************************************************
@@ -576,7 +576,7 @@ public class Manipulator {
     }
 
     public void extendSlide() {
-        slide.setTargetPosition(SLIDE_EXTENDED_POSITION);
+        slide.setTargetPosition(SLIDE_HIGH_DUMP_POSITION);
     }
 
     public void retractSlide() {
@@ -683,5 +683,10 @@ public class Manipulator {
 
         //set state to DEPLOY_MOVE_SLIDE
         manipulatorState = ManipulatorState.AVAILABLE.DEPLOY_MOVE_SLIDE;
+    }
+    public void stop() {
+        manipulatorState = ManipulatorState.AVAILABLE;
+        slide.setTargetPosition(slide.getCurrentPosition());
+        shoulder.setTargetPosition(shoulder.getCurrentPosition());
     }
 }

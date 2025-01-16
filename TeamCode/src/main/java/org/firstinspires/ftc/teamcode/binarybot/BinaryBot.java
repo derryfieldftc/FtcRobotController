@@ -42,7 +42,7 @@ public class BinaryBot {
     static final double     POD_COUNTS_PER_MOTOR_REV    = 8192;
     static final double     POD_DRIVE_GEAR_REDUCTION    = 1;
     // REV robotics smaller omni wheels are 60mm in diameter.
-    static final double     POD_WHEEL_DIAMETER_INCHES   = 2.36;
+    static final double     POD_WHEEL_DIAMETER_INCHES   = 1.37795;
     static final double     POD_WHEEL_CIRCUM_INCHES = Math.PI * POD_WHEEL_DIAMETER_INCHES;
     static final double     POD_COUNTS_PER_INCH         =   (POD_COUNTS_PER_MOTOR_REV * POD_DRIVE_GEAR_REDUCTION) /
                                                             (POD_WHEEL_CIRCUM_INCHES);
@@ -56,7 +56,7 @@ public class BinaryBot {
     static final double     DRIVE_COUNTS_PER_INCH         =   (DRIVE_COUNTS_PER_MOTOR_REV * DRIVE_DRIVE_GEAR_REDUCTION) /
             (DRIVE_WHEEL_CIRCUM_INCHES);
 
-    static final boolean USE_ODOMETRY_POD = false;
+    static final boolean USE_ODOMETRY_POD = true;
     static final double STRAFE_ENCODER_FUDGE_FACTOR = 1.0;
 
     // ******************************************************************
