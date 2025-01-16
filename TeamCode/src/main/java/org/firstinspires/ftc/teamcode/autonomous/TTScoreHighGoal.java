@@ -82,7 +82,7 @@ public class TTScoreHighGoal extends LinearOpMode {
 
         // go backwards to approach goal.
         if (opModeIsActive()) {
-            bot.measuredDrive(Manipulator.MOTOR_SPEED, -55);
+            bot.measuredDrive(Manipulator.MOTOR_SPEED, -30);
 
             // loop until done.
             while(opModeIsActive() &&  bot.measuredUpdate()) {
@@ -165,11 +165,11 @@ public class TTScoreHighGoal extends LinearOpMode {
             }
             manipulator.updateElbow();
         }
-//        retract slide
+//        retract slide, move towards block
         if (opModeIsActive()){
             manipulator.tilt.setPosition(manipulator.TILT_DEPLOYED);
             manipulator.slide.setTargetPosition(manipulator.SLIDE_RETRACTED_POSITION);
-            bot.measuredDrive(Manipulator.MOTOR_SPEED, 2.25);
+            bot.measuredDrive(Manipulator.MOTOR_SPEED, 2.5);
             // loop until done.
             while(opModeIsActive() &&  bot.measuredUpdate()) {
                 // send telemetry.
@@ -183,8 +183,9 @@ public class TTScoreHighGoal extends LinearOpMode {
                 telemetry.update();
             }
         }
+//        Moves to the right 7 inches
         if (opModeIsActive()) {
-            bot.measuredStrafe(Manipulator.MOTOR_SPEED, 6.5);
+            bot.measuredStrafe(Manipulator.MOTOR_SPEED, 7);
             // loop until done.
             while(opModeIsActive() &&  bot.measuredUpdate()) {
                 // send telemetry.
@@ -287,6 +288,17 @@ public class TTScoreHighGoal extends LinearOpMode {
             manipulator.slide.setTargetPosition(manipulator.SLIDE_RETRACTED_POSITION);
             while(opModeIsActive()&& manipulator.slide.isBusy()){
                 telemetry.addData("Status","Moving to slide bottom position...");
+                telemetry.update();
+            }
+        }
+        if (opModeIsActive()) {
+            bot.measuredDrive(Manipulator.MOTOR_SPEED, -2);
+            // loop until done.
+            while(opModeIsActive() &&  bot.measuredUpdate()) {
+                // send telemetry.
+                telemetry.addData("state", bot.measuredState);
+                telemetry.addData("tgt pos", bot.tgtPos);
+                telemetry.addData("curr pos", bot.currPos);
                 telemetry.update();
             }
         }
