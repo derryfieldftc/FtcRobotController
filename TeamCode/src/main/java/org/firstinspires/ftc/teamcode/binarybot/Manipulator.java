@@ -98,15 +98,14 @@ public class Manipulator {
     // claw-related constants
     // ******************************************************************
     //public static double CLAW_OPENED = 1;
-    public static double CLAW_OPENED = .35;
-    //public static double CLAW_CLOSED = 0.77;
+    public static double CLAW_OPENED = 0.7;
     public static double CLAW_CLOSED = 0.5;
 
     // ******************************************************************
     // wrist-related constants
     // ******************************************************************
-    public static double WRIST_ROTATED_POSITION = 0.9;
-    public static double WRIST_UNROTATED_POSITION = 0.1;
+    public static double WRIST_ROTATED_POSITION = 0.65;
+    public static double WRIST_UNROTATED_POSITION = 0.15;
 
     // ******************************************************************
     // timing-related constants
