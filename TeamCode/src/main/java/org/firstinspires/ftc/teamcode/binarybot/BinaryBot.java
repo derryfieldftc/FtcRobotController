@@ -9,11 +9,13 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.RobotLog;
 
 
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -71,6 +73,7 @@ public class BinaryBot {
     public DcMotor driveEncoder;
     public DcMotor strafeEncoder;
     RevHubOrientationOnRobot orientationOnRobot;
+    public DistanceSensor distanceSensor;
 
     // op mode related items.
     private OpMode opMode;
@@ -167,6 +170,8 @@ public class BinaryBot {
 
         // IMU
         initIMU();
+
+        distanceSensor = hardwareMap.get(DistanceSensor.class, "rightDistance");
     }
 
     /**
@@ -198,6 +203,10 @@ public class BinaryBot {
         // and named "imu".
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
+    }
+
+    public double get_distance() {
+        return distanceSensor.getDistance(DistanceUnit.INCH);
     }
 
     public void updateAngles() {

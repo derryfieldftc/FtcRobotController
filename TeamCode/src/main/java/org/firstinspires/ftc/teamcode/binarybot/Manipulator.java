@@ -67,9 +67,9 @@ public class Manipulator {
     public static int SHOULDER_TILT_BOUNDARY = 4100;
 
     public static int SHOULDER_TRANSFER = 2600;
-    public static int SHOULDER_AFTER_TRANSFER = 2900;
+    public static int SHOULDER_AFTER_TRANSFER = 5200;
 
-    // step size for adjusting positioN
+    // step size for adjusting position
     public static final int SHOULDER_DELTA = 10;
 
     // ******************************************************************
@@ -80,7 +80,7 @@ public class Manipulator {
     // ******************************************************************
     // elbow-related constants
     // ******************************************************************
-    public static double ELBOW_DEPLOYED = 1.0;
+    public static double ELBOW_DEPLOYED = 0.95;
     public static double ELBOW_AFTER_TRANSFER;
     public static double ELBOW_TRANSFER = 0.8;
     public static double ELBOW_CLEAR_BAR = 0.55;
@@ -113,7 +113,7 @@ public class Manipulator {
 
     // time (msec) before moving the shoulder after the block has been released.
     public static int TRANSFER_DELAY = 300;
-    public static int DUMP_HIGH_TIP_DELAY = 300;
+    public static int DUMP_HIGH_TIP_DELAY = 600;
         public static int DUMP_HIGH_UNTIP_DELAY = 700;
     public static int PICK_CLOSING_CLAW_DELAY = 300;
 

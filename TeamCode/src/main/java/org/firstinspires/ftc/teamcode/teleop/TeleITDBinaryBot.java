@@ -115,7 +115,7 @@ public class TeleITDBinaryBot extends LinearOpMode {
                 manipulator.tiltBucket(epad2.gamepad.right_trigger);
 
                 // trim the shoulder.
-                manipulator.trimShoulder(-epad2.gamepad.right_stick_y);
+                manipulator.trimShoulder(-epad2.gamepad.right_stick_y * ((epad2.gamepad.left_trigger > .5) ? 1 : 1 + epad2.gamepad.left_trigger));
 
                 // toggle the wrist?
                 if (epad2.justPressed(LEFT_BUMPER)) {
@@ -143,6 +143,16 @@ public class TeleITDBinaryBot extends LinearOpMode {
 
                 if (epad2.justPressed(DPAD_RIGHT)) {
                     manipulator.tiltRight();
+                }
+
+                //move arm to picking postion
+                if (epad2.justPressed(A)) {
+                    manipulator.shoulder.setTargetPosition(5200);
+                    manipulator.elbow.setPosition(Manipulator.ELBOW_DEPLOYED);
+                }
+                if (epad2.justPressed(Y)) {
+                    manipulator.shoulder.setTargetPosition(2600);
+                    manipulator.elbow.setPosition(Manipulator.ELBOW_DEPLOYED);
                 }
 
                 if (epad2.justPressed(DPAD_LEFT)) {
@@ -184,6 +194,7 @@ public class TeleITDBinaryBot extends LinearOpMode {
             telemetry.addData("shoulder tgt pos", bot.manipulator.shoulder.getTargetPosition());
             telemetry.addData("slide curr pos", bot.manipulator.slide.getCurrentPosition());
             telemetry.addData("slide tgt pos", bot.manipulator.slide.getTargetPosition());
+            telemetry.addData("distance", bot.get_distance());
             telemetry.update();
         }
     }
