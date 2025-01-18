@@ -291,14 +291,38 @@ public class TTScoreHighGoal extends LinearOpMode {
                 telemetry.update();
             }
         }
+
+        // turn CCW.
         if (opModeIsActive()) {
-            bot.measuredDrive(Manipulator.MOTOR_SPEED, -2);
+            bot.measuredTurn(Manipulator.MOTOR_SPEED, -50);
+
+            // loop until done.
+            while(opModeIsActive() &&  bot.measuredUpdate()) {
+                // send telemetry.
+                telemetry.addData("state", bot.measuredState);
+                telemetry.addData("tgt angle", bot.tgtAngle);
+                telemetry.addData("curr angle", bot.integratedAngle);
+                telemetry.update();
+            }
+
+
+        }
+        if (opModeIsActive()) {
+            bot.measuredDrive(Manipulator.MOTOR_SPEED, 2);
             // loop until done.
             while(opModeIsActive() &&  bot.measuredUpdate()) {
                 // send telemetry.
                 telemetry.addData("state", bot.measuredState);
                 telemetry.addData("tgt pos", bot.tgtPos);
                 telemetry.addData("curr pos", bot.currPos);
+                telemetry.update();
+            }
+        }
+        if(opModeIsActive()){
+            manipulator.unrotateWrist();
+
+            while(opModeIsActive() && bot.measuredUpdate()){
+                telemetry.addData("Status","unrotating wrist");
                 telemetry.update();
             }
         }

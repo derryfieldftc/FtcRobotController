@@ -112,7 +112,7 @@ public class Manipulator {
     // ******************************************************************
 
     // time (msec) before moving the shoulder after the block has been released.
-    public static int TRANSFER_DELAY = 300;
+    public static int TRANSFER_DELAY = 150;
     public static int DUMP_HIGH_TIP_DELAY = 600;
         public static int DUMP_HIGH_UNTIP_DELAY = 700;
     public static int PICK_CLOSING_CLAW_DELAY = 300;
