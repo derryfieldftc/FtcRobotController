@@ -28,7 +28,8 @@ public abstract class AutonomousOpMode extends LinearOpMode {
 		waitForStart();
 
 		for (RobotTask task : tasks) {
-			task.run();
+			if (opModeIsActive())
+				task.run();
 		}
 
 		for (RobotTask task : tasks) {
