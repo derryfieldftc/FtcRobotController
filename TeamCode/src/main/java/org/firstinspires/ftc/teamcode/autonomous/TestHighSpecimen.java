@@ -52,6 +52,13 @@ public class TestHighSpecimen extends LinearOpMode {
         // create a new robot object.
         bot = new BinaryBot(hardwareMap, this);
 
+        //    calibrate encoders for robot
+//        BREAKS AUTO WITHOUT ODOMETRY
+        bot.calibrateOdometry();
+
+        // reset positions on manipulator.
+        bot.manipulator.resetPositions();
+
         // get a reference to the manipulator.
         Manipulator manipulator = bot.manipulator;
 
@@ -69,8 +76,8 @@ public class TestHighSpecimen extends LinearOpMode {
                 // send telemetry.
                 telemetry.addData("state", bot.state);
                 telemetry.addData("slide", bot.manipulator.slide.getCurrentPosition());
-                telemetry.addData("tgt pos", bot.tgtPos);
-                telemetry.addData("curr pos", bot.currPos);
+                telemetry.addData("tgt pos", bot.targetPos);
+                telemetry.addData("curr pos", bot.currentPos);
                 telemetry.update();
 
             }

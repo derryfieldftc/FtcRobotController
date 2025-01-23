@@ -43,7 +43,6 @@ import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.*;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.binarybot.BinaryBot;
 import org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad;
@@ -194,7 +193,7 @@ public class TeleITDBinaryBot extends LinearOpMode {
             telemetry.addData("shoulder tgt pos", bot.manipulator.shoulder.getTargetPosition());
             telemetry.addData("slide curr pos", bot.manipulator.slide.getCurrentPosition());
             telemetry.addData("slide tgt pos", bot.manipulator.slide.getTargetPosition());
-            telemetry.addData("distance", bot.get_distance());
+            telemetry.addData("distance", bot.getDistance());
             telemetry.update();
         }
     }

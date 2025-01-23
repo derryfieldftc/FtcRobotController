@@ -50,7 +50,7 @@ public class TestScoreHighGoal extends LinearOpMode {
         bot = new BinaryBot(hardwareMap, this);
 
         //    calibrate encoders for robot
-        bot.calibrate();
+        bot.calibrateOdometry();
 
         // reset positions on manipulator.
         bot.manipulator.resetPositions();
@@ -71,8 +71,8 @@ public class TestScoreHighGoal extends LinearOpMode {
             while(opModeIsActive() &&  bot.update()) {
                 // send telemetry.
                 telemetry.addData("state", bot.state);
-                telemetry.addData("tgt pos", bot.tgtPos);
-                telemetry.addData("curr pos", bot.currPos);
+                telemetry.addData("tgt pos", bot.targetPos);
+                telemetry.addData("curr pos", bot.currentPos);
                 telemetry.update();
             }
         }

@@ -51,7 +51,7 @@ public class TTScoreHighGoal extends LinearOpMode {
 
         //    calibrate encoders for robot
 //        BREAKS AUTO WITHOUT ODOMETRY
-        bot.calibrate();
+        bot.calibrateOdometry();
 
         // reset positions on manipulator.
         bot.manipulator.resetPositions();
@@ -74,8 +74,8 @@ public class TTScoreHighGoal extends LinearOpMode {
             while(opModeIsActive() &&  bot.update()) {
                 // send telemetry.
                 telemetry.addData("state", bot.state);
-                telemetry.addData("tgt pos", bot.tgtPos);
-                telemetry.addData("curr pos", bot.currPos);
+                telemetry.addData("tgt pos", bot.targetPos);
+                telemetry.addData("curr pos", bot.currentPos);
                 telemetry.update();
             }
         }
@@ -95,8 +95,8 @@ public class TTScoreHighGoal extends LinearOpMode {
 //                telemetry.addData("deviceName", manipulator.sensorDistance.getDeviceName());
 //                telemetry.addData("range", String.format("%.01f in", manipulator.sensorDistance.getDistance(DistanceUnit.INCH)));
                 telemetry.addData("state", bot.state);
-                telemetry.addData("tgt pos", bot.tgtPos);
-                telemetry.addData("curr pos", bot.currPos);
+                telemetry.addData("tgt pos", bot.targetPos);
+                telemetry.addData("curr pos", bot.currentPos);
                 telemetry.update();
             }
         }
@@ -121,8 +121,8 @@ public class TTScoreHighGoal extends LinearOpMode {
             while(opModeIsActive() &&  bot.update()) {
                 // send telemetry.
                 telemetry.addData("state", bot.state);
-                telemetry.addData("tgt pos", bot.tgtPos);
-                telemetry.addData("curr pos", bot.currPos);
+                telemetry.addData("tgt pos", bot.targetPos);
+                telemetry.addData("curr pos", bot.currentPos);
                 telemetry.update();
             }
         }
@@ -165,8 +165,8 @@ public class TTScoreHighGoal extends LinearOpMode {
             while(opModeIsActive() &&  bot.update()) {
                 // send telemetry.
                 telemetry.addData("state", bot.state);
-                telemetry.addData("tgt pos", bot.tgtPos);
-                telemetry.addData("curr pos", bot.currPos);
+                telemetry.addData("tgt pos", bot.targetPos);
+                telemetry.addData("curr pos", bot.currentPos);
                 telemetry.update();
             }
             while(opModeIsActive()&& manipulator.slide.isBusy()){
@@ -181,8 +181,8 @@ public class TTScoreHighGoal extends LinearOpMode {
             while(opModeIsActive() &&  bot.update()) {
                 // send telemetry.
                 telemetry.addData("state", bot.state);
-                telemetry.addData("tgt pos", bot.tgtPos);
-                telemetry.addData("curr pos", bot.currPos);
+                telemetry.addData("tgt pos", bot.targetPos);
+                telemetry.addData("curr pos", bot.currentPos);
                 telemetry.update();
             }
         }
@@ -229,8 +229,8 @@ public class TTScoreHighGoal extends LinearOpMode {
             while(opModeIsActive() &&  bot.update()) {
                 // send telemetry.
                 telemetry.addData("state", bot.state);
-                telemetry.addData("tgt pos", bot.tgtPos);
-                telemetry.addData("curr pos", bot.currPos);
+                telemetry.addData("tgt pos", bot.targetPos);
+                telemetry.addData("curr pos", bot.currentPos);
                 telemetry.update();
             }
         }
@@ -242,8 +242,8 @@ public class TTScoreHighGoal extends LinearOpMode {
             while(opModeIsActive() &&  bot.update()) {
                 // send telemetry.
                 telemetry.addData("state", bot.state);
-                telemetry.addData("tgt pos", bot.tgtPos);
-                telemetry.addData("curr pos", bot.currPos);
+                telemetry.addData("tgt pos", bot.targetPos);
+                telemetry.addData("curr pos", bot.currentPos);
                 telemetry.update();
             }
         }
@@ -270,8 +270,8 @@ public class TTScoreHighGoal extends LinearOpMode {
             while(opModeIsActive() &&  bot.update()) {
                 // send telemetry.
                 telemetry.addData("state", bot.state);
-                telemetry.addData("tgt pos", bot.tgtPos);
-                telemetry.addData("curr pos", bot.currPos);
+                telemetry.addData("tgt pos", bot.targetPos);
+                telemetry.addData("curr pos", bot.currentPos);
                 telemetry.update();
             }
         }
@@ -306,8 +306,8 @@ public class TTScoreHighGoal extends LinearOpMode {
             while(opModeIsActive() &&  bot.update()) {
                 // send telemetry.
                 telemetry.addData("state", bot.state);
-                telemetry.addData("tgt pos", bot.tgtPos);
-                telemetry.addData("curr pos", bot.currPos);
+                telemetry.addData("tgt pos", bot.targetPos);
+                telemetry.addData("curr pos", bot.currentPos);
                 telemetry.update();
             }
         }

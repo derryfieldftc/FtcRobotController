@@ -69,8 +69,8 @@ public class TestMeasuredStrafe extends LinearOpMode {
             while(opModeIsActive() &&  bot.update()) {
                 // send telemetry.
                 telemetry.addData("state", bot.state);
-                telemetry.addData("tgt pos", bot.tgtPos);
-                telemetry.addData("curr pos", bot.currPos);
+                telemetry.addData("tgt pos", bot.targetPos);
+                telemetry.addData("curr pos", bot.currentPos);
                 telemetry.update();
             }
         }
@@ -85,8 +85,8 @@ public class TestMeasuredStrafe extends LinearOpMode {
             while(opModeIsActive() &&  bot.update()) {
                 // send telemetry.
                 telemetry.addData("state", bot.state);
-                telemetry.addData("tgt pos", bot.tgtPos);
-                telemetry.addData("curr pos", bot.currPos);
+                telemetry.addData("tgt pos", bot.targetPos);
+                telemetry.addData("curr pos", bot.currentPos);
                 telemetry.update();
             }
         }

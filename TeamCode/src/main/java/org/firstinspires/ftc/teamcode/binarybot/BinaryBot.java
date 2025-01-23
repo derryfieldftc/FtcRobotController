@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode.binarybot;
 
 import static androidx.core.math.MathUtils.clamp;
 
+import static org.firstinspires.ftc.teamcode.binarybot.BinaryBot.State.SPECIMEN_BACK_OFF;
+import static org.firstinspires.ftc.teamcode.binarybot.BinaryBot.State.SPECIMEN_HOOKING;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -30,17 +33,19 @@ public class BinaryBot {
         IDLE,
 
         // robot is doing a measured drive, strafe, or turn.
-        FORWARD,
-        BACKWARD,
-        RIGHTWARD,
-        LEFTWARD,
-        CLOCKWISE,
-        COUNTERCLOCKWISE,
+        DRIVING_FORWARD,
+        DRIVING_BACKWARD,
+
+        STRAFING_RIGHT,
+        STRAFING_LEFT,
+
+        TURNING_CLOCKWISE,
+        TURNING_COUNTERCLOCKWISE,
 
         // robot is placing a specimen.
-        SPECIMEN_RAISE_HIGH,
-        SPECIMEN_APPROACH_SUB,
-        SPECIMEN_LOWER_HIGH,
+        SPECIMEN_RAISING,
+        SPECIMEN_APPROACHING,
+        SPECIMEN_HOOKING,
         SPECIMEN_BACK_OFF
     }
 
@@ -57,6 +62,7 @@ public class BinaryBot {
     static final double     POD_COUNTS_PER_INCH         =   (POD_COUNTS_PER_MOTOR_REV * POD_DRIVE_GEAR_REDUCTION) /
                                                             (POD_WHEEL_CIRCUM_INCHES);
 
+
     static final double     DRIVE_COUNTS_PER_MOTOR_REV    = 537.7;
     static final double     DRIVE_DRIVE_GEAR_REDUCTION    = 1;
 
@@ -67,6 +73,7 @@ public class BinaryBot {
             (DRIVE_WHEEL_CIRCUM_INCHES);
 
     static final boolean USE_ODOMETRY_POD = true;
+
     static final double STRAFE_ENCODER_FUDGE_FACTOR = 1.0;
 
     static final double SPECIMEN_APPROACH_DISTANCE_INCHES = 3.0;
@@ -97,40 +104,24 @@ public class BinaryBot {
     private double previousAngle = 0;
     public double integratedAngle = 0;
 
-    private boolean useAutoCorrect = true;
+    private final boolean USE_AUTO_CORRECT = true;
     private final double P_COEFFICIENT_DRIVE = 0.1;
     private final double P_COEFFICIENT_STRAFE = 0.05;
 
-    // ******************************************************************
-    // public member variables.
-    // ******************************************************************
-    // ITD arm.
-    // make it publicly visible.
     public Manipulator manipulator;
-
-    // current bot state.
     public State state = State.IDLE;
 
-    // ******************************************************************
-    // construction
-    // ******************************************************************
     public BinaryBot(HardwareMap hardwareMap, OpMode opMode) {
         this.opMode = opMode;
         this.hardwareMap = hardwareMap;
         initHardware();
     }
 
-    // ******************************************************************
-    // private / helper methods.
-    // ******************************************************************
-    /**
-     * Init robot hardware.
-     */
     private void initHardware() {
-        motorFL = hardwareMap.get(DcMotor.class, "motorFL");
-        motorBL = hardwareMap.get(DcMotor.class, "motorBL");
-        motorFR = hardwareMap.get(DcMotor.class, "motorFR");
-        motorBR = hardwareMap.get(DcMotor.class, "motorBR");
+        motorFL = hardwareMap.dcMotor.get("motorFL");
+        motorBL = hardwareMap.dcMotor.get("motorBL");
+        motorFR = hardwareMap.dcMotor.get("motorFR");
+        motorBR = hardwareMap.dcMotor.get("motorBR");
 
         motorFL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         motorBL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -142,45 +133,28 @@ public class BinaryBot {
         motorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+
         motorFL.setDirection(DcMotorSimple.Direction.REVERSE);
         motorBL.setDirection(DcMotorSimple.Direction.REVERSE);
         motorFR.setDirection(DcMotorSimple.Direction.FORWARD);
         motorBR.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        // init the arm.
         manipulator = new Manipulator(hardwareMap, opMode);
 
-        // odometry.
         if (USE_ODOMETRY_POD) {
-            strafeEncoder = hardwareMap.get(DcMotor.class, "strafe");
-        } else {
-            // use the front left drive motor.
-            strafeEncoder = motorFL;
-        }
+            strafeEncoder = hardwareMap.dcMotor.get("strafe");
+            driveEncoder = hardwareMap.dcMotor.get("drive");
 
-        // should we use odometry pod or the built in motor.
-        if (USE_ODOMETRY_POD) {
-            driveEncoder = hardwareMap.get(DcMotor.class, "drive");
+            strafeEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
+            driveEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
+
+            strafeEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            driveEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         } else {
-            // use the front left drive motor.
+            strafeEncoder = motorFL;
             driveEncoder = motorFL;
         }
 
-        // reverse drive and strafe encoder values
-        // so that positive changes corresponds to forward and rightward motion.
-        if (USE_ODOMETRY_POD) {
-            strafeEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
-            driveEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
-        }
-
-        // put "motors" into run without encoder mode.
-        // we only need the encoder ports.  no motor should be attached.
-        if (USE_ODOMETRY_POD) {
-            strafeEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            driveEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        }
-
-        // IMU
         initIMU();
 
         distanceSensor = hardwareMap.get(DistanceSensor.class, "rightDistance");
@@ -190,7 +164,7 @@ public class BinaryBot {
      * calibrate encoder
      * reset the strafing and drive encoders
      */
-    public void calibrate(){
+    public void calibrateOdometry() {
         // for now, reset the encoders
         // reset encoders.
         driveEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -217,7 +191,7 @@ public class BinaryBot {
         imu.initialize(parameters);
     }
 
-    public double get_distance() {
+    public double getDistance() {
         return distanceSensor.getDistance(DistanceUnit.INCH);
     }
 
@@ -294,15 +268,13 @@ public class BinaryBot {
      */
     public void stop() {
         drive(0, 0, 0);
-
-        // set state to idle.
         state = State.IDLE;
     }
 
     // drive a specified distance in inches.
-    public int currPos = 0;
+    public int currentPos = 0;
     public int initPos = 0;
-    public int tgtPos = 0;
+    public int targetPos = 0;
     public double tgtAngle = 0;
     public float measuredPower = 0;
 
@@ -320,23 +292,24 @@ public class BinaryBot {
         initPos = driveEncoder.getCurrentPosition();
 
         // offset in encoder ticks.
-        double offset = 0;
+        double offset;
         if (USE_ODOMETRY_POD) {
             offset = distance * POD_COUNTS_PER_INCH;
         } else {
             offset = distance * DRIVE_COUNTS_PER_INCH;
         }
-        tgtPos = (int)Math.round(offset + initPos);
+
+        targetPos = (int)Math.round(offset + initPos);
         if (offset < 0) {
             measuredPower = -(float)Math.abs(power);
-            state = State.BACKWARD;
+            state = State.DRIVING_BACKWARD;
         } else {
             measuredPower = (float)Math.abs(power);
-            state = State.FORWARD;
+            state = State.DRIVING_FORWARD;
         }
 
         // is auto correct enabled (which helps keep the bot drive straight)?
-        if (useAutoCorrect) {
+        if (USE_AUTO_CORRECT) {
             // reset angles.
             resetAngles();
             // set the target angle equal to the current angle.
@@ -363,17 +336,17 @@ public class BinaryBot {
             offset = distance * DRIVE_COUNTS_PER_INCH * STRAFE_ENCODER_FUDGE_FACTOR;
         }
 
-        tgtPos = (int)Math.round(offset + initPos);
+        targetPos = (int)Math.round(offset + initPos);
         if (offset < 0) {
             measuredPower = -(float)Math.abs(power);
-            state = State.LEFTWARD;
+            state = State.STRAFING_LEFT;
         } else {
             measuredPower = (float)Math.abs(power);
-            state = State.RIGHTWARD;
+            state = State.STRAFING_RIGHT;
         }
 
         // is auto correct enabled (which helps keep the bot drive straight)?
-        if (useAutoCorrect) {
+        if (USE_AUTO_CORRECT) {
             // reset angles.
             resetAngles();
             // set the target angle equal to the current angle.
@@ -394,10 +367,10 @@ public class BinaryBot {
         tgtAngle = angle;
         if (tgtAngle < 0) {
             measuredPower = -(float)Math.abs(power);
-            state = State.COUNTERCLOCKWISE;
+            state = State.TURNING_COUNTERCLOCKWISE;
         } else {
             measuredPower = (float)Math.abs(power);
-            state = State.CLOCKWISE;
+            state = State.TURNING_CLOCKWISE;
         }
     }
 
@@ -410,7 +383,7 @@ public class BinaryBot {
         float value;
         double error;
         // are we using auto correct?
-        if (useAutoCorrect) {
+        if (USE_AUTO_CORRECT) {
             // update angles.
             updateAngles();
 
@@ -440,7 +413,7 @@ public class BinaryBot {
         manipulator.slide.setTargetPosition(Manipulator.SLIDE_HIGH_SPECIMEN_POSITION);
 
         // put it in new state.
-        state = State.SPECIMEN_RAISE_HIGH;
+        state = State.SPECIMEN_RAISING;
     }
 
     /**
@@ -449,15 +422,24 @@ public class BinaryBot {
      */
     public boolean update() {
         float correction = 0;
+        currentPos = driveEncoder.getCurrentPosition();
         switch(state) {
             case IDLE:
-                // done.
                 return false;
-            case FORWARD:
+            case DRIVING_FORWARD:
+                if (currentPos > targetPos) {
+                    stop();
+                    return false;
+                } else {
+                    correction = propCorrection(P_COEFFICIENT_DRIVE);
+                    drive(measuredPower, 0, correction);
+                    return true;
+                }
+            case DRIVING_BACKWARD:
                 // update current position
-                currPos = driveEncoder.getCurrentPosition();
+                currentPos = driveEncoder.getCurrentPosition();
                 // are we there yet?
-                if (currPos > tgtPos) {
+                if (currentPos < targetPos) {
                     // note that stop() should put it in IDLE mode.
                     stop();
                     return false;
@@ -466,24 +448,11 @@ public class BinaryBot {
                     drive(measuredPower, 0, correction);
                     return true;
                 }
-            case BACKWARD:
+            case STRAFING_RIGHT:
                 // update current position
-                currPos = driveEncoder.getCurrentPosition();
+                currentPos = strafeEncoder.getCurrentPosition();
                 // are we there yet?
-                if (currPos < tgtPos) {
-                    // note that stop() should put it in IDLE mode.
-                    stop();
-                    return false;
-                } else {
-                    correction = propCorrection(P_COEFFICIENT_DRIVE);
-                    drive(measuredPower, 0, correction);
-                    return true;
-                }
-            case RIGHTWARD:
-                // update current position
-                currPos = strafeEncoder.getCurrentPosition();
-                // are we there yet?
-                if (currPos > tgtPos) {
+                if (currentPos > targetPos) {
                     // note that stop() should put it in IDLE mode.
                     stop();
                     return false;
@@ -492,11 +461,11 @@ public class BinaryBot {
                     drive(0, measuredPower, correction);
                     return true;
                 }
-            case LEFTWARD:
+            case STRAFING_LEFT:
                 // update current position
-                currPos = strafeEncoder.getCurrentPosition();
+                currentPos = strafeEncoder.getCurrentPosition();
                 // are we there yet?
-                if (currPos < tgtPos) {
+                if (currentPos < targetPos) {
                     // note that stop() should put it in IDLE mode.
                     stop();
                     return false;
@@ -505,7 +474,7 @@ public class BinaryBot {
                     drive(0, measuredPower, correction);
                     return true;
                 }
-            case CLOCKWISE:
+            case TURNING_CLOCKWISE:
                 // update angles
                 updateAngles();
 
@@ -517,7 +486,7 @@ public class BinaryBot {
                     drive(0, 0, measuredPower);
                     return true;
                 }
-            case COUNTERCLOCKWISE:
+            case TURNING_COUNTERCLOCKWISE:
                 // update angles
                 updateAngles();
 
@@ -529,7 +498,7 @@ public class BinaryBot {
                     drive(0, 0, measuredPower);
                     return true;
                 }
-            case SPECIMEN_RAISE_HIGH:
+            case SPECIMEN_RAISING:
                 // is the slide done raising into position?
                 if (manipulator.slide.isBusy() == false) {
                     // we're done moving the slide.
@@ -545,11 +514,11 @@ public class BinaryBot {
                     }
                     // robot has to move backwards.
                     offset = -offset;
-                    tgtPos = (int)Math.round(offset + initPos);
+                    targetPos = (int)Math.round(offset + initPos);
                     measuredPower = -SPECIMEN_APPROACH_POWER;
 
                     // is auto correct enabled (which helps keep the bot drive straight)?
-                    if (useAutoCorrect) {
+                    if (USE_AUTO_CORRECT) {
                         // reset angles.
                         resetAngles();
                         // set the target angle equal to the current angle.
@@ -557,7 +526,7 @@ public class BinaryBot {
                     }
 
                     // switch to approach sub state.
-                    state = State.SPECIMEN_APPROACH_SUB;
+                    state = State.SPECIMEN_APPROACHING;
 
                     // we're still busy.
                     return true;
@@ -565,13 +534,15 @@ public class BinaryBot {
                     // we are still busy.
                     return true;
                 }
-            case SPECIMEN_APPROACH_SUB:
+            case SPECIMEN_APPROACHING:
                 // approach the sub until we've moved the required distance.
                 // update current position
-                currPos = driveEncoder.getCurrentPosition();
+                currentPos = driveEncoder.getCurrentPosition();
 
+
+                currentPos = driveEncoder.getCurrentPosition();
                 // are we there yet?
-                if (currPos < tgtPos) {
+                if (currentPos > targetPos) {
                     // note that stop() should put it in IDLE mode.
                     stop();
 
@@ -579,14 +550,14 @@ public class BinaryBot {
                     manipulator.slide.setTargetPosition(Manipulator.SLIDE_HIGH_SPECIMEN_RELEASE);
 
                     // change to the next state.
-                    state = State.SPECIMEN_LOWER_HIGH;
+                    state = SPECIMEN_HOOKING;
                     return true;
                 } else {
                     correction = propCorrection(P_COEFFICIENT_DRIVE);
                     drive(measuredPower, 0, correction);
                     return true;
                 }
-            case SPECIMEN_LOWER_HIGH:
+            case SPECIMEN_HOOKING:
                 if (manipulator.slide.isBusy() == false) {
                     // we're done moving slide.
                     // we need to back off.
@@ -601,11 +572,11 @@ public class BinaryBot {
                         offset = SPECIMEN_BACKOFF_DISTANCE_INCHES * DRIVE_COUNTS_PER_INCH;
                     }
                     // we're going forwards.
-                    tgtPos = (int)Math.round(offset + initPos);
+                    targetPos = (int)Math.round(offset + initPos);
                     measuredPower = SPECIMEN_APPROACH_POWER;
 
                     // is auto correct enabled (which helps keep the bot drive straight)?
-                    if (useAutoCorrect) {
+                    if (USE_AUTO_CORRECT) {
                         // reset angles.
                         resetAngles();
                         // set the target angle equal to the current angle.
@@ -613,7 +584,7 @@ public class BinaryBot {
                     }
 
                     // switch to approach sub state.
-                    state = State.SPECIMEN_BACK_OFF;
+                    state = SPECIMEN_BACK_OFF;
 
                     // we're still busy.
                     return true;
@@ -623,9 +594,9 @@ public class BinaryBot {
                 }
             case SPECIMEN_BACK_OFF:
                 // update current position
-                currPos = driveEncoder.getCurrentPosition();
+                currentPos = driveEncoder.getCurrentPosition();
                 // are we there yet?
-                if (currPos > tgtPos) {
+                if (currentPos < targetPos) {
                     // note that stop() should put it in IDLE mode.
                     stop();
                     return false;
