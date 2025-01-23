@@ -67,6 +67,8 @@ public class TTScoreHighGoal extends LinearOpMode {
 
         // move off the wall by strafing to the left.
         if (opModeIsActive()) {
+            // Deploys green thing
+            manipulator.greenThing.setPosition(Manipulator.GREEN_DEPLOYED);
 //            moves 6 inches to the left at power .4
             bot.measuredStrafe(Manipulator.MOTOR_SPEED, -6);
 
@@ -128,6 +130,7 @@ public class TTScoreHighGoal extends LinearOpMode {
         }
         // raise slide and dump.
         if (opModeIsActive()) {
+            manipulator.greenThing.setPosition(manipulator.GREEN_RETRACTED);
             manipulator.startHighDump();
 
             // loop until high dump is done.
@@ -137,16 +140,6 @@ public class TTScoreHighGoal extends LinearOpMode {
                 telemetry.update();
             }
         }
-//        // lower slide half way
-//        if (opModeIsActive()){
-//            manipulator.slide.setTargetPosition(manipulator.SLIDE_MID_POSITION);
-//
-//            while(opModeIsActive() &&  manipulator.slide.isBusy()) {
-//                // send telemetry.
-//                telemetry.addData("Status", "Moving to slide to mid position...");
-//                telemetry.update();
-//            }
-//        }
         //deploys shoulder
         if (opModeIsActive()){
             manipulator.deploy();
@@ -221,7 +214,12 @@ public class TTScoreHighGoal extends LinearOpMode {
                 telemetry.update();
             }
         }
-        if(opModeIsActive()){
+//        if(opModeIsActive()){
+//
+//        }
+        if (opModeIsActive()) {
+            bot.measuredStrafe(Manipulator.MOTOR_SPEED, -6.5);
+
             manipulator.elbow.setPosition(Manipulator.ELBOW_DEPLOYED);
             manipulator.deploy();
 
@@ -229,9 +227,6 @@ public class TTScoreHighGoal extends LinearOpMode {
                 telemetry.addData("Status","Deploying stuff...");
                 telemetry.update();
             }
-        }
-        if (opModeIsActive()) {
-            bot.measuredStrafe(Manipulator.MOTOR_SPEED, -6.5);
             // loop until done.
             while(opModeIsActive() &&  bot.measuredUpdate()) {
                 // send telemetry.

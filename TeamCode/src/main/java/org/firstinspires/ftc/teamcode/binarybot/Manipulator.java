@@ -47,6 +47,9 @@ public class Manipulator {
     public static final int SLIDE_RETRACTED_POSITION = 0;
     public static int SLIDE_TRANSFER_POSITION = 400;
     public static int SLIDE_HIGH_DUMP_POSITION = 4900;
+    public static int SLIDE_HIGH_SPECIMEN_POSITION = 2620;
+    public static int SLIDE_HIGH_SPECIMEN_RELEASE = 2250;
+    public static int SLIDE_SPECIMEN_PICK = 320;
 
     // step size for adjusting position.
     public static final int SLIDE_DELTA = 10;
@@ -55,7 +58,7 @@ public class Manipulator {
     // shoulder-related constants
     // ******************************************************************
     // shoulder motor power
-    public static final double SHOULDER_POWER = 0.75;
+    public static final double SHOULDER_POWER = 0.8;
 
     // shoulder motor positions
     public static int SHOULDER_ELBOW_BOUNDARY = 4200;
@@ -93,7 +96,9 @@ public class Manipulator {
     private static double TILT_RETRACTED = 0.75;
     private static double TILT_LEFT = 0.8;
     private static double TILT_RIGHT = 1;
-
+//    NOT CORRECT VALUE
+    public static final double GREEN_DEPLOYED =.7;
+    public static final double GREEN_RETRACTED = .5;
     // ******************************************************************
     // claw-related constants
     // ******************************************************************
@@ -127,6 +132,7 @@ public class Manipulator {
     private Servo wrist;
     public Servo tilt;
     public Servo elbow;
+    public Servo greenThing;
     public DigitalChannel limitSlide;
     public DigitalChannel limitShoulder;
 //    public DistanceSensor sensorDistance;
@@ -154,6 +160,8 @@ public class Manipulator {
         wrist = hardwareMap.servo.get("wrist");
         tilt = hardwareMap.servo.get("tilt");
         elbow = hardwareMap.servo.get("elbow");
+//        GREEN THING- rubber thing on servo
+        greenThing = hardwareMap.servo.get("greenThing");
         //get references to the limit switches
         limitShoulder = hardwareMap.get(DigitalChannel.class, "limitShoulder");
         limitSlide = hardwareMap.get(DigitalChannel.class, "limitSlide");
@@ -213,6 +221,8 @@ public class Manipulator {
 
         // retract tilt
         tilt.setPosition(TILT_RETRACTED);
+        //Retract green thing
+        greenThing.setPosition(GREEN_RETRACTED);
     }
     public void calibrate(){
         if (limitShoulder.getState() == false){
