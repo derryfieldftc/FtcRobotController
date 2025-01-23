@@ -5,6 +5,7 @@ import static androidx.core.math.MathUtils.clamp;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -69,7 +70,8 @@ public class BinaryBot {
     static final double STRAFE_ENCODER_FUDGE_FACTOR = 1.0;
 
     static final double SPECIMEN_APPROACH_DISTANCE_INCHES = 3.0;
-    static final float SPECIMEN_APPROACH_POWER = 1.0f;
+    static final double SPECIMEN_BACKOFF_DISTANCE_INCHES = 12.0;
+    static final float SPECIMEN_APPROACH_POWER = 0.4f;
 
     // ******************************************************************
     // private member variables
@@ -532,7 +534,7 @@ public class BinaryBot {
                 if (manipulator.slide.isBusy() == false) {
                     // we're done moving the slide.
                     // get ready to move into position.
-                    currPos = driveEncoder.getCurrentPosition();
+                    initPos = driveEncoder.getCurrentPosition();
 
                     // offset in encoder ticks.
                     double offset = 0;
@@ -541,8 +543,10 @@ public class BinaryBot {
                     } else {
                         offset = SPECIMEN_APPROACH_DISTANCE_INCHES * DRIVE_COUNTS_PER_INCH;
                     }
+                    // robot has to move backwards.
+                    offset = -offset;
                     tgtPos = (int)Math.round(offset + initPos);
-                    measuredPower = SPECIMEN_APPROACH_POWER;
+                    measuredPower = -SPECIMEN_APPROACH_POWER;
 
                     // is auto correct enabled (which helps keep the bot drive straight)?
                     if (useAutoCorrect) {
@@ -565,8 +569,9 @@ public class BinaryBot {
                 // approach the sub until we've moved the required distance.
                 // update current position
                 currPos = driveEncoder.getCurrentPosition();
+
                 // are we there yet?
-                if (currPos > tgtPos) {
+                if (currPos < tgtPos) {
                     // note that stop() should put it in IDLE mode.
                     stop();
 
@@ -575,7 +580,7 @@ public class BinaryBot {
 
                     // change to the next state.
                     state = State.SPECIMEN_LOWER_HIGH;
-                    return false;
+                    return true;
                 } else {
                     correction = propCorrection(P_COEFFICIENT_DRIVE);
                     drive(measuredPower, 0, correction);
@@ -586,19 +591,18 @@ public class BinaryBot {
                     // we're done moving slide.
                     // we need to back off.
                     // get ready to move into position.
-                    currPos = driveEncoder.getCurrentPosition();
+                    initPos = driveEncoder.getCurrentPosition();
 
                     // offset in encoder ticks.
                     double offset = 0;
                     if (USE_ODOMETRY_POD) {
-                        offset = SPECIMEN_APPROACH_DISTANCE_INCHES * POD_COUNTS_PER_INCH;
+                        offset = SPECIMEN_BACKOFF_DISTANCE_INCHES * POD_COUNTS_PER_INCH;
                     } else {
-                        offset = SPECIMEN_APPROACH_DISTANCE_INCHES * DRIVE_COUNTS_PER_INCH;
+                        offset = SPECIMEN_BACKOFF_DISTANCE_INCHES * DRIVE_COUNTS_PER_INCH;
                     }
-                    // we're going backwards.
-                    offset = -offset;
+                    // we're going forwards.
                     tgtPos = (int)Math.round(offset + initPos);
-                    measuredPower = -SPECIMEN_APPROACH_POWER;
+                    measuredPower = SPECIMEN_APPROACH_POWER;
 
                     // is auto correct enabled (which helps keep the bot drive straight)?
                     if (useAutoCorrect) {
@@ -613,13 +617,15 @@ public class BinaryBot {
 
                     // we're still busy.
                     return true;
-
+                } else {
+                    // slide is still busy.
+                    return true;
                 }
             case SPECIMEN_BACK_OFF:
                 // update current position
                 currPos = driveEncoder.getCurrentPosition();
                 // are we there yet?
-                if (currPos < tgtPos) {
+                if (currPos > tgtPos) {
                     // note that stop() should put it in IDLE mode.
                     stop();
                     return false;

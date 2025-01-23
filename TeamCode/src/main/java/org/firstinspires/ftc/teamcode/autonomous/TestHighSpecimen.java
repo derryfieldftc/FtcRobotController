@@ -65,13 +65,16 @@ public class TestHighSpecimen extends LinearOpMode {
             bot.placeSpecimenHigh();
 
             // loop until done traveling 2 feet.
-            while(opModeIsActive() &&  bot.update()) {
+            while(opModeIsActive() && bot.update()) {
                 // send telemetry.
                 telemetry.addData("state", bot.state);
+                telemetry.addData("slide", bot.manipulator.slide.getCurrentPosition());
                 telemetry.addData("tgt pos", bot.tgtPos);
                 telemetry.addData("curr pos", bot.currPos);
                 telemetry.update();
+
             }
+            sleep(2000);
         }
     }
 }
