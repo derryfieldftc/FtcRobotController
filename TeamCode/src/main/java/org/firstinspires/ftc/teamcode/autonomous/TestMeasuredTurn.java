@@ -66,9 +66,9 @@ public class TestMeasuredTurn extends LinearOpMode {
             bot.measuredTurn(0.2, 90);
 
             // loop until done turning.
-            while(opModeIsActive() &&  bot.measuredUpdate()) {
+            while(opModeIsActive() &&  bot.update()) {
                 // send telemetry.
-                telemetry.addData("state", bot.measuredState);
+                telemetry.addData("state", bot.state);
                 telemetry.addData("integrated angle", bot.integratedAngle);
                 telemetry.update();
             }

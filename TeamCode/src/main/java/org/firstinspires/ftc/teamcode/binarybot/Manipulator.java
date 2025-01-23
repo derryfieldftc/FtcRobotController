@@ -25,10 +25,7 @@ public class Manipulator {
         DEPLOY_MOVE_SLIDE,
         DEPLOY_MOVE_SHOULDER,
         PICK_FROM_FLOOR_MOVE_SHOULDER,
-        PICK_FROM_FLOOR_CLOSE_CLAW,
-        SPECIMEN_MOVE_TO_SUB,
-        SPECIMEN_PLACE_HIGH,
-        SPECIMEN_BACK_UP
+        PICK_FROM_FLOOR_CLOSE_CLAW
     }
 
     // ******************************************************************
@@ -209,17 +206,7 @@ public class Manipulator {
         // set state.
         manipulatorState = ManipulatorState.PICK_FROM_FLOOR_MOVE_SHOULDER;
     }
-    public void placeHigh(){
-        if (manipulatorState != ManipulatorState.AVAILABLE) {
-            // already busy.
-            // can't pick right now.
-            return;
-        }
-        slide.setTargetPosition(SLIDE_HIGH_SPECIMEN_POSITION);
 
-        greenThing.setPosition(GREEN_DEPLOYED);
-        manipulatorState = ManipulatorState.SPECIMEN_PLACE_HIGH;
-    }
     /**
      * reset servo and slide positions for initial state.
      */
@@ -495,14 +482,6 @@ public class Manipulator {
                     // we're still waiting.
                     return true;
                 }
-
-            case SPECIMEN_PLACE_HIGH:
-                if (slide.isBusy() == false){
-                    // done moving slide into position
-                    // move forward a specified amount.
-
-                    manipulatorState =
-                }
             default:
                 return false;
         }
@@ -714,17 +693,7 @@ public class Manipulator {
         //set state to DEPLOY_MOVE_SLIDE
         manipulatorState = ManipulatorState.AVAILABLE.DEPLOY_MOVE_SLIDE;
     }
-    public void specimenHighScore() {
-        if (manipulatorState != ManipulatorState.AVAILABLE){
-            // already busy
-            return;
-        } else {
-            manipulatorState = ManipulatorState.SPECIMEN_HIGH_SCORING;
 
-            slide.setTargetPosition(SLIDE_SPECIMEN_PICK);
-            greenThing.setPosition(GREEN_DEPLOYED);
-        }
-    }
     public void stop() {
         manipulatorState = ManipulatorState.AVAILABLE;
         slide.setTargetPosition(slide.getCurrentPosition());

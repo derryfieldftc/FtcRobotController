@@ -8,10 +8,8 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.util.RobotLog;
 
 
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
@@ -26,14 +24,23 @@ public class BinaryBot {
     // enumerations.
     // ******************************************************************
     // measured movement system state.
-    public enum MeasuredState {
+    public enum State {
+        // robot is available.
         IDLE,
+
+        // robot is doing a measured drive, strafe, or turn.
         FORWARD,
         BACKWARD,
         RIGHTWARD,
         LEFTWARD,
         CLOCKWISE,
-        COUNTERCLOCKWISE
+        COUNTERCLOCKWISE,
+
+        // robot is placing a specimen.
+        SPECIMEN_RAISE_HIGH,
+        SPECIMEN_APPROACH_SUB,
+        SPECIMEN_LOWER_HIGH,
+        SPECIMEN_BACK_OFF
     }
 
     // ******************************************************************
@@ -60,6 +67,9 @@ public class BinaryBot {
 
     static final boolean USE_ODOMETRY_POD = true;
     static final double STRAFE_ENCODER_FUDGE_FACTOR = 1.0;
+
+    static final double SPECIMEN_APPROACH_DISTANCE_INCHES = 3.0;
+    static final float SPECIMEN_APPROACH_POWER = 1.0f;
 
     // ******************************************************************
     // private member variables
@@ -96,8 +106,8 @@ public class BinaryBot {
     // make it publicly visible.
     public Manipulator manipulator;
 
-    // current odometry state.
-    public MeasuredState measuredState = MeasuredState.IDLE;
+    // current bot state.
+    public State state = State.IDLE;
 
     // ******************************************************************
     // construction
@@ -284,7 +294,7 @@ public class BinaryBot {
         drive(0, 0, 0);
 
         // set state to idle.
-        measuredState = MeasuredState.IDLE;
+        state = State.IDLE;
     }
 
     // drive a specified distance in inches.
@@ -317,10 +327,10 @@ public class BinaryBot {
         tgtPos = (int)Math.round(offset + initPos);
         if (offset < 0) {
             measuredPower = -(float)Math.abs(power);
-            measuredState = MeasuredState.BACKWARD;
+            state = State.BACKWARD;
         } else {
             measuredPower = (float)Math.abs(power);
-            measuredState = MeasuredState.FORWARD;
+            state = State.FORWARD;
         }
 
         // is auto correct enabled (which helps keep the bot drive straight)?
@@ -354,10 +364,10 @@ public class BinaryBot {
         tgtPos = (int)Math.round(offset + initPos);
         if (offset < 0) {
             measuredPower = -(float)Math.abs(power);
-            measuredState = MeasuredState.LEFTWARD;
+            state = State.LEFTWARD;
         } else {
             measuredPower = (float)Math.abs(power);
-            measuredState = MeasuredState.RIGHTWARD;
+            state = State.RIGHTWARD;
         }
 
         // is auto correct enabled (which helps keep the bot drive straight)?
@@ -382,10 +392,10 @@ public class BinaryBot {
         tgtAngle = angle;
         if (tgtAngle < 0) {
             measuredPower = -(float)Math.abs(power);
-            measuredState = MeasuredState.COUNTERCLOCKWISE;
+            state = State.COUNTERCLOCKWISE;
         } else {
             measuredPower = (float)Math.abs(power);
-            measuredState = MeasuredState.CLOCKWISE;
+            state = State.CLOCKWISE;
         }
     }
 
@@ -414,13 +424,30 @@ public class BinaryBot {
         }
         return value;
     }
+
+    public void placeSpecimenHigh() {
+        if (state != State.IDLE) {
+            // robot is not available.
+            return;
+        }
+
+        // put green thingy in place.
+        manipulator.greenThing.setPosition(Manipulator.GREEN_DEPLOYED);
+
+        // raise slide.
+        manipulator.slide.setTargetPosition(Manipulator.SLIDE_HIGH_SPECIMEN_POSITION);
+
+        // put it in new state.
+        state = State.SPECIMEN_RAISE_HIGH;
+    }
+
     /**
      *
      * @return true if still in measured mode.
      */
-    public boolean measuredUpdate() {
+    public boolean update() {
         float correction = 0;
-        switch(measuredState) {
+        switch(state) {
             case IDLE:
                 // done.
                 return false;
@@ -498,6 +525,107 @@ public class BinaryBot {
                     return false;
                 } else {
                     drive(0, 0, measuredPower);
+                    return true;
+                }
+            case SPECIMEN_RAISE_HIGH:
+                // is the slide done raising into position?
+                if (manipulator.slide.isBusy() == false) {
+                    // we're done moving the slide.
+                    // get ready to move into position.
+                    currPos = driveEncoder.getCurrentPosition();
+
+                    // offset in encoder ticks.
+                    double offset = 0;
+                    if (USE_ODOMETRY_POD) {
+                        offset = SPECIMEN_APPROACH_DISTANCE_INCHES * POD_COUNTS_PER_INCH;
+                    } else {
+                        offset = SPECIMEN_APPROACH_DISTANCE_INCHES * DRIVE_COUNTS_PER_INCH;
+                    }
+                    tgtPos = (int)Math.round(offset + initPos);
+                    measuredPower = SPECIMEN_APPROACH_POWER;
+
+                    // is auto correct enabled (which helps keep the bot drive straight)?
+                    if (useAutoCorrect) {
+                        // reset angles.
+                        resetAngles();
+                        // set the target angle equal to the current angle.
+                        tgtAngle = integratedAngle;
+                    }
+
+                    // switch to approach sub state.
+                    state = State.SPECIMEN_APPROACH_SUB;
+
+                    // we're still busy.
+                    return true;
+                } else {
+                    // we are still busy.
+                    return true;
+                }
+            case SPECIMEN_APPROACH_SUB:
+                // approach the sub until we've moved the required distance.
+                // update current position
+                currPos = driveEncoder.getCurrentPosition();
+                // are we there yet?
+                if (currPos > tgtPos) {
+                    // note that stop() should put it in IDLE mode.
+                    stop();
+
+                    // now we need to lower the slide.
+                    manipulator.slide.setTargetPosition(Manipulator.SLIDE_HIGH_SPECIMEN_RELEASE);
+
+                    // change to the next state.
+                    state = State.SPECIMEN_LOWER_HIGH;
+                    return false;
+                } else {
+                    correction = propCorrection(P_COEFFICIENT_DRIVE);
+                    drive(measuredPower, 0, correction);
+                    return true;
+                }
+            case SPECIMEN_LOWER_HIGH:
+                if (manipulator.slide.isBusy() == false) {
+                    // we're done moving slide.
+                    // we need to back off.
+                    // get ready to move into position.
+                    currPos = driveEncoder.getCurrentPosition();
+
+                    // offset in encoder ticks.
+                    double offset = 0;
+                    if (USE_ODOMETRY_POD) {
+                        offset = SPECIMEN_APPROACH_DISTANCE_INCHES * POD_COUNTS_PER_INCH;
+                    } else {
+                        offset = SPECIMEN_APPROACH_DISTANCE_INCHES * DRIVE_COUNTS_PER_INCH;
+                    }
+                    // we're going backwards.
+                    offset = -offset;
+                    tgtPos = (int)Math.round(offset + initPos);
+                    measuredPower = -SPECIMEN_APPROACH_POWER;
+
+                    // is auto correct enabled (which helps keep the bot drive straight)?
+                    if (useAutoCorrect) {
+                        // reset angles.
+                        resetAngles();
+                        // set the target angle equal to the current angle.
+                        tgtAngle = integratedAngle;
+                    }
+
+                    // switch to approach sub state.
+                    state = State.SPECIMEN_BACK_OFF;
+
+                    // we're still busy.
+                    return true;
+
+                }
+            case SPECIMEN_BACK_OFF:
+                // update current position
+                currPos = driveEncoder.getCurrentPosition();
+                // are we there yet?
+                if (currPos < tgtPos) {
+                    // note that stop() should put it in IDLE mode.
+                    stop();
+                    return false;
+                } else {
+                    correction = propCorrection(P_COEFFICIENT_DRIVE);
+                    drive(measuredPower, 0, correction);
                     return true;
                 }
             default:
