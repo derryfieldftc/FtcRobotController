@@ -91,7 +91,7 @@ public class BinaryBot {
     public DcMotor driveEncoder;
     public DcMotor strafeEncoder;
     RevHubOrientationOnRobot orientationOnRobot;
-    public DistanceSensor distanceLeftRear;
+    public DistanceSensor distanceRightRear;
 
     // op mode related items.
     private OpMode opMode;
@@ -156,7 +156,7 @@ public class BinaryBot {
 
         initIMU();
 
-        distanceLeftRear = hardwareMap.get(DistanceSensor.class, "leftRearDistance");
+        distanceRightRear = hardwareMap.get(DistanceSensor.class, "rightRearDistance");
     }
 
     /**
@@ -191,7 +191,7 @@ public class BinaryBot {
     }
 
     public double getDistance() {
-        return distanceLeftRear.getDistance(DistanceUnit.INCH);
+        return distanceRightRear.getDistance(DistanceUnit.INCH);
     }
 
     public void updateAngles() {
