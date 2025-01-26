@@ -8,7 +8,6 @@ import static org.firstinspires.ftc.teamcode.binarybot.BinaryBot.State.SPECIMEN_
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -92,7 +91,7 @@ public class BinaryBot {
     public DcMotor driveEncoder;
     public DcMotor strafeEncoder;
     RevHubOrientationOnRobot orientationOnRobot;
-    public DistanceSensor distanceSensor;
+    public DistanceSensor leftRearDistance;
 
     // op mode related items.
     private OpMode opMode;
@@ -157,7 +156,7 @@ public class BinaryBot {
 
         initIMU();
 
-        distanceSensor = hardwareMap.get(DistanceSensor.class, "rightDistance");
+        leftRearDistance = hardwareMap.get(DistanceSensor.class, "leftRearDistance");
     }
 
     /**
@@ -192,7 +191,7 @@ public class BinaryBot {
     }
 
     public double getDistance() {
-        return distanceSensor.getDistance(DistanceUnit.INCH);
+        return leftRearDistance.getDistance(DistanceUnit.INCH);
     }
 
     public void updateAngles() {
@@ -407,7 +406,7 @@ public class BinaryBot {
         }
 
         // put green thingy in place.
-        manipulator.greenThing.setPosition(Manipulator.GREEN_DEPLOYED);
+        manipulator.greenThing.setPosition(Manipulator.GREEN_RETRACTED);
 
         // raise slide.
         manipulator.slide.setTargetPosition(Manipulator.SLIDE_HIGH_SPECIMEN_POSITION);
@@ -545,7 +544,7 @@ public class BinaryBot {
                 if (currentPos > targetPos) {
                     // note that stop() should put it in IDLE mode.
                     stop();
-
+                    manipulator.greenThing.setPosition(manipulator.GREEN_DEPLOYED);
                     // now we need to lower the slide.
                     manipulator.slide.setTargetPosition(Manipulator.SLIDE_HIGH_SPECIMEN_RELEASE);
 

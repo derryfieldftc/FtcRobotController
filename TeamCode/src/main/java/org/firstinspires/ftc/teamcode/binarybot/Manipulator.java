@@ -47,8 +47,8 @@ public class Manipulator {
     public static final int SLIDE_RETRACTED_POSITION = 0;
     public static int SLIDE_TRANSFER_POSITION = 400;
     public static int SLIDE_HIGH_DUMP_POSITION = 4900;
-    public static int SLIDE_HIGH_SPECIMEN_POSITION = 3000;
-    public static int SLIDE_HIGH_SPECIMEN_RELEASE = 2250;
+    public static int SLIDE_HIGH_SPECIMEN_POSITION = 3200;
+    public static int SLIDE_HIGH_SPECIMEN_RELEASE = 1600;
     public static int SLIDE_SPECIMEN_PICK = 320;
 
     // step size for adjusting position.
@@ -97,8 +97,8 @@ public class Manipulator {
     private static double TILT_LEFT = 0.8;
     private static double TILT_RIGHT = 1;
 //    NOT CORRECT VALUE
-    public static final double GREEN_DEPLOYED =.7;
-    public static final double GREEN_RETRACTED = .5;
+    public static final double GREEN_DEPLOYED =.65;
+    public static final double GREEN_RETRACTED = .55;
     // ******************************************************************
     // claw-related constants
     // ******************************************************************
@@ -121,6 +121,9 @@ public class Manipulator {
     public static int DUMP_HIGH_TIP_DELAY = 600;
         public static int DUMP_HIGH_UNTIP_DELAY = 700;
     public static int PICK_CLOSING_CLAW_DELAY = 300;
+    public static int LRDistance;
+    public static int RRDistance;
+
 
     // ******************************************************************
     // private member variables.
@@ -135,7 +138,8 @@ public class Manipulator {
     public Servo greenThing;
     public DigitalChannel limitSlide;
     public DigitalChannel limitShoulder;
-//    public DistanceSensor sensorDistance;
+   public DistanceSensor rightRearDistance;
+   public DistanceSensor leftRearDistance;
     private ManipulatorState manipulatorState = ManipulatorState.AVAILABLE;
     private long startTime = 0;
     private OpMode opMode;
@@ -165,7 +169,10 @@ public class Manipulator {
         //get references to the limit switches
         limitShoulder = hardwareMap.get(DigitalChannel.class, "limitShoulder");
         limitSlide = hardwareMap.get(DigitalChannel.class, "limitSlide");
-
+        //get references to the distance sensors
+        rightRearDistance = hardwareMap.get(DistanceSensor.class, "rightRearDistance");
+        rightRearDistance = hardwareMap.get(DistanceSensor.class, "rightRearDistance");
+        leftRearDistance = hardwareMap.get(DistanceSensor.class, "leftRearDistance");
         // set zero power brake mode for motors.
         shoulder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         slide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -591,7 +598,6 @@ public class Manipulator {
     public void retractSlide() {
         slide.setTargetPosition(SLIDE_RETRACTED_POSITION);
     }
-
     public void trimSlide(float input) {
         // get current target position.
         int pos = slide.getTargetPosition();
