@@ -91,5 +91,67 @@ public class TTHighSpecimen extends LinearOpMode {
                 telemetry.update();
             }
         }
+        if(opModeIsActive()){
+            //Turns robot around
+            bot.measuredTurn(.4,180);
+            while(opModeIsActive() && bot.update()){
+                // send telemetry.
+                telemetry.addData("state", bot.state);
+                telemetry.addData("tgt angle", bot.tgtAngle);
+                telemetry.addData("curr angle", bot.integratedAngle);
+                telemetry.update();
+            }
+        }
+        if (opModeIsActive()) {
+            //Strafes to get past sub
+            bot.measuredStrafe(.4, 20);
+            // loop until done.
+            while(opModeIsActive() &&  bot.update()) {
+                // send telemetry.
+                telemetry.addData("state", bot.state);
+                telemetry.addData("tgt pos", bot.targetPos);
+                telemetry.addData("curr pos", bot.currentPos);
+                telemetry.update();
+            }
+        }
+        if (opModeIsActive()) {
+            //Drives to get past samples
+            bot.measuredDrive(.4, 29);
+            // loop until done.
+            while(opModeIsActive() &&  bot.update()) {
+                // send telemetry.
+                telemetry.addData("state", bot.state);
+                telemetry.addData("tgt pos", bot.targetPos);
+                telemetry.addData("curr pos", bot.currentPos);
+                telemetry.update();
+            }
+        }
+        if (opModeIsActive()) {
+            //Strafes to get samples
+            bot.measuredStrafe(.4, 12);
+            // loop until done.
+            while(opModeIsActive() &&  bot.update()) {
+                // send telemetry.
+                telemetry.addData("state", bot.state);
+                telemetry.addData("tgt pos", bot.targetPos);
+                telemetry.addData("curr pos", bot.currentPos);
+                telemetry.update();
+            }
+        }
+
+        if (opModeIsActive()) {
+            //Drives forward
+            bot.measuredDrive(.4, -27);
+            // loop until done.
+            while(opModeIsActive() &&  bot.update()) {
+                // send telemetry.
+                telemetry.addData("state", bot.state);
+                telemetry.addData("tgt pos", bot.targetPos);
+                telemetry.addData("curr pos", bot.currentPos);
+                telemetry.update();
+            }
+        }
+
+
     }
 }

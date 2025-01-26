@@ -76,7 +76,7 @@ public class BinaryBot {
     static final double STRAFE_ENCODER_FUDGE_FACTOR = 1.0;
 
     static final double SPECIMEN_APPROACH_DISTANCE_INCHES = 3.0;
-    static final double SPECIMEN_BACKOFF_DISTANCE_INCHES = 12.0;
+    static final double SPECIMEN_BACKOFF_DISTANCE_INCHES = 9.0;
     static final float SPECIMEN_APPROACH_POWER = 0.4f;
 
     // ******************************************************************
@@ -105,7 +105,7 @@ public class BinaryBot {
 
     private final boolean USE_AUTO_CORRECT = true;
     private final double P_COEFFICIENT_DRIVE = 0.1;
-    private final double P_COEFFICIENT_STRAFE = 0.05;
+    private final double P_COEFFICIENT_STRAFE = 0.025;
 
     public Manipulator manipulator;
     public State state = State.IDLE;

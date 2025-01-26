@@ -48,7 +48,7 @@ public class Manipulator {
     public static int SLIDE_TRANSFER_POSITION = 400;
     public static int SLIDE_HIGH_DUMP_POSITION = 4900;
     public static int SLIDE_HIGH_SPECIMEN_POSITION = 3700;
-    public static int SLIDE_HIGH_SPECIMEN_RELEASE = 2500;
+    public static int SLIDE_HIGH_SPECIMEN_RELEASE = 2450;
     public static int SLIDE_SPECIMEN_PICK = 320;
 
     // step size for adjusting position.
