@@ -75,7 +75,7 @@ public class TTHighSpecimen extends LinearOpMode {
 
         if (opModeIsActive()) {
             // distance to the submersible.
-            bot.placeSpecimenHigh(distance);
+            bot.placeSpecimenHigh(distance-4);
 
             bot.update();
             while(opModeIsActive() && bot.update()) {

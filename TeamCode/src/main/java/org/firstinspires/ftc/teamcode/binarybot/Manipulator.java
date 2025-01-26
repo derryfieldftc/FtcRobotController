@@ -47,8 +47,8 @@ public class Manipulator {
     public static final int SLIDE_RETRACTED_POSITION = 0;
     public static int SLIDE_TRANSFER_POSITION = 400;
     public static int SLIDE_HIGH_DUMP_POSITION = 4900;
-    public static int SLIDE_HIGH_SPECIMEN_POSITION = 3200;
-    public static int SLIDE_HIGH_SPECIMEN_RELEASE = 1600;
+    public static int SLIDE_HIGH_SPECIMEN_POSITION = 3700;
+    public static int SLIDE_HIGH_SPECIMEN_RELEASE = 2500;
     public static int SLIDE_SPECIMEN_PICK = 320;
 
     // step size for adjusting position.
@@ -98,7 +98,7 @@ public class Manipulator {
     private static double TILT_RIGHT = 1;
 //    NOT CORRECT VALUE
     public static final double GREEN_DEPLOYED =.65;
-    public static final double GREEN_RETRACTED = .55;
+    public static final double GREEN_RETRACTED = .45;
     // ******************************************************************
     // claw-related constants
     // ******************************************************************

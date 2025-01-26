@@ -413,7 +413,7 @@ public class BinaryBot {
         this.targetDistanceInches = targetDistanceInches;
 
         // put green thingy in place.
-        manipulator.greenThing.setPosition(Manipulator.GREEN_RETRACTED);
+        manipulator.greenThing.setPosition(Manipulator.GREEN_DEPLOYED);
 
         // raise slide.
         manipulator.slide.setTargetPosition(Manipulator.SLIDE_HIGH_SPECIMEN_POSITION);
