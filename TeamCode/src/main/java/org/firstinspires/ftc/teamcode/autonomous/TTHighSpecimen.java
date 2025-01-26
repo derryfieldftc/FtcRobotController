@@ -31,6 +31,7 @@ package org.firstinspires.ftc.teamcode.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.binarybot.BinaryBot;
 import org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad;
@@ -65,51 +66,29 @@ public class TTHighSpecimen extends LinearOpMode {
         // get an enhanced gamepad for driver #2.
         epad2 = new EnhancedGamepad(gamepad2);
 
+        double distance = bot.getDistance();
+        telemetry.addData("Distance", distance);
+        telemetry.update();
+
         // wait for start command from driver hub.
         waitForStart();
-        if (opModeIsActive()) {
-            bot.getDistance();
-            telemetry.addData("Distance", bot.leftRearDistance);
-            telemetry.update();
-            sleep(1000);
-        }
-        if (opModeIsActive()) {
 
-            bot.measuredDrive(manipulator.MOTOR_SPEED, -23);
-            while (opModeIsActive() && bot.update()) {
-                // send telemetry.
-                telemetry.addData("state", bot.state);
-                telemetry.addData("tgt pos", bot.targetPos);
-                telemetry.addData("curr pos", bot.currentPos);
-                telemetry.update();
-            }
-            sleep(1000);
-        }
         if (opModeIsActive()) {
-            bot.placeSpecimenHigh();
+            // distance to the submersible.
+            bot.placeSpecimenHigh(distance);
 
-            // loop until done traveling 3 in towards bar and then 12 inches away from it after it is done
+            bot.update();
             while(opModeIsActive() && bot.update()) {
+                RobotLog.aa("TIE", String.format("TIE: tgtPos = %d, curr pos = %d, dist to tgt = %.2f",
+                        bot.targetPos,bot.currentPos, bot.getDistance()));
+
                 // send telemetry.
                 telemetry.addData("state", bot.state);
                 telemetry.addData("slide", bot.manipulator.slide.getCurrentPosition());
                 telemetry.addData("tgt pos", bot.targetPos);
                 telemetry.addData("curr pos", bot.currentPos);
+                telemetry.addData("Distance to tgt", bot.getDistance());
                 telemetry.update();
-
-            }
-
-            sleep(1000);
-        }
-        if (opModeIsActive())   {
-            bot.measuredDrive(manipulator.MOTOR_SPEED, 1);
-            while(opModeIsActive() && bot.update()) {
-                // send telemetry.
-                telemetry.addData("state", bot.state);
-                telemetry.addData("tgt pos", bot.targetPos);
-                telemetry.addData("curr pos", bot.currentPos);
-                telemetry.update();
-
             }
         }
     }

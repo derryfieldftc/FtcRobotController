@@ -91,7 +91,7 @@ public class BinaryBot {
     public DcMotor driveEncoder;
     public DcMotor strafeEncoder;
     RevHubOrientationOnRobot orientationOnRobot;
-    public DistanceSensor leftRearDistance;
+    public DistanceSensor distanceLeftRear;
 
     // op mode related items.
     private OpMode opMode;
@@ -156,7 +156,7 @@ public class BinaryBot {
 
         initIMU();
 
-        leftRearDistance = hardwareMap.get(DistanceSensor.class, "leftRearDistance");
+        distanceLeftRear = hardwareMap.get(DistanceSensor.class, "leftRearDistance");
     }
 
     /**
@@ -191,7 +191,7 @@ public class BinaryBot {
     }
 
     public double getDistance() {
-        return leftRearDistance.getDistance(DistanceUnit.INCH);
+        return distanceLeftRear.getDistance(DistanceUnit.INCH);
     }
 
     public void updateAngles() {
@@ -276,6 +276,10 @@ public class BinaryBot {
     public int targetPos = 0;
     public double tgtAngle = 0;
     public float measuredPower = 0;
+
+    // this variable target distance is used to specify how
+    // far the bot should travel in inches.
+    public double targetDistanceInches = 0;
 
     /**
      * drive forward/backwards using odometery a measured distance.
@@ -399,11 +403,14 @@ public class BinaryBot {
         return value;
     }
 
-    public void placeSpecimenHigh() {
+    public void placeSpecimenHigh(double targetDistanceInches) {
         if (state != State.IDLE) {
             // robot is not available.
             return;
         }
+
+        // use the specified approach distance value.
+        this.targetDistanceInches = targetDistanceInches;
 
         // put green thingy in place.
         manipulator.greenThing.setPosition(Manipulator.GREEN_RETRACTED);
@@ -413,6 +420,11 @@ public class BinaryBot {
 
         // put it in new state.
         state = State.SPECIMEN_RAISING;
+    }
+
+    public void placeSpecimenHigh() {
+        // use the default approach distance value.
+        placeSpecimenHigh(SPECIMEN_APPROACH_DISTANCE_INCHES);
     }
 
     /**
@@ -507,13 +519,12 @@ public class BinaryBot {
                     // offset in encoder ticks.
                     double offset = 0;
                     if (USE_ODOMETRY_POD) {
-                        offset = SPECIMEN_APPROACH_DISTANCE_INCHES * POD_COUNTS_PER_INCH;
+                        offset = targetDistanceInches * POD_COUNTS_PER_INCH;
                     } else {
-                        offset = SPECIMEN_APPROACH_DISTANCE_INCHES * DRIVE_COUNTS_PER_INCH;
+                        offset = targetDistanceInches * DRIVE_COUNTS_PER_INCH;
                     }
                     // robot has to move backwards.
-                    offset = -offset;
-                    targetPos = (int)Math.round(offset + initPos);
+                    targetPos = (int)Math.round(initPos - offset);
                     measuredPower = -SPECIMEN_APPROACH_POWER;
 
                     // is auto correct enabled (which helps keep the bot drive straight)?
@@ -537,11 +548,8 @@ public class BinaryBot {
                 // approach the sub until we've moved the required distance.
                 // update current position
                 currentPos = driveEncoder.getCurrentPosition();
-
-
-                currentPos = driveEncoder.getCurrentPosition();
                 // are we there yet?
-                if (currentPos > targetPos) {
+                if (currentPos < targetPos) {
                     // note that stop() should put it in IDLE mode.
                     stop();
                     manipulator.greenThing.setPosition(manipulator.GREEN_DEPLOYED);
@@ -570,8 +578,8 @@ public class BinaryBot {
                     } else {
                         offset = SPECIMEN_BACKOFF_DISTANCE_INCHES * DRIVE_COUNTS_PER_INCH;
                     }
-                    // we're going forwards.
-                    targetPos = (int)Math.round(offset + initPos);
+                    // we're going forward.
+                    targetPos = (int)Math.round(initPos + offset);
                     measuredPower = SPECIMEN_APPROACH_POWER;
 
                     // is auto correct enabled (which helps keep the bot drive straight)?
@@ -595,7 +603,7 @@ public class BinaryBot {
                 // update current position
                 currentPos = driveEncoder.getCurrentPosition();
                 // are we there yet?
-                if (currentPos < targetPos) {
+                if (currentPos > targetPos) {
                     // note that stop() should put it in IDLE mode.
                     stop();
                     return false;
