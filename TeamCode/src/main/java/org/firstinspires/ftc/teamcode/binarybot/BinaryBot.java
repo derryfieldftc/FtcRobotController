@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.binarybot;
 import static androidx.core.math.MathUtils.clamp;
 
 import static org.firstinspires.ftc.teamcode.binarybot.BinaryBot.State.SPECIMEN_BACK_OFF;
+import static org.firstinspires.ftc.teamcode.binarybot.BinaryBot.State.SPECIMEN_DONE_PICK;
+import static org.firstinspires.ftc.teamcode.binarybot.BinaryBot.State.SPECIMEN_DONE_PICK_BACK_OFF;
 import static org.firstinspires.ftc.teamcode.binarybot.BinaryBot.State.SPECIMEN_HOOKING;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
@@ -45,7 +47,11 @@ public class BinaryBot {
         SPECIMEN_RAISING,
         SPECIMEN_APPROACHING,
         SPECIMEN_HOOKING,
-        SPECIMEN_BACK_OFF
+        SPECIMEN_BACK_OFF,
+        SPECIMEN_PICK_RAISING,
+        SPECIMEN_PICK_APPROACHING,
+        SPECIMEN_DONE_PICK,
+        SPECIMEN_DONE_PICK_BACK_OFF
     }
 
     // ******************************************************************
@@ -76,8 +82,10 @@ public class BinaryBot {
     static final double STRAFE_ENCODER_FUDGE_FACTOR = 1.0;
 
     static final double SPECIMEN_APPROACH_DISTANCE_INCHES = 3.0;
+    static final double SPECIMEN_APPROACH_PICK_DISTANCE_INCHES = -3;
     static final double SPECIMEN_BACKOFF_DISTANCE_INCHES = 9.0;
     static final float SPECIMEN_APPROACH_POWER = 0.4f;
+    static final double SPECIMEN_PICK_BACKOFF_DISTANCE_INCHES = 3.0;
 
     // ******************************************************************
     // private member variables
@@ -425,8 +433,30 @@ public class BinaryBot {
     public void placeSpecimenHigh() {
         // use the default approach distance value.
         placeSpecimenHigh(SPECIMEN_APPROACH_DISTANCE_INCHES);
+
     }
 
+    public void pickSpecimen(double targetDistanceInches) {
+        if (state != State.IDLE) {
+            //robot is not available
+            return;
+        }
+        // use the specified approach distance value.
+        this.targetDistanceInches = targetDistanceInches;
+
+
+
+        // raise slide.
+        manipulator.slide.setTargetPosition(Manipulator.SLIDE_SPECIMEN_PICK);
+
+        // put it in new state.
+        state = State.SPECIMEN_PICK_RAISING;
+    }
+    public void pickSpecimen() {
+        // use the default approach distance value.
+        pickSpecimen(SPECIMEN_APPROACH_PICK_DISTANCE_INCHES);
+
+    }
     /**
      *
      * @return true if still in measured mode.
@@ -612,6 +642,110 @@ public class BinaryBot {
                     drive(measuredPower, 0, correction);
                     return true;
                 }
+            case SPECIMEN_PICK_RAISING:
+                // is the slide done raising into position?
+                if (manipulator.slide.isBusy() == false) {
+                    // we're done moving the slide.
+                    // get ready to move into position.
+                    initPos = driveEncoder.getCurrentPosition();
+
+                    // offset in encoder ticks.
+                    double offset = 0;
+                    if (USE_ODOMETRY_POD) {
+                        offset = targetDistanceInches * POD_COUNTS_PER_INCH;
+                    } else {
+                        offset = targetDistanceInches * DRIVE_COUNTS_PER_INCH;
+                    }
+                    // robot has to move backwards.
+                    targetPos = (int)Math.round(initPos - offset);
+                    measuredPower = -SPECIMEN_APPROACH_POWER;
+
+                    // is auto correct enabled (which helps keep the bot drive straight)?
+                    if (USE_AUTO_CORRECT) {
+                        // reset angles.
+                        resetAngles();
+                        // set the target angle equal to the current angle.
+                        tgtAngle = integratedAngle;
+                    }
+
+                    // switch to approach sub state.
+                    state = State.SPECIMEN_PICK_APPROACHING;
+
+                    // we're still busy.
+                    return true;
+                } else {
+                    // we are still busy.
+                    return true;
+                }
+            case SPECIMEN_PICK_APPROACHING:
+                // approach the sub until we've moved the required distance.
+                // update current position
+                currentPos = driveEncoder.getCurrentPosition();
+                // are we there yet?
+                if (currentPos < targetPos) {
+                    // note that stop() should put it in IDLE mode.
+                    stop();
+                    manipulator.greenThing.setPosition(manipulator.GREEN_DEPLOYED);
+                    // now we need to raise the slide.
+                    manipulator.slide.setTargetPosition(Manipulator.SLIDE_HIGH_SPECIMEN_RELEASE);
+
+                    // change to the next state.
+                    state = SPECIMEN_DONE_PICK;
+                    return true;
+                } else {
+                    correction = propCorrection(P_COEFFICIENT_DRIVE);
+                    drive(measuredPower, 0, correction);
+                    return true;
+                }
+            case SPECIMEN_DONE_PICK:
+                if (manipulator.slide.isBusy() == false) {
+                    // we're done moving slide.
+                    // we need to back off.
+                    // get ready to move into position.
+                    initPos = driveEncoder.getCurrentPosition();
+
+                    // offset in encoder ticks.
+                    double offset = 0;
+                    if (USE_ODOMETRY_POD) {
+                        offset = SPECIMEN_BACKOFF_DISTANCE_INCHES * POD_COUNTS_PER_INCH;
+                    } else {
+                        offset = SPECIMEN_BACKOFF_DISTANCE_INCHES * DRIVE_COUNTS_PER_INCH;
+                    }
+                    // we're going forward.
+                    targetPos = (int)Math.round(initPos + offset);
+                    measuredPower = SPECIMEN_APPROACH_POWER;
+
+                    // is auto correct enabled (which helps keep the bot drive straight)?
+                    if (USE_AUTO_CORRECT) {
+                        // reset angles.
+                        resetAngles();
+                        // set the target angle equal to the current angle.
+                        tgtAngle = integratedAngle;
+                    }
+
+                    // switch to approach sub state.
+                    state = SPECIMEN_DONE_PICK_BACK_OFF;
+
+                    // we're still busy.
+                    return true;
+                } else {
+                    // slide is still busy.
+                    return true;
+                }
+            case SPECIMEN_DONE_PICK_BACK_OFF:
+                // update current position
+                currentPos = driveEncoder.getCurrentPosition();
+                // are we there yet?
+                if (currentPos > targetPos) {
+                    // note that stop() should put it in IDLE mode.
+                    stop();
+                    return false;
+                } else {
+                    correction = propCorrection(P_COEFFICIENT_DRIVE);
+                    drive(measuredPower, 0, correction);
+                    return true;
+                }
+
             default:
                 return false;
         }

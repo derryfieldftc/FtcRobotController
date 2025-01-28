@@ -49,7 +49,7 @@ public class Manipulator {
     public static int SLIDE_HIGH_DUMP_POSITION = 4900;
     public static int SLIDE_HIGH_SPECIMEN_POSITION = 3700;
     public static int SLIDE_HIGH_SPECIMEN_RELEASE = 2450;
-    public static int SLIDE_SPECIMEN_PICK = 320;
+    public static int SLIDE_SPECIMEN_PICK = 500;
 
     // step size for adjusting position.
     public static final int SLIDE_DELTA = 10;
@@ -119,7 +119,7 @@ public class Manipulator {
     // time (msec) before moving the shoulder after the block has been released.
     public static int TRANSFER_DELAY = 150;
     public static int DUMP_HIGH_TIP_DELAY = 600;
-        public static int DUMP_HIGH_UNTIP_DELAY = 700;
+    public static int DUMP_HIGH_UNTIP_DELAY = 700;
     public static int PICK_CLOSING_CLAW_DELAY = 300;
     public static int LRDistance;
     public static int RRDistance;
