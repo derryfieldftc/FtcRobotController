@@ -63,7 +63,7 @@ public class TestAutoScore extends LinearOpMode {
             bot.measuredStrafe(0.3, -6);
 
             // loop until done.
-            while(opModeIsActive() &&  bot.update()) {
+            while(opModeIsActive() && bot.update().inMeasuredMode) {
                 // send telemetry.
                 telemetry.addData("state", bot.state);
                 telemetry.addData("tgt pos", bot.targetPos);
@@ -77,7 +77,7 @@ public class TestAutoScore extends LinearOpMode {
             bot.measuredDrive(0.3, -55);
 
             // loop until done.
-            while(opModeIsActive() &&  bot.update()) {
+            while(opModeIsActive() && bot.update().inMeasuredMode) {
                 // send telemetry.
                 telemetry.addData("state", bot.state);
                 telemetry.addData("tgt pos", bot.targetPos);
@@ -91,7 +91,7 @@ public class TestAutoScore extends LinearOpMode {
             bot.measuredTurn(0.3, -40);
 
             // loop until done.
-            while(opModeIsActive() &&  bot.update()) {
+            while(opModeIsActive() && bot.update().inMeasuredMode) {
                 // send telemetry.
                 telemetry.addData("state", bot.state);
                 telemetry.addData("tgt angle", bot.tgtAngle);

@@ -66,7 +66,7 @@ public class TestMeasuredDrive extends LinearOpMode {
             bot.measuredDrive(0.3, 48);
 
             // loop until done traveling 2 feet.
-            while(opModeIsActive() &&  bot.update()) {
+            while(opModeIsActive() && bot.update().inMeasuredMode) {
                 // send telemetry.
                 telemetry.addData("state", bot.state);
                 telemetry.addData("tgt pos", bot.targetPos);
