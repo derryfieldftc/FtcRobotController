@@ -68,7 +68,7 @@ public class TestScoreHighGoal extends LinearOpMode {
             bot.measuredStrafe(0.3, -6);
 
             // loop until done.
-            while(opModeIsActive() && bot.update().inMeasuredMode) {
+            while(opModeIsActive() &&  bot.update()) {
                 // send telemetry.
                 telemetry.addData("state", bot.state);
                 telemetry.addData("tgt pos", bot.targetPos);
