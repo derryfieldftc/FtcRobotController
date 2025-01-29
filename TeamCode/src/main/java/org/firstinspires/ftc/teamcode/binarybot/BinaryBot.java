@@ -2,10 +2,7 @@ package org.firstinspires.ftc.teamcode.binarybot;
 
 import static androidx.core.math.MathUtils.clamp;
 
-import static org.firstinspires.ftc.teamcode.binarybot.BinaryBot.State.SPECIMEN_BACK_OFF;
-import static org.firstinspires.ftc.teamcode.binarybot.BinaryBot.State.SPECIMEN_DONE_PICK;
-import static org.firstinspires.ftc.teamcode.binarybot.BinaryBot.State.SPECIMEN_DONE_PICK_BACK_OFF;
-import static org.firstinspires.ftc.teamcode.binarybot.BinaryBot.State.SPECIMEN_HOOKING;
+import static org.firstinspires.ftc.teamcode.binarybot.BinaryBot.State.*;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
@@ -15,6 +12,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.RobotLog;
 
 
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
@@ -48,6 +46,7 @@ public class BinaryBot {
         SPECIMEN_APPROACHING,
         SPECIMEN_HOOKING,
         SPECIMEN_BACK_OFF,
+
         SPECIMEN_PICK_RAISING,
         SPECIMEN_PICK_APPROACHING,
         SPECIMEN_DONE_PICK,
@@ -65,7 +64,7 @@ public class BinaryBot {
     static final double     POD_WHEEL_DIAMETER_INCHES   = 1.37795;
     static final double     POD_WHEEL_CIRCUM_INCHES = Math.PI * POD_WHEEL_DIAMETER_INCHES;
     static final double     POD_COUNTS_PER_INCH         =   (POD_COUNTS_PER_MOTOR_REV * POD_DRIVE_GEAR_REDUCTION) /
-                                                            (POD_WHEEL_CIRCUM_INCHES);
+            (POD_WHEEL_CIRCUM_INCHES);
 
 
     static final double     DRIVE_COUNTS_PER_MOTOR_REV    = 537.7;
@@ -84,7 +83,7 @@ public class BinaryBot {
     static final double SPECIMEN_APPROACH_DISTANCE_INCHES = 3.0;
     static final double SPECIMEN_APPROACH_PICK_DISTANCE_INCHES = -3;
     static final double SPECIMEN_BACKOFF_DISTANCE_INCHES = 9.0;
-    static final float SPECIMEN_APPROACH_POWER = 0.4f;
+    static final float SPECIMEN_APPROACH_POWER = 0.5f;
     static final double SPECIMEN_PICK_BACKOFF_DISTANCE_INCHES = 3.0;
 
     // ******************************************************************
@@ -275,6 +274,7 @@ public class BinaryBot {
      */
     public void stop() {
         drive(0, 0, 0);
+        RobotLog.vv("STATE", "stop(): IDLE");
         state = State.IDLE;
     }
 
@@ -313,9 +313,11 @@ public class BinaryBot {
         targetPos = (int)Math.round(offset + initPos);
         if (offset < 0) {
             measuredPower = -(float)Math.abs(power);
+            RobotLog.vv("STATE", String.format("measuredDrive(%f, %f): DRIVING_BACKWARD", power, distance));
             state = State.DRIVING_BACKWARD;
         } else {
             measuredPower = (float)Math.abs(power);
+            RobotLog.vv("STATE", String.format("measuredDrive(%f, %f): DRIVING_FORWARD", power, distance));
             state = State.DRIVING_FORWARD;
         }
 
@@ -350,9 +352,11 @@ public class BinaryBot {
         targetPos = (int)Math.round(offset + initPos);
         if (offset < 0) {
             measuredPower = -(float)Math.abs(power);
+            RobotLog.vv("STATE", String.format("measuredStrafe(%f, %f): STRAFING_LEFT", power, distance));
             state = State.STRAFING_LEFT;
         } else {
             measuredPower = (float)Math.abs(power);
+            RobotLog.vv("STATE", String.format("measuredStrafe(%f, %f): STRAFING_RIGHT", power, distance));
             state = State.STRAFING_RIGHT;
         }
 
@@ -378,9 +382,11 @@ public class BinaryBot {
         tgtAngle = angle;
         if (tgtAngle < 0) {
             measuredPower = -(float)Math.abs(power);
+            RobotLog.vv("STATE", String.format("measuredTurn(%f, %f): TURNING_COUNTERCLOCKWISE", power, angle));
             state = State.TURNING_COUNTERCLOCKWISE;
         } else {
             measuredPower = (float)Math.abs(power);
+            RobotLog.vv("STATE", String.format("measuredTurn(%f, %f): TURNING_CLOCKWISE", power, angle));
             state = State.TURNING_CLOCKWISE;
         }
     }
@@ -397,10 +403,8 @@ public class BinaryBot {
         if (USE_AUTO_CORRECT) {
             // update angles.
             updateAngles();
-
             // calculate error (degrees).
             error = integratedAngle - tgtAngle;
-
             // corrective "twist" power is proportional to error.
             // should be applied in opposite direction.
             value = -(float)(p_coefficient * error);
@@ -427,6 +431,7 @@ public class BinaryBot {
         manipulator.slide.setTargetPosition(Manipulator.SLIDE_HIGH_SPECIMEN_POSITION);
 
         // put it in new state.
+        RobotLog.vv("STATE", String.format("placeSpecimenHigh(%f): SPECIMEN_RAISING", targetDistanceInches));
         state = State.SPECIMEN_RAISING;
     }
 
@@ -450,6 +455,7 @@ public class BinaryBot {
         manipulator.slide.setTargetPosition(Manipulator.SLIDE_SPECIMEN_PICK);
 
         // put it in new state.
+        RobotLog.vv("STATE", String.format("pickSpecimen(%f): SPECIMEN_PICK_RAISING", targetDistanceInches));
         state = State.SPECIMEN_PICK_RAISING;
     }
     public void pickSpecimen() {
@@ -464,290 +470,204 @@ public class BinaryBot {
     public boolean update() {
         float correction = 0;
         currentPos = driveEncoder.getCurrentPosition();
-        switch(state) {
-            case IDLE:
+
+
+        if (state == IDLE) {
+            return false;
+        } else if (state == DRIVING_FORWARD) {
+            if (currentPos > targetPos) { // done moving
+                stop();
                 return false;
-            case DRIVING_FORWARD:
-                if (currentPos > targetPos) {
-                    stop();
-                    return false;
-                } else {
-                    correction = propCorrection(P_COEFFICIENT_DRIVE);
-                    drive(measuredPower, 0, correction);
-                    return true;
-                }
-            case DRIVING_BACKWARD:
-                // update current position
-                currentPos = driveEncoder.getCurrentPosition();
-                // are we there yet?
-                if (currentPos < targetPos) {
-                    // note that stop() should put it in IDLE mode.
-                    stop();
-                    return false;
-                } else {
-                    correction = propCorrection(P_COEFFICIENT_DRIVE);
-                    drive(measuredPower, 0, correction);
-                    return true;
-                }
-            case STRAFING_RIGHT:
-                // update current position
-                currentPos = strafeEncoder.getCurrentPosition();
-                // are we there yet?
-                if (currentPos > targetPos) {
-                    // note that stop() should put it in IDLE mode.
-                    stop();
-                    return false;
-                } else {
-                    correction = propCorrection(P_COEFFICIENT_STRAFE);
-                    drive(0, measuredPower, correction);
-                    return true;
-                }
-            case STRAFING_LEFT:
-                // update current position
-                currentPos = strafeEncoder.getCurrentPosition();
-                // are we there yet?
-                if (currentPos < targetPos) {
-                    // note that stop() should put it in IDLE mode.
-                    stop();
-                    return false;
-                } else {
-                    correction = propCorrection(P_COEFFICIENT_STRAFE);
-                    drive(0, measuredPower, correction);
-                    return true;
-                }
-            case TURNING_CLOCKWISE:
-                // update angles
-                updateAngles();
-
-                if (integratedAngle > tgtAngle) {
-                    // note that stop() should put it in IDLE mode.
-                    stop();
-                    return false;
-                } else {
-                    drive(0, 0, measuredPower);
-                    return true;
-                }
-            case TURNING_COUNTERCLOCKWISE:
-                // update angles
-                updateAngles();
-
-                if (integratedAngle < tgtAngle) {
-                    // note that stop() should put it in IDLE mode.
-                    stop();
-                    return false;
-                } else {
-                    drive(0, 0, measuredPower);
-                    return true;
-                }
-            case SPECIMEN_RAISING:
-                // is the slide done raising into position?
-                if (manipulator.slide.isBusy() == false) {
-                    // we're done moving the slide.
-                    // get ready to move into position.
-                    initPos = driveEncoder.getCurrentPosition();
-
-                    // offset in encoder ticks.
-                    double offset = 0;
-                    if (USE_ODOMETRY_POD) {
-                        offset = targetDistanceInches * POD_COUNTS_PER_INCH;
-                    } else {
-                        offset = targetDistanceInches * DRIVE_COUNTS_PER_INCH;
-                    }
-                    // robot has to move backwards.
-                    targetPos = (int)Math.round(initPos - offset);
-                    measuredPower = -SPECIMEN_APPROACH_POWER;
-
-                    // is auto correct enabled (which helps keep the bot drive straight)?
-                    if (USE_AUTO_CORRECT) {
-                        // reset angles.
-                        resetAngles();
-                        // set the target angle equal to the current angle.
-                        tgtAngle = integratedAngle;
-                    }
-
-                    // switch to approach sub state.
-                    state = State.SPECIMEN_APPROACHING;
-
-                    // we're still busy.
-                    return true;
-                } else {
-                    // we are still busy.
-                    return true;
-                }
-            case SPECIMEN_APPROACHING:
-                // approach the sub until we've moved the required distance.
-                // update current position
-                currentPos = driveEncoder.getCurrentPosition();
-                // are we there yet?
-                if (currentPos < targetPos) {
-                    // note that stop() should put it in IDLE mode.
-                    stop();
-                    manipulator.greenThing.setPosition(manipulator.GREEN_DEPLOYED);
-                    // now we need to lower the slide.
-                    manipulator.slide.setTargetPosition(Manipulator.SLIDE_HIGH_SPECIMEN_RELEASE);
-
-                    // change to the next state.
-                    state = SPECIMEN_HOOKING;
-                    return true;
-                } else {
-                    correction = propCorrection(P_COEFFICIENT_DRIVE);
-                    drive(measuredPower, 0, correction);
-                    return true;
-                }
-            case SPECIMEN_HOOKING:
-                if (manipulator.slide.isBusy() == false) {
-                    // we're done moving slide.
-                    // we need to back off.
-                    // get ready to move into position.
-                    initPos = driveEncoder.getCurrentPosition();
-
-                    // offset in encoder ticks.
-                    double offset = 0;
-                    if (USE_ODOMETRY_POD) {
-                        offset = SPECIMEN_BACKOFF_DISTANCE_INCHES * POD_COUNTS_PER_INCH;
-                    } else {
-                        offset = SPECIMEN_BACKOFF_DISTANCE_INCHES * DRIVE_COUNTS_PER_INCH;
-                    }
-                    // we're going forward.
-                    targetPos = (int)Math.round(initPos + offset);
-                    measuredPower = SPECIMEN_APPROACH_POWER;
-
-                    // is auto correct enabled (which helps keep the bot drive straight)?
-                    if (USE_AUTO_CORRECT) {
-                        // reset angles.
-                        resetAngles();
-                        // set the target angle equal to the current angle.
-                        tgtAngle = integratedAngle;
-                    }
-
-                    // switch to approach sub state.
-                    state = SPECIMEN_BACK_OFF;
-
-                    // we're still busy.
-                    return true;
-                } else {
-                    // slide is still busy.
-                    return true;
-                }
-            case SPECIMEN_BACK_OFF:
-                // update current position
-                currentPos = driveEncoder.getCurrentPosition();
-                // are we there yet?
-                if (currentPos > targetPos) {
-                    // note that stop() should put it in IDLE mode.
-                    stop();
-                    return false;
-                } else {
-                    correction = propCorrection(P_COEFFICIENT_DRIVE);
-                    drive(measuredPower, 0, correction);
-                    return true;
-                }
-            case SPECIMEN_PICK_RAISING:
-                // is the slide done raising into position?
-                if (manipulator.slide.isBusy() == false) {
-                    // we're done moving the slide.
-                    // get ready to move into position.
-                    initPos = driveEncoder.getCurrentPosition();
-
-                    // offset in encoder ticks.
-                    double offset = 0;
-                    if (USE_ODOMETRY_POD) {
-                        offset = targetDistanceInches * POD_COUNTS_PER_INCH;
-                    } else {
-                        offset = targetDistanceInches * DRIVE_COUNTS_PER_INCH;
-                    }
-                    // robot has to move backwards.
-                    targetPos = (int)Math.round(initPos - offset);
-                    measuredPower = -SPECIMEN_APPROACH_POWER;
-
-                    // is auto correct enabled (which helps keep the bot drive straight)?
-                    if (USE_AUTO_CORRECT) {
-                        // reset angles.
-                        resetAngles();
-                        // set the target angle equal to the current angle.
-                        tgtAngle = integratedAngle;
-                    }
-
-                    // switch to approach sub state.
-                    state = State.SPECIMEN_PICK_APPROACHING;
-
-                    // we're still busy.
-                    return true;
-                } else {
-                    // we are still busy.
-                    return true;
-                }
-            case SPECIMEN_PICK_APPROACHING:
-                // approach the sub until we've moved the required distance.
-                // update current position
-                currentPos = driveEncoder.getCurrentPosition();
-                // are we there yet?
-                if (currentPos < targetPos) {
-                    // note that stop() should put it in IDLE mode.
-                    stop();
-                    manipulator.greenThing.setPosition(manipulator.GREEN_DEPLOYED);
-                    // now we need to raise the slide.
-                    manipulator.slide.setTargetPosition(Manipulator.SLIDE_HIGH_SPECIMEN_RELEASE);
-
-                    // change to the next state.
-                    state = SPECIMEN_DONE_PICK;
-                    return true;
-                } else {
-                    correction = propCorrection(P_COEFFICIENT_DRIVE);
-                    drive(measuredPower, 0, correction);
-                    return true;
-                }
-            case SPECIMEN_DONE_PICK:
-                if (manipulator.slide.isBusy() == false) {
-                    // we're done moving slide.
-                    // we need to back off.
-                    // get ready to move into position.
-                    initPos = driveEncoder.getCurrentPosition();
-
-                    // offset in encoder ticks.
-                    double offset = 0;
-                    if (USE_ODOMETRY_POD) {
-                        offset = SPECIMEN_BACKOFF_DISTANCE_INCHES * POD_COUNTS_PER_INCH;
-                    } else {
-                        offset = SPECIMEN_BACKOFF_DISTANCE_INCHES * DRIVE_COUNTS_PER_INCH;
-                    }
-                    // we're going forward.
-                    targetPos = (int)Math.round(initPos + offset);
-                    measuredPower = SPECIMEN_APPROACH_POWER;
-
-                    // is auto correct enabled (which helps keep the bot drive straight)?
-                    if (USE_AUTO_CORRECT) {
-                        // reset angles.
-                        resetAngles();
-                        // set the target angle equal to the current angle.
-                        tgtAngle = integratedAngle;
-                    }
-
-                    // switch to approach sub state.
-                    state = SPECIMEN_DONE_PICK_BACK_OFF;
-
-                    // we're still busy.
-                    return true;
-                } else {
-                    // slide is still busy.
-                    return true;
-                }
-            case SPECIMEN_DONE_PICK_BACK_OFF:
-                // update current position
-                currentPos = driveEncoder.getCurrentPosition();
-                // are we there yet?
-                if (currentPos > targetPos) {
-                    // note that stop() should put it in IDLE mode.
-                    stop();
-                    return false;
-                } else {
-                    correction = propCorrection(P_COEFFICIENT_DRIVE);
-                    drive(measuredPower, 0, correction);
-                    return true;
-                }
-
-            default:
+            } else { // keep moving
+                correction = propCorrection(P_COEFFICIENT_DRIVE);
+                drive(measuredPower, 0, correction);
+                return true;
+            }
+        } else if (state == DRIVING_BACKWARD) {
+            currentPos = driveEncoder.getCurrentPosition();
+            if (currentPos < targetPos) { // done moving
+                stop();
                 return false;
+            } else { // keep moving
+                correction = propCorrection(P_COEFFICIENT_DRIVE);
+                drive(measuredPower, 0, correction);
+                return true;
+            }
+        } else if (state == STRAFING_RIGHT) {
+            currentPos = strafeEncoder.getCurrentPosition();
+            if (currentPos > targetPos) { // done moving
+                stop();
+                return false;
+            } else { // keep moving
+                correction = propCorrection(P_COEFFICIENT_STRAFE);
+                drive(0, measuredPower, correction);
+                return true;
+            }
+        } else if (state == STRAFING_LEFT) {
+            currentPos = strafeEncoder.getCurrentPosition();
+            if (currentPos < targetPos) { // done moving
+                stop();
+                return false;
+            } else { // keep moving
+                correction = propCorrection(P_COEFFICIENT_STRAFE);
+                drive(0, measuredPower, correction);
+                return true;
+            }
+        } else if (state == TURNING_CLOCKWISE) {
+            updateAngles();
+            if (integratedAngle > tgtAngle) { // done turning
+                stop();
+                return false;
+            } else { // keep turning
+                drive(0, 0, measuredPower);
+                return true;
+            }
+        } else if (state == TURNING_COUNTERCLOCKWISE) {
+            updateAngles();
+            if (integratedAngle < tgtAngle) { // done turning
+                stop();
+                return false;
+            } else {
+                drive(0, 0, measuredPower);
+                return true;
+            }
+        } else if (state == SPECIMEN_RAISING) {
+            if (!manipulator.slide.isBusy()) { // slide is done raising
+                initPos = driveEncoder.getCurrentPosition();
+
+                double inchesToTicks = USE_ODOMETRY_POD ? POD_COUNTS_PER_INCH : DRIVE_COUNTS_PER_INCH;
+                double offset = targetDistanceInches * inchesToTicks; // offset in encoder ticks.
+                targetPos = (int) Math.round(initPos - offset); // robot has to move backwards.
+                measuredPower = -SPECIMEN_APPROACH_POWER;
+
+                if (USE_AUTO_CORRECT) {
+                    resetAngles();
+                    tgtAngle = integratedAngle; // set the target angle equal to the current angle.
+                }
+
+                RobotLog.vv("STATE", "SPECIMEN_RAISING -> SPECIMEN_APPROACHING");
+                state = State.SPECIMEN_APPROACHING;
+                return true;
+            } else { // slide is not done raising, wait
+                return true;
+            }
+        } else if (state == SPECIMEN_APPROACHING) { // approach the sub until we've moved the required distance.
+            currentPos = driveEncoder.getCurrentPosition();
+            if (currentPos < targetPos) { // done approaching
+                stop();
+                manipulator.greenThing.setPosition(manipulator.GREEN_DEPLOYED);
+                // now we need to lower the slide.
+                manipulator.slide.setTargetPosition(Manipulator.SLIDE_HIGH_SPECIMEN_RELEASE);
+
+                RobotLog.vv("STATE", "SPECIMEN_APPROACHING -> SPECIMEN_HOOKING");
+                state = SPECIMEN_HOOKING;
+                return true;
+            } else { // keep driving with correction
+                correction = propCorrection(P_COEFFICIENT_DRIVE);
+                drive(measuredPower, 0, correction);
+                return true;
+            }
+        } else if (state == SPECIMEN_HOOKING) {
+            if (manipulator.slide.isBusy() == false) { // slide is done lowering
+                // we need to back off.
+                initPos = driveEncoder.getCurrentPosition();
+
+                // offset in encoder ticks.
+                double inchesToTicks = USE_ODOMETRY_POD ? POD_COUNTS_PER_INCH : DRIVE_COUNTS_PER_INCH;
+                double offset = SPECIMEN_BACKOFF_DISTANCE_INCHES * inchesToTicks;
+                targetPos = (int) Math.round(initPos + offset); // we're going forward.
+                measuredPower = SPECIMEN_APPROACH_POWER;
+
+                if (USE_AUTO_CORRECT) {
+                    resetAngles();
+                    tgtAngle = integratedAngle; // set the target angle equal to the current angle.
+                }
+
+                RobotLog.vv("STATE", "SPECIMEN_HOOKING -> SPECIMEN_BACK_OFF");
+                state = SPECIMEN_BACK_OFF;
+                return true;
+            } else {
+                return true; // wait for slide to lower
+            }
+        } else if (state == SPECIMEN_BACK_OFF) {
+            currentPos = driveEncoder.getCurrentPosition();
+            if (currentPos > targetPos) { // done backing off
+                stop();
+                return false;
+            } else { // keep backing off
+                correction = propCorrection(P_COEFFICIENT_DRIVE);
+                drive(measuredPower, 0, correction);
+                return true;
+            }
+        } else if (state == SPECIMEN_PICK_RAISING) {
+            if (manipulator.slide.isBusy() == false) { // is the slide done raising into position?
+                initPos = driveEncoder.getCurrentPosition();
+
+                double inchesToTicks = USE_ODOMETRY_POD ? POD_COUNTS_PER_INCH : DRIVE_COUNTS_PER_INCH;
+                double offset = targetDistanceInches * inchesToTicks; // offset in encoder ticks.
+                targetPos = (int) Math.round(initPos - offset); // robot has to move backwards.
+                measuredPower = -SPECIMEN_APPROACH_POWER;
+
+                if (USE_AUTO_CORRECT) {
+                    resetAngles();
+                    tgtAngle = integratedAngle; // set the target angle equal to the current angle.
+                }
+                // switch to approach sub state.
+                RobotLog.vv("STATE", "SPECIMEN_PICK_RAISING -> SPECIMEN_PICK_APPROACHING");
+                state = State.SPECIMEN_PICK_APPROACHING;
+                return true;
+            } else {
+                return true; // not done raising slide, wait
+            }
+        } else if (state == SPECIMEN_PICK_APPROACHING) { // approach the sub until we've moved the required distance.
+            currentPos = driveEncoder.getCurrentPosition();
+            if (currentPos < targetPos) { // done approaching
+                stop();
+                // now we need to raise the slide.
+                manipulator.greenThing.setPosition(manipulator.GREEN_DEPLOYED);
+                manipulator.slide.setTargetPosition(Manipulator.SLIDE_HIGH_SPECIMEN_RELEASE);
+
+                RobotLog.vv("STATE", "SPECIMEN_PICK_APPROACHING -> SPECIMEN_DONE_PICK");
+                state = SPECIMEN_DONE_PICK;
+                return true;
+            } else { // keep going
+                correction = propCorrection(P_COEFFICIENT_DRIVE);
+                drive(measuredPower, 0, correction);
+                return true;
+            }
+        } else if (state == SPECIMEN_DONE_PICK) {
+            if (!manipulator.slide.isBusy()) { // we're done moving slide.
+                // we need to back off
+                initPos = driveEncoder.getCurrentPosition();
+                // offset in encoder ticks.
+                double inchesToTicks = USE_ODOMETRY_POD ? POD_COUNTS_PER_INCH : DRIVE_COUNTS_PER_INCH;
+                double offset = SPECIMEN_PICK_BACKOFF_DISTANCE_INCHES * inchesToTicks;
+                targetPos = (int) Math.round(initPos + offset); // we're going forward.
+                measuredPower = SPECIMEN_APPROACH_POWER;
+
+                if (USE_AUTO_CORRECT) {
+                    resetAngles();
+                    tgtAngle = integratedAngle; // set the target angle equal to the current angle.
+                }
+                // next we need to back off
+                RobotLog.vv("STATE", "SPECIMEN_DONE_PICK -> SPECIMEN_DONE_PICK_BACK_OFF");
+                state = SPECIMEN_DONE_PICK_BACK_OFF;
+            }
+            return true; // always busy in this state
+        } else if (state == SPECIMEN_DONE_PICK_BACK_OFF) {
+            currentPos = driveEncoder.getCurrentPosition();
+            if (currentPos > targetPos) { // are we there yet?
+                stop();
+                return false;
+            } else { // keep going
+                correction = propCorrection(P_COEFFICIENT_DRIVE);
+                drive(measuredPower, 0, correction);
+                return true;
+            }
+        } else {
+            RobotLog.vv("STATE", "Unknown state, calling stop()");
+            stop();
+            return false;
         }
     }
 }

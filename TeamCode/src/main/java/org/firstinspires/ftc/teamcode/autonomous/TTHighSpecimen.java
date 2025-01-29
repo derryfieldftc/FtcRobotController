@@ -69,18 +69,15 @@ public class TTHighSpecimen extends LinearOpMode {
         double distance = bot.getDistance();
         telemetry.addData("Distance", distance);
         telemetry.update();
+
         // wait for start command from driver hub.
         waitForStart();
 
         if (opModeIsActive()) {
             // distance to the submersible.
-            bot.placeSpecimenHigh(distance-4);
+            bot.placeSpecimenHigh(distance - 4.0);
 
-            while(opModeIsActive() && bot.update()) {
-                RobotLog.aa("TIE", String.format("TIE: tgtPos = %d, curr pos = %d, dist to tgt = %.2f",
-                        bot.targetPos,bot.currentPos, bot.getDistance()));
-
-                // send telemetry.
+            while (opModeIsActive() && bot.update()) {
                 telemetry.addData("state", bot.state);
                 telemetry.addData("slide", bot.manipulator.slide.getCurrentPosition());
                 telemetry.addData("tgt pos", bot.targetPos);
@@ -88,13 +85,14 @@ public class TTHighSpecimen extends LinearOpMode {
                 telemetry.addData("Distance to tgt", bot.getDistance());
                 telemetry.update();
             }
-        } bot.update();
+        }
+        bot.update();
 
-        if(opModeIsActive()){
-            //Turns robot around
+        // robot is done hooking the specimen
+        if (opModeIsActive()) {
+            // turn the robot around
             bot.measuredTurn(.4,180);
-            while(opModeIsActive() && bot.update()){
-                // send telemetry.
+            while (opModeIsActive() && bot.update()) {
                 telemetry.addData("state", bot.state);
                 telemetry.addData("tgt angle", bot.tgtAngle);
                 telemetry.addData("curr angle", bot.integratedAngle);
@@ -102,10 +100,9 @@ public class TTHighSpecimen extends LinearOpMode {
             }
         }
         if (opModeIsActive()) {
-            //Strafes to get past sub
+            // Strafes to get past sub
             bot.measuredStrafe(.4, 20);
-            // loop until done.
-            while(opModeIsActive() &&  bot.update()) {
+            while (opModeIsActive() && bot.update()) {
                 // send telemetry.
                 telemetry.addData("state", bot.state);
                 telemetry.addData("tgt pos", bot.targetPos);
@@ -114,10 +111,10 @@ public class TTHighSpecimen extends LinearOpMode {
             }
         }
         if (opModeIsActive()) {
-            //Drives to get past samples
+            // Drives to get past samples
             bot.measuredDrive(.4, 29);
             // loop until done.
-            while(opModeIsActive() &&  bot.update()) {
+            while (opModeIsActive() && bot.update()) {
                 // send telemetry.
                 telemetry.addData("state", bot.state);
                 telemetry.addData("tgt pos", bot.targetPos);
@@ -127,9 +124,9 @@ public class TTHighSpecimen extends LinearOpMode {
         }
         if (opModeIsActive()) {
             //Strafes to get samples
-            bot.measuredStrafe(.4, 12);
+            bot.measuredStrafe(.4, 11);
             // loop until done.
-            while(opModeIsActive() &&  bot.update()) {
+            while (opModeIsActive() && bot.update()) {
                 // send telemetry.
                 telemetry.addData("state", bot.state);
                 telemetry.addData("tgt pos", bot.targetPos);
@@ -139,11 +136,9 @@ public class TTHighSpecimen extends LinearOpMode {
         }
 
         if (opModeIsActive()) {
-            //Drives forward
+            // Drives forward
             bot.measuredDrive(manipulator.MOTOR_SPEED, -40);
-            // loop until done.
-            while(opModeIsActive() &&  bot.update()) {
-                // send telemetry.
+            while (opModeIsActive() && bot.update()) {
                 telemetry.addData("state", bot.state);
                 telemetry.addData("tgt pos", bot.targetPos);
                 telemetry.addData("curr pos", bot.currentPos);
@@ -152,8 +147,7 @@ public class TTHighSpecimen extends LinearOpMode {
         }
         if (opModeIsActive()) {
             bot.measuredDrive(manipulator.MOTOR_SPEED, 8);
-
-            while(opModeIsActive() &&  bot.update()) {
+            while (opModeIsActive() && bot.update()) {
                 // send telemetry.
                 telemetry.addData("state", bot.state);
                 telemetry.addData("tgt pos", bot.targetPos);
@@ -166,9 +160,9 @@ public class TTHighSpecimen extends LinearOpMode {
 
         if (opModeIsActive()) {
             //Strafes to get samples
-            bot.measuredStrafe(manipulator.MOTOR_SPEED, -8);
+            bot.measuredStrafe(manipulator.MOTOR_SPEED, -6);
             // loop until done.
-            while(opModeIsActive() &&  bot.update()) {
+            while (opModeIsActive() && bot.update()) {
                 // send telemetry.
                 telemetry.addData("state", bot.state);
                 telemetry.addData("tgt pos", bot.targetPos);
@@ -176,34 +170,34 @@ public class TTHighSpecimen extends LinearOpMode {
                 telemetry.update();
             }
         }
-        if(opModeIsActive()) {
+        if (opModeIsActive()) {
             distance = bot.getDistance();
             telemetry.addData("Distance", distance);
             telemetry.update();
-
-        } bot.update();
+        }
+        bot.update();
 
 
         if (opModeIsActive()) {
             // distance to the wall
             bot.pickSpecimen(distance-2);
 
-            while(opModeIsActive() && bot.update()) {
+            while (opModeIsActive() && bot.update()) {
                 RobotLog.aa("TIE", String.format("TIE: tgtPos = %d, curr pos = %d, dist to tgt = %.2f",
                         bot.targetPos, bot.currentPos, bot.getDistance()));
             }
-                // send telemetry.
-                telemetry.addData("state", bot.state);
-                telemetry.addData("slide", bot.manipulator.slide.getCurrentPosition());
-                telemetry.addData("tgt pos", bot.targetPos);
-                telemetry.addData("curr pos", bot.currentPos);
-                telemetry.addData("Distance to tgt", bot.getDistance());
-                telemetry.update();
-            }
-        if(opModeIsActive()){
+            // send telemetry.
+            telemetry.addData("state", bot.state);
+            telemetry.addData("slide", bot.manipulator.slide.getCurrentPosition());
+            telemetry.addData("tgt pos", bot.targetPos);
+            telemetry.addData("curr pos", bot.currentPos);
+            telemetry.addData("Distance to tgt", bot.getDistance());
+            telemetry.update();
+        }
+        if (opModeIsActive()) {
             //Turns robot around
             bot.measuredTurn(.4,180);
-            while(opModeIsActive() && bot.update()){
+            while (opModeIsActive() && bot.update()) {
                 // send telemetry.
                 telemetry.addData("state", bot.state);
                 telemetry.addData("tgt angle", bot.tgtAngle);
@@ -215,7 +209,7 @@ public class TTHighSpecimen extends LinearOpMode {
             //Strafes to get past sub
             bot.measuredStrafe(.4, 28);
             // loop until done.
-            while(opModeIsActive() &&  bot.update()) {
+            while (opModeIsActive() && bot.update()) {
                 // send telemetry.
                 telemetry.addData("state", bot.state);
                 telemetry.addData("tgt pos", bot.targetPos);
@@ -223,17 +217,17 @@ public class TTHighSpecimen extends LinearOpMode {
                 telemetry.update();
             }
         }
-        if(opModeIsActive()) {
+        if (opModeIsActive()) {
             distance = bot.getDistance();
             telemetry.addData("Distance", distance);
             telemetry.update();
-
-        } bot.update();
+        }
+        bot.update();
         if (opModeIsActive()) {
             // distance to the submersible.
             bot.placeSpecimenHigh(distance-4);
 
-            while(opModeIsActive() && bot.update()) {
+            while (opModeIsActive() && bot.update()) {
                 RobotLog.aa("TIE", String.format("TIE: tgtPos = %d, curr pos = %d, dist to tgt = %.2f",
                         bot.targetPos,bot.currentPos, bot.getDistance()));
 
@@ -245,12 +239,7 @@ public class TTHighSpecimen extends LinearOpMode {
                 telemetry.addData("Distance to tgt", bot.getDistance());
                 telemetry.update();
             }
-        } bot.update();
         }
-
-
-
-
-
-
+        bot.update();
     }
+}
