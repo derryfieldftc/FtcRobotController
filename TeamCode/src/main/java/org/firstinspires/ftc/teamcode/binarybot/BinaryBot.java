@@ -109,6 +109,7 @@ public class BinaryBot {
     private Acceleration gravity;
     private double previousAngle = 0;
     public double integratedAngle = 0;
+    public double initialAngle = 0.0;
 
     private final boolean USE_AUTO_CORRECT = true;
     private final double P_COEFFICIENT_DRIVE = 0.1;
@@ -195,6 +196,9 @@ public class BinaryBot {
         // and named "imu".
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
+
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        initialAngle = angles.firstAngle;
     }
 
     public double getDistance() {
@@ -225,13 +229,15 @@ public class BinaryBot {
     }
 
     public void resetAngles() {
+        RobotLog.vv("IMU", "reset angles start");
         integratedAngle = 0;
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         previousAngle = angles.firstAngle;
 
         // the binary bot team uses the convention that a positive angle is a clockwise rotation.
         // we need to flip the currAngle to work with this convention.
-        previousAngle = - previousAngle;
+        previousAngle = -previousAngle;
+        RobotLog.vv("IMU", "reset angles end");
     }
 
     public double getCurrentAngle() {

@@ -45,6 +45,8 @@ public class TTHighSpecimen extends LinearOpMode {
     private BinaryBot bot = null;
     private EnhancedGamepad epad2 = null;
 
+    final double HALF_TURN = 175.0;
+
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
@@ -91,7 +93,7 @@ public class TTHighSpecimen extends LinearOpMode {
         // robot is done hooking the specimen
         if (opModeIsActive()) {
             // turn the robot around
-            bot.measuredTurn(.4,180);
+            bot.measuredTurn(.4, HALF_TURN);
             while (opModeIsActive() && bot.update()) {
                 telemetry.addData("state", bot.state);
                 telemetry.addData("tgt angle", bot.tgtAngle);
@@ -99,9 +101,10 @@ public class TTHighSpecimen extends LinearOpMode {
                 telemetry.update();
             }
         }
+
         if (opModeIsActive()) {
             // Strafes to get past sub
-            bot.measuredStrafe(manipulator.MOTOR_SPEED, 20);
+            bot.measuredStrafe(Manipulator.MOTOR_SPEED, 20);
             while (opModeIsActive() && bot.update()) {
                 // send telemetry.
                 telemetry.addData("state", bot.state);
@@ -112,7 +115,7 @@ public class TTHighSpecimen extends LinearOpMode {
         }
         if (opModeIsActive()) {
             // Drives to get past samples
-            bot.measuredDrive(manipulator.MOTOR_SPEED, 29);
+            bot.measuredDrive(Manipulator.MOTOR_SPEED, 27);
             // loop until done.
             while (opModeIsActive() && bot.update()) {
                 // send telemetry.
@@ -137,7 +140,7 @@ public class TTHighSpecimen extends LinearOpMode {
 
         if (opModeIsActive()) {
             // Drives forward
-            bot.measuredDrive(manipulator.MOTOR_SPEED, -40);
+            bot.measuredDrive(Manipulator.MOTOR_SPEED, -40);
             while (opModeIsActive() && bot.update()) {
                 telemetry.addData("state", bot.state);
                 telemetry.addData("tgt pos", bot.targetPos);
@@ -180,7 +183,7 @@ public class TTHighSpecimen extends LinearOpMode {
 
         if (opModeIsActive()) {
             // distance to the wall
-            bot.pickSpecimen(distance-2);
+            bot.pickSpecimen(distance-4);
 
             while (opModeIsActive() && bot.update()) {
                 RobotLog.aa("TIE", String.format("TIE: tgtPos = %d, curr pos = %d, dist to tgt = %.2f",
@@ -196,7 +199,7 @@ public class TTHighSpecimen extends LinearOpMode {
         }
         if (opModeIsActive()) {
             //Turns robot around
-            bot.measuredTurn(.4,180);
+            bot.measuredTurn(.4,HALF_TURN);
             while (opModeIsActive() && bot.update()) {
                 // send telemetry.
                 telemetry.addData("state", bot.state);
@@ -225,7 +228,7 @@ public class TTHighSpecimen extends LinearOpMode {
         bot.update();
         if (opModeIsActive()) {
             // distance to the submersible.
-            bot.placeSpecimenHigh(distance-4);
+            bot.placeSpecimenHigh(distance-8);
 
             while (opModeIsActive() && bot.update()) {
                 RobotLog.aa("TIE", String.format("TIE: tgtPos = %d, curr pos = %d, dist to tgt = %.2f",
@@ -240,6 +243,8 @@ public class TTHighSpecimen extends LinearOpMode {
                 telemetry.update();
             }
         }
-        bot.update();
+
+        bot.manipulator.retractSlide();
+        while (opModeIsActive()) {}
     }
 }
