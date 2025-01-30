@@ -101,7 +101,7 @@ public class TTHighSpecimen extends LinearOpMode {
         }
         if (opModeIsActive()) {
             // Strafes to get past sub
-            bot.measuredStrafe(.4, 20);
+            bot.measuredStrafe(manipulator.MOTOR_SPEED, 20);
             while (opModeIsActive() && bot.update()) {
                 // send telemetry.
                 telemetry.addData("state", bot.state);
@@ -112,7 +112,7 @@ public class TTHighSpecimen extends LinearOpMode {
         }
         if (opModeIsActive()) {
             // Drives to get past samples
-            bot.measuredDrive(.4, 29);
+            bot.measuredDrive(manipulator.MOTOR_SPEED, 29);
             // loop until done.
             while (opModeIsActive() && bot.update()) {
                 // send telemetry.
@@ -207,7 +207,7 @@ public class TTHighSpecimen extends LinearOpMode {
         }
         if (opModeIsActive()) {
             //Strafes to get past sub
-            bot.measuredStrafe(.4, 28);
+            bot.measuredStrafe(manipulator.MOTOR_SPEED, 30);
             // loop until done.
             while (opModeIsActive() && bot.update()) {
                 // send telemetry.
