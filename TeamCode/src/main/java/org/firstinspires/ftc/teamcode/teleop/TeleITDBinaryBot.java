@@ -29,16 +29,6 @@
 
 package org.firstinspires.ftc.teamcode.teleop;
 
-//import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.B;
-//import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.DPAD_DOWN;
-//import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.DPAD_LEFT;
-//import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.DPAD_RIGHT;
-//import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.DPAD_UP;
-//import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.LEFT_BUMPER;
-//import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.LEFT_STICK;
-//import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.RIGHT_BUMPER;
-//import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.RIGHT_STICK;
-//import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.START;
 import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.*;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -53,8 +43,10 @@ import org.firstinspires.ftc.teamcode.binarybot.Manipulator;
 public class TeleITDBinaryBot extends LinearOpMode {
 
     // Declare OpMode members.
-    private BinaryBot bot = null;
-    private EnhancedGamepad epad2 = null;
+    private BinaryBot bot;
+    private EnhancedGamepad epad1;
+    private EnhancedGamepad epad2;
+    private boolean invertDrive = false;
 
     @Override
     public void runOpMode() {
@@ -67,8 +59,9 @@ public class TeleITDBinaryBot extends LinearOpMode {
         // get a reference to the manipulator.
         Manipulator manipulator = bot.manipulator;
 
-        // get an enhanced gamepad for driver #2.
+        // get enhanced gamepads.
         epad2 = new EnhancedGamepad(gamepad2);
+        epad1 = new EnhancedGamepad(gamepad1);
         bot.resetAngles();
 
         // wait for start command from driver hub.
@@ -76,13 +69,22 @@ public class TeleITDBinaryBot extends LinearOpMode {
 
         // loop until opmode is stopped.
         while (opModeIsActive()) {
+            // use enhanced gamepad to detect if buttons were just pressed.
+            // update the enhanced gamepad data.
+            epad2.poll();
+            epad1.poll();
+
+            //invert the controls, useful for specimens
+            if (epad1.justPressed(A))
+                invertDrive = !invertDrive;
+
             // get gamepad input for mecanum drive.
-            double drive = -gamepad1.left_stick_y;
-            double strafe = gamepad1.left_stick_x;
-            double twist = gamepad1.right_stick_x;
+            double drive = -gamepad1.left_stick_y * (invertDrive ? -1 : 1);
+            double strafe = gamepad1.left_stick_x * (invertDrive ? -1 : 1);
+            double twist = gamepad1.right_stick_x * (invertDrive ? -1 : 1);
 
             // scale power?
-            double scale = Math.abs(1 - gamepad1.right_trigger);
+            double scale = Math.abs(1 - gamepad1.right_trigger + .01);
             drive = scale * drive;
             strafe = scale * strafe;
             twist = scale * twist;
@@ -90,21 +92,28 @@ public class TeleITDBinaryBot extends LinearOpMode {
             // update the mecanum drive.
             bot.drive(drive, strafe, twist);
 
-            // use enhanced gamepad to detect if buttons were just pressed.
-            // update the enhanced gamepad data.
-            epad2.poll();
-
             // is the manipulator available?
             if (manipulator.isAvailable()) {
                 // respond to gamepad input to change state of manipulator.
                 // extend slide?
-                if (epad2.justPressed(DPAD_UP)) {
-                    manipulator.extendSlide();
-                }
+                if (epad2.pressed(X)) {
+                    if (epad2.justPressed(DPAD_UP)) {
+                        manipulator.slide.setTargetPosition(Manipulator.SLIDE_HIGH_SPECIMEN_POSITION);
+                    }
+                    if (epad2.justPressed(DPAD_DOWN)) {
+                        manipulator.slide.setTargetPosition(Manipulator.SLIDE_SPECIMEN_PICK);
+                    }
+                    manipulator.greenThing.setPosition(Manipulator.GREEN_DEPLOYED);
+                } else {
+                    if (epad2.justPressed(DPAD_UP)) {
+                        manipulator.extendSlide();
+                    }
 
-                // retract slide?
-                if (epad2.justPressed(DPAD_DOWN)) {
-                    manipulator.retractSlide();
+                    // retract slide?
+                    if (epad2.justPressed(DPAD_DOWN)) {
+                        manipulator.retractSlide();
+                    }
+                    manipulator.greenThing.setPosition(Manipulator.GREEN_RETRACTED);
                 }
 
                 // trim the slide using the left joystick (y direction).
@@ -114,14 +123,14 @@ public class TeleITDBinaryBot extends LinearOpMode {
                 manipulator.tiltBucket(epad2.gamepad.right_trigger);
 
                 // trim the shoulder.
-                manipulator.trimShoulder(-epad2.gamepad.right_stick_y * ((epad2.gamepad.left_trigger > .5) ? 1 : 1 + epad2.gamepad.left_trigger));
+                manipulator.trimShoulder(-epad2.gamepad.right_stick_y * ((epad2.gamepad.left_trigger > .5) ? 1 : 2));
 
                 // toggle the wrist?
                 if (epad2.justPressed(LEFT_BUMPER)) {
                     manipulator.toggleWrist();
                 }
 //                Resets the encoders for the slide and the shoulder
-                if (epad2.justPressed((START))&& epad2.justPressed(RIGHT_STICK)){
+                if (epad2.justPressed((START)) && epad2.justPressed(RIGHT_STICK)){
                     bot.manipulator.resetPositions();
                 }
                 // toggle the claw?
@@ -131,9 +140,10 @@ public class TeleITDBinaryBot extends LinearOpMode {
 
                 // transfer sample?
                 if (epad2.justPressed(B) && !epad2.pressed(START)) {
-                    // start the transfer.
+                   // start the transfer.
                     manipulator.startTransfer();
                 }
+
 
                 // tilt left or right?
                 if (epad2.justPressed(DPAD_LEFT)) {
