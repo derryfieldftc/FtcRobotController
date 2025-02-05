@@ -232,7 +232,8 @@ public class Manipulator {
         greenThing.setPosition(GREEN_RETRACTED);
     }
     public void calibrate(){
-        if (limitShoulder.getState() == false){
+        boolean shouldCalibrate = true; //limitShoulder.getState() == false;
+        if (shouldCalibrate) {
             //limit switch is pressed
             // zero encoder.
             shoulder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -240,7 +241,8 @@ public class Manipulator {
             //set back to run to position mode
             shoulder.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
-        if (limitSlide.getState()==false){
+
+        if (shouldCalibrate) {
             slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         }
