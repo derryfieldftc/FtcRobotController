@@ -37,7 +37,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.ballbot.BallBot;
 import org.firstinspires.ftc.teamcode.ballbot.EnhancedGamepad;
 
-@TeleOp(name="ITD Binary Bot", group="BinaryBot")
+@TeleOp(name="ITD BallBot", group="Ballbot")
 //@Disabled
 public class TeleBallBot extends LinearOpMode {
     private BallBot bot = null;
