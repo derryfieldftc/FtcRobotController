@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.ballbot;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -14,12 +15,19 @@ public class Launcher {
 
     private HardwareMap hardwareMap;
     private OpMode opMode;
+    //Doubles for tilt
+    public final double TILT_MIN = .5;
+    public final double TILT_MAX = 0;
+    public double currentTilt;
+    // Values for releasing ball
+    private  final double BALL_RELEASE_CLOSED = .5;
+    private final double BALL_RELEASE_OPEN = .25;
+    private final long BALL_RELEASE_DELAY = 150;
 
-    private final float TILT_MIN = 0;
-    private final float TILT_MAX = 0.5f;
 
     // construction.
     public Launcher(HardwareMap hardwareMap, OpMode opMode) {
+
         this.hardwareMap = hardwareMap;
         this.opMode = opMode;
     }
@@ -32,7 +40,15 @@ public class Launcher {
         ballRelease = hardwareMap.get(Servo.class, "ballRelease");
     }
 
-    public void tilt(float tgtPosition) {
+    public void tilt(double tgtPosition) {
         tilt.setPosition(tgtPosition);
+        currentTilt = tgtPosition;
     }
+    public void releaseBall() {
+        LinearOpMode linear_op_mode = (LinearOpMode)opMode;
+        ballRelease.setPosition(BALL_RELEASE_OPEN);
+        linear_op_mode.sleep(BALL_RELEASE_DELAY);
+        ballRelease.setPosition(BALL_RELEASE_CLOSED);
+    }
+
 }

@@ -36,15 +36,18 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.ballbot.BallBot;
 import org.firstinspires.ftc.teamcode.ballbot.EnhancedGamepad;
+import org.firstinspires.ftc.teamcode.ballbot.Launcher;
 
 @TeleOp(name="ITD BallBot", group="Ballbot")
 //@Disabled
 public class TeleBallBot extends LinearOpMode {
     private BallBot bot = null;
     private EnhancedGamepad epad2 = null;
-
+    private EnhancedGamepad epad1 = null;
     @Override
     public void runOpMode() {
+        Launcher launcher = new Launcher(hardwareMap, this);
+        launcher.initHardware();
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
@@ -53,6 +56,8 @@ public class TeleBallBot extends LinearOpMode {
 
         // get an enhanced gamepad for driver #2.
         epad2 = new EnhancedGamepad(gamepad2);
+        // get an enhanced gamepad for driver #1.
+        epad1 = new EnhancedGamepad(gamepad1);
         bot.resetAngles();
 
         // wait for start command from driver hub.
@@ -77,8 +82,18 @@ public class TeleBallBot extends LinearOpMode {
             // use enhanced gamepad to detect if buttons were just pressed.
             // update the enhanced gamepad data.
             epad2.poll();
-
+            epad1.poll();
+            if (epad1.justPressed(DPAD_DOWN)) {
+                launcher.tilt(.5);
+            }
+            if (epad1.justPressed(DPAD_UP)) {
+                launcher.tilt(0);
+            }
+            if (epad1.justPressed(A)) {
+                launcher.releaseBall();
+            }
             bot.updateAngles();
+            telemetry.addData("Tilt position ", launcher.currentTilt);
             telemetry.addData("integrated angle", bot.integratedAngle);
             telemetry.update();
         }
