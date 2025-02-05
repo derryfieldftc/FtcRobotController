@@ -84,10 +84,10 @@ public class TeleBallBot extends LinearOpMode {
             epad2.poll();
             epad1.poll();
             if (epad1.justPressed(DPAD_DOWN)) {
-                launcher.tilt(.5);
+                launcher.tiltDown();
             }
             if (epad1.justPressed(DPAD_UP)) {
-                launcher.tilt(0);
+                launcher.tiltUp();
             }
             if (epad1.justPressed(A)) {
                 launcher.releaseBall();

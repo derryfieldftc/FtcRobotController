@@ -19,10 +19,13 @@ public class Launcher {
     public final double TILT_MIN = .5;
     public final double TILT_MAX = 0;
     public double currentTilt;
+    private double variableTilt = 0.5;
+    private final double TILT_INCREMENT = .1;
     // Values for releasing ball
     private  final double BALL_RELEASE_CLOSED = .5;
     private final double BALL_RELEASE_OPEN = .25;
     private final long BALL_RELEASE_DELAY = 150;
+
 
 
     // construction.
@@ -39,10 +42,19 @@ public class Launcher {
         tilt = hardwareMap.get(Servo.class, "tilt");
         ballRelease = hardwareMap.get(Servo.class, "ballRelease");
     }
-
-    public void tilt(double tgtPosition) {
-        tilt.setPosition(tgtPosition);
-        currentTilt = tgtPosition;
+    public void tiltUp() {
+        if (currentTilt - TILT_INCREMENT >= TILT_MAX) {
+            variableTilt = variableTilt - TILT_INCREMENT;
+            tilt.setPosition(variableTilt);
+            currentTilt = variableTilt;
+        }
+    }
+    public void tiltDown() {
+        if (currentTilt + TILT_INCREMENT <= TILT_MIN) {
+            variableTilt = variableTilt + TILT_INCREMENT;
+            tilt.setPosition(variableTilt);
+            currentTilt = variableTilt;
+        }
     }
     public void releaseBall() {
         LinearOpMode linear_op_mode = (LinearOpMode)opMode;
