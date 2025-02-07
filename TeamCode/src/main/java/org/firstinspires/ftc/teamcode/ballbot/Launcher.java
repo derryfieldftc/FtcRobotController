@@ -13,8 +13,8 @@ public class Launcher {
     public Servo tilt;
     public Servo ballRelease;
 
-    private HardwareMap hardwareMap;
-    private OpMode opMode;
+    private final HardwareMap hardwareMap;
+    private final OpMode opMode;
     //Doubles for tilt
     public final double TILT_MIN = .5;
     public final double TILT_MAX = 0;
@@ -32,7 +32,7 @@ public class Launcher {
     private double spinnerSpeed = .5;
     public double spinnerTargetSpeed;
     private boolean spinnerOn = false;
-
+    private double intakePower = -1;
 
     // construction.
     public Launcher(HardwareMap hardwareMap, OpMode opMode) {
@@ -91,12 +91,18 @@ public class Launcher {
         spinner.setPower(0);
     }
     public void updateSpinner() {
-        if (spinnerOn == true) {
+        if (spinnerOn) {
             spinner.setPower(spinnerTargetSpeed);
         } else {
             spinner.setPower(0);
         }
         spinnerSpeed = spinnerTargetSpeed;
+    }
+    public void intakeOn() {
+        harvester.setPower(intakePower);
+    }
+    public void intakeOff() {
+        harvester.setPower(0);
     }
 
 
