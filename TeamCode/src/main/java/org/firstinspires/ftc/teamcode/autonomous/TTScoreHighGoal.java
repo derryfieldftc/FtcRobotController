@@ -61,12 +61,14 @@ public class TTScoreHighGoal extends LinearOpMode {
         //calibrate encoders for manipulator
         manipulator.calibrate();
         // wait for start command from driver hub.
+
+        // Deploys green thing
+        manipulator.greenThing.setPosition(Manipulator.GREEN_DEPLOYED);
+
         waitForStart();
 
         // move off the wall by strafing to the left.
         if (opModeIsActive()) {
-            // Deploys green thing
-            manipulator.greenThing.setPosition(Manipulator.GREEN_DEPLOYED);
 //            moves 6 inches to the left at power .4
             bot.measuredStrafe(Manipulator.MOTOR_SPEED, -6);
 
@@ -141,6 +143,7 @@ public class TTScoreHighGoal extends LinearOpMode {
         //deploys shoulder
         if (opModeIsActive()){
             manipulator.deploy();
+            manipulator.greenThing.setPosition(Manipulator.GREEN_DEPLOYED);
 
             bot.measuredTurn(Manipulator.MOTOR_SPEED,-45);
             while(opModeIsActive() && bot.update()){
