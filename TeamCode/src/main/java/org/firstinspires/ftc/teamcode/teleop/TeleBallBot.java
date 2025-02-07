@@ -92,9 +92,26 @@ public class TeleBallBot extends LinearOpMode {
             if (epad1.justPressed(A)) {
                 launcher.releaseBall();
             }
+            if (epad1.justPressed(RIGHT_BUMPER)) {
+                launcher.speedUp();
+                launcher.updateSpinner();
+            }
+            if (epad1.justPressed(LEFT_BUMPER)) {
+                launcher.speedDown();
+                launcher.updateSpinner();
+            }
+            if (epad1.pressed(START) && epad1.pressed(BACK)) {
+                launcher.turnSpinnerOn();
+                launcher.updateSpinner();
+            }
+            if (epad1.justPressed(RIGHT_STICK)) {
+                launcher.turnSpinnerOff();
+                launcher.updateSpinner();
+            }
             bot.updateAngles();
             telemetry.addData("Tilt position ", launcher.currentTilt);
             telemetry.addData("integrated angle", bot.integratedAngle);
+            telemetry.addData("spinner target speed", launcher.spinnerTargetSpeed);
             telemetry.update();
         }
     }

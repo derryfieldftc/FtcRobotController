@@ -25,7 +25,13 @@ public class Launcher {
     private  final double BALL_RELEASE_CLOSED = .5;
     private final double BALL_RELEASE_OPEN = .25;
     private final long BALL_RELEASE_DELAY = 150;
+    //Variables for the spinner
 
+    private final double SPINNER_INCREMENT = .1;
+    private final double SPINNER_MAX_SPEED = 1;
+    private double spinnerSpeed = .5;
+    public double spinnerTargetSpeed;
+    private boolean spinnerOn = false;
 
 
     // construction.
@@ -62,5 +68,37 @@ public class Launcher {
         linear_op_mode.sleep(BALL_RELEASE_DELAY);
         ballRelease.setPosition(BALL_RELEASE_CLOSED);
     }
+    public void speedUp() {
+        if (spinnerSpeed < SPINNER_MAX_SPEED - SPINNER_INCREMENT) {
+            spinnerTargetSpeed = spinnerSpeed + SPINNER_INCREMENT;
+        }
+
+    }
+    public void speedDown() {
+            spinnerTargetSpeed = spinnerSpeed - SPINNER_INCREMENT;
+            if (spinnerTargetSpeed < 0) {
+                spinnerTargetSpeed = 0;
+            }
+
+
+    }
+    public void turnSpinnerOn() {
+        spinnerOn = true;
+        spinner.setPower(spinnerTargetSpeed);
+    }
+    public void turnSpinnerOff() {
+        spinnerOn = false;
+        spinner.setPower(0);
+    }
+    public void updateSpinner() {
+        if (spinnerOn == true) {
+            spinner.setPower(spinnerTargetSpeed);
+        } else {
+            spinner.setPower(0);
+        }
+        spinnerSpeed = spinnerTargetSpeed;
+    }
+
+
 
 }
