@@ -123,7 +123,8 @@ public class TeleITDBinaryBot extends LinearOpMode {
                 manipulator.tiltBucket(epad2.gamepad.right_trigger);
 
                 // trim the shoulder.
-                manipulator.trimShoulder(-epad2.gamepad.right_stick_y * ((epad2.gamepad.left_trigger > .5) ? 1 : 2));
+                manipulator.trimShoulder(-epad2.gamepad.right_stick_y * (1 + -gamepad2.left_trigger));
+                telemetry.addData("left trigger", gamepad2.left_trigger);
 
                 // toggle the wrist?
                 if (epad2.justPressed(LEFT_BUMPER)) {

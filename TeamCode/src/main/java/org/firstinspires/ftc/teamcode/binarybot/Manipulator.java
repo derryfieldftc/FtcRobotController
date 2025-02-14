@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.configuration.DeviceConfiguration;
 
 public class Manipulator {
+
     // ******************************************************************
     // enumerations
     // ******************************************************************
@@ -67,7 +68,8 @@ public class Manipulator {
     public static final int MAX_SHOULDER_POSITION = 8000;
     public static final int MIN_SHOULDER_POSITION = 0;
     public static final int SHOULDER_PICK_POSITION = 5950;
-    public static int SHOULDER_TILT_BOUNDARY = 4100;
+    public static final int SHOULDER_TILT_BOUNDARY = 4100;
+    private static final int SHOULDER_OPENEING_SAFTEY = 2000;
 
     public static int SHOULDER_TRANSFER = 2600;
     public static int SHOULDER_AFTER_TRANSFER = 5200;
@@ -643,20 +645,29 @@ public class Manipulator {
             return;
         }
 
-        if (input >= 0.75) {
-            pos = pos + 3 * SHOULDER_DELTA;
-        } else if (input >= 0.5) {
-            pos = pos + 2 * SHOULDER_DELTA;
-        } else if (input >= 0.25) {
-            pos = pos + SHOULDER_DELTA;
-        } else if (input <= -0.75) {
-            pos = pos - 3 * SHOULDER_DELTA;
-        } else if (input <= -0.5) {
-            pos = pos - 2 * SHOULDER_DELTA;
-        } else if (input <= -0.25) {
-            pos = pos - SHOULDER_DELTA;
+        if (shoulder.getCurrentPosition() < SHOULDER_OPENEING_SAFTEY && slide.getCurrentPosition() < SLIDE_SPECIMEN_PICK) {
+            this.extendSlide();
+            this.greenThing.setPosition(GREEN_DEPLOYED);
+            return; // shouldent trim, shoulder is in the way
         }
 
+        if (false) {
+            if (input >= 0.75) {
+                pos = pos + 3 * SHOULDER_DELTA;
+            } else if (input >= 0.5) {
+                pos = pos + 2 * SHOULDER_DELTA;
+            } else if (input >= 0.25) {
+                pos = pos + SHOULDER_DELTA;
+            } else if (input <= -0.75) {
+                pos = pos - 3 * SHOULDER_DELTA;
+            } else if (input <= -0.5) {
+                pos = pos - 2 * SHOULDER_DELTA;
+            } else if (input <= -0.25) {
+                pos = pos - SHOULDER_DELTA;
+            }
+        } {
+            pos += (int)input * 50;
+        }
         // don't exceed limits.
         if (pos > MAX_SHOULDER_POSITION) {
             pos = MAX_SHOULDER_POSITION;
@@ -689,7 +700,9 @@ public class Manipulator {
     public void untipBucket() {
         tiltBucket(0);
     }
-    public void deploy(){
+
+    public void deploy() {
+
 
         if (manipulatorState != ManipulatorState.AVAILABLE){
             //manipulator is busy.
@@ -697,6 +710,7 @@ public class Manipulator {
         }
         //moves slide to mid position
         slide.setTargetPosition(SLIDE_MID_POSITION);
+        greenThing.setPosition(Manipulator.GREEN_DEPLOYED);
 
         //set state to DEPLOY_MOVE_SLIDE
         manipulatorState = ManipulatorState.AVAILABLE.DEPLOY_MOVE_SLIDE;

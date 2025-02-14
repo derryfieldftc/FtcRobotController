@@ -130,7 +130,6 @@ public class TTScoreHighGoal extends LinearOpMode {
         }
         // raise slide and dump.
         if (opModeIsActive()) {
-            manipulator.greenThing.setPosition(manipulator.GREEN_RETRACTED);
             manipulator.startHighDump();
 
             // loop until high dump is done.
@@ -143,7 +142,6 @@ public class TTScoreHighGoal extends LinearOpMode {
         //deploys shoulder
         if (opModeIsActive()){
             manipulator.deploy();
-            manipulator.greenThing.setPosition(Manipulator.GREEN_DEPLOYED);
 
             bot.measuredTurn(Manipulator.MOTOR_SPEED,-45);
             while(opModeIsActive() && bot.update()){
