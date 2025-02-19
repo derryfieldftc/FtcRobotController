@@ -59,7 +59,7 @@ public class TeleBallBot extends LinearOpMode {
         // get an enhanced gamepad for driver #1.
         epad1 = new EnhancedGamepad(gamepad1);
         bot.resetAngles();
-
+        launcher.moveServosToStart();
         // wait for start command from driver hub.
         waitForStart();
 

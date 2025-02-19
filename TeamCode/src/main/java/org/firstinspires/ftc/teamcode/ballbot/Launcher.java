@@ -62,6 +62,10 @@ public class Launcher {
             currentTilt = variableTilt;
         }
     }
+    public void moveServosToStart() {
+        tilt.setPosition(TILT_MIN);
+        ballRelease.setPosition(BALL_RELEASE_CLOSED);
+    }
     public void releaseBall() {
         LinearOpMode linear_op_mode = (LinearOpMode)opMode;
         ballRelease.setPosition(BALL_RELEASE_OPEN);
