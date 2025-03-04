@@ -24,7 +24,7 @@ public class Launcher {
     // Values for releasing ball
     private  final double BALL_RELEASE_CLOSED = .5;
     private final double BALL_RELEASE_OPEN = .25;
-    private final long BALL_RELEASE_DELAY = 150;
+    private final long BALL_RELEASE_DELAY = 100;
     //Variables for the spinner
 
     private final double SPINNER_INCREMENT = .1;
