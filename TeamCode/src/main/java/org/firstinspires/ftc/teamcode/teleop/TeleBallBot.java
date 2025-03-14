@@ -50,7 +50,7 @@ public class TeleBallBot extends LinearOpMode {
         launcher.initHardware();
         telemetry.addData("Status", "Initialized");
         telemetry.update();
-
+        launcher.resetPositions();
         // create a new robot object.
         bot = new BallBot(hardwareMap, this);
 
@@ -59,7 +59,6 @@ public class TeleBallBot extends LinearOpMode {
         // get an enhanced gamepad for driver #1.
         epad1 = new EnhancedGamepad(gamepad1);
         bot.resetAngles();
-        launcher.moveServosToStart();
         // wait for start command from driver hub.
         waitForStart();
 
@@ -108,10 +107,10 @@ public class TeleBallBot extends LinearOpMode {
                 launcher.turnSpinnerOff();
                 launcher.updateSpinner();
             }
-            if (epad1.justPressed(X)) {
-                launcher.intakeOn();
-            }
             if (epad1.justPressed(Y)) {
+                launcher.toggleIntake();
+            }
+            if (epad1.justPressed(X)) {
                 launcher.intakeOff();
             }
             bot.updateAngles();

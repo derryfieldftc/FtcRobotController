@@ -9,14 +9,14 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class Launcher {
     public DcMotor spinner;
     public DcMotor harvester;
-
+    public DcMotor firstIntake;
     public Servo tilt;
     public Servo ballRelease;
 
     private final HardwareMap hardwareMap;
     private final OpMode opMode;
     //Doubles for tilt
-    public final double TILT_MIN = .5;
+    public final double TILT_MIN = .45;
     public final double TILT_MAX = 0;
     public double currentTilt;
     private double variableTilt = 0.5;
@@ -24,7 +24,7 @@ public class Launcher {
     // Values for releasing ball
     private  final double BALL_RELEASE_CLOSED = .5;
     private final double BALL_RELEASE_OPEN = .25;
-    private final long BALL_RELEASE_DELAY = 100;
+    private final long BALL_RELEASE_DELAY = 90;
     //Variables for the spinner
 
     private final double SPINNER_INCREMENT = .1;
@@ -32,7 +32,7 @@ public class Launcher {
     private double spinnerSpeed = .5;
     public double spinnerTargetSpeed;
     private boolean spinnerOn = false;
-    private double intakePower = -1;
+    private double intakePower = 1;
 
     // construction.
     public Launcher(HardwareMap hardwareMap, OpMode opMode) {
@@ -40,10 +40,14 @@ public class Launcher {
         this.hardwareMap = hardwareMap;
         this.opMode = opMode;
     }
-
+    public void resetPositions() {
+        tilt.setPosition(TILT_MIN);
+        ballRelease.setPosition(BALL_RELEASE_CLOSED);
+    }
     public void initHardware() {
         spinner = hardwareMap.get(DcMotor.class, "spinner");
         harvester = hardwareMap.get(DcMotor.class, "harvester");
+        firstIntake = hardwareMap.get(DcMotor.class, "firstIntake");
 
         tilt = hardwareMap.get(Servo.class, "tilt");
         ballRelease = hardwareMap.get(Servo.class, "ballRelease");
@@ -61,10 +65,6 @@ public class Launcher {
             tilt.setPosition(variableTilt);
             currentTilt = variableTilt;
         }
-    }
-    public void moveServosToStart() {
-        tilt.setPosition(TILT_MIN);
-        ballRelease.setPosition(BALL_RELEASE_CLOSED);
     }
     public void releaseBall() {
         LinearOpMode linear_op_mode = (LinearOpMode)opMode;
@@ -104,11 +104,19 @@ public class Launcher {
     }
     public void intakeOn() {
         harvester.setPower(intakePower);
+        firstIntake.setPower(intakePower);
     }
     public void intakeOff() {
         harvester.setPower(0);
+        firstIntake.setPower(0);
     }
-
+    public void toggleIntake() {
+        if (harvester.getPower()!= intakePower) {
+            intakeOn();
+        } else {
+            intakeOff();
+        }
+    }
 
 
 }
