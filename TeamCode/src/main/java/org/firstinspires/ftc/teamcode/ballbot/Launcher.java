@@ -10,6 +10,7 @@ public class Launcher {
     public DcMotor spinner;
     public DcMotor harvester;
     public DcMotor firstIntake;
+    public DcMotor liftMotor;
     public Servo tilt;
     public Servo ballRelease;
 
@@ -32,6 +33,7 @@ public class Launcher {
     private double spinnerSpeed = .5;
     public double spinnerTargetSpeed;
     private boolean spinnerOn = false;
+    private double liftPower = .6;
     private double intakePower = .7;
 
     // construction.
@@ -86,6 +88,9 @@ public class Launcher {
 
 
     }
+    public double getSpinnerSpeed() {
+        return spinnerTargetSpeed;
+    }
     public void turnSpinnerOn() {
         spinnerOn = true;
         spinner.setPower(spinnerTargetSpeed);
@@ -117,6 +122,18 @@ public class Launcher {
             intakeOff();
         }
     }
-
+    public void liftOn() {
+        liftMotor.setPower(liftPower);
+    }
+    public void liftOff() {
+        liftMotor.setPower(0);
+    }
+    public void toggleLift() {
+        if (liftMotor.getPower() != liftPower) {
+            liftOn();
+        } else {
+            liftOff();
+        }
+    }
 
 }
