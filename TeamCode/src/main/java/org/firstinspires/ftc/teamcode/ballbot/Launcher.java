@@ -10,6 +10,7 @@ public class Launcher {
     public DcMotor spinner;
     public DcMotor harvester;
     public DcMotor firstIntake;
+    public DcMotor liftMotor;
     public Servo tilt;
     public Servo ballRelease;
 
@@ -33,6 +34,7 @@ public class Launcher {
     public double spinnerTargetSpeed;
     private boolean spinnerOn = false;
     private double intakePower = 1;
+    private double liftPower = .6;
 
     // construction.
     public Launcher(HardwareMap hardwareMap, OpMode opMode) {
@@ -48,7 +50,7 @@ public class Launcher {
         spinner = hardwareMap.get(DcMotor.class, "spinner");
         harvester = hardwareMap.get(DcMotor.class, "harvester");
         firstIntake = hardwareMap.get(DcMotor.class, "firstIntake");
-
+        liftMotor = hardwareMap.get(DcMotor.class, "liftMotor");
         tilt = hardwareMap.get(Servo.class, "tilt");
         ballRelease = hardwareMap.get(Servo.class, "ballRelease");
     }
@@ -86,6 +88,9 @@ public class Launcher {
 
 
     }
+    public double getSpinnerSpeed() {
+        return spinnerTargetSpeed;
+    }
     public void turnSpinnerOn() {
         spinnerOn = true;
         spinner.setPower(spinnerTargetSpeed);
@@ -117,6 +122,18 @@ public class Launcher {
             intakeOff();
         }
     }
-
+    public void liftOn() {
+        liftMotor.setPower(liftPower);
+    }
+    public void liftOff() {
+        liftMotor.setPower(0);
+    }
+    public void toggleLift() {
+        if (liftMotor.getPower() != liftPower) {
+            liftOn();
+        } else {
+            liftOff();
+        }
+    }
 
 }
