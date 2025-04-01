@@ -32,7 +32,7 @@ public class Launcher {
     private double spinnerSpeed = .5;
     public double spinnerTargetSpeed;
     private boolean spinnerOn = false;
-    private double intakePower = 1;
+    private double intakePower = .7;
 
     // construction.
     public Launcher(HardwareMap hardwareMap, OpMode opMode) {
