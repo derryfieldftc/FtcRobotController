@@ -4,11 +4,10 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.GamepadManager;
+import org.firstinspires.ftc.teamcode.lib.GamepadManager;
 import org.firstinspires.ftc.teamcode.RobotPlugin;
 import org.firstinspires.ftc.teamcode.ServoStateMachine;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
