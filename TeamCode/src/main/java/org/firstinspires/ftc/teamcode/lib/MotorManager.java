@@ -23,7 +23,7 @@ public class MotorManager implements DcMotor {
 	private float powerLimit = 1;
 	private DcMotor motor;
 	private static OpMode opMode;
-	private static ArrayList<MotorManager> motorManagerList;
+	private static ArrayList<MotorManager> motorManagerList = new ArrayList<>();
 
 	/**
 	 * Creates a new MotorManager.
@@ -58,6 +58,24 @@ public class MotorManager implements DcMotor {
 		this.min = Integer.MIN_VALUE;
 		this.max = Integer.MAX_VALUE;
 		return this;
+	}
+
+	public MotorManager setUpperBound(int max) {
+		this.max = max;
+		return this;
+	}
+
+	public int getUpperBound() {
+		return max;
+	}
+
+	public MotorManager setLowerBound(int min) {
+		this.min = min;
+		return this;
+	}
+
+	public int getLowerBound() {
+		return min;
 	}
 
 	/**
@@ -108,7 +126,7 @@ public class MotorManager implements DcMotor {
 						+ "\ndir: " + getDirection();
 			case RUN_TO_POSITION:
 				return getMode()
-						+ "\npos val/min/max" + getCurrentPosition()
+						+ "\npos val/min/max: " + getCurrentPosition()
 						+ "/" + min + "/" + max
 						+ "\ntargetPos: " + getTargetPosition()
 						+ "\npower val/max: " + getPower()

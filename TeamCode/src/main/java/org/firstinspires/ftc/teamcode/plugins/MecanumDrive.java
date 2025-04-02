@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import org.firstinspires.ftc.robotcore.external.ExportClassToBlocks;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RobotPlugin;
+import org.firstinspires.ftc.teamcode.lib.MotorManager;
 
 @ExportClassToBlocks
 public class MecanumDrive extends RobotPlugin {
@@ -16,15 +17,16 @@ public class MecanumDrive extends RobotPlugin {
 	Telemetry telemetry;
 	HardwareMap hardwareMap;
 	Gamepad gamepad;
-	DcMotor motorFL;
-	DcMotor motorBL;
-	DcMotor motorFR;
-	DcMotor motorBR;
+	MotorManager motorFL;
+	MotorManager motorBL;
+	MotorManager motorFR;
+	MotorManager motorBR;
 
 	/**
 	 * This class is a simple mecanum drive. The motors run without encoders so it should "just work"
 	 */
 	public MecanumDrive(OpMode opMode) {
+		MotorManager.setGlobalOpMode(opMode);
 		this.opMode = opMode;
 		this.telemetry = opMode.telemetry;
 		this.hardwareMap = opMode.hardwareMap;
@@ -33,10 +35,10 @@ public class MecanumDrive extends RobotPlugin {
 
 	@Override
 	public void init() {
-		motorFL = hardwareMap.dcMotor.get("motorFL");
-		motorBL = hardwareMap.dcMotor.get("motorBL");
-		motorFR = hardwareMap.dcMotor.get("motorFR");
-		motorBR = hardwareMap.dcMotor.get("motorBR");
+		motorFL = new MotorManager("motorFL");
+		motorBL = new MotorManager("motorBL");
+		motorFR = new MotorManager("motorFR");
+		motorBR = new MotorManager("motorBR");
 
 		motorFL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 		motorBL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
