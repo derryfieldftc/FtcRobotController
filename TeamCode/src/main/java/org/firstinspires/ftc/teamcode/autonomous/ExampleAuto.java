@@ -10,7 +10,6 @@ public class ExampleAuto extends TaskAutonomous {
 	public RobotTask[] createTasksList() {
         return new RobotTask[] {
                 new ExampleTask(this).speed(0.3).seconds(1),
-				new DelayTask(this).waitMillis(2000),
                 new ExampleTask(this).speed(-0.3).seconds(1),
 		};
 	}

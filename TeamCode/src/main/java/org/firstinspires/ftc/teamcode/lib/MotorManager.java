@@ -93,6 +93,44 @@ public class MotorManager implements DcMotor {
 		return this;
 	}
 
+	/**
+	 * Returns some data about a motor, useful for debugging.
+	 * Changes what data is printed based on motor mode.
+	 * @return
+	 */
+	public String motorData() {
+		switch (getMode()) {
+			case RUN_USING_ENCODER:
+			case RUN_WITHOUT_ENCODER:
+				return getMode()
+						+ "\npower val/max: " + getPower()
+						+ "/" + powerLimit
+						+ "\ndir: " + getDirection();
+			case RUN_TO_POSITION:
+				return getMode()
+						+ "\npos val/min/max" + getCurrentPosition()
+						+ "/" + min + "/" + max
+						+ "\ntargetPos: " + getTargetPosition()
+						+ "\npower val/max: " + getPower()
+						+ "/" + powerLimit;
+			default:
+				return getMode()
+						+ "\n" + getMotorType().toString()
+						+ "\nport: " + getPortNumber()
+						+ "\nname: " + getDeviceName()
+						+ "\ncontroller: " + getController()
+						+ "\nconnectionInfo: " + getConnectionInfo()
+						+ "\nmanufacturer: " + getManufacturer();
+		}
+	}
+
+	/**
+	 * Automatically dumps <code>motorData()</code> to telemetry
+	 */
+	public void dumpMotorData() {
+		opMode.telemetry.addLine(motorData());
+	}
+
 	@Override
 	public void setDirection(Direction direction) {
 		motor.setDirection(direction);
