@@ -90,7 +90,7 @@ public class TeleBallBot extends LinearOpMode {
             }
             //Prevents balls being released when the spinner is not moving
             if (epad1.justPressed(A)) {
-                if (launcher.getSpinnerSpeed() > 0) {
+                if (launcher.getSpinnerSpeed() > 0 && launcher.getSpinnerState()) {
                 launcher.releaseBall();
                 }
             }
@@ -110,15 +110,11 @@ public class TeleBallBot extends LinearOpMode {
                 launcher.turnSpinnerOff();
                 launcher.updateSpinner();
             }
-            if (epad1.pressed(Y) && epad1.pressed(X)) {
-                launcher.toggleIntake();
-            }
-            if (epad1.pressed(Y) && epad1.pressed(B)) {
-                launcher.toggleLift();
-            }
             if (epad1.justPressed(Y)) {
-                launcher.toggleLift();
                 launcher.toggleIntake();
+            }
+            if (epad1.justPressed(X)) {
+                launcher.toggleLift();
             }
             bot.updateAngles();
             telemetry.addData("Tilt position ", launcher.currentTilt);
