@@ -14,7 +14,7 @@ import java.util.ArrayList;
 /**
  * Thin wrapper class that implements DcMotor.
  * Comes with a few quality of life features like speed limits and bounds.
- * Any methods that are prefixed with an `_` return this object
+ * Any methods that are prefixed with an `_` Returns this object
  * @see DcMotor
  */
 public class MotorManager implements DcMotor {
@@ -33,7 +33,7 @@ public class MotorManager implements DcMotor {
 	 */
 	public MotorManager(String name) {
 		if (opMode == null)
-			throw new RuntimeException("OpMode is null, please make sure you have used the MotorManager.setGlobalOpMode() method");
+			throw new RuntimeException("OpMode is null, please make sure you have used the MotorManager.setGlobalOpMode() method previously");
 
 		this.motor = opMode.hardwareMap.dcMotor.get(name);
 		motorManagerList.add(this);
@@ -104,7 +104,7 @@ public class MotorManager implements DcMotor {
 
 	/**
 	 * {@link MotorManager#setPower}
-	 * @Returns this
+	 * @return this
 	 */
 	public MotorManager _setPower(double power) {
 		motor.setPower(clamp(power, min, max));
@@ -156,7 +156,7 @@ public class MotorManager implements DcMotor {
 
 	/**
 	 * {@link MotorManager#setDirection}
-	 * @Returns this
+	 * @return this
 	 */
 	public MotorManager _setDirection(Direction direction) {
 		motor.setDirection(direction);
@@ -185,7 +185,7 @@ public class MotorManager implements DcMotor {
 
 	/**
 	 * {@link MotorManager#setMotorType}
-	 * @Returns this
+	 * @return this
 	 */
 	public MotorManager _setMotorType(MotorConfigurationType motorType) {
 		motor.setMotorType(motorType);
@@ -209,7 +209,7 @@ public class MotorManager implements DcMotor {
 
 	/**
 	 * {@link MotorManager#setZeroPowerBehavior}
-	 * @Returns this
+	 * @return this
 	 */
 	public MotorManager _setZeroPowerBehavior(ZeroPowerBehavior zeroPowerBehavior) {
 		motor.setZeroPowerBehavior(zeroPowerBehavior);
@@ -229,7 +229,7 @@ public class MotorManager implements DcMotor {
 
 	/**
 	 * {@link MotorManager#setPowerFloat}
-	 * @Returns this
+	 * @return this
 	 */
 	public MotorManager _setPowerFloat() {
 		setZeroPowerBehavior(ZeroPowerBehavior.FLOAT);
@@ -249,7 +249,7 @@ public class MotorManager implements DcMotor {
 
 	/**
 	 * {@link MotorManager#setTargetPosition}
-	 * @Returns this
+	 * @return this
 	 */
 	public MotorManager _setTargetPosition(int position) {
 		motor.setTargetPosition(clamp(position, min, max));
@@ -278,7 +278,7 @@ public class MotorManager implements DcMotor {
 
 	/**
 	 * {@link MotorManager#setMode}
-	 * @Returns this
+	 * @return this
 	 */
 	public MotorManager _setMode(RunMode mode) {
 		motor.setMode(mode);
@@ -317,7 +317,7 @@ public class MotorManager implements DcMotor {
 
 	/**
 	 * {@link MotorManager#resetDeviceConfigurationForOpMode}
-	 * @Returns this
+	 * @return this
 	 */
 	public MotorManager _resetDeviceConfigurationForOpMode() {
 		motor.resetDeviceConfigurationForOpMode(); //TODO! figure out what this does
@@ -331,7 +331,7 @@ public class MotorManager implements DcMotor {
 
 	/**
 	 * {@link MotorManager#close}
-	 * @Returns this
+	 * @return this
 	 */
 	public MotorManager _close() {
 		motor.close();
