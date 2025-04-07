@@ -112,7 +112,7 @@ public class Launcher {
     }
     public void intakeOn() {
         harvester.setPower(intakePower);
-        firstIntake.setPower(intakePower);
+        firstIntake.setPower(-intakePower);
     }
     public void intakeOff() {
         harvester.setPower(0);
