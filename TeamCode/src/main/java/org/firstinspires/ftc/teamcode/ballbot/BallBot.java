@@ -38,7 +38,7 @@ public class BallBot {
     private DcMotor motorBL;
     private DcMotor motorFR;
     private DcMotor motorBR;
-
+    private DistanceSensor ballSensor;
     RevHubOrientationOnRobot orientationOnRobot;
 
     // op mode related items.
@@ -82,7 +82,7 @@ public class BallBot {
         motorBL.setDirection(DcMotorSimple.Direction.REVERSE);
         motorFR.setDirection(DcMotorSimple.Direction.FORWARD);
         motorBR.setDirection(DcMotorSimple.Direction.FORWARD);
-
+        ballSensor = hardwareMap.get(DistanceSensor.class, "ballSensor");
         initIMU();
     }
 
@@ -104,7 +104,9 @@ public class BallBot {
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
     }
-
+    public double getDistance() {
+        return ballSensor.getDistance(DistanceUnit.INCH);
+    }
     public void updateAngles() {
         float currAngle;
         double deltaAngle;

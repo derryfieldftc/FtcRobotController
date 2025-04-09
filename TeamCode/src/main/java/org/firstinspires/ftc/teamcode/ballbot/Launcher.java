@@ -138,4 +138,25 @@ public class Launcher {
             liftOff();
         }
     }
+    private double noBalls = 8.6;
+    private double oneBall = 7.6;
+    private double twoBalls = 7.2;
+    private double threeBalls = 5.86;
+    private double fourBalls = 3.8;
+    private double fiveBalls = 2.2;
+    public int calculateBalls(double distance) {
+        if (distance > noBalls) {
+            return 0;
+        } else if (distance > oneBall) {
+            return 1;
+        } else if (distance > twoBalls) {
+            return 2;
+        } else if (distance > threeBalls) {
+            return 3;
+        } else if (distance > fourBalls) {
+            return  4;
+        } else {
+            return 5;
+        }
+    }
 }

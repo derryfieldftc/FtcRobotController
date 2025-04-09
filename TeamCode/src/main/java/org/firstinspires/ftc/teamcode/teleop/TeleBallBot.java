@@ -120,6 +120,8 @@ public class TeleBallBot extends LinearOpMode {
             telemetry.addData("Tilt position ", launcher.currentTilt);
             telemetry.addData("integrated angle", bot.integratedAngle);
             telemetry.addData("spinner target speed", launcher.spinnerTargetSpeed);
+            telemetry.addData("distance", bot.getDistance());
+            telemetry.addData("Balls: ", launcher.calculateBalls(bot.getDistance()));
             telemetry.update();
         }
     }
