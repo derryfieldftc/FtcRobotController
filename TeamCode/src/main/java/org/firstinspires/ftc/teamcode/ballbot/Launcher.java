@@ -19,8 +19,7 @@ public class Launcher {
     //Doubles for tilt
     public final double TILT_MIN = .4;
     public final double TILT_MAX = 0;
-    public double currentTilt;
-    private double variableTilt = 0.5;
+    public double currentTilt = .4;
     private final double TILT_INCREMENT = .1;
     // Values for releasing ball
     private  final double BALL_RELEASE_CLOSED = .5;
@@ -56,16 +55,16 @@ public class Launcher {
     }
     public void tiltUp() {
         if (currentTilt - TILT_INCREMENT >= TILT_MAX) {
-            variableTilt = variableTilt - TILT_INCREMENT;
-            tilt.setPosition(variableTilt);
-            currentTilt = variableTilt;
+            currentTilt -= TILT_INCREMENT;
+            tilt.setPosition(currentTilt);
+
         }
     }
     public void tiltDown() {
         if (currentTilt + TILT_INCREMENT <= TILT_MIN) {
-            variableTilt = variableTilt + TILT_INCREMENT;
-            tilt.setPosition(variableTilt);
-            currentTilt = variableTilt;
+            currentTilt += TILT_INCREMENT;
+            tilt.setPosition(currentTilt);
+
         }
     }
     public void releaseBall() {
@@ -101,6 +100,13 @@ public class Launcher {
     public void turnSpinnerOff() {
         spinnerOn = false;
         spinner.setPower(0);
+    }
+    public void toggleSpinner() {
+        if (getSpinnerState() == false) {
+            turnSpinnerOn();
+        } else {
+            turnSpinnerOff();
+        }
     }
     public void updateSpinner() {
         if (spinnerOn) {
@@ -138,22 +144,22 @@ public class Launcher {
             liftOff();
         }
     }
-    private double noBalls = 8.6;
-    private double oneBall = 7.6;
-    private double twoBalls = 7.2;
-    private double threeBalls = 5.86;
-    private double fourBalls = 3.8;
-    private double fiveBalls = 2.2;
+    private final double NOBALLS = 8.6;
+    private final double ONEBALL = 7.6;
+    private final double TWOBALLS = 7.2;
+    private final double THREEBALLS = 5.86;
+    private final double FOURBALLS = 3.8;
+    //    private double fiveBalls = 2.2;
     public int calculateBalls(double distance) {
-        if (distance > noBalls) {
+        if (distance > NOBALLS) {
             return 0;
-        } else if (distance > oneBall) {
+        } else if (distance > ONEBALL) {
             return 1;
-        } else if (distance > twoBalls) {
+        } else if (distance > TWOBALLS) {
             return 2;
-        } else if (distance > threeBalls) {
+        } else if (distance > THREEBALLS) {
             return 3;
-        } else if (distance > fourBalls) {
+        } else if (distance > FOURBALLS) {
             return  4;
         } else {
             return 5;
