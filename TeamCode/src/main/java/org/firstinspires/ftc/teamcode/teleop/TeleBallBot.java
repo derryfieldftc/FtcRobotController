@@ -116,10 +116,17 @@ public class TeleBallBot extends LinearOpMode {
             if (epad1.justPressed(X)) {
                 launcher.toggleLift();
             }
+            double startTime = 0;
+            int timestate = 0;
             if (launcher.calculateBalls(bot.getDistance()) == 5) {
-                double tempTime = this.getRuntime();
-                if (tempTime + this.getRuntime() == 20 && launcher.calculateBalls(bot.getDistance()) == 5){
-                    launcher.liftOff();
+                if (timestate == 0) {
+                    timestate = 1;
+                    startTime = this.getRuntime();
+                } else {
+                    double currTime = this.getRuntime();
+                    if (currTime - startTime > 2000 && launcher.calculateBalls(bot.getDistance()) == 5) {
+                        launcher.liftOff();
+                    }
                 }
 
             }
