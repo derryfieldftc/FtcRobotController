@@ -124,7 +124,7 @@ public class TeleBallBot extends LinearOpMode {
                     timestate = 1;
                     startTime = System.currentTimeMillis();
                 } else {
-                    if ((System.currentTimeMillis() - startTime) > 800) {
+                    if ((System.currentTimeMillis() - startTime) > 2000) {
                         if (launcher.calculateBalls(bot.getDistance()) == 5) {
                             launcher.liftOff();
                             timestate = 0;

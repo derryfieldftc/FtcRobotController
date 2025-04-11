@@ -84,8 +84,8 @@ public class Launcher {
     }
     public void speedDown() {
             spinnerTargetSpeed = spinnerSpeed - SPINNER_INCREMENT;
-            if (spinnerTargetSpeed < 0) {
-                spinnerTargetSpeed = 0;
+            if (spinnerTargetSpeed < 0.2) {
+                spinnerTargetSpeed = 0.2;
             }
 
 
