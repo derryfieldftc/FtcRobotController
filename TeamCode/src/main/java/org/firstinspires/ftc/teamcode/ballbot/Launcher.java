@@ -32,8 +32,8 @@ public class Launcher {
     private double spinnerSpeed = .5;
     public double spinnerTargetSpeed;
     private boolean spinnerOn = false;
-    private double liftPower = .4;
-    private double intakePower = .5;
+    private final double LIFTPOWER = .4;
+    private final double INTAKEPOWER = .5;
 
     // construction.
     public Launcher(HardwareMap hardwareMap, OpMode opMode) {
@@ -66,6 +66,9 @@ public class Launcher {
             tilt.setPosition(currentTilt);
 
         }
+    }
+    public double getCurrentTilt() {
+        return currentTilt;
     }
     public void releaseBall() {
         LinearOpMode linear_op_mode = (LinearOpMode)opMode;
@@ -117,8 +120,8 @@ public class Launcher {
         spinnerSpeed = spinnerTargetSpeed;
     }
     public void intakeOn() {
-        harvester.setPower(intakePower);
-        firstIntake.setPower(-intakePower);
+        harvester.setPower(INTAKEPOWER);
+        firstIntake.setPower(-INTAKEPOWER);
     }
     public void intakeOff() {
         harvester.setPower(0);
@@ -132,7 +135,7 @@ public class Launcher {
         }
     }
     public void liftOn() {
-        liftMotor.setPower(liftPower);
+        liftMotor.setPower(LIFTPOWER);
     }
     public void liftOff() {
         liftMotor.setPower(0);

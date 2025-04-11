@@ -53,7 +53,8 @@ public class TeleBallBot extends LinearOpMode {
         launcher.resetPositions();
         // create a new robot object.
         bot = new BallBot(hardwareMap, this);
-
+        int timestate = 0;
+        double startTime = 0;
         // get an enhanced gamepad for driver #2.
         epad2 = new EnhancedGamepad(gamepad2);
         // get an enhanced gamepad for driver #1.
@@ -116,19 +117,25 @@ public class TeleBallBot extends LinearOpMode {
             if (epad1.justPressed(X)) {
                 launcher.toggleLift();
             }
-            double startTime = 0;
-            int timestate = 0;
+
+
             if (launcher.calculateBalls(bot.getDistance()) == 5) {
                 if (timestate == 0) {
                     timestate = 1;
-                    startTime = this.getRuntime();
+                    startTime = System.currentTimeMillis();
                 } else {
-                    double currTime = this.getRuntime();
-                    if (currTime - startTime > 2000 && launcher.calculateBalls(bot.getDistance()) == 5) {
-                        launcher.liftOff();
+                    if ((System.currentTimeMillis() - startTime) > 800) {
+                        if (launcher.calculateBalls(bot.getDistance()) == 5) {
+                            launcher.liftOff();
+                            timestate = 0;
+                        } else {
+                            timestate = 0;
+                        }
                     }
                 }
-
+            }
+            if (launcher.getCurrentTilt() != .4) {
+                launcher.liftOff();
             }
 
 
