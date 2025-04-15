@@ -53,18 +53,24 @@ public class TeleBallBot extends LinearOpMode {
         launcher.resetPositions();
         // create a new robot object.
         bot = new BallBot(hardwareMap, this);
-        int timestate = 0;
-        double startTime = 0;
         // get an enhanced gamepad for driver #2.
         epad2 = new EnhancedGamepad(gamepad2);
         // get an enhanced gamepad for driver #1.
         epad1 = new EnhancedGamepad(gamepad1);
         bot.resetAngles();
         // wait for start command from driver hub.
+        double secondsWithFive = 0;
+        double runtime = 0;
+        double oldRuntime;
+        double deltaTime;
         waitForStart();
 
         // loop until opmode is stopped.
         while (opModeIsActive()) {
+            oldRuntime = runtime;
+            runtime = this.getRuntime();
+            deltaTime = runtime - oldRuntime;
+
             // get gamepad input for mecanum drive.
             double drive = -gamepad1.left_stick_y;
             double strafe = gamepad1.left_stick_x;
@@ -92,7 +98,7 @@ public class TeleBallBot extends LinearOpMode {
             //Prevents balls being released when the spinner is not moving
             if (epad1.justPressed(A)) {
                 if (launcher.getSpinnerSpeed() > 0 && launcher.getSpinnerState()) {
-                launcher.releaseBall();
+                    launcher.releaseBall();
                 }
             }
             if (epad1.justPressed(RIGHT_BUMPER)) {
@@ -118,23 +124,17 @@ public class TeleBallBot extends LinearOpMode {
                 launcher.toggleLift();
             }
 
+            if (launcher.getCurrentTilt() != .4) {
+                launcher.liftOff();
+            }
 
             if (launcher.calculateBalls(bot.getDistance()) == 5) {
-                if (timestate == 0) {
-                    timestate = 1;
-                    startTime = System.currentTimeMillis();
-                } else {
-                    if ((System.currentTimeMillis() - startTime) > 2000) {
-                        if (launcher.calculateBalls(bot.getDistance()) == 5) {
-                            launcher.liftOff();
-                            timestate = 0;
-                        } else {
-                            timestate = 0;
-                        }
-                    }
-                }
+                secondsWithFive += deltaTime;
+            } else {
+                secondsWithFive = 0.0;
             }
-            if (launcher.getCurrentTilt() != .4) {
+
+            if (secondsWithFive > .25) {
                 launcher.liftOff();
             }
 
