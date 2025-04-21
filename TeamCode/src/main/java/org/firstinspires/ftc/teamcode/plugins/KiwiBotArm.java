@@ -2,11 +2,15 @@ package org.firstinspires.ftc.teamcode.plugins;
 
 import static androidx.core.math.MathUtils.clamp;
 
+import android.content.SharedPreferences;
+import android.provider.MediaStore;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
+import org.firstinspires.ftc.teamcode.R;
 import org.firstinspires.ftc.teamcode.RobotPlugin;
 import org.firstinspires.ftc.teamcode.lib.MotorManager;
 
@@ -14,13 +18,15 @@ public class KiwiBotArm extends RobotPlugin {
 	OpMode opMode;
 	Gamepad gamepad;
 	MotorManager arm;
-	int startingPos, targetPosition;
+	int startingPos, targetPosition, floorDistance;
 	DigitalChannel limitSwitch;
 
 	public KiwiBotArm(OpMode opMode) {
 		this.opMode = opMode;
-		gamepad = opMode.gamepad2;
+		gamepad = opMode.gamepad1;
 		MotorManager.setGlobalOpMode(opMode);
+//		floorDistance = MediaStore.Files.getContentUri();
+
 	}
 
 	@Override
@@ -36,7 +42,7 @@ public class KiwiBotArm extends RobotPlugin {
 			startingPos = arm.getCurrentPosition();
 			arm.setTargetPosition(arm.getCurrentPosition());
 			arm.setUpperBound(startingPos);
-			arm.setLowerBound(startingPos - 525);
+			arm.setLowerBound(startingPos - 545);
 			return;
 		}
 
@@ -72,6 +78,6 @@ public class KiwiBotArm extends RobotPlugin {
 			targetPosition = arm.getUpperBound();
 		}
 
-		targetPosition = clamp(targetPosition - (int)(gamepad.left_stick_y * 3), arm.getLowerBound(), arm.getUpperBound());
+		targetPosition = clamp(targetPosition - (int)(gamepad.right_stick_y * 3), arm.getLowerBound(), arm.getUpperBound());
 	}
 }
