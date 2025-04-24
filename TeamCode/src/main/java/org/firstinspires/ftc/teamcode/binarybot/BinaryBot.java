@@ -56,12 +56,9 @@ public class BinaryBot {
     // ******************************************************************
     // Constants
     // ******************************************************************
-    // The bot uses REV Robotics thru bore encoders which have a resolution of
-    // 8192 counts per revolution
-    static final double     POD_COUNTS_PER_MOTOR_REV    = 8192;
+    static final double     POD_COUNTS_PER_MOTOR_REV    = 8000; //ppr of 2000, cpr is ppr * 4
     static final double     POD_DRIVE_GEAR_REDUCTION    = 1;
-    // REV robotics smaller omni wheels are 60mm in diameter.
-    static final double     POD_WHEEL_DIAMETER_INCHES   = 1.37795;
+    static final double     POD_WHEEL_DIAMETER_INCHES   = 1.25984; //32mm
     static final double     POD_WHEEL_CIRCUM_INCHES = Math.PI * POD_WHEEL_DIAMETER_INCHES;
     static final double     POD_COUNTS_PER_INCH         =   (POD_COUNTS_PER_MOTOR_REV * POD_DRIVE_GEAR_REDUCTION) /
             (POD_WHEEL_CIRCUM_INCHES);
@@ -153,7 +150,7 @@ public class BinaryBot {
             driveEncoder = hardwareMap.dcMotor.get("drive");
 
             strafeEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
-            driveEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
+            driveEncoder.setDirection(DcMotorSimple.Direction.FORWARD);
 
             strafeEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             driveEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
