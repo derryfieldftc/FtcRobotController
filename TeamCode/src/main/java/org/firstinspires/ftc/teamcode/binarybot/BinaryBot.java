@@ -56,7 +56,7 @@ public class BinaryBot {
     // ******************************************************************
     // Constants
     // ******************************************************************
-    static final double     POD_COUNTS_PER_MOTOR_REV    = 8000; //ppr of 2000, cpr is ppr * 4
+    static final double     POD_COUNTS_PER_MOTOR_REV    = 2000; //cpr of 2000
     static final double     POD_DRIVE_GEAR_REDUCTION    = 1;
     static final double     POD_WHEEL_DIAMETER_INCHES   = 1.25984; //32mm
     static final double     POD_WHEEL_CIRCUM_INCHES = Math.PI * POD_WHEEL_DIAMETER_INCHES;

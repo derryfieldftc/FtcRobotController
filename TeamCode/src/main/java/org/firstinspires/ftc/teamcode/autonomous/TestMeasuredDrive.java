@@ -63,7 +63,7 @@ public class TestMeasuredDrive extends LinearOpMode {
 
         if (opModeIsActive()) {
             // drive forward 4 feet.
-            bot.measuredDrive(0.0, 48);
+            bot.measuredDrive(0.3, 48);
 
             // loop until done traveling 2 feet.
             while(opModeIsActive() &&  bot.update()) {
