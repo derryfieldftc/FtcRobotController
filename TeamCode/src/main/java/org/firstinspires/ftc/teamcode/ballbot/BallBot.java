@@ -84,6 +84,7 @@ public class BallBot {
         motorBR.setDirection(DcMotorSimple.Direction.FORWARD);
         ballSensor = hardwareMap.get(DistanceSensor.class, "ballSensor");
         initIMU();
+
     }
 
     private void initIMU() {

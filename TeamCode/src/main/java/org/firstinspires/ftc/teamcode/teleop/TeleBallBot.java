@@ -63,6 +63,7 @@ public class TeleBallBot extends LinearOpMode {
         double runtime = 0;
         double oldRuntime;
         double deltaTime;
+        launcher.spinnerTargetSpeed = .2;
         waitForStart();
 
         // loop until opmode is stopped.
@@ -109,12 +110,8 @@ public class TeleBallBot extends LinearOpMode {
                 launcher.speedDown();
                 launcher.updateSpinner();
             }
-            if (epad1.pressed(START) && epad1.pressed(BACK)) {
-                launcher.toggleSpinner();
-                launcher.updateSpinner();
-            }
             if (epad1.justPressed(RIGHT_STICK)) {
-                launcher.turnSpinnerOff();
+                launcher.toggleSpinner();
                 launcher.updateSpinner();
             }
             if (epad1.justPressed(Y)) {
