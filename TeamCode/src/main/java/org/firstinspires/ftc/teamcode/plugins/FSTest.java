@@ -5,6 +5,7 @@ import android.os.Environment;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.RobotPlugin;
+import org.firstinspires.ftc.teamcode.lib.FSReadWrite;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -12,6 +13,24 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 public class FSTest extends RobotPlugin {
+	OpMode opMode;
+
+	public FSTest(OpMode opMode) {
+		this.opMode = opMode;
+	}
+
+	@Override
+	public void init() {
+		FSReadWrite.store("key", "data");
+	}
+
+	@Override
+	public void start() {
+		opMode.telemetry.addLine(FSReadWrite.Serializer.deSerialize("key").toString());
+	}
+}
+
+/*
 	Environment environment;
 	OpMode opMode;
 	PrintWriter writer;
@@ -44,4 +63,4 @@ public class FSTest extends RobotPlugin {
 			writer.println("this is a new line");
 		}
 	}
-}
+ */
