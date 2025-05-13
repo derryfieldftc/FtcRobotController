@@ -40,7 +40,7 @@ public class KiwiBotArm extends RobotPlugin {
 
 	@Override
 	public void init() {
-		floorDistance = 535;
+		floorDistance = 320;
 		arm = new MotorManager("lift");
 		limitSwitch = opMode.hardwareMap.get(DigitalChannel.class, "motorStop");
 		arm._setTargetPosition(arm.getCurrentPosition())._setMode(DcMotor.RunMode.RUN_TO_POSITION)._setPower(.3);
