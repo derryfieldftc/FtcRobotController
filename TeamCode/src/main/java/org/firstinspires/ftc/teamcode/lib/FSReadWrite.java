@@ -7,17 +7,50 @@ import com.qualcomm.robotcore.util.ReadWriteFile;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class FSReadWrite {
-	static File file = AppUtil.getInstance().getSettingsFile("FSReadWriteInfo.txt");
+	static File directory = AppUtil.getInstance().getSettingsFile("FSReadWrite");
+	static File file = new File(directory, "data");
+	static FileWriter writer;
+	static Scanner reader;
 
-	public static void store(String key, String data) {
-		writeFile(file, key.length() + " " + key + " " + data, ReadWriteFile.readFile(file));
+	static {
+		try {
+			writer = new FileWriter(file);
+			reader = new Scanner(file);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
-	public static Object get(String key) {
-		String data = readFile(file);
+	/**
+	 * Do not use unless you know what you are doing
+	 */
+	public static void setUp() {
+		try {
+			file.createNewFile();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
+	}
+
+	public static void store(String key, String data) throws IOException {
+		writer.append(key.length() + " " + key + " " + data);
+		//writeFile(file, key.length() + " " + key + " " + data, ReadWriteFile.readFile(file));
+	}
+
+	public static Object get(String key) throws IOException {
+		String data = null;
+		while (reader.hasNextLine()) {
+			data = reader.nextLine();
+			Scanner dataScanner = new Scanner(data);
+		}
+
 		return data;
 	}
 

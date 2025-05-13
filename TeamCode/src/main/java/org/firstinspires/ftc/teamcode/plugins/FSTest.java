@@ -17,16 +17,24 @@ public class FSTest extends RobotPlugin {
 
 	public FSTest(OpMode opMode) {
 		this.opMode = opMode;
+		// FSReadWrite.setUp();
 	}
 
 	@Override
 	public void init() {
-		FSReadWrite.store("key", "data");
+
+		try {
+			FSReadWrite.store("key", "data");
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		FSReadWrite.setUp();
 	}
 
 	@Override
 	public void start() {
-		opMode.telemetry.addLine(FSReadWrite.Serializer.deSerialize("key").toString());
+		//opMode.telemetry.addLine(FSReadWrite.Serializer.deSerialize("key").toString());
+		opMode.telemetry.addLine("DONE");
 	}
 }
 
