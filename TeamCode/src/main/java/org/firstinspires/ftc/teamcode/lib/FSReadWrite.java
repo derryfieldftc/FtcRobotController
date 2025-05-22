@@ -18,14 +18,6 @@ public class FSReadWrite {
 	static FileWriter writer;
 	static Scanner reader;
 
-	static {
-		try {
-			writer = new FileWriter(file);
-			reader = new Scanner(file);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
 
 	/**
 	 * Do not use unless you know what you are doing
@@ -37,10 +29,18 @@ public class FSReadWrite {
 			throw new RuntimeException(e);
 		}
 
+		try {
+			writer = new FileWriter(file);
+			reader = new Scanner(file);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
 	}
 
 	public static void store(String key, String data) throws IOException {
-		writer.append(key.length() + " " + key + " " + data);
+		//writer.append(key.length() + " " + key + " " + data);
+		writer.write(1);
 		//writeFile(file, key.length() + " " + key + " " + data, ReadWriteFile.readFile(file));
 	}
 

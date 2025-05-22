@@ -17,7 +17,7 @@ public class FSTest extends RobotPlugin {
 
 	public FSTest(OpMode opMode) {
 		this.opMode = opMode;
-		// FSReadWrite.setUp();
+		 FSReadWrite.setUp();
 	}
 
 	@Override
