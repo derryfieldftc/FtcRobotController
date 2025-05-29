@@ -2,27 +2,22 @@ package org.firstinspires.ftc.teamcode.binarybot;
 
 import static androidx.core.math.MathUtils.clamp;
 
-import static org.firstinspires.ftc.teamcode.binarybot.BinaryBot.State.SPECIMEN_BACK_OFF;
-import static org.firstinspires.ftc.teamcode.binarybot.BinaryBot.State.SPECIMEN_HOOKING;
-
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-public class BinaryBot {
+public class Drivetrain {
     // ******************************************************************
     // enumerations.
     // ******************************************************************
@@ -40,27 +35,22 @@ public class BinaryBot {
 
         TURNING_CLOCKWISE,
         TURNING_COUNTERCLOCKWISE,
-
-        // robot is placing a specimen.
-        SPECIMEN_RAISING,
-        SPECIMEN_APPROACHING,
-        SPECIMEN_HOOKING,
-        SPECIMEN_BACK_OFF
     }
 
     // ******************************************************************
     // Constants
     // ******************************************************************
-    // The bot uses REV Robotics thru bore encoders which have a resolution of
-    // 8192 counts per revolution
-    static final double     POD_COUNTS_PER_MOTOR_REV    = 8192;
+    // Assume GoBilda 4-Bar Odometry Pod
+    // see https://www.gobilda.com/4-bar-odometry-pod-32mm-wheel/
+    // ******************************************************************
+    static final double     POD_COUNTS_PER_MOTOR_REV    = 2000;
     static final double     POD_DRIVE_GEAR_REDUCTION    = 1;
-    // REV robotics smaller omni wheels are 60mm in diameter.
-    static final double     POD_WHEEL_DIAMETER_INCHES   = 1.37795;
+
+    static final double POD_WHEEL_DIAMETER_CM = 3.2;
+    static final double     POD_WHEEL_DIAMETER_INCHES   = POD_WHEEL_DIAMETER_CM / 2.54;
     static final double     POD_WHEEL_CIRCUM_INCHES = Math.PI * POD_WHEEL_DIAMETER_INCHES;
     static final double     POD_COUNTS_PER_INCH         =   (POD_COUNTS_PER_MOTOR_REV * POD_DRIVE_GEAR_REDUCTION) /
                                                             (POD_WHEEL_CIRCUM_INCHES);
-
 
     static final double     DRIVE_COUNTS_PER_MOTOR_REV    = 537.7;
     static final double     DRIVE_DRIVE_GEAR_REDUCTION    = 1;
@@ -75,10 +65,6 @@ public class BinaryBot {
 
     static final double STRAFE_ENCODER_FUDGE_FACTOR = 1.0;
 
-    static final double SPECIMEN_APPROACH_DISTANCE_INCHES = 3.0;
-    static final double SPECIMEN_BACKOFF_DISTANCE_INCHES = 12.0;
-    static final float SPECIMEN_APPROACH_POWER = 0.4f;
-
     // ******************************************************************
     // private member variables
     // ******************************************************************
@@ -88,10 +74,9 @@ public class BinaryBot {
     private DcMotor motorFR;
     private DcMotor motorBR;
 
-    public DcMotor driveEncoder;
-    public DcMotor strafeEncoder;
-    RevHubOrientationOnRobot orientationOnRobot;
-    public DistanceSensor distanceLeftRear;
+    public DcMotor encoderLeft;
+    public DcMotor encoderRight;
+    public DcMotor encoderHoriz;
 
     // op mode related items.
     private OpMode opMode;
@@ -107,16 +92,16 @@ public class BinaryBot {
     private final double P_COEFFICIENT_DRIVE = 0.1;
     private final double P_COEFFICIENT_STRAFE = 0.05;
 
-    public Manipulator manipulator;
     public State state = State.IDLE;
 
-    public BinaryBot(HardwareMap hardwareMap, OpMode opMode) {
+    public Drivetrain(HardwareMap hardwareMap, OpMode opMode) {
         this.opMode = opMode;
         this.hardwareMap = hardwareMap;
         initHardware();
     }
 
     private void initHardware() {
+        // Get and configure drive motors.
         motorFL = hardwareMap.dcMotor.get("motorFL");
         motorBL = hardwareMap.dcMotor.get("motorBL");
         motorFR = hardwareMap.dcMotor.get("motorFR");
@@ -132,45 +117,43 @@ public class BinaryBot {
         motorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-
         motorFL.setDirection(DcMotorSimple.Direction.REVERSE);
         motorBL.setDirection(DcMotorSimple.Direction.REVERSE);
         motorFR.setDirection(DcMotorSimple.Direction.FORWARD);
         motorBR.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        manipulator = new Manipulator(hardwareMap, opMode);
-
+        // get and configure encoders.
         if (USE_ODOMETRY_POD) {
-            strafeEncoder = hardwareMap.dcMotor.get("strafe");
-            driveEncoder = hardwareMap.dcMotor.get("drive");
+            encoderLeft = hardwareMap.dcMotor.get("encoderLeft");
+            encoderRight = hardwareMap.dcMotor.get("encoderRight");
+            encoderHoriz = hardwareMap.dcMotor.get("encoderHoriz");
 
-            strafeEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
-            driveEncoder.setDirection(DcMotorSimple.Direction.REVERSE);
-
-            strafeEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            driveEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            encoderLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            encoderRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            encoderHoriz.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         } else {
-            strafeEncoder = motorFL;
-            driveEncoder = motorFL;
+            encoderLeft = motorFL;
+            encoderHoriz = motorFL;
         }
 
         initIMU();
-
-        distanceLeftRear = hardwareMap.get(DistanceSensor.class, "leftRearDistance");
     }
 
     /**
      * calibrate encoder
      * reset the strafing and drive encoders
      */
-    public void calibrateOdometry() {
+    public void resetOdometry() {
         // for now, reset the encoders
         // reset encoders.
-        driveEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        strafeEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        driveEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        strafeEncoder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        encoderLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        encoderLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        encoderRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        encoderRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        encoderHoriz.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        encoderHoriz.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
+
     private void initIMU() {
         // Set up the parameters with which we will use our IMU. Note that integration
         // algorithm here just reports accelerations to the logcat log; it doesn't actually
@@ -188,10 +171,6 @@ public class BinaryBot {
         // and named "imu".
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
-    }
-
-    public double getDistance() {
-        return distanceLeftRear.getDistance(DistanceUnit.INCH);
     }
 
     public void updateAngles() {
@@ -243,13 +222,13 @@ public class BinaryBot {
      *
      * @param drive forward / backward (negative) power
      * @param strafe rightwards / leftwards (negative) power
-     * @param twist clockwise / counterclockwise (negative) power
+     * @param twist counterclockwise / clockwise (negative) power - follows right hand rule
      */
     public void drive(double drive,  double strafe, double twist) {
-        double powerFL = drive + strafe + twist;
-        double powerBL = drive - strafe + twist;
-        double powerFR = drive - strafe - twist;
-        double powerBR = drive + strafe - twist;
+        double powerFL = drive + strafe - twist;
+        double powerBL = drive - strafe - twist;
+        double powerFR = drive - strafe + twist;
+        double powerBR = drive + strafe + twist;
 
         powerFL = clamp(1, -1, powerFL);
         powerBL = clamp(1, -1, powerBL);
@@ -292,7 +271,7 @@ public class BinaryBot {
         // get init position.
         // NOTE: we assume the encoder will not rollover (which it shouldn't)
         // and don't bother to check for this condition.
-        initPos = driveEncoder.getCurrentPosition();
+        initPos = encoderLeft.getCurrentPosition();
 
         // offset in encoder ticks.
         double offset;
@@ -329,7 +308,7 @@ public class BinaryBot {
         // get init position.
         // NOTE: we assume the encoder will not rollover (which it shouldn't)
         // and don't bother to check for this condition.
-        initPos = strafeEncoder.getCurrentPosition();
+        initPos = encoderHoriz.getCurrentPosition();
 
         // offset in encoder ticks.
         double offset = 0;
@@ -401,219 +380,5 @@ public class BinaryBot {
             value = 0;
         }
         return value;
-    }
-
-    public void placeSpecimenHigh(double targetDistanceInches) {
-        if (state != State.IDLE) {
-            // robot is not available.
-            return;
-        }
-
-        // use the specified approach distance value.
-        this.targetDistanceInches = targetDistanceInches;
-
-        // put green thingy in place.
-        manipulator.greenThing.setPosition(Manipulator.GREEN_RETRACTED);
-
-        // raise slide.
-        manipulator.slide.setTargetPosition(Manipulator.SLIDE_HIGH_SPECIMEN_POSITION);
-
-        // put it in new state.
-        state = State.SPECIMEN_RAISING;
-    }
-
-    public void placeSpecimenHigh() {
-        // use the default approach distance value.
-        placeSpecimenHigh(SPECIMEN_APPROACH_DISTANCE_INCHES);
-    }
-
-    /**
-     *
-     * @return true if still in measured mode.
-     */
-    public boolean update() {
-        float correction = 0;
-        currentPos = driveEncoder.getCurrentPosition();
-        switch(state) {
-            case IDLE:
-                return false;
-            case DRIVING_FORWARD:
-                if (currentPos > targetPos) {
-                    stop();
-                    return false;
-                } else {
-                    correction = propCorrection(P_COEFFICIENT_DRIVE);
-                    drive(measuredPower, 0, correction);
-                    return true;
-                }
-            case DRIVING_BACKWARD:
-                // update current position
-                currentPos = driveEncoder.getCurrentPosition();
-                // are we there yet?
-                if (currentPos < targetPos) {
-                    // note that stop() should put it in IDLE mode.
-                    stop();
-                    return false;
-                } else {
-                    correction = propCorrection(P_COEFFICIENT_DRIVE);
-                    drive(measuredPower, 0, correction);
-                    return true;
-                }
-            case STRAFING_RIGHT:
-                // update current position
-                currentPos = strafeEncoder.getCurrentPosition();
-                // are we there yet?
-                if (currentPos > targetPos) {
-                    // note that stop() should put it in IDLE mode.
-                    stop();
-                    return false;
-                } else {
-                    correction = propCorrection(P_COEFFICIENT_STRAFE);
-                    drive(0, measuredPower, correction);
-                    return true;
-                }
-            case STRAFING_LEFT:
-                // update current position
-                currentPos = strafeEncoder.getCurrentPosition();
-                // are we there yet?
-                if (currentPos < targetPos) {
-                    // note that stop() should put it in IDLE mode.
-                    stop();
-                    return false;
-                } else {
-                    correction = propCorrection(P_COEFFICIENT_STRAFE);
-                    drive(0, measuredPower, correction);
-                    return true;
-                }
-            case TURNING_CLOCKWISE:
-                // update angles
-                updateAngles();
-
-                if (integratedAngle > tgtAngle) {
-                    // note that stop() should put it in IDLE mode.
-                    stop();
-                    return false;
-                } else {
-                    drive(0, 0, measuredPower);
-                    return true;
-                }
-            case TURNING_COUNTERCLOCKWISE:
-                // update angles
-                updateAngles();
-
-                if (integratedAngle < tgtAngle) {
-                    // note that stop() should put it in IDLE mode.
-                    stop();
-                    return false;
-                } else {
-                    drive(0, 0, measuredPower);
-                    return true;
-                }
-            case SPECIMEN_RAISING:
-                // is the slide done raising into position?
-                if (manipulator.slide.isBusy() == false) {
-                    // we're done moving the slide.
-                    // get ready to move into position.
-                    initPos = driveEncoder.getCurrentPosition();
-
-                    // offset in encoder ticks.
-                    double offset = 0;
-                    if (USE_ODOMETRY_POD) {
-                        offset = targetDistanceInches * POD_COUNTS_PER_INCH;
-                    } else {
-                        offset = targetDistanceInches * DRIVE_COUNTS_PER_INCH;
-                    }
-                    // robot has to move backwards.
-                    targetPos = (int)Math.round(initPos - offset);
-                    measuredPower = -SPECIMEN_APPROACH_POWER;
-
-                    // is auto correct enabled (which helps keep the bot drive straight)?
-                    if (USE_AUTO_CORRECT) {
-                        // reset angles.
-                        resetAngles();
-                        // set the target angle equal to the current angle.
-                        tgtAngle = integratedAngle;
-                    }
-
-                    // switch to approach sub state.
-                    state = State.SPECIMEN_APPROACHING;
-
-                    // we're still busy.
-                    return true;
-                } else {
-                    // we are still busy.
-                    return true;
-                }
-            case SPECIMEN_APPROACHING:
-                // approach the sub until we've moved the required distance.
-                // update current position
-                currentPos = driveEncoder.getCurrentPosition();
-                // are we there yet?
-                if (currentPos < targetPos) {
-                    // note that stop() should put it in IDLE mode.
-                    stop();
-                    manipulator.greenThing.setPosition(manipulator.GREEN_DEPLOYED);
-                    // now we need to lower the slide.
-                    manipulator.slide.setTargetPosition(Manipulator.SLIDE_HIGH_SPECIMEN_RELEASE);
-
-                    // change to the next state.
-                    state = SPECIMEN_HOOKING;
-                    return true;
-                } else {
-                    correction = propCorrection(P_COEFFICIENT_DRIVE);
-                    drive(measuredPower, 0, correction);
-                    return true;
-                }
-            case SPECIMEN_HOOKING:
-                if (manipulator.slide.isBusy() == false) {
-                    // we're done moving slide.
-                    // we need to back off.
-                    // get ready to move into position.
-                    initPos = driveEncoder.getCurrentPosition();
-
-                    // offset in encoder ticks.
-                    double offset = 0;
-                    if (USE_ODOMETRY_POD) {
-                        offset = SPECIMEN_BACKOFF_DISTANCE_INCHES * POD_COUNTS_PER_INCH;
-                    } else {
-                        offset = SPECIMEN_BACKOFF_DISTANCE_INCHES * DRIVE_COUNTS_PER_INCH;
-                    }
-                    // we're going forward.
-                    targetPos = (int)Math.round(initPos + offset);
-                    measuredPower = SPECIMEN_APPROACH_POWER;
-
-                    // is auto correct enabled (which helps keep the bot drive straight)?
-                    if (USE_AUTO_CORRECT) {
-                        // reset angles.
-                        resetAngles();
-                        // set the target angle equal to the current angle.
-                        tgtAngle = integratedAngle;
-                    }
-
-                    // switch to approach sub state.
-                    state = SPECIMEN_BACK_OFF;
-
-                    // we're still busy.
-                    return true;
-                } else {
-                    // slide is still busy.
-                    return true;
-                }
-            case SPECIMEN_BACK_OFF:
-                // update current position
-                currentPos = driveEncoder.getCurrentPosition();
-                // are we there yet?
-                if (currentPos > targetPos) {
-                    // note that stop() should put it in IDLE mode.
-                    stop();
-                    return false;
-                } else {
-                    correction = propCorrection(P_COEFFICIENT_DRIVE);
-                    drive(measuredPower, 0, correction);
-                    return true;
-                }
-            default:
-                return false;
-        }
     }
 }

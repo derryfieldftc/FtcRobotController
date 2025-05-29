@@ -64,7 +64,6 @@ public class EnhancedGamepad {
         axes[Axis.RIGHT_TRIGGER.ordinal()] = gamepad.right_trigger;
     }
 
-
     public enum Button {
         A, B, X, Y,
         DPAD_UP, DPAD_DOWN, DPAD_LEFT, DPAD_RIGHT,
@@ -79,5 +78,4 @@ public class EnhancedGamepad {
         RIGHT_STICK_X, RIGHT_STICK_Y,
         LEFT_TRIGGER, RIGHT_TRIGGER
     }
-
 }

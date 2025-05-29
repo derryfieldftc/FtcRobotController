@@ -27,22 +27,25 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.autonomous;
+package org.firstinspires.ftc.teamcode.teleop;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+
+
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
-import org.firstinspires.ftc.teamcode.binarybot.BinaryBot;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad;
-import org.firstinspires.ftc.teamcode.binarybot.Manipulator;
+import org.firstinspires.ftc.teamcode.boxingbot.BoxingBot;
 
-@Autonomous(name="ITD Test Measured Drive", group="BinaryBot")
-//@Disabled
-public class TestMeasuredDrive extends LinearOpMode {
+@TeleOp(name="Tele Boxing Bot", group="BoxingBot")
+@Disabled
+public class TeleBoxingBot extends LinearOpMode {
 
     // Declare OpMode members.
-    private BinaryBot bot = null;
-    private EnhancedGamepad epad2 = null;
+    private BoxingBot bot;
+    private EnhancedGamepad epad1;
+    private EnhancedGamepad epad2;
+
 
     @Override
     public void runOpMode() {
@@ -50,29 +53,24 @@ public class TestMeasuredDrive extends LinearOpMode {
         telemetry.update();
 
         // create a new robot object.
-        bot = new BinaryBot(hardwareMap, this);
+        bot = new BoxingBot(hardwareMap);
 
-        // get a reference to the manipulator.
-        Manipulator manipulator = bot.manipulator;
-
-        // get an enhanced gamepad for driver #2.
+        // get enhanced gamepads.
         epad2 = new EnhancedGamepad(gamepad2);
+        epad1 = new EnhancedGamepad(gamepad1);
 
         // wait for start command from driver hub.
         waitForStart();
 
-        if (opModeIsActive()) {
-            // drive forward 4 feet.
-            bot.measuredDrive(0.3, 48);
+        // loop until opmode is stopped.
+        while (opModeIsActive()) {
+            // use enhanced gamepad to detect if buttons were just pressed.
+            // update the enhanced gamepad data.
+            epad2.poll();
+            epad1.poll();
 
-            // loop until done traveling 2 feet.
-            while(opModeIsActive() &&  bot.update()) {
-                // send telemetry.
-                telemetry.addData("state", bot.state);
-                telemetry.addData("tgt pos", bot.targetPos);
-                telemetry.addData("curr pos", bot.currentPos);
-                telemetry.update();
-            }
+           // drive.
+            bot.drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x );
         }
     }
 }
