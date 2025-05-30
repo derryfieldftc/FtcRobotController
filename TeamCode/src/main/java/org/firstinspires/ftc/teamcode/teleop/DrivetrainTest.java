@@ -46,7 +46,7 @@ public class DrivetrainTest extends OpMode
 
     private EnhancedGamepad enhanced1 = null;
     private boolean turboMode = false;
-    private static final double SNAIL_FACTOR = 0.5;
+    private static final double SNAIL_FACTOR = 0.3;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -80,6 +80,7 @@ public class DrivetrainTest extends OpMode
      */
     @Override
     public void loop() {
+        train.refreshPose();
         enhanced1.poll();
         if (enhanced1.justPressed(EnhancedGamepad.Button.X)) {
             // reset the encoder values to zero.
@@ -107,9 +108,12 @@ public class DrivetrainTest extends OpMode
         telemetry.addData("turn", turn);
 
         // encoder data
-        telemetry.addData("encoder left", train.encoderLeft.getCurrentPosition());
-        telemetry.addData("encoder right", train.encoderRight.getCurrentPosition());
-        telemetry.addData("encoder horiz", train.encoderHoriz.getCurrentPosition());
+//        telemetry.addData("encoder left", train.encoderLeft.getCurrentPosition());
+//        telemetry.addData("encoder right", train.encoderRight.getCurrentPosition());
+//        telemetry.addData("encoder horiz", train.encoderSide.getCurrentPosition());
+        telemetry.addData("x (in)", train.pose.x / 2.54);
+        telemetry.addData("y (in)", train.pose.y / 2.54);
+        telemetry.addData("theta (deg)", train.pose.theta / Math.PI * 180.0);
         telemetry.update();
     }
 

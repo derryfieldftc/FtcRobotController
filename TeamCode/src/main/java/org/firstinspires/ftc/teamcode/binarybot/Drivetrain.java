@@ -4,7 +4,6 @@ import static androidx.core.math.MathUtils.clamp;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -14,7 +13,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 public class Drivetrain {
@@ -37,32 +35,43 @@ public class Drivetrain {
         TURNING_COUNTERCLOCKWISE,
     }
 
+    public Pose pose;
+
+    // keep track of previous encoder positions (as encoder counts)
+    int prevLeftPos;
+    int prevRightPos;
+    int prevAuxPos;
+
     // ******************************************************************
     // Constants
     // ******************************************************************
     // Assume GoBilda 4-Bar Odometry Pod
     // see https://www.gobilda.com/4-bar-odometry-pod-32mm-wheel/
     // ******************************************************************
-    static final double     POD_COUNTS_PER_MOTOR_REV    = 2000;
-    static final double     POD_DRIVE_GEAR_REDUCTION    = 1;
-
+    static final double     POD_COUNTS_PER_REV    = 2000;
     static final double POD_WHEEL_DIAMETER_CM = 3.2;
-    static final double     POD_WHEEL_DIAMETER_INCHES   = POD_WHEEL_DIAMETER_CM / 2.54;
-    static final double     POD_WHEEL_CIRCUM_INCHES = Math.PI * POD_WHEEL_DIAMETER_INCHES;
-    static final double     POD_COUNTS_PER_INCH         =   (POD_COUNTS_PER_MOTOR_REV * POD_DRIVE_GEAR_REDUCTION) /
-                                                            (POD_WHEEL_CIRCUM_INCHES);
+    static final double POD_WHEEL_RADIUS_CM = POD_WHEEL_DIAMETER_CM / 2.0;
 
-    static final double     DRIVE_COUNTS_PER_MOTOR_REV    = 537.7;
+    static final double POD_WHEEL_CIRCUM_CM = Math.PI * POD_WHEEL_DIAMETER_CM;
+    static final double POD_COUNTS_PER_CM = POD_COUNTS_PER_REV / POD_WHEEL_CIRCUM_CM;
+    static final double     POD_COUNTS_PER_INCH         =   POD_COUNTS_PER_CM * 2.54;
+
+    // spacing between left and right encoder wheels.
+    static final double POD_SPACING_LR_CM = 41.0;
+
+    // spacing from center point to side-to-side encoder wheel.
+    static final double POD_SPACING_AUX_CM = 0.0;
+
+    static final double     DRIVE_COUNTS_PER_REV    = 537.7;
     static final double     DRIVE_DRIVE_GEAR_REDUCTION    = 1;
 
     // GoBilda new mecanum wheels have 104mm diameter (4.094 inches)
     static final double     DRIVE_WHEEL_DIAMETER_INCHES   = 4.094;
     static final double     DRIVE_WHEEL_CIRCUM_INCHES = Math.PI * DRIVE_WHEEL_DIAMETER_INCHES;
-    static final double     DRIVE_COUNTS_PER_INCH         =   (DRIVE_COUNTS_PER_MOTOR_REV * DRIVE_DRIVE_GEAR_REDUCTION) /
+    static final double     DRIVE_COUNTS_PER_INCH         =   (DRIVE_COUNTS_PER_REV * DRIVE_DRIVE_GEAR_REDUCTION) /
             (DRIVE_WHEEL_CIRCUM_INCHES);
 
     static final boolean USE_ODOMETRY_POD = true;
-
     static final double STRAFE_ENCODER_FUDGE_FACTOR = 1.0;
 
     // ******************************************************************
@@ -76,7 +85,7 @@ public class Drivetrain {
 
     public DcMotor encoderLeft;
     public DcMotor encoderRight;
-    public DcMotor encoderHoriz;
+    public DcMotor encoderAux;
 
     // op mode related items.
     private OpMode opMode;
@@ -95,9 +104,48 @@ public class Drivetrain {
     public State state = State.IDLE;
 
     public Drivetrain(HardwareMap hardwareMap, OpMode opMode) {
+        pose = new Pose (0, 0, 0);
         this.opMode = opMode;
         this.hardwareMap = hardwareMap;
         initHardware();
+    }
+
+    public Drivetrain(HardwareMap hardwareMap, OpMode opMode, double x, double y, double theta) {
+        this(hardwareMap, opMode);
+        pose = new Pose(x, y, theta);
+    }
+
+    public void refreshPose() {
+        // current encoder values (in counts or ticks).
+        int currLeftPos = encoderLeft.getCurrentPosition();
+        int currRightPos = encoderRight.getCurrentPosition();
+        int currAuxPos = encoderAux.getCurrentPosition();
+
+        // how much did each encoder count change?
+        int dnLeft = currLeftPos - prevLeftPos;         // dn1
+        int dnRight = currRightPos - prevRightPos;      // dn2
+        int dnAux = currAuxPos - prevAuxPos;            // dn3
+
+        // find change in center of robot in robot coordinate system.
+        double dtheta = (dnRight - dnLeft) / POD_SPACING_LR_CM / POD_COUNTS_PER_CM;
+        double dx = (dnRight + dnLeft) / 2.0 / POD_COUNTS_PER_CM;
+        double dy = (dnAux - POD_SPACING_AUX_CM * (dnRight - dnLeft) / POD_SPACING_LR_CM) / POD_COUNTS_PER_CM;
+
+        // find changes in field coordinates.
+        double h = dtheta / 2.0;
+        double deltaX = dx * Math.cos(h) - dy * Math.sin(h);
+        double deltaY = dx * Math.sin(pose.theta) + dy * Math.cos(pose.theta);
+        double deltaTheta = dtheta;
+
+        // update pose.
+        pose.x += deltaX;
+        pose.y -= deltaY;
+        pose.theta += deltaTheta;
+
+        // current values become previous ones.
+        prevLeftPos = currLeftPos;
+        prevRightPos = currRightPos;
+        prevAuxPos = currAuxPos;
     }
 
     private void initHardware() {
@@ -126,14 +174,18 @@ public class Drivetrain {
         if (USE_ODOMETRY_POD) {
             encoderLeft = hardwareMap.dcMotor.get("encoderLeft");
             encoderRight = hardwareMap.dcMotor.get("encoderRight");
-            encoderHoriz = hardwareMap.dcMotor.get("encoderHoriz");
+            encoderAux = hardwareMap.dcMotor.get("encoderAux");
 
             encoderLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             encoderRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-            encoderHoriz.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+            encoderAux.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+            prevLeftPos = encoderLeft.getCurrentPosition();
+            prevRightPos = encoderRight.getCurrentPosition();
+            prevAuxPos = encoderAux.getCurrentPosition();
         } else {
             encoderLeft = motorFL;
-            encoderHoriz = motorFL;
+            encoderAux = motorFL;
         }
 
         initIMU();
@@ -150,8 +202,13 @@ public class Drivetrain {
         encoderLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         encoderRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         encoderRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        encoderHoriz.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        encoderHoriz.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        encoderAux.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        encoderAux.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        // set prev values to zero.
+        prevLeftPos = 0;
+        prevRightPos = 0;
+        prevAuxPos = 0;
     }
 
     private void initIMU() {
@@ -308,7 +365,7 @@ public class Drivetrain {
         // get init position.
         // NOTE: we assume the encoder will not rollover (which it shouldn't)
         // and don't bother to check for this condition.
-        initPos = encoderHoriz.getCurrentPosition();
+        initPos = encoderAux.getCurrentPosition();
 
         // offset in encoder ticks.
         double offset = 0;
