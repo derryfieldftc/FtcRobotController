@@ -132,9 +132,9 @@ public class Drivetrain {
         double dy = (dnAux - POD_SPACING_AUX_CM * (dnRight - dnLeft) / POD_SPACING_LR_CM) / POD_COUNTS_PER_CM;
 
         // find changes in field coordinates.
-        double h = dtheta / 2.0;
+        double h = pose.theta + dtheta / 2.0;
         double deltaX = dx * Math.cos(h) - dy * Math.sin(h);
-        double deltaY = dx * Math.sin(pose.theta) + dy * Math.cos(pose.theta);
+        double deltaY = dx * Math.sin(h) + dy * Math.cos(h);
         double deltaTheta = dtheta;
 
         // update pose.
