@@ -139,7 +139,7 @@ public class Drivetrain {
 
         // update pose.
         pose.x += deltaX;
-        pose.y -= deltaY;
+        pose.y += deltaY;
         pose.theta += deltaTheta;
 
         // current values become previous ones.
@@ -179,6 +179,11 @@ public class Drivetrain {
             encoderLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             encoderRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             encoderAux.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+            // set directions.
+            encoderLeft.setDirection(DcMotorSimple.Direction.FORWARD);
+            encoderRight.setDirection(DcMotorSimple.Direction.FORWARD);
+            encoderAux.setDirection(DcMotorSimple.Direction.REVERSE);
 
             prevLeftPos = encoderLeft.getCurrentPosition();
             prevRightPos = encoderRight.getCurrentPosition();

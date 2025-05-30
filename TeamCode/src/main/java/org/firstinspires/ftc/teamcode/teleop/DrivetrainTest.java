@@ -107,6 +107,10 @@ public class DrivetrainTest extends OpMode
         telemetry.addData("strafe", strafe);
         telemetry.addData("turn", turn);
 
+        telemetry.addData("pos left", train.encoderLeft.getCurrentPosition());
+        telemetry.addData("pos right", train.encoderRight.getCurrentPosition());
+        telemetry.addData("pos aux", train.encoderAux.getCurrentPosition());
+
         // encoder data
 //        telemetry.addData("encoder left", train.encoderLeft.getCurrentPosition());
 //        telemetry.addData("encoder right", train.encoderRight.getCurrentPosition());
