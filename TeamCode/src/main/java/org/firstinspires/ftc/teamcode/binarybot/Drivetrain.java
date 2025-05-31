@@ -36,6 +36,7 @@ public class Drivetrain {
     }
 
     public Pose pose;
+    public Pose waypoint;
 
     // keep track of previous encoder positions (as encoder counts)
     int prevLeftPos;
@@ -50,7 +51,6 @@ public class Drivetrain {
     // ******************************************************************
     static final double     POD_COUNTS_PER_REV    = 2000;
     static final double POD_WHEEL_DIAMETER_CM = 3.2;
-    static final double POD_WHEEL_RADIUS_CM = POD_WHEEL_DIAMETER_CM / 2.0;
 
     static final double POD_WHEEL_CIRCUM_CM = Math.PI * POD_WHEEL_DIAMETER_CM;
     static final double POD_COUNTS_PER_CM = POD_COUNTS_PER_REV / POD_WHEEL_CIRCUM_CM;
@@ -62,12 +62,18 @@ public class Drivetrain {
     // spacing from center point to side-to-side encoder wheel.
     static final double POD_SPACING_AUX_CM = 0.0;
 
+    static final double TRACK_WIDTH = 41.5;                 // cm
+    static final double WHEELBASE = 33.7;                   // cm
+
     static final double     DRIVE_COUNTS_PER_REV    = 537.7;
     static final double     DRIVE_DRIVE_GEAR_REDUCTION    = 1;
 
     // GoBilda new mecanum wheels have 104mm diameter (4.094 inches)
     static final double     DRIVE_WHEEL_DIAMETER_INCHES   = 4.094;
+
+    static final double     DRIVE_WHEEL_RADIUS_CM = DRIVE_WHEEL_DIAMETER_INCHES / 2.0 * 2.54;
     static final double     DRIVE_WHEEL_CIRCUM_INCHES = Math.PI * DRIVE_WHEEL_DIAMETER_INCHES;
+
     static final double     DRIVE_COUNTS_PER_INCH         =   (DRIVE_COUNTS_PER_REV * DRIVE_DRIVE_GEAR_REDUCTION) /
             (DRIVE_WHEEL_CIRCUM_INCHES);
 
@@ -105,6 +111,7 @@ public class Drivetrain {
 
     public Drivetrain(HardwareMap hardwareMap, OpMode opMode) {
         pose = new Pose (0, 0, 0);
+        waypoint = null;
         this.opMode = opMode;
         this.hardwareMap = hardwareMap;
         initHardware();
@@ -146,6 +153,58 @@ public class Drivetrain {
         prevLeftPos = currLeftPos;
         prevRightPos = currRightPos;
         prevAuxPos = currAuxPos;
+    }
+
+    public void clearWaypoint() {
+        waypoint = null;
+    }
+
+    public void setWaypoint(Pose waypoint) {
+        this.waypoint = waypoint;
+    }
+
+    public static final double KP_X = 0.2;
+    public static final double KP_Y = 0.2;
+    public static final double KP_THETA = 0.2;
+
+    public void applyCorrection() {
+        // do we have a valid waypoint?
+        if (waypoint == null) {
+            return;
+        }
+
+        // calculate error.
+        double err_x = waypoint.x - pose.x;
+        double err_y = waypoint.y - pose.y;
+        double err_theta = waypoint.theta - pose.theta;
+
+        // figure out correction values for motors.
+        double power_x = KP_X * err_x;
+        double power_y = KP_Y * err_y;
+        double power_theta = KP_THETA * err_theta;
+
+
+        // apply power to each motor based on inverse kinematics.
+        double powerFL = (power_x - power_y - (TRACK_WIDTH + WHEELBASE) / 2.0 * power_theta) / DRIVE_WHEEL_RADIUS_CM;
+        double powerBL = (power_x + power_y - (TRACK_WIDTH + WHEELBASE) / 2.0 * power_theta) / DRIVE_WHEEL_RADIUS_CM;
+        double powerBR = (power_x - power_y + (TRACK_WIDTH + WHEELBASE) / 2.0 * power_theta) / DRIVE_WHEEL_RADIUS_CM;
+        double powerFR = (power_x + power_y + (TRACK_WIDTH + WHEELBASE) / 2.0 * power_theta) / DRIVE_WHEEL_RADIUS_CM;
+
+        // normalize the values based on the largest magnitude.
+        double max_magnitude = Math.max(
+                Math.max(Math.abs(powerFL), Math.abs(powerBL)),
+                Math.max(Math.abs(powerBR), Math.abs(powerFR))
+        );
+        powerFL /= max_magnitude;
+        powerBL /= max_magnitude;
+        powerBR /= max_magnitude;
+        powerFR /= max_magnitude;
+
+        // apply power.
+        motorFL.setPower(powerFL);
+        motorBL.setPower(powerBL);
+        motorBR.setPower(powerBR);
+        motorFR.setPower(powerFR);
     }
 
     private void initHardware() {

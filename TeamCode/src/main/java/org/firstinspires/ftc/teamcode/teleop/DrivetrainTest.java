@@ -35,6 +35,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import java.util.ArrayList;
+
 @TeleOp(name="Drivetrain Test", group="Drivetrain")
 //@Disabled
 public class DrivetrainTest extends OpMode
@@ -48,6 +50,8 @@ public class DrivetrainTest extends OpMode
     private boolean turboMode = false;
     private static final double SNAIL_FACTOR = 0.3;
 
+    ArrayList<Pose>waypoints;
+
     /*
      * Code to run ONCE when the driver hits INIT
      */
@@ -55,10 +59,24 @@ public class DrivetrainTest extends OpMode
     public void init() {
         train = new Drivetrain(hardwareMap, this);
         enhanced1 = new EnhancedGamepad(gamepad1);
+        waypoints = getWaypoints();
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
     }
+
+    public ArrayList<Pose> getWaypoints() {
+        ArrayList<Pose> list = new ArrayList<>();
+
+        list.add(new Pose(75, 75, Math.PI / 2.0));
+        list.add(new Pose(0, 75, Math.PI / 2.0));
+        list.add(new Pose(75, 0, Math.PI / 2.0));
+        list.add(new Pose(0, 0, Math.PI / 2.0));
+
+        return list;
+    }
+
+
 
     /*
      * Code to run REPEATEDLY after the driver hits INIT, but before they hit START
