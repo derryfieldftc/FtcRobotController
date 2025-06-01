@@ -69,7 +69,9 @@ public class DrivetrainTest extends OpMode
     public ArrayList<Pose> getWaypoints() {
         ArrayList<Pose> list = new ArrayList<>();
 
-        list.add(new Pose(0, 66, Math.PI / 2.0));
+        list.add(new Pose(100, 100, 0));
+        list.add(new Pose(0, 100, 0));
+        list.add(new Pose(100, 0, Math.PI / 2.0));
         list.add(new Pose(0, 0, Math.PI / 2.0));
 
 //        list.add(new Pose(75, 75, Math.PI / 2.0));
@@ -145,7 +147,11 @@ public class DrivetrainTest extends OpMode
         telemetry.addData("Current Waypoint", train.getCurrentWaypoint());
 
         // apply correction to auto navigate to current waypoint.
-        train.applyCorrection();
+        if (train.applyCorrection()) {
+            // if applyCorrection() returns true, then we are at the waypoint.
+            train.stop();
+            train.clearWaypoint();
+        }
 
         // also get driver input and drive robot.
         double drive = turboMode ? -gamepad1.left_stick_y : -SNAIL_FACTOR * gamepad1.left_stick_y;

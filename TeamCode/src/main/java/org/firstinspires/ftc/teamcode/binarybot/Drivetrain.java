@@ -173,18 +173,29 @@ public class Drivetrain {
 
     public static final double KP_X = 0.1;
     public static final double KP_Y = 0.1;
-    public static final double KP_THETA = 0.1;
+    public static final double KP_THETA = 0.3;
 
-    public void applyCorrection() {
+    // return true if we have arrived at the location.
+    public static final double RADIUS_THRESHOLD = 5;
+    public static final double ANGLE_THRESHOLD = Math.toRadians(5);
+    public boolean applyCorrection() {
         // do we have a valid waypoint?
         if (waypoint == null) {
-            return;
+            // return true because there is no waypoint to navigate to.
+            return true;
         }
 
         // calculate error.
         double err_x = waypoint.x - pose.x;
         double err_y = waypoint.y - pose.y;
         double err_theta = waypoint.theta - pose.theta;
+
+        // are we there yet?
+        double radius = Math.sqrt(err_x * err_x + err_y * err_y);
+        if (radius < RADIUS_THRESHOLD && Math.abs(err_theta) < ANGLE_THRESHOLD) {
+            // we are close enough to our waypoint.
+            return true;
+        }
 
         // convert the x and y components from field coordinates to local (robot) coordinates.
         double err_x_local = Math.cos(pose.theta) * err_x + Math.sin(pose.theta) * err_y;
@@ -220,6 +231,7 @@ public class Drivetrain {
         motorBL.setPower(powerBL);
         motorBR.setPower(powerBR);
         motorFR.setPower(powerFR);
+        return false;
     }
 
     private void initHardware() {
