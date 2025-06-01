@@ -183,7 +183,6 @@ public class Drivetrain {
         double power_y = KP_Y * err_y;
         double power_theta = KP_THETA * err_theta;
 
-
         // apply power to each motor based on inverse kinematics.
         double powerFL = (power_x - power_y - (TRACK_WIDTH + WHEELBASE) / 2.0 * power_theta) / DRIVE_WHEEL_RADIUS_CM;
         double powerBL = (power_x + power_y - (TRACK_WIDTH + WHEELBASE) / 2.0 * power_theta) / DRIVE_WHEEL_RADIUS_CM;
@@ -195,10 +194,14 @@ public class Drivetrain {
                 Math.max(Math.abs(powerFL), Math.abs(powerBL)),
                 Math.max(Math.abs(powerBR), Math.abs(powerFR))
         );
-        powerFL /= max_magnitude;
-        powerBL /= max_magnitude;
-        powerBR /= max_magnitude;
-        powerFR /= max_magnitude;
+
+        if (max_magnitude > 1) {
+            // only normalize if max magnitude is greater than 1.0.
+            powerFL /= max_magnitude;
+            powerBL /= max_magnitude;
+            powerBR /= max_magnitude;
+            powerFR /= max_magnitude;
+        }
 
         // apply power.
         motorFL.setPower(powerFL);
