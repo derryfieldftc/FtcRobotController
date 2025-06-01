@@ -57,7 +57,8 @@ public class DrivetrainTest extends OpMode
      */
     @Override
     public void init() {
-        train = new Drivetrain(hardwareMap, this);
+        // create drive train with initial pose of 0, 0, and 90 degrees.
+        train = new Drivetrain(hardwareMap, this, 0, 0, Math.PI / 2.0);
         enhanced1 = new EnhancedGamepad(gamepad1);
         waypoints = getWaypoints();
 
@@ -68,14 +69,16 @@ public class DrivetrainTest extends OpMode
     public ArrayList<Pose> getWaypoints() {
         ArrayList<Pose> list = new ArrayList<>();
 
-        list.add(new Pose(75, 75, Math.PI / 2.0));
-        list.add(new Pose(0, 75, Math.PI / 2.0));
-        list.add(new Pose(75, 0, Math.PI / 2.0));
+        list.add(new Pose(0, 66, Math.PI / 2.0));
         list.add(new Pose(0, 0, Math.PI / 2.0));
+
+//        list.add(new Pose(75, 75, Math.PI / 2.0));
+//        list.add(new Pose(0, 75, Math.PI / 2.0));
+//        list.add(new Pose(75, 0, Math.PI / 2.0));
+//        list.add(new Pose(0, 0, Math.PI / 2.0));
 
         return list;
     }
-
 
 
     /*
@@ -98,20 +101,53 @@ public class DrivetrainTest extends OpMode
      */
     @Override
     public void loop() {
+        // refresh pose (position and heading) of the robot using odometry.
         train.refreshPose();
+
+        // poll the enhanced gamepad to update states.
         enhanced1.poll();
+
+        // reset odometry system?
         if (enhanced1.justPressed(EnhancedGamepad.Button.X)) {
-            // reset the encoder values to zero.
+            // reset the odometry system.
             train.resetOdometry();
+
+            // set heading to 90 deg.
+            train.pose.theta = Math.PI / 2.0;
         }
 
+        // enable turbo mode?
         if (enhanced1.justPressed(EnhancedGamepad.Button.BACK)) {
             // toggle between snail mode (slower) and regular mode
             turboMode = !turboMode;
         }
 
-        // get driver input and drive robot.
+        // are their waypoints available?
+        if (waypoints.size() > 0) {
+            telemetry.addData("Waypoints", "Press right bumper to load next waypoint");
+            if (enhanced1.justPressed(EnhancedGamepad.Button.RIGHT_BUMPER)) {
+                Pose nextWaypoint = waypoints.get(0);
+                waypoints.remove(0);
+                train.setWaypoint(nextWaypoint);
+            }
+        }
 
+        // clear current waypoint?
+        if (train.waypoint != null) {
+            telemetry.addData("Clear", "Press left bumper and B to clear current waypoint");
+            if (enhanced1.justPressed(EnhancedGamepad.Button.LEFT_BUMPER) && enhanced1.justPressed(EnhancedGamepad.Button.B)) {
+                train.clearWaypoint();
+                telemetry.addData("Clear", "Waypoint cleared.");
+            }
+        }
+
+        // display current waypoint.
+        telemetry.addData("Current Waypoint", train.getCurrentWaypoint());
+
+        // apply correction to auto navigate to current waypoint.
+        train.applyCorrection();
+
+        // also get driver input and drive robot.
         double drive = turboMode ? -gamepad1.left_stick_y : -SNAIL_FACTOR * gamepad1.left_stick_y;
         double strafe = turboMode ? gamepad1.left_stick_x : SNAIL_FACTOR * gamepad1.left_stick_x;
         double turn  =  turboMode ? -gamepad1.right_stick_x : -SNAIL_FACTOR * gamepad1.right_stick_x;
@@ -136,6 +172,8 @@ public class DrivetrainTest extends OpMode
         telemetry.addData("x (in)", train.pose.x / 2.54);
         telemetry.addData("y (in)", train.pose.y / 2.54);
         telemetry.addData("theta (deg)", train.pose.theta / Math.PI * 180.0);
+
+        // update telemetry.
         telemetry.update();
     }
 

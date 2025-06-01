@@ -122,6 +122,14 @@ public class Drivetrain {
         pose = new Pose(x, y, theta);
     }
 
+    public String getCurrentWaypoint() {
+        if (waypoint == null) {
+            return "NULL";
+        } else {
+            return String.format("%.2f, %.2f, %.2f", waypoint.x, waypoint.y, waypoint.theta);
+        }
+    }
+
     public void refreshPose() {
         // current encoder values (in counts or ticks).
         int currLeftPos = encoderLeft.getCurrentPosition();
@@ -163,9 +171,9 @@ public class Drivetrain {
         this.waypoint = waypoint;
     }
 
-    public static final double KP_X = 0.2;
-    public static final double KP_Y = 0.2;
-    public static final double KP_THETA = 0.2;
+    public static final double KP_X = 0.1;
+    public static final double KP_Y = 0.1;
+    public static final double KP_THETA = 0.1;
 
     public void applyCorrection() {
         // do we have a valid waypoint?
@@ -178,9 +186,13 @@ public class Drivetrain {
         double err_y = waypoint.y - pose.y;
         double err_theta = waypoint.theta - pose.theta;
 
+        // convert the x and y components from field coordinates to local (robot) coordinates.
+        double err_x_local = Math.cos(pose.theta) * err_x + Math.sin(pose.theta) * err_y;
+        double err_y_local = -Math.sin(pose.theta) * err_x + Math.cos(pose.theta) * err_y;
+
         // figure out correction values for motors.
-        double power_x = KP_X * err_x;
-        double power_y = KP_Y * err_y;
+        double power_x = KP_X * err_x_local;
+        double power_y = KP_Y * err_y_local;
         double power_theta = KP_THETA * err_theta;
 
         // apply power to each motor based on inverse kinematics.
@@ -189,7 +201,7 @@ public class Drivetrain {
         double powerBR = (power_x - power_y + (TRACK_WIDTH + WHEELBASE) / 2.0 * power_theta) / DRIVE_WHEEL_RADIUS_CM;
         double powerFR = (power_x + power_y + (TRACK_WIDTH + WHEELBASE) / 2.0 * power_theta) / DRIVE_WHEEL_RADIUS_CM;
 
-        // normalize the values based on the largest magnitude.
+        // find the max magnitude.
         double max_magnitude = Math.max(
                 Math.max(Math.abs(powerFL), Math.abs(powerBL)),
                 Math.max(Math.abs(powerBR), Math.abs(powerFR))
@@ -263,7 +275,6 @@ public class Drivetrain {
      * reset the strafing and drive encoders
      */
     public void resetOdometry() {
-        // for now, reset the encoders
         // reset encoders.
         encoderLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         encoderLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -276,6 +287,11 @@ public class Drivetrain {
         prevLeftPos = 0;
         prevRightPos = 0;
         prevAuxPos = 0;
+
+        // reset pose.
+        pose.x = 0;
+        pose.y = 0;
+        pose.theta = 0;
     }
 
     private void initIMU() {
