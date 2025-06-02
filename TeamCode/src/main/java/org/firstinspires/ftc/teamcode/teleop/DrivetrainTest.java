@@ -51,6 +51,7 @@ public class DrivetrainTest extends OpMode
     private static final double SNAIL_FACTOR = 0.3;
 
     ArrayList<Pose>waypoints;
+    Pose initPose;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -58,7 +59,9 @@ public class DrivetrainTest extends OpMode
     @Override
     public void init() {
         // create drive train with initial pose of 0, 0, and 90 degrees.
-        train = new Drivetrain(hardwareMap, this, 0, 0, Math.PI / 2.0);
+        initPose = new Pose(2 * 12 * 2.54, 2 * 12 * 2.54, 0);
+        train = new Drivetrain(hardwareMap, this);
+        train.setPose(initPose);
         enhanced1 = new EnhancedGamepad(gamepad1);
         waypoints = getWaypoints();
 
@@ -69,15 +72,12 @@ public class DrivetrainTest extends OpMode
     public ArrayList<Pose> getWaypoints() {
         ArrayList<Pose> list = new ArrayList<>();
 
-        list.add(new Pose(100, 100, 0));
-        list.add(new Pose(0, 100, 0));
-        list.add(new Pose(100, 0, Math.PI / 2.0));
-        list.add(new Pose(0, 0, Math.PI / 2.0));
 
-//        list.add(new Pose(75, 75, Math.PI / 2.0));
-//        list.add(new Pose(0, 75, Math.PI / 2.0));
-//        list.add(new Pose(75, 0, Math.PI / 2.0));
-//        list.add(new Pose(0, 0, Math.PI / 2.0));
+//        list.add(new Pose(100, 0, 0));
+        list.add(new Pose(6 * 12 * 2.54, 2 * 12 * 2.54, 0));
+        list.add(new Pose(6 * 12 * 2.54, 6 * 12 * 2.54, 0));
+        list.add(new Pose(2 * 12 * 2.54, 6 * 12 * 2.54, 0));
+        list.add(new Pose(2 * 12 * 2.54, 2 * 12 * 2.54, 0));
 
         return list;
     }
@@ -114,14 +114,20 @@ public class DrivetrainTest extends OpMode
             // reset the odometry system.
             train.resetOdometry();
 
-            // set heading to 90 deg.
-            train.pose.theta = Math.PI / 2.0;
+            // reset init pose.
+            train.setPose(initPose);
         }
 
         // enable turbo mode?
         if (enhanced1.justPressed(EnhancedGamepad.Button.BACK)) {
             // toggle between snail mode (slower) and regular mode
             turboMode = !turboMode;
+        }
+
+        if (enhanced1.justPressed(EnhancedGamepad.Button.DPAD_UP)){
+            boolean val = train.getMotorCorrectionEnabled();
+            val = !val;
+            train.setMotorCorrectionEnabled(val);
         }
 
         // are their waypoints available?
@@ -162,6 +168,7 @@ public class DrivetrainTest extends OpMode
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.addData("Turbo Mode", turboMode);
+        telemetry.addData("Motor Correction Enabled", train.getMotorCorrectionEnabled());
 
         telemetry.addData("drive", drive);
         telemetry.addData("strafe", strafe);

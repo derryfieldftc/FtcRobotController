@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -109,11 +110,22 @@ public class Drivetrain {
 
     public State state = State.IDLE;
 
+    public boolean motor_correction_enabled = false;
+
+    public void setMotorCorrectionEnabled(boolean value) {
+        this.motor_correction_enabled = value;
+    }
+
+    public boolean getMotorCorrectionEnabled() {
+        return motor_correction_enabled;
+    }
+
     public Drivetrain(HardwareMap hardwareMap, OpMode opMode) {
         pose = new Pose (0, 0, 0);
         waypoint = null;
         this.opMode = opMode;
         this.hardwareMap = hardwareMap;
+        motor_correction_enabled = false;
         initHardware();
     }
 
@@ -130,6 +142,13 @@ public class Drivetrain {
         }
     }
 
+    public void setPose (Pose pose) {
+        this.pose = pose;
+    }
+
+    public Pose getPose() {
+        return this.pose;
+    }
     public void refreshPose() {
         // current encoder values (in counts or ticks).
         int currLeftPos = encoderLeft.getCurrentPosition();
@@ -171,13 +190,13 @@ public class Drivetrain {
         this.waypoint = waypoint;
     }
 
-    public static final double KP_X = 0.1;
-    public static final double KP_Y = 0.1;
-    public static final double KP_THETA = 0.3;
+    public static final double KP_X = 2.0;
+    public static final double KP_Y = 2.0;
+    public static final double KP_THETA = 5.0;
 
     // return true if we have arrived at the location.
-    public static final double RADIUS_THRESHOLD = 5;
-    public static final double ANGLE_THRESHOLD = Math.toRadians(5);
+    public static final double RADIUS_THRESHOLD = 2;
+    public static final double ANGLE_THRESHOLD = Math.toRadians(2);
     public boolean applyCorrection() {
         // do we have a valid waypoint?
         if (waypoint == null) {
@@ -190,6 +209,8 @@ public class Drivetrain {
         double err_y = waypoint.y - pose.y;
         double err_theta = waypoint.theta - pose.theta;
 
+        RobotLog.d("TIE: err_x = %.2f, err_y = %.2f, err_theta = %.2f", err_x, err_y, err_theta);
+
         // are we there yet?
         double radius = Math.sqrt(err_x * err_x + err_y * err_y);
         if (radius < RADIUS_THRESHOLD && Math.abs(err_theta) < ANGLE_THRESHOLD) {
@@ -201,16 +222,22 @@ public class Drivetrain {
         double err_x_local = Math.cos(pose.theta) * err_x + Math.sin(pose.theta) * err_y;
         double err_y_local = -Math.sin(pose.theta) * err_x + Math.cos(pose.theta) * err_y;
 
+        RobotLog.d("TIE: err_x_local = %.2f, err_y_local = %.2f, err_theta = %.2f", err_x_local, err_y_local, err_theta);
+
         // figure out correction values for motors.
-        double power_x = KP_X * err_x_local;
-        double power_y = KP_Y * err_y_local;
+        double power_x_local = KP_X * err_x_local;
+        double power_y_local = KP_Y * err_y_local;
         double power_theta = KP_THETA * err_theta;
 
+        RobotLog.d("TIE: power_x_local = %.2f, power_y_local = %.2f, power_theta = %.2f", power_x_local, power_y_local, power_theta);
+
         // apply power to each motor based on inverse kinematics.
-        double powerFL = (power_x - power_y - (TRACK_WIDTH + WHEELBASE) / 2.0 * power_theta) / DRIVE_WHEEL_RADIUS_CM;
-        double powerBL = (power_x + power_y - (TRACK_WIDTH + WHEELBASE) / 2.0 * power_theta) / DRIVE_WHEEL_RADIUS_CM;
-        double powerBR = (power_x - power_y + (TRACK_WIDTH + WHEELBASE) / 2.0 * power_theta) / DRIVE_WHEEL_RADIUS_CM;
-        double powerFR = (power_x + power_y + (TRACK_WIDTH + WHEELBASE) / 2.0 * power_theta) / DRIVE_WHEEL_RADIUS_CM;
+        double powerFL = (power_x_local - power_y_local - (TRACK_WIDTH + WHEELBASE) / 2.0 * power_theta) / DRIVE_WHEEL_RADIUS_CM;
+        double powerBL = (power_x_local + power_y_local - (TRACK_WIDTH + WHEELBASE) / 2.0 * power_theta) / DRIVE_WHEEL_RADIUS_CM;
+        double powerBR = (power_x_local - power_y_local + (TRACK_WIDTH + WHEELBASE) / 2.0 * power_theta) / DRIVE_WHEEL_RADIUS_CM;
+        double powerFR = (power_x_local + power_y_local + (TRACK_WIDTH + WHEELBASE) / 2.0 * power_theta) / DRIVE_WHEEL_RADIUS_CM;
+
+        RobotLog.d("TIE: powerFL = %.2f, powerBL = %.2f, powerBR = %.2f, powerFR = %.2f", powerFL, powerBL, powerBR, powerFR);
 
         // find the max magnitude.
         double max_magnitude = Math.max(
@@ -226,11 +253,16 @@ public class Drivetrain {
             powerFR /= max_magnitude;
         }
 
-        // apply power.
-        motorFL.setPower(powerFL);
-        motorBL.setPower(powerBL);
-        motorBR.setPower(powerBR);
-        motorFR.setPower(powerFR);
+        RobotLog.d("TIE: (normalized) powerFL = %.2f, powerBL = %.2f, powerBR = %.2f, powerFR = %.2f", powerFL, powerBL, powerBR, powerFR);
+
+        if (motor_correction_enabled) {
+            // apply power.
+            motorFL.setPower(powerFL);
+            motorBL.setPower(powerBL);
+            motorBR.setPower(powerBR);
+            motorFR.setPower(powerFR);
+        }
+
         return false;
     }
 
