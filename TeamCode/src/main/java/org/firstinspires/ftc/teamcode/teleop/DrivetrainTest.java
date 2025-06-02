@@ -59,7 +59,7 @@ public class DrivetrainTest extends OpMode
     @Override
     public void init() {
         // create drive train with initial pose of 0, 0, and 90 degrees.
-        initPose = new Pose(2 * 12 * 2.54, 2 * 12 * 2.54, 0);
+        initPose = new Pose(4 * 12 * 2.54, 4 * 12 * 2.54, 0);
         train = new Drivetrain(hardwareMap, this);
         train.setPose(initPose);
         enhanced1 = new EnhancedGamepad(gamepad1);
@@ -73,11 +73,21 @@ public class DrivetrainTest extends OpMode
         ArrayList<Pose> list = new ArrayList<>();
 
 
-//        list.add(new Pose(100, 0, 0));
-        list.add(new Pose(6 * 12 * 2.54, 2 * 12 * 2.54, 0));
-        list.add(new Pose(6 * 12 * 2.54, 6 * 12 * 2.54, 0));
-        list.add(new Pose(2 * 12 * 2.54, 6 * 12 * 2.54, 0));
-        list.add(new Pose(2 * 12 * 2.54, 2 * 12 * 2.54, 0));
+//        list.add(new Pose(200, 0, 0));
+//        list.add(new Pose(0, 0, 0));
+
+        list.add(new Pose(8 * 12 * 2.54, 4 * 12 * 2.54, 0));
+        list.add(new Pose(8 * 12 * 2.54, 4 * 12 * 2.54, Math.PI / 2.0));
+        list.add(new Pose(8 * 12 * 2.54, 8 * 12 * 2.54, Math.PI / 2.0));
+        list.add(new Pose(8 * 12 * 2.54, 8 * 12 * 2.54, Math.PI / 1.0));
+        list.add(new Pose(4 * 12 * 2.54, 8 * 12 * 2.54, Math.PI / 1.0));
+        list.add(new Pose(4 * 12 * 2.54, 8 * 12 * 2.54, 3.0 * Math.PI / 2.0));
+        list.add(new Pose(4 * 12 * 2.54, 4 * 12 * 2.54, 3.0 * Math.PI / 2.0));
+        list.add(new Pose(4 * 12 * 2.54, 4 * 12 * 2.54, 4.0 * Math.PI / 2.0));
+
+//        list.add(new Pose(2 * 12 * 2.54, 6 * 12 * 2.54, Math.PI / 2.0));
+//        list.add(new Pose(6 * 12 * 2.54, 2 * 12 * 2.54, 0));
+//        list.add(new Pose(2 * 12 * 2.54, 2 * 12 * 2.54, 0));
 
         return list;
     }

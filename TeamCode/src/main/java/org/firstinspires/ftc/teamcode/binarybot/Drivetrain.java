@@ -125,7 +125,7 @@ public class Drivetrain {
         waypoint = null;
         this.opMode = opMode;
         this.hardwareMap = hardwareMap;
-        motor_correction_enabled = false;
+        motor_correction_enabled = true;
         initHardware();
     }
 
@@ -190,9 +190,9 @@ public class Drivetrain {
         this.waypoint = waypoint;
     }
 
-    public static final double KP_X = 2.0;
-    public static final double KP_Y = 2.0;
-    public static final double KP_THETA = 5.0;
+    public static final double KP_X = 10.0;
+    public static final double KP_Y = 10.0;
+    public static final double KP_THETA = 15.0;
 
     // return true if we have arrived at the location.
     public static final double RADIUS_THRESHOLD = 2;
@@ -204,7 +204,7 @@ public class Drivetrain {
             return true;
         }
 
-        // calculate error.
+        // calculate error (in field coordinate system).
         double err_x = waypoint.x - pose.x;
         double err_y = waypoint.y - pose.y;
         double err_theta = waypoint.theta - pose.theta;
@@ -225,17 +225,27 @@ public class Drivetrain {
         RobotLog.d("TIE: err_x_local = %.2f, err_y_local = %.2f, err_theta = %.2f", err_x_local, err_y_local, err_theta);
 
         // figure out correction values for motors.
-        double power_x_local = KP_X * err_x_local;
-        double power_y_local = KP_Y * err_y_local;
-        double power_theta = KP_THETA * err_theta;
+        double power_x_local;
+        double power_y_local;
+        double power_theta;
+        power_x_local = KP_X * err_x_local;
+        power_y_local = KP_Y * err_y_local;
+        power_theta = KP_THETA * err_theta;
 
         RobotLog.d("TIE: power_x_local = %.2f, power_y_local = %.2f, power_theta = %.2f", power_x_local, power_y_local, power_theta);
 
-        // apply power to each motor based on inverse kinematics.
-        double powerFL = (power_x_local - power_y_local - (TRACK_WIDTH + WHEELBASE) / 2.0 * power_theta) / DRIVE_WHEEL_RADIUS_CM;
-        double powerBL = (power_x_local + power_y_local - (TRACK_WIDTH + WHEELBASE) / 2.0 * power_theta) / DRIVE_WHEEL_RADIUS_CM;
-        double powerBR = (power_x_local - power_y_local + (TRACK_WIDTH + WHEELBASE) / 2.0 * power_theta) / DRIVE_WHEEL_RADIUS_CM;
-        double powerFR = (power_x_local + power_y_local + (TRACK_WIDTH + WHEELBASE) / 2.0 * power_theta) / DRIVE_WHEEL_RADIUS_CM;
+//        this.drive(power_x_local, -power_y_local, power_theta);
+
+//        // apply power to each motor based on inverse kinematics.
+//        double powerFL = (power_x_local - power_y_local - (TRACK_WIDTH + WHEELBASE) / 2.0 * power_theta) / DRIVE_WHEEL_RADIUS_CM;
+//        double powerBL = (power_x_local + power_y_local - (TRACK_WIDTH + WHEELBASE) / 2.0 * power_theta) / DRIVE_WHEEL_RADIUS_CM;
+//        double powerBR = (power_x_local - power_y_local + (TRACK_WIDTH + WHEELBASE) / 2.0 * power_theta) / DRIVE_WHEEL_RADIUS_CM;
+//        double powerFR = (power_x_local + power_y_local + (TRACK_WIDTH + WHEELBASE) / 2.0 * power_theta) / DRIVE_WHEEL_RADIUS_CM;
+        // apply power to each motor.
+        double powerFL = (power_x_local - power_y_local - power_theta);
+        double powerBL = (power_x_local + power_y_local - power_theta);
+        double powerBR = (power_x_local - power_y_local + power_theta);
+        double powerFR = (power_x_local + power_y_local + power_theta);
 
         RobotLog.d("TIE: powerFL = %.2f, powerBL = %.2f, powerBR = %.2f, powerFR = %.2f", powerFL, powerBL, powerBR, powerFR);
 
@@ -245,13 +255,15 @@ public class Drivetrain {
                 Math.max(Math.abs(powerBR), Math.abs(powerFR))
         );
 
-        if (max_magnitude > 1) {
-            // only normalize if max magnitude is greater than 1.0.
-            powerFL /= max_magnitude;
-            powerBL /= max_magnitude;
-            powerBR /= max_magnitude;
-            powerFR /= max_magnitude;
+        if (max_magnitude < 1) {
+            max_magnitude = 1.0;
         }
+
+        // normalize so values stay proportionate and are less than or equal to 1 in magnitude.
+        powerFL /= max_magnitude;
+        powerBL /= max_magnitude;
+        powerBR /= max_magnitude;
+        powerFR /= max_magnitude;
 
         RobotLog.d("TIE: (normalized) powerFL = %.2f, powerBL = %.2f, powerBR = %.2f, powerFR = %.2f", powerFL, powerBL, powerBR, powerFR);
 
@@ -262,6 +274,8 @@ public class Drivetrain {
             motorBR.setPower(powerBR);
             motorFR.setPower(powerFR);
         }
+
+        RobotLog.d("TIE:");
 
         return false;
     }
@@ -409,20 +423,38 @@ public class Drivetrain {
      * @param twist counterclockwise / clockwise (negative) power - follows right hand rule
      */
     public void drive(double drive,  double strafe, double twist) {
-        double powerFL = drive + strafe - twist;
-        double powerBL = drive - strafe - twist;
-        double powerFR = drive - strafe + twist;
-        double powerBR = drive + strafe + twist;
 
-        powerFL = clamp(1, -1, powerFL);
-        powerBL = clamp(1, -1, powerBL);
-        powerFR = clamp(1, -1, powerFR);
-        powerBR = clamp(1, -1, powerBR);
+
+        // apply power to each motor based on inverse kinematics.
+        double powerFL = (drive + strafe - twist);
+        double powerBL = (drive - strafe - twist);
+        double powerBR = (drive + strafe + twist);
+        double powerFR = (drive - strafe + twist);
+
+//        RobotLog.d("TIE: powerFL = %.2f, powerBL = %.2f, powerBR = %.2f, powerFR = %.2f", powerFL, powerBL, powerBR, powerFR);
+
+        // scale the powers (so they are <= 1).
+        double scalar = Math.max(Math.abs(powerFL), Math.max(Math.abs(powerFR), Math.max(Math.abs(powerBL), Math.abs(powerBR))));
+
+        // Only apply scalar if greater than 1. Otherwise we could unintentionally increase power
+        // This also prevents dividing by 0
+        if(scalar < 1) {
+            scalar = 1;
+        }
+
+        powerFL /= scalar;
+        powerBL /= scalar;
+        powerFR /= scalar;
+        powerBR /= scalar;
+
+//        RobotLog.d("TIE: (normalized) powerFL = %.2f, powerBL = %.2f, powerBR = %.2f, powerFR = %.2f", powerFL, powerBL, powerBR, powerFR);
 
         motorFL.setPower(powerFL);
         motorBL.setPower(powerBL);
         motorFR.setPower(powerFR);
         motorBR.setPower(powerBR);
+
+//        RobotLog.d("TIE: ");
     }
 
     /**
