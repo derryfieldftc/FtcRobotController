@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
@@ -38,6 +39,8 @@ public class Drivetrain {
 
     public Pose pose;
     public Pose waypoint;
+
+    public DSLog log;
 
     // keep track of previous encoder positions (as encoder counts)
     int prevLeftPos;
@@ -81,6 +84,10 @@ public class Drivetrain {
     static final boolean USE_ODOMETRY_POD = true;
     static final double STRAFE_ENCODER_FUDGE_FACTOR = 1.0;
 
+    public boolean isChalkDown = false;
+    public static final double CHALK_DOWN = 1.0;
+    public static final double CHALK_UP = 0.0;
+
     // ******************************************************************
     // private member variables
     // ******************************************************************
@@ -93,6 +100,9 @@ public class Drivetrain {
     public DcMotor encoderLeft;
     public DcMotor encoderRight;
     public DcMotor encoderAux;
+
+    // servo for chalk.
+    public Servo chalk;
 
     // op mode related items.
     private OpMode opMode;
@@ -112,6 +122,24 @@ public class Drivetrain {
 
     public boolean motor_correction_enabled = false;
 
+    public void chalkDown() {
+        chalk.setPosition(CHALK_DOWN);
+        isChalkDown = true;
+    }
+
+    public void chalkUp() {
+        chalk.setPosition(CHALK_UP);
+        isChalkDown = false;
+    }
+
+    public void toggleChalk() {
+        if (isChalkDown) {
+            chalkUp();
+        } else {
+            chalkDown();
+        }
+    }
+
     public void setMotorCorrectionEnabled(boolean value) {
         this.motor_correction_enabled = value;
     }
@@ -121,11 +149,14 @@ public class Drivetrain {
     }
 
     public Drivetrain(HardwareMap hardwareMap, OpMode opMode) {
+        log = new DSLog("/sdcard/FIRST/drivetrain.txt");
+        log.log("x, y, theta, err_x, err_y, err_theta, err_x_local, err_y_local, power_x_local, power_y_local, power_theta, powerFL, powerBL, powerBR, powerFR");
         pose = new Pose (0, 0, 0);
         waypoint = null;
         this.opMode = opMode;
         this.hardwareMap = hardwareMap;
         motor_correction_enabled = true;
+        isChalkDown = false;
         initHardware();
     }
 
@@ -140,6 +171,10 @@ public class Drivetrain {
         } else {
             return String.format("%.2f, %.2f, %.2f", waypoint.x, waypoint.y, waypoint.theta);
         }
+    }
+
+    public void close_log() {
+        log.close();
     }
 
     public void setPose (Pose pose) {
@@ -190,9 +225,9 @@ public class Drivetrain {
         this.waypoint = waypoint;
     }
 
-    public static final double KP_X = 10.0;
-    public static final double KP_Y = 10.0;
-    public static final double KP_THETA = 15.0;
+    public static final double KP_X = 0.1;
+    public static final double KP_Y = 0.1;
+    public static final double KP_THETA = 0.1;
 
     // return true if we have arrived at the location.
     public static final double RADIUS_THRESHOLD = 2;
@@ -209,7 +244,7 @@ public class Drivetrain {
         double err_y = waypoint.y - pose.y;
         double err_theta = waypoint.theta - pose.theta;
 
-        RobotLog.d("TIE: err_x = %.2f, err_y = %.2f, err_theta = %.2f", err_x, err_y, err_theta);
+        //RobotLog.d("TIE: err_x = %.2f, err_y = %.2f, err_theta = %.2f", err_x, err_y, err_theta);
 
         // are we there yet?
         double radius = Math.sqrt(err_x * err_x + err_y * err_y);
@@ -222,7 +257,7 @@ public class Drivetrain {
         double err_x_local = Math.cos(pose.theta) * err_x + Math.sin(pose.theta) * err_y;
         double err_y_local = -Math.sin(pose.theta) * err_x + Math.cos(pose.theta) * err_y;
 
-        RobotLog.d("TIE: err_x_local = %.2f, err_y_local = %.2f, err_theta = %.2f", err_x_local, err_y_local, err_theta);
+        //RobotLog.d("TIE: err_x_local = %.2f, err_y_local = %.2f, err_theta = %.2f", err_x_local, err_y_local, err_theta);
 
         // figure out correction values for motors.
         double power_x_local;
@@ -232,7 +267,7 @@ public class Drivetrain {
         power_y_local = KP_Y * err_y_local;
         power_theta = KP_THETA * err_theta;
 
-        RobotLog.d("TIE: power_x_local = %.2f, power_y_local = %.2f, power_theta = %.2f", power_x_local, power_y_local, power_theta);
+       // RobotLog.d("TIE: power_x_local = %.2f, power_y_local = %.2f, power_theta = %.2f", power_x_local, power_y_local, power_theta);
 
 //        this.drive(power_x_local, -power_y_local, power_theta);
 
@@ -247,7 +282,7 @@ public class Drivetrain {
         double powerBR = (power_x_local - power_y_local + power_theta);
         double powerFR = (power_x_local + power_y_local + power_theta);
 
-        RobotLog.d("TIE: powerFL = %.2f, powerBL = %.2f, powerBR = %.2f, powerFR = %.2f", powerFL, powerBL, powerBR, powerFR);
+       // RobotLog.d("TIE: powerFL = %.2f, powerBL = %.2f, powerBR = %.2f, powerFR = %.2f", powerFL, powerBL, powerBR, powerFR);
 
         // find the max magnitude.
         double max_magnitude = Math.max(
@@ -265,7 +300,7 @@ public class Drivetrain {
         powerBR /= max_magnitude;
         powerFR /= max_magnitude;
 
-        RobotLog.d("TIE: (normalized) powerFL = %.2f, powerBL = %.2f, powerBR = %.2f, powerFR = %.2f", powerFL, powerBL, powerBR, powerFR);
+        //RobotLog.d("TIE: (normalized) powerFL = %.2f, powerBL = %.2f, powerBR = %.2f, powerFR = %.2f", powerFL, powerBL, powerBR, powerFR);
 
         if (motor_correction_enabled) {
             // apply power.
@@ -275,7 +310,13 @@ public class Drivetrain {
             motorFR.setPower(powerFR);
         }
 
-        RobotLog.d("TIE:");
+        //RobotLog.d("TIE:");
+
+        // log data.
+        log.log(String.format("%.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f",
+                pose.x, pose.y, pose.theta, err_x, err_y, err_theta, err_x_local, err_y_local,
+                power_x_local, power_y_local, power_theta, powerFL, powerBL, powerBR, powerFR)
+                );
 
         return false;
     }
@@ -324,6 +365,10 @@ public class Drivetrain {
             encoderLeft = motorFL;
             encoderAux = motorFL;
         }
+
+        // get servo.
+        chalk = hardwareMap.servo.get("chalkControl");
+        chalkUp();
 
         initIMU();
     }
