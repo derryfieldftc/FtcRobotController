@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
@@ -114,6 +115,16 @@ public class Drivetrain {
     private double previousAngle = 0;
     public double integratedAngle = 0;
 
+    public double previous_time = 0;
+    public double current_time = 0;
+    public double delta_time = 0;
+    ElapsedTime elapsed_time;
+
+    PID pid_x;
+    PID pid_y;
+    PID pid_theta;
+
+
     private final boolean USE_AUTO_CORRECT = true;
     private final double P_COEFFICIENT_DRIVE = 0.1;
     private final double P_COEFFICIENT_STRAFE = 0.05;
@@ -149,9 +160,15 @@ public class Drivetrain {
     }
 
     public Drivetrain(HardwareMap hardwareMap, OpMode opMode) {
+        elapsed_time = new ElapsedTime();
         log = new DSLog("/sdcard/FIRST/drivetrain.txt");
         log.log("x, y, theta, err_x, err_y, err_theta, err_x_local, err_y_local, power_x_local, power_y_local, power_theta, powerFL, powerBL, powerBR, powerFR");
         pose = new Pose (0, 0, 0);
+
+        pid_x = new PID(0.1, 0.01, 0, 2);
+        pid_y = new PID(0.1, 0.01, 0, 2);
+        pid_theta = new PID(0.5, 0.02, 0, Math.toRadians(2));
+
         waypoint = null;
         this.opMode = opMode;
         this.hardwareMap = hardwareMap;
@@ -219,19 +236,25 @@ public class Drivetrain {
 
     public void clearWaypoint() {
         waypoint = null;
+        elapsed_time.reset();
+        previous_time = elapsed_time.milliseconds();
+        pid_x.clear();;
+        pid_y.clear();
+        pid_theta.clear();
     }
 
     public void setWaypoint(Pose waypoint) {
         this.waypoint = waypoint;
+        elapsed_time.reset();
+        previous_time = elapsed_time.milliseconds();
+        pid_x.clear();;
+        pid_y.clear();
+        pid_theta.clear();
     }
 
-    public static final double KP_X = 0.1;
-    public static final double KP_Y = 0.1;
-    public static final double KP_THETA = 0.1;
-
     // return true if we have arrived at the location.
-    public static final double RADIUS_THRESHOLD = 2;
-    public static final double ANGLE_THRESHOLD = Math.toRadians(2);
+    public static final double RADIUS_THRESHOLD = 4;
+    public static final double ANGLE_THRESHOLD = Math.toRadians(3);
     public boolean applyCorrection() {
         // do we have a valid waypoint?
         if (waypoint == null) {
@@ -250,6 +273,7 @@ public class Drivetrain {
         double radius = Math.sqrt(err_x * err_x + err_y * err_y);
         if (radius < RADIUS_THRESHOLD && Math.abs(err_theta) < ANGLE_THRESHOLD) {
             // we are close enough to our waypoint.
+            this.stop();
             return true;
         }
 
@@ -263,9 +287,16 @@ public class Drivetrain {
         double power_x_local;
         double power_y_local;
         double power_theta;
-        power_x_local = KP_X * err_x_local;
-        power_y_local = KP_Y * err_y_local;
-        power_theta = KP_THETA * err_theta;
+
+        // update current time.
+        current_time = elapsed_time.milliseconds();
+        delta_time = (current_time - previous_time) / 1000.0;
+        previous_time = current_time;
+
+        // calculate correction values using PID controllers (x, y, and theta).
+        power_x_local = pid_x.calculate(err_x_local, delta_time);
+        power_y_local = pid_y.calculate(err_y_local, delta_time);
+        power_theta = pid_theta.calculate(err_theta, delta_time);
 
        // RobotLog.d("TIE: power_x_local = %.2f, power_y_local = %.2f, power_theta = %.2f", power_x_local, power_y_local, power_theta);
 
@@ -299,6 +330,14 @@ public class Drivetrain {
         powerBL /= max_magnitude;
         powerBR /= max_magnitude;
         powerFR /= max_magnitude;
+
+        if (Math.max(Math.max(Math.abs(powerFL), Math.abs(powerBL)), Math.max(Math.abs(powerBR), Math.abs(powerFR))) > 0.7)  {
+            // scale it.
+            powerFL *= 0.7;
+            powerBL *= 0.7;
+            powerBR *= 0.7;
+            powerFR *= 0.7;
+        }
 
         //RobotLog.d("TIE: (normalized) powerFL = %.2f, powerBL = %.2f, powerBR = %.2f, powerFR = %.2f", powerFL, powerBL, powerBR, powerFR);
 

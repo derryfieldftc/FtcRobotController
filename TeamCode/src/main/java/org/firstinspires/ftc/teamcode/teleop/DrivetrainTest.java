@@ -34,6 +34,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import java.util.ArrayList;
 
@@ -146,33 +147,34 @@ public class DrivetrainTest extends OpMode
             train.setMotorCorrectionEnabled(val);
         }
 
+        telemetry.addData("Waypoints", "Right bumper load / Left bumper clear");
+
         // are their waypoints available?
         if (waypoints.size() > 0) {
-            telemetry.addData("Waypoints", "Press right bumper to load next waypoint");
             if (enhanced1.justPressed(EnhancedGamepad.Button.RIGHT_BUMPER)) {
                 Pose nextWaypoint = waypoints.get(0);
                 waypoints.remove(0);
                 train.setWaypoint(nextWaypoint);
             }
         }
-
-        // clear current waypoint?
-        if (train.waypoint != null) {
-            telemetry.addData("Clear", "Press left bumper and B to clear current waypoint");
-            if (enhanced1.justPressed(EnhancedGamepad.Button.LEFT_BUMPER) && enhanced1.justPressed(EnhancedGamepad.Button.B)) {
-                train.clearWaypoint();
-                telemetry.addData("Clear", "Waypoint cleared.");
-            }
-        }
-
         // display current waypoint.
         telemetry.addData("Current Waypoint", train.getCurrentWaypoint());
 
-        // apply correction to auto navigate to current waypoint.
-        if (train.applyCorrection()) {
-            // if applyCorrection() returns true, then we are at the waypoint.
-            train.stop();
-            train.clearWaypoint();
+        if (train.waypoint != null) {
+
+            if (enhanced1.justPressed(EnhancedGamepad.Button.LEFT_BUMPER) && enhanced1.justPressed(EnhancedGamepad.Button.B)) {
+                train.clearWaypoint();
+                telemetry.addData("Clear", "Waypoint cleared.");
+            } else {
+                // apply correction and see if we are close enough to stop.
+                if (train.applyCorrection()) {
+                    // if applyCorrection() returns true, then we are at the waypoint.
+                    train.stop();
+                    RobotLog.d("TIE: made it to waypoint. Clearing waypoint...");
+                    train.clearWaypoint();
+                    RobotLog.d("TIE: cleared!");
+                }
+            }
         }
 
         // also get driver input and drive robot.
@@ -182,17 +184,17 @@ public class DrivetrainTest extends OpMode
         train.drive(drive, strafe, turn);
 
         // Show the elapsed game time and wheel power.
-        telemetry.addData("Status", "Run Time: " + runtime.toString());
+//        telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.addData("Turbo Mode", turboMode);
         telemetry.addData("Motor Correction Enabled", train.getMotorCorrectionEnabled());
 
-        telemetry.addData("drive", drive);
-        telemetry.addData("strafe", strafe);
-        telemetry.addData("turn", turn);
+//        telemetry.addData("drive", drive);
+//        telemetry.addData("strafe", strafe);
+//        telemetry.addData("turn", turn);
 
-        telemetry.addData("pos left", train.encoderLeft.getCurrentPosition());
-        telemetry.addData("pos right", train.encoderRight.getCurrentPosition());
-        telemetry.addData("pos aux", train.encoderAux.getCurrentPosition());
+//        telemetry.addData("pos left", train.encoderLeft.getCurrentPosition());
+//        telemetry.addData("pos right", train.encoderRight.getCurrentPosition());
+//        telemetry.addData("pos aux", train.encoderAux.getCurrentPosition());
 
         // encoder data
 //        telemetry.addData("encoder left", train.encoderLeft.getCurrentPosition());
@@ -201,6 +203,20 @@ public class DrivetrainTest extends OpMode
         telemetry.addData("x (in)", train.pose.x / 2.54);
         telemetry.addData("y (in)", train.pose.y / 2.54);
         telemetry.addData("theta (deg)", train.pose.theta / Math.PI * 180.0);
+
+
+        if (train.waypoint != null) {
+            telemetry.addData("err_x (in)", (train.waypoint.x - train.pose.x) / 2.54);
+            telemetry.addData("err_y (in)", (train.waypoint.y - train.pose.y) / 2.54);
+            telemetry.addData("err_theta (deg)", (train.waypoint.theta - train.pose.theta) / Math.PI * 180.0);
+        } else {
+            telemetry.addData("err_x (in)", "N/A");
+            telemetry.addData("err_y (in)", "N/A");
+            telemetry.addData("err_theta (deg)", "N/A");
+        }
+
+
+
 
         // update telemetry.
         telemetry.update();
