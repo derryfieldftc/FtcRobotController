@@ -152,7 +152,7 @@ public class Drivetrain {
 
         pid_x = new PID(0.06, 0.001, 0.000, 0.0001);
         pid_y = new PID(0.06, 0.001, 0.000, 0.0001);
-        pid_theta = new PID(0.6, 0.001, 0.000, Math.toRadians(0.0001));
+        pid_theta = new PID(0.8, 0.002, 0.000, Math.toRadians(0.0001));
 
         waypoint = null;
         this.opMode = opMode;

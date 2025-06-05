@@ -75,7 +75,14 @@ public class DrivetrainTest extends OpMode
         ArrayList<Pose> list = new ArrayList<>();
 
 
-        list.add(new Pose(96*2.54, 0, 0));
+        list.add(new Pose(8 * 12 * 2.54, 0 * 12 * 2.54, 0));
+        list.add(new Pose(8 * 12 * 2.54, 8 * 12 * 2.54, 0));
+        list.add(new Pose(0 * 12 * 2.54, 8 * 12 * 2.54, 0));
+        list.add(new Pose(0 * 12 * 2.54, 0 * 12 * 2.54, 0));
+        list.add(new Pose(4 * 12 * 2.54, 0 * 12 * 2.54, 0));
+        list.add(new Pose(4 * 12 * 2.54, 8 * 12 * 2.54, 0));
+        list.add(new Pose(8 * 12 * 2.54, 4 * 12 * 2.54, 0));
+        list.add(new Pose(0 * 12 * 2.54, 4 * 12 * 2.54, 0));
 //        list.add(new Pose(4*12*2.54, 0, 0));
 //        list.add(new Pose(6*12*2.54, 0, 0));
 //        list.add(new Pose(0, 0, 0));
