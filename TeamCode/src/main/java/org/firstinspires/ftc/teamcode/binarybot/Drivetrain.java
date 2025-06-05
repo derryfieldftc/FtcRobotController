@@ -166,9 +166,9 @@ public class Drivetrain {
         log.log("x, y, theta, err_x, err_y, err_theta, err_x_local, err_y_local, power_x_local, power_y_local, power_theta, powerFL, powerBL, powerBR, powerFR");
         pose = new Pose (0, 0, 0);
 
-        pid_x = new PID(0.5, 0.05, 0.001, 0.0001);
-        pid_y = new PID(0.5, 0.05, 0.001, 0.0001);
-        pid_theta = new PID(1.0, 0.05, 0.001, Math.toRadians(0.0001));
+        pid_x = new PID(0.04, 0.005, 0.000, 0.0001);
+        pid_y = new PID(0.04, 0.005, 0.000, 0.0001);
+        pid_theta = new PID(1.0, 0.005, 0.000, Math.toRadians(0.0001));
 
         waypoint = null;
         this.opMode = opMode;
@@ -270,6 +270,10 @@ public class Drivetrain {
         double err_y = waypoint.y - pose.y;
         double err_theta = waypoint.theta - pose.theta;
 
+        // clip the error otherwise it can wash out the other error.
+        err_x = Range.clip(err_x, -10, 10);
+        err_y = Range.clip(err_y, -10, 10);
+
         //RobotLog.d("TIE: err_x = %.2f, err_y = %.2f, err_theta = %.2f", err_x, err_y, err_theta);
         // convert the x and y components from field coordinates to local (robot) coordinates.
         double err_x_local = Math.cos(pose.theta) * err_x + Math.sin(pose.theta) * err_y;
@@ -280,7 +284,7 @@ public class Drivetrain {
 
         // are we there yet?
         // use field coordinates.
-        if (Math.abs(err_x) < 1 && Math.abs(err_y) < 1 && Math.abs(err_theta) < Math.toRadians(3)) {
+        if (Math.abs(err_x) < 1.5 && Math.abs(err_y) < 1.5 && Math.abs(err_theta) < Math.toRadians(3)) {
             this.stop();
             this.clearWaypoint();
             pid_x.clear();
