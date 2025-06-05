@@ -166,9 +166,9 @@ public class Drivetrain {
         log.log("x, y, theta, err_x, err_y, err_theta, err_x_local, err_y_local, power_x_local, power_y_local, power_theta, powerFL, powerBL, powerBR, powerFR");
         pose = new Pose (0, 0, 0);
 
-        pid_x = new PID(0.04, 0.005, 0.000, 0.0001);
-        pid_y = new PID(0.04, 0.005, 0.000, 0.0001);
-        pid_theta = new PID(1.0, 0.005, 0.000, Math.toRadians(0.0001));
+        pid_x = new PID(0.025, 0.000, 0.000, 0.0001);
+        pid_y = new PID(0.025, 0.000, 0.000, 0.0001);
+        pid_theta = new PID(0.5, 0.000, 0.000, Math.toRadians(0.0001));
 
         waypoint = null;
         this.opMode = opMode;
@@ -284,7 +284,7 @@ public class Drivetrain {
 
         // are we there yet?
         // use field coordinates.
-        if (Math.abs(err_x) < 1.5 && Math.abs(err_y) < 1.5 && Math.abs(err_theta) < Math.toRadians(3)) {
+        if (Math.abs(err_x) < 2 && Math.abs(err_y) < 2 && Math.abs(err_theta) < Math.toRadians(4)) {
             this.stop();
             this.clearWaypoint();
             pid_x.clear();
