@@ -24,20 +24,6 @@ public class Drivetrain {
     // enumerations.
     // ******************************************************************
     // measured movement system state.
-    public enum State {
-        // robot is available.
-        IDLE,
-
-        // robot is doing a measured drive, strafe, or turn.
-        DRIVING_FORWARD,
-        DRIVING_BACKWARD,
-
-        STRAFING_RIGHT,
-        STRAFING_LEFT,
-
-        TURNING_CLOCKWISE,
-        TURNING_COUNTERCLOCKWISE,
-    }
 
     public Pose pose;
     public Pose waypoint;
@@ -130,8 +116,6 @@ public class Drivetrain {
     private final double P_COEFFICIENT_DRIVE = 0.1;
     private final double P_COEFFICIENT_STRAFE = 0.05;
 
-    public State state = State.IDLE;
-
     public boolean motor_correction_enabled = false;
 
     public void chalkDown() {
@@ -166,9 +150,9 @@ public class Drivetrain {
         log.log("x, y, theta, err_x, err_y, err_theta, err_x_local, err_y_local, power_x_local, power_y_local, power_theta, powerFL, powerBL, powerBR, powerFR");
         pose = new Pose (0, 0, 0);
 
-        pid_x = new PID(0.025, 0.000, 0.000, 0.0001);
-        pid_y = new PID(0.025, 0.000, 0.000, 0.0001);
-        pid_theta = new PID(0.5, 0.000, 0.000, Math.toRadians(0.0001));
+        pid_x = new PID(0.06, 0.001, 0.000, 0.0001);
+        pid_y = new PID(0.06, 0.001, 0.000, 0.0001);
+        pid_theta = new PID(0.6, 0.001, 0.000, Math.toRadians(0.0001));
 
         waypoint = null;
         this.opMode = opMode;
@@ -544,15 +528,11 @@ public class Drivetrain {
      * @param twist counterclockwise / clockwise (negative) power - follows right hand rule
      */
     public void drive(double drive,  double strafe, double twist) {
-
-
         // apply power to each motor based on inverse kinematics.
         double powerFL = (drive + strafe - twist);
         double powerBL = (drive - strafe - twist);
         double powerBR = (drive + strafe + twist);
         double powerFR = (drive - strafe + twist);
-
-//        RobotLog.d("TIE: powerFL = %.2f, powerBL = %.2f, powerBR = %.2f, powerFR = %.2f", powerFL, powerBL, powerBR, powerFR);
 
         // scale the powers (so they are <= 1).
         double scalar = Math.max(Math.abs(powerFL), Math.max(Math.abs(powerFR), Math.max(Math.abs(powerBL), Math.abs(powerBR))));
@@ -568,14 +548,10 @@ public class Drivetrain {
         powerFR /= scalar;
         powerBR /= scalar;
 
-//        RobotLog.d("TIE: (normalized) powerFL = %.2f, powerBL = %.2f, powerBR = %.2f, powerFR = %.2f", powerFL, powerBL, powerBR, powerFR);
-
         motorFL.setPower(powerFL);
         motorBL.setPower(powerBL);
         motorFR.setPower(powerFR);
         motorBR.setPower(powerBR);
-
-//        RobotLog.d("TIE: ");
     }
 
     /**
@@ -583,139 +559,8 @@ public class Drivetrain {
      */
     public void stop() {
         drive(0, 0, 0);
-        state = State.IDLE;
     }
 
-    // drive a specified distance in inches.
-    public int currentPos = 0;
-    public int initPos = 0;
-    public int targetPos = 0;
-    public double tgtAngle = 0;
-    public float measuredPower = 0;
 
-    // this variable target distance is used to specify how
-    // far the bot should travel in inches.
-    public double targetDistanceInches = 0;
 
-    /**
-     * drive forward/backwards using odometery a measured distance.
-     * use negative distance to go backwards.
-     *
-     * @param power - magnitude of forward drive power (from 0 to 1).
-     * @param distance - distance to drive (inches).
-     */
-    public void measuredDrive(double power, double distance)  {
-        // get init position.
-        // NOTE: we assume the encoder will not rollover (which it shouldn't)
-        // and don't bother to check for this condition.
-        initPos = encoderLeft.getCurrentPosition();
-
-        // offset in encoder ticks.
-        double offset;
-        if (USE_ODOMETRY_POD) {
-            offset = distance * POD_COUNTS_PER_INCH;
-        } else {
-            offset = distance * DRIVE_COUNTS_PER_INCH;
-        }
-
-        targetPos = (int)Math.round(offset + initPos);
-        if (offset < 0) {
-            measuredPower = -(float)Math.abs(power);
-            state = State.DRIVING_BACKWARD;
-        } else {
-            measuredPower = (float)Math.abs(power);
-            state = State.DRIVING_FORWARD;
-        }
-
-        // is auto correct enabled (which helps keep the bot drive straight)?
-        if (USE_AUTO_CORRECT) {
-            // reset angles.
-            resetAngles();
-            // set the target angle equal to the current angle.
-            tgtAngle = integratedAngle;
-        }
-    }
-
-    /**
-     * Strafe a measured distance.  Positive power is to the right.
-     * @param power the magnitude of the strafe power (0 to 1).
-     * @param distance the measured distance in inches.
-     */
-    public void measuredStrafe(double power, double distance)  {
-        // get init position.
-        // NOTE: we assume the encoder will not rollover (which it shouldn't)
-        // and don't bother to check for this condition.
-        initPos = encoderAux.getCurrentPosition();
-
-        // offset in encoder ticks.
-        double offset = 0;
-        if (USE_ODOMETRY_POD) {
-            offset = distance * POD_COUNTS_PER_INCH;
-        } else {
-            offset = distance * DRIVE_COUNTS_PER_INCH * STRAFE_ENCODER_FUDGE_FACTOR;
-        }
-
-        targetPos = (int)Math.round(offset + initPos);
-        if (offset < 0) {
-            measuredPower = -(float)Math.abs(power);
-            state = State.STRAFING_LEFT;
-        } else {
-            measuredPower = (float)Math.abs(power);
-            state = State.STRAFING_RIGHT;
-        }
-
-        // is auto correct enabled (which helps keep the bot drive straight)?
-        if (USE_AUTO_CORRECT) {
-            // reset angles.
-            resetAngles();
-            // set the target angle equal to the current angle.
-            tgtAngle = integratedAngle;
-        }
-    }
-
-    /**
-     * Turn a specified number of degrees.
-     * Positive angles imply clockwise turn.
-     * @param power magnitude of turn power (0 to 1)
-     * @param angle turn angle (degrees)
-     */
-    public void measuredTurn(double power, double angle)  {
-        // reset angles.
-        resetAngles();
-
-        tgtAngle = angle;
-        if (tgtAngle < 0) {
-            measuredPower = -(float)Math.abs(power);
-            state = State.TURNING_COUNTERCLOCKWISE;
-        } else {
-            measuredPower = (float)Math.abs(power);
-            state = State.TURNING_CLOCKWISE;
-        }
-    }
-
-    /**
-     * calculate the correction power.
-     * proportional to the angle error.
-     * @return correction power.
-     */
-    private float propCorrection(double p_coefficient) {
-        float value;
-        double error;
-        // are we using auto correct?
-        if (USE_AUTO_CORRECT) {
-            // update angles.
-            updateAngles();
-
-            // calculate error (degrees).
-            error = integratedAngle - tgtAngle;
-
-            // corrective "twist" power is proportional to error.
-            // should be applied in opposite direction.
-            value = -(float)(p_coefficient * error);
-        } else {
-            // no autocorrect power will be applied.
-            value = 0;
-        }
-        return value;
-    }
 }
