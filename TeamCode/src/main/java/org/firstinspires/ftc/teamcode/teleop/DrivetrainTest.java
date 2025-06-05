@@ -49,6 +49,7 @@ public class DrivetrainTest extends OpMode
 
     private EnhancedGamepad enhanced1 = null;
     private boolean turboMode = false;
+    private boolean autoMode = false;
     private static final double SNAIL_FACTOR = 0.3;
 
     ArrayList<Pose>waypoints;
@@ -74,8 +75,10 @@ public class DrivetrainTest extends OpMode
         ArrayList<Pose> list = new ArrayList<>();
 
 
-        list.add(new Pose(100, 0, 0));
-        list.add(new Pose(0, 0, 0));
+        list.add(new Pose(24*2.54, 0, 0));
+//        list.add(new Pose(4*12*2.54, 0, 0));
+//        list.add(new Pose(6*12*2.54, 0, 0));
+//        list.add(new Pose(0, 0, 0));
 
 //        double s = 8.0;
 //        list.add(new Pose(s * 12 * 2.54, 0 * 12 * 2.54, 0));

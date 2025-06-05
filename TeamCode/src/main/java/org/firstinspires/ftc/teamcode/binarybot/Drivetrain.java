@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
@@ -165,9 +166,9 @@ public class Drivetrain {
         log.log("x, y, theta, err_x, err_y, err_theta, err_x_local, err_y_local, power_x_local, power_y_local, power_theta, powerFL, powerBL, powerBR, powerFR");
         pose = new Pose (0, 0, 0);
 
-        pid_x = new PID(0.1, 0.01, 0, 2);
-        pid_y = new PID(0.1, 0.01, 0, 2);
-        pid_theta = new PID(0.5, 0.02, 0, Math.toRadians(2));
+        pid_x = new PID(0.5, 0.05, 0.001, 0.0001);
+        pid_y = new PID(0.5, 0.05, 0.001, 0.0001);
+        pid_theta = new PID(1.0, 0.05, 0.001, Math.toRadians(0.0001));
 
         waypoint = null;
         this.opMode = opMode;
@@ -227,6 +228,8 @@ public class Drivetrain {
         pose.x += deltaX;
         pose.y += deltaY;
         pose.theta += deltaTheta;
+//        updateAngles();
+//        pose.theta = Math.toRadians(integratedAngle);
 
         // current values become previous ones.
         prevLeftPos = currLeftPos;
@@ -268,18 +271,23 @@ public class Drivetrain {
         double err_theta = waypoint.theta - pose.theta;
 
         //RobotLog.d("TIE: err_x = %.2f, err_y = %.2f, err_theta = %.2f", err_x, err_y, err_theta);
-
-        // are we there yet?
-        double radius = Math.sqrt(err_x * err_x + err_y * err_y);
-        if (radius < RADIUS_THRESHOLD && Math.abs(err_theta) < ANGLE_THRESHOLD) {
-            // we are close enough to our waypoint.
-            this.stop();
-            return true;
-        }
-
         // convert the x and y components from field coordinates to local (robot) coordinates.
         double err_x_local = Math.cos(pose.theta) * err_x + Math.sin(pose.theta) * err_y;
         double err_y_local = -Math.sin(pose.theta) * err_x + Math.cos(pose.theta) * err_y;
+//        double err_x_local = Math.cos(err_theta) * err_x + Math.sin(err_theta) * err_y;
+//        double err_y_local = -Math.sin(err_theta) * err_x + Math.cos(err_theta) * err_y;
+
+
+        // are we there yet?
+        // use field coordinates.
+        if (Math.abs(err_x) < 1 && Math.abs(err_y) < 1 && Math.abs(err_theta) < Math.toRadians(3)) {
+            this.stop();
+            this.clearWaypoint();
+            pid_x.clear();
+            pid_y.clear();
+            pid_theta.clear();
+            return true;
+        }
 
         //RobotLog.d("TIE: err_x_local = %.2f, err_y_local = %.2f, err_theta = %.2f", err_x_local, err_y_local, err_theta);
 
@@ -297,6 +305,22 @@ public class Drivetrain {
         power_x_local = pid_x.calculate(err_x_local, delta_time);
         power_y_local = pid_y.calculate(err_y_local, delta_time);
         power_theta = pid_theta.calculate(err_theta, delta_time);
+
+        power_x_local = Range.clip(power_x_local, -1, 1);
+        power_y_local = Range.clip(power_y_local, -1, 1);
+        power_theta = Range.clip(power_theta, -1, 1);
+
+//        if (Math.abs(power_x_local) > 1.0) {
+//            power_x_local /= power_x_local;
+//        }
+//
+//        if (Math.abs(power_y_local) > 1.0) {
+//            power_y_local /= power_y_local;
+//        }
+//
+//        if (Math.abs(power_theta) > 1.0) {
+//            power_theta /= power_theta;
+//        }
 
        // RobotLog.d("TIE: power_x_local = %.2f, power_y_local = %.2f, power_theta = %.2f", power_x_local, power_y_local, power_theta);
 
@@ -325,19 +349,28 @@ public class Drivetrain {
             max_magnitude = 1.0;
         }
 
-        // normalize so values stay proportionate and are less than or equal to 1 in magnitude.
-        powerFL /= max_magnitude;
-        powerBL /= max_magnitude;
-        powerBR /= max_magnitude;
-        powerFR /= max_magnitude;
+        // don't normalize by the largest magnitude because the other corrections will get washed out by the largest one.
+        powerFL = Range.clip(powerFL, -1, +1);
+        powerBL = Range.clip(powerBL, -1, +1);
+        powerBR = Range.clip(powerBR, -1, +1);
+        powerFR = Range.clip(powerFR, -1, +1);
 
-        if (Math.max(Math.max(Math.abs(powerFL), Math.abs(powerBL)), Math.max(Math.abs(powerBR), Math.abs(powerFR))) > 0.7)  {
-            // scale it.
-            powerFL *= 0.7;
-            powerBL *= 0.7;
-            powerBR *= 0.7;
-            powerFR *= 0.7;
-        }
+//        // normalize so values stay proportionate and are less than or equal to 1 in magnitude.
+//        powerFL /= max_magnitude;
+//        powerBL /= max_magnitude;
+//        powerBR /= max_magnitude;
+//        powerFR /= max_magnitude;
+
+        // limit top speed. if exceeds, scale proportionally.
+//        double MOTOR_TOP_SPEED = 0.3;
+//        max_magnitude = Math.max(Math.max(Math.abs(powerFL), Math.abs(powerBL)), Math.max(Math.abs(powerBR), Math.abs(powerFR)));
+//        if (max_magnitude > MOTOR_TOP_SPEED)  {
+//            double factor = MOTOR_TOP_SPEED / max_magnitude;
+//            powerFL *= factor;
+//            powerBL *= factor;
+//            powerBR *= factor;
+//            powerFR *= factor;
+//        }
 
         //RobotLog.d("TIE: (normalized) powerFL = %.2f, powerBL = %.2f, powerBR = %.2f, powerFR = %.2f", powerFL, powerBL, powerBR, powerFR);
 

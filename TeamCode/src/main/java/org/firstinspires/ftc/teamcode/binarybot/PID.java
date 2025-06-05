@@ -18,14 +18,24 @@ public class PID {
         previous_error = 0;
     }
 
+    public boolean close_enough(double error) {
+        if (Math.abs(error) < threshold) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public double calculate(double error, double dt) {
-        if (error < threshold) {
+        if (close_enough(error)) {
             // reset values.
             integral = 0;
             previous_error = 0;
-            return 0;
 
+            // no correction needed since we're close enough.
+            return 0;
         } else {
+            // cumulative error
             integral += error * dt;
 
             // derivative is the rate of change of error.
