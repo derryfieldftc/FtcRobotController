@@ -19,6 +19,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
 public class Drivetrain {
     // ******************************************************************
     // enumerations.
@@ -162,9 +166,9 @@ public class Drivetrain {
         initHardware();
     }
 
-    public Drivetrain(HardwareMap hardwareMap, OpMode opMode, double x, double y, double theta) {
+    public Drivetrain(HardwareMap hardwareMap, OpMode opMode, Pose pose) {
         this(hardwareMap, opMode);
-        pose = new Pose(x, y, theta);
+        this.pose = pose;
     }
 
     public String getCurrentWaypoint() {
@@ -212,8 +216,6 @@ public class Drivetrain {
         pose.x += deltaX;
         pose.y += deltaY;
         pose.theta += deltaTheta;
-//        updateAngles();
-//        pose.theta = Math.toRadians(integratedAngle);
 
         // current values become previous ones.
         prevLeftPos = currLeftPos;
@@ -258,13 +260,9 @@ public class Drivetrain {
         err_x = Range.clip(err_x, -10, 10);
         err_y = Range.clip(err_y, -10, 10);
 
-        //RobotLog.d("TIE: err_x = %.2f, err_y = %.2f, err_theta = %.2f", err_x, err_y, err_theta);
         // convert the x and y components from field coordinates to local (robot) coordinates.
         double err_x_local = Math.cos(pose.theta) * err_x + Math.sin(pose.theta) * err_y;
         double err_y_local = -Math.sin(pose.theta) * err_x + Math.cos(pose.theta) * err_y;
-//        double err_x_local = Math.cos(err_theta) * err_x + Math.sin(err_theta) * err_y;
-//        double err_y_local = -Math.sin(err_theta) * err_x + Math.cos(err_theta) * err_y;
-
 
         // are we there yet?
         // use field coordinates.
@@ -276,8 +274,6 @@ public class Drivetrain {
             pid_theta.clear();
             return true;
         }
-
-        //RobotLog.d("TIE: err_x_local = %.2f, err_y_local = %.2f, err_theta = %.2f", err_x_local, err_y_local, err_theta);
 
         // figure out correction values for motors.
         double power_x_local;
@@ -294,73 +290,33 @@ public class Drivetrain {
         power_y_local = pid_y.calculate(err_y_local, delta_time);
         power_theta = pid_theta.calculate(err_theta, delta_time);
 
+        // WHAT WOULD HAPPEN IF I OMIT THIS STEP?
+        // clip the values so that the motor power stays within a reasonable range of values.
+        // this also helps prevent one value from washing out the other two values too dramatically.
         power_x_local = Range.clip(power_x_local, -1, 1);
         power_y_local = Range.clip(power_y_local, -1, 1);
         power_theta = Range.clip(power_theta, -1, 1);
 
-//        if (Math.abs(power_x_local) > 1.0) {
-//            power_x_local /= power_x_local;
-//        }
-//
-//        if (Math.abs(power_y_local) > 1.0) {
-//            power_y_local /= power_y_local;
-//        }
-//
-//        if (Math.abs(power_theta) > 1.0) {
-//            power_theta /= power_theta;
-//        }
-
-       // RobotLog.d("TIE: power_x_local = %.2f, power_y_local = %.2f, power_theta = %.2f", power_x_local, power_y_local, power_theta);
-
-//        this.drive(power_x_local, -power_y_local, power_theta);
-
-//        // apply power to each motor based on inverse kinematics.
+//        // apply power to each motor based on inverse kinematics for mecanum drive.
 //        double powerFL = (power_x_local - power_y_local - (TRACK_WIDTH + WHEELBASE) / 2.0 * power_theta) / DRIVE_WHEEL_RADIUS_CM;
 //        double powerBL = (power_x_local + power_y_local - (TRACK_WIDTH + WHEELBASE) / 2.0 * power_theta) / DRIVE_WHEEL_RADIUS_CM;
 //        double powerBR = (power_x_local - power_y_local + (TRACK_WIDTH + WHEELBASE) / 2.0 * power_theta) / DRIVE_WHEEL_RADIUS_CM;
 //        double powerFR = (power_x_local + power_y_local + (TRACK_WIDTH + WHEELBASE) / 2.0 * power_theta) / DRIVE_WHEEL_RADIUS_CM;
+
         // apply power to each motor.
+        // use simplified inverse kinematic model.
         double powerFL = (power_x_local - power_y_local - power_theta);
         double powerBL = (power_x_local + power_y_local - power_theta);
         double powerBR = (power_x_local - power_y_local + power_theta);
         double powerFR = (power_x_local + power_y_local + power_theta);
 
-       // RobotLog.d("TIE: powerFL = %.2f, powerBL = %.2f, powerBR = %.2f, powerFR = %.2f", powerFL, powerBL, powerBR, powerFR);
-
-        // find the max magnitude.
-        double max_magnitude = Math.max(
-                Math.max(Math.abs(powerFL), Math.abs(powerBL)),
-                Math.max(Math.abs(powerBR), Math.abs(powerFR))
-        );
-
-        if (max_magnitude < 1) {
-            max_magnitude = 1.0;
-        }
-
         // don't normalize by the largest magnitude because the other corrections will get washed out by the largest one.
-        powerFL = Range.clip(powerFL, -1, +1);
-        powerBL = Range.clip(powerBL, -1, +1);
-        powerBR = Range.clip(powerBR, -1, +1);
-        powerFR = Range.clip(powerFR, -1, +1);
-
-//        // normalize so values stay proportionate and are less than or equal to 1 in magnitude.
-//        powerFL /= max_magnitude;
-//        powerBL /= max_magnitude;
-//        powerBR /= max_magnitude;
-//        powerFR /= max_magnitude;
-
-        // limit top speed. if exceeds, scale proportionally.
-//        double MOTOR_TOP_SPEED = 0.3;
-//        max_magnitude = Math.max(Math.max(Math.abs(powerFL), Math.abs(powerBL)), Math.max(Math.abs(powerBR), Math.abs(powerFR)));
-//        if (max_magnitude > MOTOR_TOP_SPEED)  {
-//            double factor = MOTOR_TOP_SPEED / max_magnitude;
-//            powerFL *= factor;
-//            powerBL *= factor;
-//            powerBR *= factor;
-//            powerFR *= factor;
-//        }
-
-        //RobotLog.d("TIE: (normalized) powerFL = %.2f, powerBL = %.2f, powerBR = %.2f, powerFR = %.2f", powerFL, powerBL, powerBR, powerFR);
+        // simply clip the power values so it will be in the accepted ranges.
+        double max_power = 0.6;
+        powerFL = Range.clip(powerFL, -max_power, +max_power);
+        powerBL = Range.clip(powerBL, -max_power, +max_power);
+        powerBR = Range.clip(powerBR, -max_power, +max_power);
+        powerFR = Range.clip(powerFR, -max_power, +max_power);
 
         if (motor_correction_enabled) {
             // apply power.
@@ -369,8 +325,6 @@ public class Drivetrain {
             motorBR.setPower(powerBR);
             motorFR.setPower(powerFR);
         }
-
-        //RobotLog.d("TIE:");
 
         // log data.
         log.log(String.format("%.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f",
