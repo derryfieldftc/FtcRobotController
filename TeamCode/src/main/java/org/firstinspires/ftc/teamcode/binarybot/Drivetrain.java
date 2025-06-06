@@ -154,9 +154,9 @@ public class Drivetrain {
         log.log("x, y, theta, err_x, err_y, err_theta, err_x_local, err_y_local, power_x_local, power_y_local, power_theta, powerFL, powerBL, powerBR, powerFR");
         pose = new Pose (0, 0, 0);
 
-        pid_x = new PID(0.06, 0.001, 0.000, 0.0001);
-        pid_y = new PID(0.06, 0.001, 0.000, 0.0001);
-        pid_theta = new PID(0.8, 0.002, 0.000, Math.toRadians(0.0001));
+        pid_x = new PID(0.014, 0.001, 0.000, 0.0001);
+        pid_y = new PID(0.014, 0.001, 0.000, 0.0001);
+        pid_theta = new PID(0.08, 0.002, 0.000, Math.toRadians(0.0001));
 
         waypoint = null;
         this.opMode = opMode;
@@ -266,7 +266,7 @@ public class Drivetrain {
 
         // are we there yet?
         // use field coordinates.
-        if (Math.abs(err_x) < 2 && Math.abs(err_y) < 2 && Math.abs(err_theta) < Math.toRadians(4)) {
+        if (Math.abs(err_x) < 1 && Math.abs(err_y) < 1 && Math.abs(err_theta) < Math.toRadians(2)) {
             this.stop();
             this.clearWaypoint();
             pid_x.clear();
@@ -312,7 +312,7 @@ public class Drivetrain {
 
         // don't normalize by the largest magnitude because the other corrections will get washed out by the largest one.
         // simply clip the power values so it will be in the accepted ranges.
-        double max_power = 0.6;
+        double max_power = 1.0;
         powerFL = Range.clip(powerFL, -max_power, +max_power);
         powerBL = Range.clip(powerBL, -max_power, +max_power);
         powerBR = Range.clip(powerBR, -max_power, +max_power);
