@@ -36,7 +36,11 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 @TeleOp(name="Drivetrain Test", group="Drivetrain")
 //@Disabled
@@ -55,55 +59,64 @@ public class DrivetrainTest extends OpMode
     ArrayList<Pose>waypoints;
     Pose initPose;
 
+    public void toggleAuto() {
+        if (autoMode) {
+            autoMode = false;
+        } else {
+            autoMode = true;
+        }
+    }
+
     /*
      * Code to run ONCE when the driver hits INIT
      */
     @Override
     public void init() {
         // create drive train with initial pose of 0, 0, and 90 degrees.
-        initPose = new Pose(0 * 12 * 2.54, 0 * 12 * 2.54, 0);
+        //initPose = new Pose(0 * 12 * 2.54, 0 * 12 * 2.54, 0);
+        initPose = new Pose (60.96,0.0,1.57);
         train = new Drivetrain(hardwareMap, this);
         train.setPose(initPose);
         enhanced1 = new EnhancedGamepad(gamepad1);
-        waypoints = getWaypoints();
+        waypoints = importWaypoints("/sdcard/FIRST/waypoints.csv");
 
         // Tell the driver that initialization is complete.
         telemetry.addData("Status", "Initialized");
     }
 
-    public ArrayList<Pose> getWaypoints() {
+    public ArrayList<Pose> importWaypoints(String path) {
         ArrayList<Pose> list = new ArrayList<>();
-
-
-        list.add(new Pose(8 * 12 * 2.54, 0 * 12 * 2.54, 0));
-        list.add(new Pose(8 * 12 * 2.54, 8 * 12 * 2.54, 0));
-        list.add(new Pose(0 * 12 * 2.54, 8 * 12 * 2.54, 0));
-        list.add(new Pose(0 * 12 * 2.54, 0 * 12 * 2.54, 0));
-        list.add(new Pose(4 * 12 * 2.54, 0 * 12 * 2.54, 0));
-        list.add(new Pose(4 * 12 * 2.54, 8 * 12 * 2.54, 0));
-        list.add(new Pose(8 * 12 * 2.54, 4 * 12 * 2.54, 0));
-        list.add(new Pose(0 * 12 * 2.54, 4 * 12 * 2.54, 0));
-//        list.add(new Pose(4*12*2.54, 0, 0));
-//        list.add(new Pose(6*12*2.54, 0, 0));
-//        list.add(new Pose(0, 0, 0));
-
-//        double s = 8.0;
-//        list.add(new Pose(s * 12 * 2.54, 0 * 12 * 2.54, 0));
-//        list.add(new Pose(s * 12 * 2.54, 0 * 12 * 2.54, Math.PI / 2.0));
-//        list.add(new Pose(s * 12 * 2.54, s * 12 * 2.54, Math.PI / 2.0));
-//        list.add(new Pose(s * 12 * 2.54, s * 12 * 2.54, Math.PI / 1.0));
-//        list.add(new Pose(0 * 12 * 2.54, s * 12 * 2.54, Math.PI / 1.0));
-//        list.add(new Pose(0 * 12 * 2.54, s * 12 * 2.54, 3.0 * Math.PI / 2.0));
-//        list.add(new Pose(0 * 12 * 2.54, 0 * 12 * 2.54, 3.0 * Math.PI / 2.0));
-//        list.add(new Pose(0 * 12 * 2.54, 0 * 12 * 2.54, 4.0 * Math.PI / 2.0));
-
-//        list.add(new Pose(2 * 12 * 2.54, 6 * 12 * 2.54, Math.PI / 2.0));
-//        list.add(new Pose(6 * 12 * 2.54, 2 * 12 * 2.54, 0));
-//        list.add(new Pose(2 * 12 * 2.54, 2 * 12 * 2.54, 0));
-
+        File file = new File(path);
+        // make sure you can read UTF 8 characters.
+        try(Scanner in = new Scanner(file, StandardCharsets.UTF_8.name());) {
+            // read line by line.
+            while(in.hasNextLine()) {
+                // read in token by token.
+                String line = in.nextLine();
+                Scanner data = new Scanner(line);
+                data.useDelimiter("[\\s,]+");
+                String token = data.next().trim();
+                // remove any non alphanumeric characters.
+                token = token.replaceAll("[^a-zA-Z0-9\\.\\-]", "");
+                double x = Double.parseDouble(token);
+                RobotLog.d(String.format("TIE: x = %.2f", x));
+                token = data.next().trim();
+                token = token.replaceAll("[^a-zA-Z0-9\\.\\-]", "");
+                double y = Double.parseDouble(token);
+                RobotLog.d(String.format("TIE: y = %.2f", y));
+                token = data.next().trim();
+                token = token.replaceAll("[^a-zA-Z0-9\\.\\-]", "");
+                double theta = Double.parseDouble(token);
+                Pose pose = new Pose(x, y, theta);
+                RobotLog.d(String.format("TIE: theta = %.2f", theta));
+                list.add(pose);
+            }
+        } catch (FileNotFoundException e) {
+            RobotLog.e("DS_Robotics: import_poses() failed.");
+            RobotLog.e("DS_Robotics: " + e.getMessage());
+        }
         return list;
     }
-
 
     /*
      * Code to run REPEATEDLY after the driver hits INIT, but before they hit START
@@ -157,76 +170,48 @@ public class DrivetrainTest extends OpMode
             train.setMotorCorrectionEnabled(val);
         }
 
-        telemetry.addData("Waypoints", "Right bumper load / Left bumper clear");
-
-        // are their waypoints available?
-        if (waypoints.size() > 0) {
-            if (enhanced1.justPressed(EnhancedGamepad.Button.RIGHT_BUMPER)) {
-                Pose nextWaypoint = waypoints.get(0);
-                waypoints.remove(0);
-                train.setWaypoint(nextWaypoint);
-            }
+        telemetry.addData("Instructions", "Dpad down toggle auto");
+        if (enhanced1.justPressed(EnhancedGamepad.Button.DPAD_DOWN)) {
+            toggleAuto();
         }
+        telemetry.addData("Auto Mode", autoMode);
         // display current waypoint.
         telemetry.addData("Current Waypoint", train.getCurrentWaypoint());
 
-        if (train.waypoint != null) {
-
-            if (enhanced1.justPressed(EnhancedGamepad.Button.LEFT_BUMPER) && enhanced1.justPressed(EnhancedGamepad.Button.B)) {
-                train.clearWaypoint();
-                telemetry.addData("Clear", "Waypoint cleared.");
-            } else {
-                // apply correction and see if we are close enough to stop.
+        if(autoMode) {
+            // navigate to waypoints autonomously.
+            if (train.waypoint != null) {
+                // we currently have a valid waypoint to navigate to.
                 if (train.applyCorrection()) {
-                    // if applyCorrection() returns true, then we are at the waypoint.
+                    // if applyCorrection() returns true, then we have arrived at the waypoint.
                     train.stop();
                     RobotLog.d("TIE: made it to waypoint. Clearing waypoint...");
                     train.clearWaypoint();
                     RobotLog.d("TIE: cleared!");
                 }
+            } else {
+                // get a new waypoint, if available.
+                if (waypoints.size() > 0) {
+                    train.waypoint = waypoints.get(0);
+                    waypoints.remove(0);
+                }
             }
+        } else {
+            // also get driver input and drive robot.
+            double drive = turboMode ? -gamepad1.left_stick_y : -SNAIL_FACTOR * gamepad1.left_stick_y;
+            double strafe = turboMode ? gamepad1.left_stick_x : SNAIL_FACTOR * gamepad1.left_stick_x;
+            double turn  =  turboMode ? -gamepad1.right_stick_x : -SNAIL_FACTOR * gamepad1.right_stick_x;
+            train.drive(drive, strafe, turn);
         }
 
-        // also get driver input and drive robot.
-        double drive = turboMode ? -gamepad1.left_stick_y : -SNAIL_FACTOR * gamepad1.left_stick_y;
-        double strafe = turboMode ? gamepad1.left_stick_x : SNAIL_FACTOR * gamepad1.left_stick_x;
-        double turn  =  turboMode ? -gamepad1.right_stick_x : -SNAIL_FACTOR * gamepad1.right_stick_x;
-        train.drive(drive, strafe, turn);
-
         // Show the elapsed game time and wheel power.
-//        telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.addData("Turbo Mode", turboMode);
         telemetry.addData("Motor Correction Enabled", train.getMotorCorrectionEnabled());
 
-//        telemetry.addData("drive", drive);
-//        telemetry.addData("strafe", strafe);
-//        telemetry.addData("turn", turn);
-
-//        telemetry.addData("pos left", train.encoderLeft.getCurrentPosition());
-//        telemetry.addData("pos right", train.encoderRight.getCurrentPosition());
-//        telemetry.addData("pos aux", train.encoderAux.getCurrentPosition());
-
         // encoder data
-//        telemetry.addData("encoder left", train.encoderLeft.getCurrentPosition());
-//        telemetry.addData("encoder right", train.encoderRight.getCurrentPosition());
-//        telemetry.addData("encoder horiz", train.encoderSide.getCurrentPosition());
-        telemetry.addData("x (in)", train.pose.x / 2.54);
-        telemetry.addData("y (in)", train.pose.y / 2.54);
-        telemetry.addData("theta (deg)", train.pose.theta / Math.PI * 180.0);
-
-
-        if (train.waypoint != null) {
-            telemetry.addData("err_x (in)", (train.waypoint.x - train.pose.x) / 2.54);
-            telemetry.addData("err_y (in)", (train.waypoint.y - train.pose.y) / 2.54);
-            telemetry.addData("err_theta (deg)", (train.waypoint.theta - train.pose.theta) / Math.PI * 180.0);
-        } else {
-            telemetry.addData("err_x (in)", "N/A");
-            telemetry.addData("err_y (in)", "N/A");
-            telemetry.addData("err_theta (deg)", "N/A");
-        }
-
-
-
+        telemetry.addData("x", train.pose.x);
+        telemetry.addData("y", train.pose.y);
+        telemetry.addData("theta", train.pose.theta);
 
         // update telemetry.
         telemetry.update();

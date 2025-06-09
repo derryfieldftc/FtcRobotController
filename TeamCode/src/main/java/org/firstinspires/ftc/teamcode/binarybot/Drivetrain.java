@@ -152,11 +152,24 @@ public class Drivetrain {
         elapsed_time = new ElapsedTime();
         log = new DSLog("/sdcard/FIRST/drivetrain.txt");
         log.log("x, y, theta, err_x, err_y, err_theta, err_x_local, err_y_local, power_x_local, power_y_local, power_theta, powerFL, powerBL, powerBR, powerFR");
-        pose = new Pose (0, 0, 0);
+        pose = new Pose (0,	0,0);
 
-        pid_x = new PID(0.014, 0.001, 0.000, 0.0001);
-        pid_y = new PID(0.014, 0.001, 0.000, 0.0001);
-        pid_theta = new PID(0.08, 0.002, 0.000, Math.toRadians(0.0001));
+
+//        pid_x = new PID(0.014, 0.001, 0.000, 0.0001);
+//        pid_y = new PID(0.014, 0.001, 0.000, 0.0001);
+//        pid_theta = new PID(0.2, 0.07, 0.000, Math.toRadians(0.0001));
+
+        pid_x = new PID(0.21, 0.01, 0.000, 0.0001);
+        pid_y = new PID(0.21, 0.01, 0.000, 0.0001);
+        pid_theta = new PID(0.85, 0.1, 0.000, Math.toRadians(0.0001));
+
+//        pid_x = new PID(0.045, 0.01, 0.000, 0.0001);
+//        pid_y = new PID(0.045, 0.01, 0.000, 0.0001);
+//        pid_theta = new PID(0.55, 0.1, 0.000, Math.toRadians(0.0001));
+
+//        pid_x = new PID(0.04, 0.001, 0.000, 0.0001);
+//        pid_y = new PID(0.04, 0.001, 0.000, 0.0001);
+//        pid_theta = new PID(0.08, 0.002, 0.000, Math.toRadians(0.0001));
 
         waypoint = null;
         this.opMode = opMode;
@@ -241,9 +254,6 @@ public class Drivetrain {
         pid_theta.clear();
     }
 
-    // return true if we have arrived at the location.
-    public static final double RADIUS_THRESHOLD = 4;
-    public static final double ANGLE_THRESHOLD = Math.toRadians(3);
     public boolean applyCorrection() {
         // do we have a valid waypoint?
         if (waypoint == null) {
