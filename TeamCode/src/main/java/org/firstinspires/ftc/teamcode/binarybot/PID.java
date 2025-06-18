@@ -1,5 +1,14 @@
 package org.firstinspires.ftc.teamcode.binarybot;
 
+import com.qualcomm.robotcore.util.RobotLog;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
+
 public class PID {
     // for now I'm making member variables (for convenience).
     public double kp, ki, kd;
@@ -11,6 +20,36 @@ public class PID {
         this.ki = ki;
         this.kd = kd;
         this.threshold = threshold;
+    }
+
+    // create a PID controller using values from a file.
+    public static PID importPID(String path) {
+        File file = new File(path);
+        PID pid = null;
+        try (Scanner in = new Scanner(file, StandardCharsets.UTF_8.name());) {
+            // add a comma to the delimiter list.
+            in.useDelimiter("[\\s,\\t\\n,]+");
+            // should be in the format of P,I,D,threshold (all as doubles)
+            double p, i, d, threshold;
+            p = RobotData.getDouble(in);
+            i = RobotData.getDouble(in);
+            d = RobotData.getDouble(in);
+            threshold = RobotData.getDouble(in);
+            pid = new PID(p, i, d, threshold);
+        } catch (FileNotFoundException e) {
+            RobotLog.e("importPID error: " + e.getMessage());
+        }
+        return pid;
+    }
+
+    // store PID values to a file.
+    public static void exportPID(String path, PID pid) {
+        File file = new File(path);
+        try (PrintWriter out = new PrintWriter(file)) {
+            out.printf("%.6f,%.6f,%.6f,%.6f%n", pid.kp, pid.ki, pid.kd, pid.threshold);
+        } catch (IOException e) {
+            RobotLog.e("exportPID error: " + e.getMessage());
+        }
     }
 
     public void clear() {
