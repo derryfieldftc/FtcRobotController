@@ -28,6 +28,20 @@ public class Drivetrain {
     // enumerations.
     // ******************************************************************
     // measured movement system state.
+    public enum State {
+        IDLE,
+        NAVIGATING,
+        DELAYING
+    }
+
+    public State state = State.IDLE;
+    public State getState() {
+        return state;
+    }
+
+    public void setState(State state) {
+        this.state = state;
+    }
 
     public Pose pose;
     public Pose waypoint;
@@ -115,6 +129,30 @@ public class Drivetrain {
     PID pid_y;
     PID pid_theta;
 
+    public void setPIDX(PID pid) {
+        this.pid_x = pid;
+    }
+
+    public PID getPIDX() {
+        return pid_x;
+    }
+
+    public void setPIDY(PID pid) {
+        this.pid_y = pid;
+    }
+
+    public PID getPIDY() {
+        return pid_y;
+    }
+
+    public void setPIDTheta(PID pid) {
+        this.pid_theta = pid;
+    }
+
+    public PID getPIDTheta() {
+        return pid_theta;
+    }
+
 
     private final boolean USE_AUTO_CORRECT = true;
     private final double P_COEFFICIENT_DRIVE = 0.1;
@@ -149,8 +187,9 @@ public class Drivetrain {
     }
 
     public Drivetrain(HardwareMap hardwareMap, OpMode opMode) {
+
         elapsed_time = new ElapsedTime();
-        log = new DSLog("/sdcard/FIRST/drivetrain.txt");
+        log = new DSLog("/sdcard/FIRST/drivetrain_log.txt");
         log.log("x, y, theta, err_x, err_y, err_theta, err_x_local, err_y_local, power_x_local, power_y_local, power_theta, powerFL, powerBL, powerBR, powerFR");
         pose = new Pose (0,	0,0);
 
@@ -159,6 +198,8 @@ public class Drivetrain {
 //        pid_y = new PID(0.014, 0.001, 0.000, 0.0001);
 //        pid_theta = new PID(0.2, 0.07, 0.000, Math.toRadians(0.0001));
 
+        // set default PID values.
+        // note user can change this useing the setPID methods.
         pid_x = new PID(0.21, 0.01, 0.000, 0.0001);
         pid_y = new PID(0.21, 0.01, 0.000, 0.0001);
         pid_theta = new PID(0.85, 0.1, 0.000, Math.toRadians(0.0001));

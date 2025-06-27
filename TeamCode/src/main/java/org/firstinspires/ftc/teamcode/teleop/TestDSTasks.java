@@ -35,7 +35,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.binarybot.DSLog;
+import org.firstinspires.ftc.teamcode.binarybot.Drivetrain;
+import org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad;
 import org.firstinspires.ftc.teamcode.binarybot.PID;
+import org.firstinspires.ftc.teamcode.binarybot.Pose;
 import org.firstinspires.ftc.teamcode.binarybot.RobotData;
 import org.firstinspires.ftc.teamcode.binarybot.Task;
 import org.firstinspires.ftc.teamcode.binarybot.TaskList;
@@ -46,14 +49,32 @@ import java.util.ArrayList;
 //@Disabled
 public class TestDSTasks extends OpMode
 {
+    enum Mode {
+        MANUAL,
+        AUTONOMOUS
+    }
+
+    Mode currMode;
+
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private DSLog ds_log;
     private double start_time;
 
+    private Drivetrain drivetrain;
+
     private PID pid = null;
 
     TaskList tasks = null;
+    Task currentTask;
+
+    Pose initPose = null;
+
+    boolean turboMode = false;
+
+    private EnhancedGamepad enhanced1 = null;
+
+    private static final double SNAIL_FACTOR = 0.3;
     /*
      * Code to run ONCE when the driver hits INIT
      */
@@ -63,19 +84,37 @@ public class TestDSTasks extends OpMode
         ds_log = new DSLog(path);
         RobotLog.d("TIE: ds_log created (%s)", path);
         telemetry.addData("Status", "Initialized");
-        pid = PID.importPID("/sdcard/FIRST/samplePID.txt");
-        RobotLog.d("TIE: p = %.6f, i = %.6f, d = %.6f, threshold = %.6f", pid.kp, pid.ki, pid.kd, pid.threshold);
 
-        PID.exportPID("/sdcard/FIRST/outPID.txt", pid);
-        RobotLog.d("TIE: wrote PID values to outPID.txt");
+        // create driveTrain Object.
+        drivetrain = new Drivetrain(hardwareMap, this);
+
+        // set initial pose of drive train.
+        initPose = new Pose(0, 0, 1.57);
+        drivetrain.setPose(initPose);
+
+        // get and set PID controllers for x, y, and theta directions.
+        pid = PID.importPID("/sdcard/FIRST/PIDX.txt");
+        drivetrain.setPIDX(pid);
+        pid = PID.importPID("/sdcard/FIRST/PIDY.txt");
+        drivetrain.setPIDY(pid);
+        pid = PID.importPID("/sdcard/FIRST/PIDTheta.txt");
+        drivetrain.setPIDTheta(pid);
+        RobotLog.d("TIE: imported PID values for x, y, and theta.");
 
         // import tasks.
+        currentTask = null;
         tasks = new TaskList();
         tasks.importTasks("/sdcard/FIRST/dsTasks.txt");
-        RobotLog.d("TIE: wrote PID values to outPID.txt");
+        RobotLog.d("TIE: imported tasks");
 
         // display.
         RobotLog.d("TIE: " + tasks.toString());
+
+        // current mode of this op mode.
+        currMode = Mode.MANUAL;
+
+        // use an enhanced gamepad to keep track of button presses.
+        enhanced1 = new EnhancedGamepad(gamepad1);
     }
 
     /*
@@ -99,17 +138,127 @@ public class TestDSTasks extends OpMode
      */
     @Override
     public void loop() {
+        // refresh pose.
+        drivetrain.refreshPose();
 
-        double curr_time = runtime.milliseconds();
-        if (curr_time - start_time > 5000) {
-            String msg = runtime.toString();
-            ds_log.log(msg);
-            start_time = curr_time;
-            RobotLog.d("TIE: " + msg);
+        // refresh gamepad data.
+        enhanced1.poll();
+
+        // reset odometry system?
+        if (enhanced1.justPressed(EnhancedGamepad.Button.X)) {
+            // reset the odometry system.
+            drivetrain.resetOdometry();
+
+            // reset init pose.
+            drivetrain.setPose(initPose);
         }
 
+        // enable turbo mode?
+        if (enhanced1.justPressed(EnhancedGamepad.Button.BACK)) {
+            // toggle between snail mode (slower) and regular mode
+            turboMode = !turboMode;
+        }
+
+        // chalk down?
+        if (enhanced1.justPressed(EnhancedGamepad.Button.A)) {
+            drivetrain.toggleChalk();
+        }
+
+        if (enhanced1.justPressed(EnhancedGamepad.Button.DPAD_UP)){
+            boolean val = drivetrain.getMotorCorrectionEnabled();
+            val = !val;
+            drivetrain.setMotorCorrectionEnabled(val);
+        }
+
+        if (enhanced1.justPressed(EnhancedGamepad.Button.DPAD_DOWN)) {
+            toggleAuto();
+        }
+
+        if (currMode == Mode.AUTONOMOUS) {
+            // check current state.
+            switch(drivetrain.getState()) {
+                case IDLE:
+                    // are there any tasks to process?
+                    if (tasks.size() > 0) {
+                        currentTask = tasks.get(0);
+                        tasks.remove(0);
+                        switch (currentTask.getType()) {
+                            case PEN_DOWN:
+                                drivetrain.chalkDown();
+                                RobotLog.d("TIE: PEN_DOWN");
+                                break;
+                            case PEN_UP:
+                                drivetrain.chalkUp();
+                                RobotLog.d("TIE: PEN_UP");
+                                break;
+                            case WAYPOINT:
+                                drivetrain.setWaypoint(currentTask.getPose());
+                                drivetrain.setState(Drivetrain.State.NAVIGATING);
+                                RobotLog.d("TIE: WAYPOINT");
+                                break;
+                            case DELAY:
+                                // reset timer.
+                                runtime.reset();
+                                // switch to delaying state.
+                                drivetrain.setState(Drivetrain.State.DELAYING);
+                                RobotLog.d("TIE: DELAY");
+                                break;
+                        }
+                        break;
+                    }
+                    break;
+                case NAVIGATING:
+                    // we are currently auto-navigating.
+                    // apply correction to move towards current waypoint.
+                    if (drivetrain.applyCorrection()) {
+                        // if applyCorrection() returns true, then we have arrived at the waypoint.
+                        drivetrain.stop();
+                        RobotLog.d("TIE: made it to waypoint. Clearing waypoint...");
+                        drivetrain.clearWaypoint();
+                        RobotLog.d("TIE: cleared!");
+                        // go back to idle state.
+                        drivetrain.setState(Drivetrain.State.IDLE);
+                    }
+                    break;
+                case DELAYING:
+                    double milli = runtime.milliseconds();
+//                    RobotLog.d(String.format("TIE: DELAYING - milli = %.2f", milli));
+//                    RobotLog.d(String.format("TIE: DELAYING - period = %.2f", (double)currentTask.getPeriod()));
+
+                    if (milli > (double)currentTask.getPeriod()) {
+                        // timer has expired.
+                        // switch back to idle state.
+                        drivetrain.setState(Drivetrain.State.IDLE);
+                        RobotLog.d("TIE: Done DELAYING.");
+                    }
+                    break;
+            }
+        } else {
+            // get driver input.
+            // also get driver input and drive robot.
+            double drive = turboMode ? -gamepad1.left_stick_y : -SNAIL_FACTOR * gamepad1.left_stick_y;
+            double strafe = turboMode ? gamepad1.left_stick_x : SNAIL_FACTOR * gamepad1.left_stick_x;
+            double turn  =  turboMode ? -gamepad1.right_stick_x : -SNAIL_FACTOR * gamepad1.right_stick_x;
+            drivetrain.drive(drive, strafe, turn);
+        }
+
+        // update display.
+        telemetry.addData("Instructions", "Dpad down toggle auto");
+        telemetry.addData("Mode", currMode);
+        // display current waypoint.
+        telemetry.addData("Current Waypoint", drivetrain.getCurrentWaypoint());
+
         // Show the elapsed game time and wheel power.
-        telemetry.addData("Status", "Run Time: " + runtime.toString());
+        telemetry.addData("Turbo Mode", turboMode);
+        telemetry.addData("Motor Correction Enabled", drivetrain.getMotorCorrectionEnabled());
+
+        // encoder data
+        telemetry.addData("x", drivetrain.pose.x);
+        telemetry.addData("y", drivetrain.pose.y);
+        telemetry.addData("theta", drivetrain.pose.theta);
+
+        // update telemetry.
+        telemetry.update();
     }
 
     /*
@@ -119,5 +268,13 @@ public class TestDSTasks extends OpMode
     public void stop() {
         ds_log.close();
         RobotLog.d("TIE: ds_log closed.");
+    }
+
+    public void toggleAuto() {
+        if (currMode == Mode.AUTONOMOUS) {
+            currMode = Mode.MANUAL;
+        } else {
+            currMode = Mode.AUTONOMOUS;
+        }
     }
 }

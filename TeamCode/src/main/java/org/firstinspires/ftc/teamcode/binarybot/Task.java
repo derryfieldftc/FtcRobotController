@@ -51,6 +51,14 @@ public class Task<T> {
         }
     }
 
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
+
     public void setPose(Pose pose) {
         this.pose = pose;
     }

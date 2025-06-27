@@ -24,6 +24,9 @@ public class TaskList {
             while(in.hasNextLine()) {
                 String line = in.nextLine();
                 line = line.replaceAll("[^a-zA-Z0-9.\\-,_\\s]", "");
+                if (line.length() < 1) {
+                    continue;
+                }
                 Scanner data = new Scanner(line);
                 data.useDelimiter("[\\s,\\t\\n,]+");
                 // read token, then extract type. if applicable, additional information.
