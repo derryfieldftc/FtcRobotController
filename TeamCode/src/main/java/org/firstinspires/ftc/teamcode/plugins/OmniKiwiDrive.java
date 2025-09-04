@@ -36,8 +36,8 @@ public class OmniKiwiDrive extends RobotPlugin{
 		rightPower = .5 * gamepad.left_stick_x - halfSqrt3 * gamepad.left_stick_y - gamepad.right_stick_x;
 		frontPower = -gamepad.left_stick_x - gamepad.right_stick_x;
 
-		left.setPower(leftPower);
-		right.setPower(rightPower);
-		front.setPower(frontPower);
+		left.setPower(leftPower * ((gamepad.right_trigger >= .1) ? 1.1 - gamepad.right_trigger : 1 ));
+		right.setPower(rightPower * ((gamepad.right_trigger >= .1) ? 1.1 - gamepad.right_trigger : 1 ));
+		front.setPower(frontPower * ((gamepad.right_trigger >= .1) ? 1.1 - gamepad.right_trigger : 1 ));
 	}
 }

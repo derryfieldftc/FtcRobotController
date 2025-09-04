@@ -92,6 +92,14 @@ public class KiwiBotArm extends RobotPlugin {
 			targetPosition = arm.getUpperBound();
 		}
 
+		if (gamepad.dpad_up) {
+			arm.setLowerBound(arm.getLowerBound() + 1);
+		}
+
+		if (gamepad.dpad_down) {
+			arm.setLowerBound(arm.getLowerBound() - 1);
+		}
+
 		targetPosition = clamp(targetPosition - (int)(gamepad.right_stick_y * 3), arm.getLowerBound(), arm.getUpperBound());
 
 		if (gamepadManager.justPressed(GamepadManager.Button.X)) {
@@ -103,6 +111,8 @@ public class KiwiBotArm extends RobotPlugin {
 		} else {
 			claw.setPosition(clawClosedPos);
 		}
+		opMode.telemetry.addData("Bounds U", arm.getUpperBound() + " L: " + arm.getLowerBound());
+		opMode.telemetry.addData("Arm position", arm.getCurrentPosition());
 		opMode.telemetry.addData("claw", gamepad.right_trigger);
 		gamepadManager.poll();
 	}
