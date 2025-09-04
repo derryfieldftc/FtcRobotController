@@ -68,7 +68,7 @@ public class KiwiBotArm extends RobotPlugin {
 	}
 
 	boolean clawOpen = false;
-	double clawOpenPos = .3, clawClosedPos = .5;
+	double clawOpenPos = .31, clawClosedPos = .5;
 
 	@Override
 	public void loop() {
