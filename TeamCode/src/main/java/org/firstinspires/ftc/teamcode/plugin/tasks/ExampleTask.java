@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.tasks;
+package org.firstinspires.ftc.teamcode.plugin.tasks;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -6,9 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.RobotTask;
-
-import java.time.Duration;
+import org.firstinspires.ftc.teamcode.plugin.RobotTask;
 
 public class ExampleTask extends RobotTask {
 	Telemetry telemetry;

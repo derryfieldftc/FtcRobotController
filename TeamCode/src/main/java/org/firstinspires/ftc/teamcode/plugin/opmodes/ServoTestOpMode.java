@@ -1,10 +1,10 @@
-package org.firstinspires.ftc.teamcode.opmodes;
+package org.firstinspires.ftc.teamcode.plugin.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.OpModeGroups;
-import org.firstinspires.ftc.teamcode.RobotPlugin;
-import org.firstinspires.ftc.teamcode.plugins.ServoTest;
+import org.firstinspires.ftc.teamcode.plugin.RobotPlugin;
+import org.firstinspires.ftc.teamcode.plugin.plugins.ServoTest;
 
 @TeleOp(name = "Servo Test", group = OpModeGroups.TESTS)
 public class ServoTestOpMode extends PluginOpMode {

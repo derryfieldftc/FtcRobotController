@@ -1,9 +1,9 @@
-package org.firstinspires.ftc.teamcode.autonomous;
+package org.firstinspires.ftc.teamcode.plugin.autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.OpModeGroups;
-import org.firstinspires.ftc.teamcode.RobotTask;
-import org.firstinspires.ftc.teamcode.tasks.DelayTask;
-import org.firstinspires.ftc.teamcode.tasks.ExampleTask;
+import org.firstinspires.ftc.teamcode.plugin.RobotTask;
+import org.firstinspires.ftc.teamcode.plugin.tasks.DelayTask;
+import org.firstinspires.ftc.teamcode.plugin.tasks.ExampleTask;
 
 @Autonomous(name = "ExampleAutonomous", group = OpModeGroups.AUTO)
 public class ExampleAutonomous extends TaskAutonomous {

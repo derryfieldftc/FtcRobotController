@@ -1,8 +1,8 @@
-package org.firstinspires.ftc.teamcode.autonomous;
+package org.firstinspires.ftc.teamcode.plugin.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.RobotTask;
+import org.firstinspires.ftc.teamcode.plugin.RobotTask;
 
 public abstract class TaskAutonomous extends LinearOpMode {
 

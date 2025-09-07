@@ -1,8 +1,8 @@
-package org.firstinspires.ftc.teamcode.tasks;
+package org.firstinspires.ftc.teamcode.plugin.tasks;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.teamcode.RobotTask;
+import org.firstinspires.ftc.teamcode.plugin.RobotTask;
 
 public class DelayTask extends RobotTask {
 

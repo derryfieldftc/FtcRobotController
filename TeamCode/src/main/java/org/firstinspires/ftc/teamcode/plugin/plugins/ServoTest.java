@@ -1,11 +1,11 @@
-package org.firstinspires.ftc.teamcode.plugins;
+package org.firstinspires.ftc.teamcode.plugin.plugins;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.GamepadManager;
-import org.firstinspires.ftc.teamcode.RobotPlugin;
+import org.firstinspires.ftc.teamcode.plugin.RobotPlugin;
 
 import java.util.Arrays;
 import java.util.List;

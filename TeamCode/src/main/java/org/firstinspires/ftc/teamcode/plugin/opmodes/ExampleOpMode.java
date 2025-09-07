@@ -1,10 +1,10 @@
-package org.firstinspires.ftc.teamcode.opmodes;
+package org.firstinspires.ftc.teamcode.plugin.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.OpModeGroups;
-import org.firstinspires.ftc.teamcode.RobotPlugin;
-import org.firstinspires.ftc.teamcode.plugins.ExamplePlugin;
+import org.firstinspires.ftc.teamcode.plugin.RobotPlugin;
+import org.firstinspires.ftc.teamcode.plugin.plugins.ExamplePlugin;
 
 /*
  * This is an example OpMode, it should give basic structure to how an OpMode is formatted and

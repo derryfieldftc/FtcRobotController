@@ -1,6 +1,4 @@
-package org.firstinspires.ftc.teamcode;
-
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+package org.firstinspires.ftc.teamcode.plugin;
 
 /**
  * This is the building blocks of every autonomous task
