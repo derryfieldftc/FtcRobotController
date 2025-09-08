@@ -33,6 +33,11 @@ public class MecanumDrive extends RobotPlugin {
 		return this;
 	}
 
+	public MecanumDrive hardwareMap(HardwareMap hardwareMap) {
+		this.hardwareMap = hardwareMap;
+		return this;
+	}
+
 	@Override
 	public void init() {
 		motorFL = hardwareMap.dcMotor.get("motorFL");
