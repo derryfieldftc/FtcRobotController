@@ -27,14 +27,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode.opmodes;
 
-import android.util.Size;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
@@ -66,8 +66,7 @@ import java.util.List;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list.
  */
 @TeleOp(name = "Concept: AprilTag", group = "Concept")
-@Disabled
-public class ConceptAprilTag extends LinearOpMode {
+public class ExampleConceptAprilTag extends LinearOpMode {
 
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
 
@@ -126,12 +125,12 @@ public class ConceptAprilTag extends LinearOpMode {
         aprilTag = new AprilTagProcessor.Builder()
 
             // The following default settings are available to un-comment and edit as needed.
-            //.setDrawAxes(false)
-            //.setDrawCubeProjection(false)
-            //.setDrawTagOutline(true)
-            //.setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
+            .setDrawAxes(false)
+            .setDrawCubeProjection(false)
+            .setDrawTagOutline(true)
+            .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
             //.setTagLibrary(AprilTagGameDatabase.getCenterStageTagLibrary())
-            //.setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES)
+            .setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES)
 
             // == CAMERA CALIBRATION ==
             // If you do not manually specify calibration parameters, the SDK will attempt
