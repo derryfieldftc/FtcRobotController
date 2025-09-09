@@ -13,11 +13,12 @@ import org.firstinspires.ftc.teamcode.plugin.plugins.MecanumDrive;
 public class IntakeTestOpMode extends OpMode {
 	RobotPlugin mechanumDrive;
 	DcMotor intake;
+	GamepadManager mgamepad;
 	boolean intakeOn = false;
-	double intakePower = 0;
 
 	@Override
 	public void init() {
+		mgamepad = new GamepadManager(gamepad1);
 		hardwareMap.getClass(); //for setup
 		mechanumDrive = new MecanumDrive(this);
 		mechanumDrive.init();
@@ -29,16 +30,15 @@ public class IntakeTestOpMode extends OpMode {
 	@Override
 	public void loop() {
 		mechanumDrive.loop();
-		if (gamepad1.a)
-			intakeOn = true;
-		if (gamepad1.b)
-			intakeOn = false;
+		if (mgamepad.justPressed(GamepadManager.Button.A))
+			intakeOn = !intakeOn;
 
 		if (intakeOn) {
-			intake.setPower(gamepad1.right_stick_x);
+			intake.setPower(gamepad1.right_stick_y);
 		}
 
-		telemetry.addData("intakePower", intakePower);
+		telemetry.addData("intakePower", intake.getPower());
 		telemetry.addData("intakeOn", intakeOn);
+		mgamepad.poll();
 	}
 }
