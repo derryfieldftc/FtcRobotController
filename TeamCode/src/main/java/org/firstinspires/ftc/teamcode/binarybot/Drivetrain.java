@@ -90,10 +90,6 @@ public class Drivetrain {
     static final boolean USE_ODOMETRY_POD = true;
     static final double STRAFE_ENCODER_FUDGE_FACTOR = 1.0;
 
-    public boolean isChalkDown = false;
-    public static final double CHALK_DOWN = 1.0;
-    public static final double CHALK_UP = 0.0;
-
     // ******************************************************************
     // private member variables
     // ******************************************************************
@@ -106,9 +102,6 @@ public class Drivetrain {
     public DcMotor encoderLeft;
     public DcMotor encoderRight;
     public DcMotor encoderAux;
-
-    // servo for chalk.
-    public Servo chalk;
 
     // op mode related items.
     private OpMode opMode;
@@ -160,24 +153,6 @@ public class Drivetrain {
 
     public boolean motor_correction_enabled = false;
 
-    public void chalkDown() {
-        chalk.setPosition(CHALK_DOWN);
-        isChalkDown = true;
-    }
-
-    public void chalkUp() {
-        chalk.setPosition(CHALK_UP);
-        isChalkDown = false;
-    }
-
-    public void toggleChalk() {
-        if (isChalkDown) {
-            chalkUp();
-        } else {
-            chalkDown();
-        }
-    }
-
     public void setMotorCorrectionEnabled(boolean value) {
         this.motor_correction_enabled = value;
     }
@@ -216,7 +191,6 @@ public class Drivetrain {
         this.opMode = opMode;
         this.hardwareMap = hardwareMap;
         motor_correction_enabled = true;
-        isChalkDown = false;
         initHardware();
     }
 
@@ -410,9 +384,9 @@ public class Drivetrain {
 
         // get and configure encoders.
         if (USE_ODOMETRY_POD) {
-            encoderLeft = hardwareMap.dcMotor.get("encoderLeft");
-            encoderRight = hardwareMap.dcMotor.get("encoderRight");
-            encoderAux = hardwareMap.dcMotor.get("encoderAux");
+            encoderLeft = hardwareMap.dcMotor.get("motorBL");
+            encoderRight = hardwareMap.dcMotor.get("intake");
+            encoderAux = hardwareMap.dcMotor.get("motorBR");
 
             encoderLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             encoderRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -430,10 +404,6 @@ public class Drivetrain {
             encoderLeft = motorFL;
             encoderAux = motorFL;
         }
-
-        // get servo.
-        chalk = hardwareMap.servo.get("chalkControl");
-        chalkUp();
 
         initIMU();
     }
