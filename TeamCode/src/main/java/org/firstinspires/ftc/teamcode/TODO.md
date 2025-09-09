@@ -3,6 +3,7 @@
 - [x] Find which direction (x) to turn the camera to focus on a target tag
 - [ ] Refactor into a camera class in the robot package
 - [ ] Make camera agnostic
-- [ ] Add y axis
+- [x] Add y axis
 - [ ] Test framerates and quality to find balance & make sure it does not take too much cpu time
+- [ ] Test on an actual robot to see if motion blur is an issue (pray motion blur isent too big of a deal)
 

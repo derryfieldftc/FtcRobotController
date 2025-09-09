@@ -21,8 +21,15 @@ public class AprilTagTestOpMode extends OpMode {
 	final static boolean USE_WEBCAM = true;
 	public AprilTagProcessor aprilTag;
 	private VisionPortal visionPortal; //for the driver hub camera view
-	public int cameraMiddlePixel = 320;
+	public int cameraMiddleX = 320;
+	public int cameraMiddleY = 240; //TODO! make sure this is the correct number
+	public double lastTagX = 0;
+	public double lastTagY = 0;
+	public double tagOffsetX = 0;
+	public double tagOffsetY = 0;
 	public Tag targetTag = Tag.PGP;
+
+	public double deltaTime = 0;
 
 	/**
 	 * A way to represent each tag and its id for this season
@@ -57,7 +64,6 @@ public class AprilTagTestOpMode extends OpMode {
 	public void loop() {
 		mecanumDrive.loop();
 		//telemetryAprilTag();
-		telemetry.addLine(String.valueOf(cameraMiddlePixel));
 		telemetry.addData("tags found", aprilTag.getDetections().size());
 		String ids = new String();
 		for (AprilTagDetection tag : aprilTag.getDetections()) {
@@ -66,18 +72,26 @@ public class AprilTagTestOpMode extends OpMode {
 		telemetry.addData("tag ids", ids);
 		for (AprilTagDetection tag:aprilTag.getDetections()) {
 			if (tag.id == targetTag.id) {
-				double tagOffset =  cameraMiddlePixel - tag.center.x;
-				telemetry.addData("tag offset", tagOffset);
-				telemetry.addLine("move " + ((tagOffset > 0) ? "left" : "right"));
+				tagOffsetX = cameraMiddleX - tag.center.x;
+				tagOffsetY =  cameraMiddleY - tag.center.y;
+				lastTagX = tag.center.x;
+				lastTagY = tag.center.y;
 			}
 		}
+		telemetry.addData("X offset", tagOffsetX);
+		telemetry.addLine("move " + ((tagOffsetX > 0) ? "left" : "right"));
+		telemetry.addData("Y offset", tagOffsetY);
+		telemetry.addLine("move " + ((tagOffsetY > 0) ? "up" : "down"));
+
+		telemetry.addData("Time since last cycle", this.getRuntime() - deltaTime );
+		deltaTime = this.getRuntime();
+
 		telemetry.update();
 	}
 
 	// thank you to the concept april tag file
 	private void initAprilTag() {
 		aprilTag = new AprilTagProcessor.Builder()
-
 				.setDrawAxes(false)
 				.setDrawCubeProjection(false)
 				.setDrawTagOutline(true)
@@ -98,6 +112,7 @@ public class AprilTagTestOpMode extends OpMode {
 		VisionPortal.Builder builder = new VisionPortal.Builder();
 
 		if (USE_WEBCAM) {
+			// NOTE FOR WEBCAM, MAKE SURE IT IS PLUGGED INTO LEFTMOST USB, OTHERWISE THE CONNECTION IS IFFY
 			builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
 		} else {
 			builder.setCamera(BuiltinCameraDirection.BACK);
