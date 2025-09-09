@@ -1,9 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -23,6 +21,29 @@ public class AprilTagTestOpMode extends OpMode {
 	final static boolean USE_WEBCAM = true;
 	public AprilTagProcessor aprilTag;
 	private VisionPortal visionPortal; //for the driver hub camera view
+	public int cameraMiddlePixel = 320;
+	public Tag targetTag = Tag.PGP;
+
+	/**
+	 * A way to represent each tag and its id for this season
+	 */
+	public enum Tag {
+		BLUE (20),
+		GPP (21),
+		PGP (22),
+		PPG (23),
+		RED (24);
+
+		private final int id;
+
+		// You actually cannot use a constructor for an Enum
+		Tag(int id) {
+			this.id = id;
+		}
+		public int id() {
+			return this.id;
+		}
+	}
 
 	@Override
 	public void init() {
@@ -35,7 +56,21 @@ public class AprilTagTestOpMode extends OpMode {
 	@Override
 	public void loop() {
 		mecanumDrive.loop();
-		telemetryAprilTag();
+		//telemetryAprilTag();
+		telemetry.addLine(String.valueOf(cameraMiddlePixel));
+		telemetry.addData("tags found", aprilTag.getDetections().size());
+		String ids = new String();
+		for (AprilTagDetection tag : aprilTag.getDetections()) {
+			ids += " " + tag.id;
+		}
+		telemetry.addData("tag ids", ids);
+		for (AprilTagDetection tag:aprilTag.getDetections()) {
+			if (tag.id == targetTag.id) {
+				double tagOffset =  cameraMiddlePixel - tag.center.x;
+				telemetry.addData("tag offset", tagOffset);
+				telemetry.addLine("move " + ((tagOffset > 0) ? "left" : "right"));
+			}
+		}
 		telemetry.update();
 	}
 
@@ -43,20 +78,11 @@ public class AprilTagTestOpMode extends OpMode {
 	private void initAprilTag() {
 		aprilTag = new AprilTagProcessor.Builder()
 
-				// The following default settings are available to un-comment and edit as needed.
 				.setDrawAxes(false)
 				.setDrawCubeProjection(false)
 				.setDrawTagOutline(true)
 				.setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
-				//.setTagLibrary(AprilTagGameDatabase.getCenterStageTagLibrary())
 				.setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES)
-
-				// == CAMERA CALIBRATION ==
-				// If you do not manually specify calibration parameters, the SDK will attempt
-				// to load a predefined calibration for your camera.
-				//.setLensIntrinsics(578.272, 578.272, 402.145, 221.506)
-				// ... these parameters are fx, fy, cx, cy.
-
 				.build();
 
 		// Adjust Image Decimation to trade-off detection-range for detection-rate.
@@ -71,26 +97,11 @@ public class AprilTagTestOpMode extends OpMode {
 		// Create the vision portal by using a builder.
 		VisionPortal.Builder builder = new VisionPortal.Builder();
 
-		// Set the camera (webcam vs. built-in RC phone camera).
 		if (USE_WEBCAM) {
 			builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
 		} else {
 			builder.setCamera(BuiltinCameraDirection.BACK);
 		}
-
-		// Choose a camera resolution. Not all cameras support all resolutions.
-		//builder.setCameraResolution(new Size(640, 480));
-
-		// Enable the RC preview (LiveView).  Set "false" to omit camera monitoring.
-		//builder.enableLiveView(true);
-
-		// Set the stream format; MJPEG uses less bandwidth than default YUY2.
-		//builder.setStreamFormat(VisionPortal.StreamFormat.YUY2);
-
-		// Choose whether or not LiveView stops if no processors are enabled.
-		// If set "true", monitor shows solid orange screen if no processors enabled.
-		// If set "false", monitor shows camera view without annotations.
-		//builder.setAutoStopLiveView(false);
 
 		// Set and enable the processor.
 		builder.addProcessor(aprilTag);
@@ -100,8 +111,7 @@ public class AprilTagTestOpMode extends OpMode {
 
 		// Disable or re-enable the aprilTag processor at any time.
 		//visionPortal.setProcessorEnabled(aprilTag, true);
-
-	}   // end method initAprilTag()
+	}
 
 
 	/**
@@ -123,12 +133,12 @@ public class AprilTagTestOpMode extends OpMode {
 				telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
 				telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
 			}
-		}   // end for() loop
+		}
 
 		// Add "key" information to telemetry
 		telemetry.addLine("\nkey:\nXYZ = X (Right), Y (Forward), Z (Up) dist.");
 		telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
 		telemetry.addLine("RBE = Range, Bearing & Elevation");
 
-	}   // end method telemetryAprilTag()
+	}
 }
