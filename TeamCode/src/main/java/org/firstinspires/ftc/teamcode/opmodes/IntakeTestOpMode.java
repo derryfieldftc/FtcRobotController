@@ -14,7 +14,8 @@ public class IntakeTestOpMode extends OpMode {
 	RobotPlugin mechanumDrive;
 	DcMotor intake;
 	GamepadManager mgamepad;
-	boolean intakeOn = false;
+	boolean intakeOn = true;
+	boolean reverseDirection = false;
 
 	@Override
 	public void init() {
@@ -33,8 +34,11 @@ public class IntakeTestOpMode extends OpMode {
 		if (mgamepad.justPressed(GamepadManager.Button.A))
 			intakeOn = !intakeOn;
 
+		if (mgamepad.justPressed(GamepadManager.Button.RIGHT_BUMPER))
+			reverseDirection = !reverseDirection;
+
 		if (intakeOn) {
-			intake.setPower(gamepad1.right_stick_y);
+			intake.setPower(gamepad1.right_trigger * .6 * ((reverseDirection) ? -1 : 1));
 		}
 
 		telemetry.addData("intakePower", intake.getPower());

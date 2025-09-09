@@ -1,10 +1,13 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import android.util.Size;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -162,7 +165,10 @@ public class Camera {
 
 		if (USE_WEBCAM) {
 			// NOTE FOR WEBCAM, MAKE SURE IT IS PLUGGED INTO LEFTMOST USB, OTHERWISE THE CONNECTION IS IFFY
-			builder.setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"));
+			CameraName camera = hardwareMap.get(WebcamName.class, "Webcam 1");
+			builder.setCamera(camera);
+
+			telemetry.addLine(camera.getCameraCharacteristics().toString());
 		} else {
 			builder.setCamera(BuiltinCameraDirection.BACK);
 		}
