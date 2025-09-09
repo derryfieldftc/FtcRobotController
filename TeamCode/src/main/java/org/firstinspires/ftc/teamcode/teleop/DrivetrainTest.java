@@ -159,11 +159,6 @@ public class DrivetrainTest extends OpMode
             turboMode = !turboMode;
         }
 
-        // chalk down?
-        if (enhanced1.justPressed(EnhancedGamepad.Button.A)) {
-            train.toggleChalk();
-        }
-
         if (enhanced1.justPressed(EnhancedGamepad.Button.DPAD_UP)){
             boolean val = train.getMotorCorrectionEnabled();
             val = !val;

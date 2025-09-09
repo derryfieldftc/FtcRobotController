@@ -4,8 +4,6 @@ import java.util.InputMismatchException;
 
 public class Task<T> {
     public enum Type {
-        PEN_UP,
-        PEN_DOWN,
         WAYPOINT,
         DELAY
     }
@@ -16,11 +14,7 @@ public class Task<T> {
 
     public static Type type(String token) {
         token = token.toUpperCase();
-        if(token.equals("PEN_UP")) {
-            return Type.PEN_UP;
-        } else if (token.equals("PEN_DOWN")) {
-            return Type.PEN_DOWN;
-        } else if (token.equals("WAYPOINT")) {
+        if (token.equals("WAYPOINT")) {
             return Type.WAYPOINT;
         } else if (token.equals("DELAY")) {
             return Type.DELAY;
@@ -78,11 +72,7 @@ public class Task<T> {
     @Override
     public String toString() {
         String s = "";
-        if (type == Type.PEN_UP) {
-            s = "PEN_UP";
-        } else if (type == Type.PEN_DOWN) {
-            s = "PEN_DOWN";
-        } else if (type == Type.WAYPOINT) {
+        if (type == Type.WAYPOINT) {
             s = String.format("WAYPOINT: %.06f, %.06f, %.06f", pose.x, pose.y, pose.theta);
         } else if (type == Type.DELAY) {
             s = String.format("DELAY: %d", period);

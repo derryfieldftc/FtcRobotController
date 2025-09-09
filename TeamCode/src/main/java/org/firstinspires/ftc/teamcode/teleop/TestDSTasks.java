@@ -159,11 +159,6 @@ public class TestDSTasks extends OpMode
             turboMode = !turboMode;
         }
 
-        // chalk down?
-        if (enhanced1.justPressed(EnhancedGamepad.Button.A)) {
-            drivetrain.toggleChalk();
-        }
-
         if (enhanced1.justPressed(EnhancedGamepad.Button.DPAD_UP)){
             boolean val = drivetrain.getMotorCorrectionEnabled();
             val = !val;
@@ -183,14 +178,6 @@ public class TestDSTasks extends OpMode
                         currentTask = tasks.get(0);
                         tasks.remove(0);
                         switch (currentTask.getType()) {
-                            case PEN_DOWN:
-                                drivetrain.chalkDown();
-                                RobotLog.d("TIE: PEN_DOWN");
-                                break;
-                            case PEN_UP:
-                                drivetrain.chalkUp();
-                                RobotLog.d("TIE: PEN_UP");
-                                break;
                             case WAYPOINT:
                                 drivetrain.setWaypoint(currentTask.getPose());
                                 drivetrain.setState(Drivetrain.State.NAVIGATING);
