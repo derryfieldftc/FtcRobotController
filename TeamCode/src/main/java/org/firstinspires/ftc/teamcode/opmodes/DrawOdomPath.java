@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import android.annotation.SuppressLint;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -20,7 +22,7 @@ public class DrawOdomPath extends OpMode {
 	Drivetrain drivetrain;
 	MecanumDrive mecanumDrive;
 	GamepadManager mgamepad;
-	ArrayList<Pose> poses = new ArrayList<>();
+	ArrayList<Task> tasks = new ArrayList<>();
 
 	@Override
 	public void init() {
@@ -37,16 +39,16 @@ public class DrawOdomPath extends OpMode {
 		mgamepad.poll();
 
 		if (mgamepad.justPressed(GamepadManager.Button.Y)) {
-			poses = new ArrayList<>();
+			tasks = new ArrayList<>();
 			drivetrain.resetOdometry();
 		}
 
 		if (mgamepad.justPressed(GamepadManager.Button.A)) {
-			poses.add(drivetrain.getPose());
+			tasks.add(new Task(Task.Type.WAYPOINT, drivetrain.getPose()));
 		}
 
 		if (mgamepad.justPressed(GamepadManager.Button.B)) {
-			poses.remove(poses.size() - 1);
+			tasks.remove(tasks.size() - 1);
 		}
 
 		if (mgamepad.justPressed(GamepadManager.Button.START)) {
@@ -57,20 +59,31 @@ public class DrawOdomPath extends OpMode {
 			}
 		}
 
-		for (int i = 0; i < poses.size(); i++) {
-			Pose pose = poses.get(i);
-			telemetry.addData("(" + i + ")", "x: " + pose.x + " y: " + pose.y + " t: " + pose.theta);
+		for (int i = tasks.size() - 1; i >= 0; i--) {
+			if (tasks.get(i).getType() == Task.Type.DELAY) {
+				telemetry.addData("("+i+")", tasks.get(i).getPeriod());
+			} else if (tasks.get(i).getType() ==Task.Type.WAYPOINT) {
+				Pose pose = tasks.get(i).getPose();
+				telemetry.addData("(" + i + ")", "x: " + pose.x + " y: " + pose.y + " t: " + pose.theta);
+			}
 		}
 		telemetry.update();
 	}
 
+	@SuppressLint("DefaultLocale")
 	private void saveToFile() throws IOException {
 		File file = new File("/sdcard/FIRST/" + this.getRuntime());
 		file.createNewFile();
 		PrintWriter writer = new PrintWriter(file);
-		for (Pose pose:poses) {
-			writer.println("WAYPOINT " + pose.x + " " + pose.y + " " + pose.theta);
-			writer.println("DELAY 1000"); //hacky TODO! fix this later and implement the write to file method in the task class
+		for (Task task : tasks) {
+			if (task.getType() == Task.Type.DELAY) {
+				writer.println(String.format("DELAY: %d", task.getPeriod()));
+			} else if (task.getType() == Task.Type.WAYPOINT) {
+				Pose pose = task.getPose();
+				writer.println(String.format("WAYPOINT: %.6f %.6f %.6f", pose.x, pose.y, pose.theta));
+			}
 		}
+		writer.flush();
+		writer.close();
 	}
 }

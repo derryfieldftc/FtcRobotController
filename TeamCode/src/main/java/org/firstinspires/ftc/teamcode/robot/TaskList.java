@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -58,8 +60,20 @@ public class TaskList {
         this.tasks = tasks;
     }
 
-    public void exportTasks(String path) {
-        // TODO: write code to export task list to a file,
+    public void exportTasks(String path) throws IOException {
+        File file = new File(path);
+        file.createNewFile();
+        PrintWriter writer = new PrintWriter(file);
+        for (Task task : tasks) {
+            if (task.getType() == Task.Type.DELAY) {
+                writer.println(String.format("DELAY: %d", task.getPeriod()));
+            } else if (task.getType() == Task.Type.WAYPOINT) {
+                Pose pose = task.getPose();
+                writer.println(String.format("WAYPOINT: %.6f %.6f %.6f", pose.x, pose.y, pose.theta));
+            }
+        }
+        writer.flush();
+        writer.close();
     }
 
     public int size() {
