@@ -60,6 +60,10 @@ public class TaskList {
         this.tasks = tasks;
     }
 
+    public ArrayList<Task> get() {
+        return tasks;
+    }
+
     public void exportTasks(String path) throws IOException {
         File file = new File(path);
         file.createNewFile();

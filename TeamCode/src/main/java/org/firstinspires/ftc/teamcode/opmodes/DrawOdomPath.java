@@ -75,7 +75,10 @@ public class DrawOdomPath extends OpMode {
 		telemetry.update();
 	}
 
-	@SuppressLint("DefaultLocale")
+	/**
+	 * Would just use a TaskList now
+	 * @throws IOException
+	 */
 	private void saveToFile() throws IOException {
 		File file = new File("/sdcard/FIRST/" + this.getRuntime());
 		file.createNewFile();
