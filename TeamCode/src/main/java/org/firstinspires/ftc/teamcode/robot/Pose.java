@@ -14,4 +14,8 @@ public class Pose {
         this.y = y;
         this.theta = theta;
     }
+
+    public String dump() {
+        return String.format("x: %.3f y: %.3f t: %.3f", x, y, theta);
+    }
 }

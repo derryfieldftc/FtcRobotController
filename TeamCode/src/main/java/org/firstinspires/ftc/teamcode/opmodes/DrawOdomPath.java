@@ -36,6 +36,7 @@ public class DrawOdomPath extends OpMode {
 	@Override
 	public void loop() {
 		mecanumDrive.loop();
+		drivetrain.refreshPose();
 		mgamepad.poll();
 
 		if (mgamepad.justPressed(GamepadManager.Button.Y)) {
@@ -44,7 +45,9 @@ public class DrawOdomPath extends OpMode {
 		}
 
 		if (mgamepad.justPressed(GamepadManager.Button.A)) {
-			tasks.add(new Task(Task.Type.WAYPOINT, drivetrain.getPose()));
+			// have to make an actual copy <3 thx java very cool
+			Pose newPose = new Pose(drivetrain.getPose().x, drivetrain.getPose().y, drivetrain.getPose().theta);
+			tasks.add(new Task(Task.Type.WAYPOINT, newPose));
 		}
 
 		if (mgamepad.justPressed(GamepadManager.Button.B)) {
@@ -59,12 +62,14 @@ public class DrawOdomPath extends OpMode {
 			}
 		}
 
+		Pose tempPose = drivetrain.getPose();
+		telemetry.addLine(String.format("x: %.3f y: %.3f t: %.3f", tempPose.x, tempPose.y, tempPose.theta));
 		for (int i = tasks.size() - 1; i >= 0; i--) {
 			if (tasks.get(i).getType() == Task.Type.DELAY) {
 				telemetry.addData("("+i+")", tasks.get(i).getPeriod());
 			} else if (tasks.get(i).getType() ==Task.Type.WAYPOINT) {
 				Pose pose = tasks.get(i).getPose();
-				telemetry.addData("(" + i + ")", "x: " + pose.x + " y: " + pose.y + " t: " + pose.theta);
+				telemetry.addLine(String.format("(%d) x: %.3f y: %.3f t: %.3f", i, pose.x, pose.y, pose.theta));
 			}
 		}
 		telemetry.update();
@@ -85,5 +90,6 @@ public class DrawOdomPath extends OpMode {
 		}
 		writer.flush();
 		writer.close();
+		telemetry.addData("Saved, filename: ", file.getAbsoluteFile());
 	}
 }

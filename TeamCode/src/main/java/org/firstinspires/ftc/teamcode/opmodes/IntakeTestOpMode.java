@@ -25,8 +25,7 @@ public class IntakeTestOpMode extends OpMode {
 		mechanumDrive.init();
 		intake = hardwareMap.dcMotor.get("intake");
 		intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-		intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-	}
+		intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT); }
 
 	@Override
 	public void loop() {
@@ -34,12 +33,13 @@ public class IntakeTestOpMode extends OpMode {
 		if (mgamepad.justPressed(GamepadManager.Button.A))
 			intakeOn = !intakeOn;
 
-		if (mgamepad.justPressed(GamepadManager.Button.RIGHT_BUMPER))
+		if (mgamepad.justPressed(GamepadManager.Button.B))
 			reverseDirection = !reverseDirection;
 
 		if (intakeOn) {
 			intake.setPower(gamepad1.right_trigger * .6 * ((reverseDirection) ? -1 : 1));
 		}
+
 
 		telemetry.addData("intakePower", intake.getPower());
 		telemetry.addData("intakeOn", intakeOn);
