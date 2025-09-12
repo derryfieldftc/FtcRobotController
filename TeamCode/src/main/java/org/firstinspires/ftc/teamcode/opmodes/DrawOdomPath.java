@@ -1,9 +1,8 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import android.annotation.SuppressLint;
-
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.teamcode.GamepadManager;
 import org.firstinspires.ftc.teamcode.OpModeGroups;
@@ -16,6 +15,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicReference;
 
 @TeleOp(name = "Draw Odom Path", group = OpModeGroups.TESTS)
 public class DrawOdomPath extends OpMode {
@@ -80,7 +81,17 @@ public class DrawOdomPath extends OpMode {
 	 * @throws IOException
 	 */
 	private void saveToFile() throws IOException {
-		File file = new File("/sdcard/FIRST/" + this.getRuntime());
+		AtomicReference<String> filename = new AtomicReference<>(new String(Double.toString(this.getRuntime())));
+
+		// She might be on to something
+		Iterator<String> allNames = hardwareMap.getAllNames(DistanceSensor.class).stream().iterator();
+		allNames.forEachRemaining((name) -> {
+			if (name.contains("FNPRE_")) {
+				filename.set(name.substring(6));
+			}
+		});
+
+		File file = new File("/sdcard/FIRST/" + filename.get());
 		file.createNewFile();
 		PrintWriter writer = new PrintWriter(file);
 		for (Task task : tasks) {
