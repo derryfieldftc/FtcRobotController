@@ -28,5 +28,8 @@ public class RobotTest extends OpMode {
 		bot.intakeSpinner.setPower(gamepad2.left_trigger);
 		bot.intake.setSpeed(gamepad2.right_trigger);
 		bot.intakeSpinner.setRotation(abs(1 - gamepad2.right_stick_y));
+
+		telemetry.addData("spinnerR", bot.intakeSpinner.spinnerSpinner.getPosition());
+		bot.intakeSpinner.dumpColor();
 	}
 }
