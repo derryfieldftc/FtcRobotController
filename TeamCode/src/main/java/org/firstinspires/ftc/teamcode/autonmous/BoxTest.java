@@ -31,8 +31,8 @@ public class BoxTest extends OpMode {
 
 		if (drivetrain.waypoint != null) {
 			if (!drivetrain.applyCorrection()) {
-				telemetry.addData("wp:", drivetrain.waypoint.dump());
-				telemetry.addData("pose: ", drivetrain.getPose().dump());
+				telemetry.addData("wp:", drivetrain.waypoint.fancyDump());
+				telemetry.addData("pose: ", drivetrain.getPose().fancyDump());
 			} else {
 				drivetrain.stop();
 				drivetrain.clearWaypoint();

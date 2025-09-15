@@ -100,7 +100,7 @@ public class Drivetrain {
     public DcMotor encoderAux;
 
     // op mode related items.
-    private OpMode opMode;
+    private static OpMode opMode;
     private HardwareMap hardwareMap;
 
     private BNO055IMU imu;
@@ -193,6 +193,17 @@ public class Drivetrain {
     public Drivetrain(HardwareMap hardwareMap, OpMode opMode, Pose pose) {
         this(hardwareMap, opMode);
         this.pose = pose;
+    }
+
+    public static void SetOpMode(OpMode opMode_) {
+        opMode = opMode_;
+    }
+
+    /**
+     * ONLY USE IF YOU HAVE PREVIOUSLY SET THE STATIC OPMODE
+     */
+    public Drivetrain() {
+        this(opMode.hardwareMap, opMode);
     }
 
     public String getCurrentWaypoint() {

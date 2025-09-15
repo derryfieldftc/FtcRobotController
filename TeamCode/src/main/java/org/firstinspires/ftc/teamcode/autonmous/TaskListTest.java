@@ -3,8 +3,7 @@ package org.firstinspires.ftc.teamcode.autonmous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.robot.Drivetrain;
-import org.firstinspires.ftc.teamcode.robot.Pose;
-import org.firstinspires.ftc.teamcode.robot.Task;
+import org.firstinspires.ftc.teamcode.robot.Tasks.OldTask;
 import org.firstinspires.ftc.teamcode.robot.TaskList;
 
 import java.util.ArrayList;
@@ -23,7 +22,7 @@ public class TaskListTest extends OpMode {
 
 	@Override
 	public void loop() {
-		ArrayList<Task> poses = list.get();
+		ArrayList<OldTask> poses = list.get();
 
 	}
 }

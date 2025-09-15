@@ -1,55 +1,53 @@
-package org.firstinspires.ftc.teamcode.robot;
+package org.firstinspires.ftc.teamcode.robot.Tasks;
+
+import org.firstinspires.ftc.teamcode.robot.Pose;
 
 import java.util.InputMismatchException;
 
-public class Task<T> {
-    public enum Type {
-        WAYPOINT,
-        DELAY
-    }
+public class OldTask<T> {
 
-    Type type = null;
+    TaskType type = null;
     Pose pose = null;
     long period = 0;             // delay period in msec.
 
-    public static Type type(String token) {
+    public static TaskType type(String token) {
         token = token.toUpperCase();
         if (token.equals("WAYPOINT")) {
-            return Type.WAYPOINT;
+            return TaskType.WAYPOINT;
         } else if (token.equals("DELAY")) {
-            return Type.DELAY;
+            return TaskType.DELAY;
         } else {
             throw new InputMismatchException("Error: Unknown Task type! Problem Token: " + token);
         }
     }
 
-    public Task(Type type) {
+    public OldTask(TaskType type) {
         this.type = type;
     }
 
-    public Task(Type type, Pose pose) {
+    public OldTask(TaskType type, Pose pose) {
         this(type);
-        if (type == Type.WAYPOINT) {
+        if (type == TaskType.WAYPOINT) {
             this.pose = pose;
         } else {
             throw new InputMismatchException("A Pose argument must be used with a task of type WAYPOINT.");
         }
     }
 
-    public Task(Type type, long periodMS) {
+    public OldTask(TaskType type, long periodMS) {
         this(type);
-        if (type == Type.DELAY) {
+        if (type == TaskType.DELAY) {
             this.period = periodMS;
         } else {
             throw new InputMismatchException("A period argument must be used with a task of type DELAY.");
         }
     }
 
-    public Type getType() {
+    public TaskType getType() {
         return type;
     }
 
-    public void setType(Type type) {
+    public void setType(TaskType type) {
         this.type = type;
     }
 
@@ -72,9 +70,9 @@ public class Task<T> {
     @Override
     public String toString() {
         String s = "";
-        if (type == Type.WAYPOINT) {
+        if (type == TaskType.WAYPOINT) {
             s = String.format("WAYPOINT: %.06f, %.06f, %.06f", pose.x, pose.y, pose.theta);
-        } else if (type == Type.DELAY) {
+        } else if (type == TaskType.DELAY) {
             s = String.format("DELAY: %d", period);
         } else {
             s = "UNKNOWN";

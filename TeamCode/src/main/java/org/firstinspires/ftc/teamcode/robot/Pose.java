@@ -15,7 +15,11 @@ public class Pose {
         this.theta = theta;
     }
 
-    public String dump() {
+    public String fancyDump() {
         return String.format("x: %.3f y: %.3f t: %.3f", x, y, theta);
+    }
+
+    public String dump() {
+        return String.format("%.6f %.6f %.6f", x, y, theta);
     }
 }

@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import com.qualcomm.robotcore.util.RobotLog;
 
+import org.firstinspires.ftc.teamcode.robot.Tasks.OldTask;
+import org.firstinspires.ftc.teamcode.robot.Tasks.TaskType;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -11,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class TaskList {
-    ArrayList<Task> tasks = null;
+    ArrayList<OldTask> tasks = null;
 
     public TaskList() {
         tasks = new ArrayList<>();
@@ -20,7 +23,7 @@ public class TaskList {
     // import a sequence of tasks from a file.
     // return the sequence as an array list with first task at index = 0.
     public void importTasks(String path) {
-        ArrayList <Task> tasks = new ArrayList<>();
+        ArrayList <OldTask> tasks = new ArrayList<>();
         File file = new File(path);
         try(Scanner in = new Scanner(file, StandardCharsets.UTF_8.name())) {
             while(in.hasNextLine()) {
@@ -33,19 +36,19 @@ public class TaskList {
                 data.useDelimiter("[\\s,\\t\\n,]+");
                 // read token, then extract type. if applicable, additional information.
                 String token = data.next().trim();
-                Task.Type type = Task.type(token);
+                TaskType type = OldTask.type(token);
 
-                Task task = new Task(type);
+                OldTask task = new OldTask(type);
 
                 // do we need to get additional data?
-                if (task.type == Task.Type.WAYPOINT) {
+                if (type == TaskType.WAYPOINT) {
                     double x, y, theta;
                     x = RobotData.getDouble(data);
                     y = RobotData.getDouble(data);
                     theta = RobotData.getDouble(data);
                     Pose pose = new Pose(x, y, theta);
                     task.setPose(pose);
-                } else if (task.type == Task.Type.DELAY) {
+                } else if (type == TaskType.DELAY) {
                     long period = RobotData.getLong(data);
                     task.setPeriod(period);
                 }
@@ -60,7 +63,7 @@ public class TaskList {
         this.tasks = tasks;
     }
 
-    public ArrayList<Task> get() {
+    public ArrayList<OldTask> get() {
         return tasks;
     }
 
@@ -68,10 +71,10 @@ public class TaskList {
         File file = new File(path);
         file.createNewFile();
         PrintWriter writer = new PrintWriter(file);
-        for (Task task : tasks) {
-            if (task.getType() == Task.Type.DELAY) {
+        for (OldTask task : tasks) {
+            if (task.getType() == TaskType.DELAY) {
                 writer.println(String.format("DELAY: %d", task.getPeriod()));
-            } else if (task.getType() == Task.Type.WAYPOINT) {
+            } else if (task.getType() == TaskType.WAYPOINT) {
                 Pose pose = task.getPose();
                 writer.println(String.format("WAYPOINT: %.6f %.6f %.6f", pose.x, pose.y, pose.theta));
             }
@@ -84,8 +87,8 @@ public class TaskList {
         return tasks.size();
     }
 
-    public Task nextTask() {
-        Task task = null;
+    public OldTask nextTask() {
+        OldTask task = null;
         if (tasks.size() > 0) {
             task = tasks.get(0);
             tasks.remove(0);
@@ -93,7 +96,7 @@ public class TaskList {
         return task;
     }
 
-    public void add(Task task) {
+    public void add(OldTask task) {
         tasks.add(task);
     }
 
@@ -101,7 +104,7 @@ public class TaskList {
         tasks.clear();
     }
 
-    public Task get(int index) {
+    public OldTask get(int index) {
         return tasks.get(index);
     }
 

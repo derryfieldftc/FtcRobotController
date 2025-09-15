@@ -7,10 +7,10 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import org.firstinspires.ftc.teamcode.GamepadManager;
 import org.firstinspires.ftc.teamcode.OpModeGroups;
 import org.firstinspires.ftc.teamcode.plugin.plugins.MecanumDrive;
-import org.firstinspires.ftc.teamcode.plugin.tasks.DelayTask;
 import org.firstinspires.ftc.teamcode.robot.Drivetrain;
 import org.firstinspires.ftc.teamcode.robot.Pose;
-import org.firstinspires.ftc.teamcode.robot.Task;
+import org.firstinspires.ftc.teamcode.robot.Tasks.OldTask;
+import org.firstinspires.ftc.teamcode.robot.Tasks.TaskType;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +24,7 @@ public class DrawOdomPath extends OpMode {
 	Drivetrain drivetrain;
 	MecanumDrive mecanumDrive;
 	GamepadManager mgamepad;
-	ArrayList<Task> tasks = new ArrayList<>();
+	ArrayList<OldTask> tasks = new ArrayList<>();
 
 	@Override
 	public void init() {
@@ -49,7 +49,7 @@ public class DrawOdomPath extends OpMode {
 		if (mgamepad.justPressed(GamepadManager.Button.A)) {
 			// have to make an actual copy <3 thx java very cool
 			Pose newPose = new Pose(drivetrain.getPose().x, drivetrain.getPose().y, drivetrain.getPose().theta);
-			tasks.add(new Task(Task.Type.WAYPOINT, newPose));
+			tasks.add(new OldTask(TaskType.WAYPOINT, newPose));
 		}
 
 		if (mgamepad.justPressed(GamepadManager.Button.B)) {
@@ -57,7 +57,7 @@ public class DrawOdomPath extends OpMode {
 		}
 
 		if (mgamepad.justPressed(GamepadManager.Button.X)) {
-			tasks.add(new Task(Task.Type.DELAY, 1000));
+			tasks.add(new OldTask(TaskType.DELAY, 1000));
 		}
 
 		if (mgamepad.justPressed(GamepadManager.Button.START)) {
@@ -71,9 +71,9 @@ public class DrawOdomPath extends OpMode {
 		Pose tempPose = drivetrain.getPose();
 		telemetry.addLine(String.format("x: %.3f y: %.3f t: %.3f", tempPose.x, tempPose.y, tempPose.theta));
 		for (int i = tasks.size() - 1; i >= 0; i--) {
-			if (tasks.get(i).getType() == Task.Type.DELAY) {
+			if (tasks.get(i).getType() == TaskType.DELAY) {
 				telemetry.addData("("+i+")", tasks.get(i).getPeriod());
-			} else if (tasks.get(i).getType() ==Task.Type.WAYPOINT) {
+			} else if (tasks.get(i).getType() == TaskType.WAYPOINT) {
 				Pose pose = tasks.get(i).getPose();
 				telemetry.addLine(String.format("(%d) x: %.3f y: %.3f t: %.3f", i, pose.x, pose.y, pose.theta));
 			}
@@ -99,10 +99,10 @@ public class DrawOdomPath extends OpMode {
 		File file = new File("/sdcard/FIRST/" + filename.get());
 		file.createNewFile();
 		PrintWriter writer = new PrintWriter(file);
-		for (Task task : tasks) {
-			if (task.getType() == Task.Type.DELAY) {
+		for (OldTask task : tasks) {
+			if (task.getType() == TaskType.DELAY) {
 				writer.println(String.format("DELAY: %d", task.getPeriod()));
-			} else if (task.getType() == Task.Type.WAYPOINT) {
+			} else if (task.getType() == TaskType.WAYPOINT) {
 				Pose pose = task.getPose();
 				writer.println(String.format("WAYPOINT: %.6f %.6f %.6f", pose.x, pose.y, pose.theta));
 			}

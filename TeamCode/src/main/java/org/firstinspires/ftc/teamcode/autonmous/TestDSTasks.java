@@ -38,7 +38,7 @@ import org.firstinspires.ftc.teamcode.GamepadManager;
 import org.firstinspires.ftc.teamcode.robot.Drivetrain;
 import org.firstinspires.ftc.teamcode.robot.PID;
 import org.firstinspires.ftc.teamcode.robot.Pose;
-import org.firstinspires.ftc.teamcode.robot.Task;
+import org.firstinspires.ftc.teamcode.robot.Tasks.OldTask;
 import org.firstinspires.ftc.teamcode.robot.TaskList;
 
 @TeleOp(name="TestDSTasks", group="Drivetrain")
@@ -62,7 +62,7 @@ public class TestDSTasks extends OpMode
     private PID pid = null;
 
     TaskList tasks = null;
-    Task currentTask;
+    OldTask currentTask;
 
     Pose initPose = null;
 
