@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -21,6 +22,7 @@ public class Intake {
 
 	public void init() {
 		intake = hardwareMap.dcMotor.get("intake");
+		intake.setDirection(DcMotorSimple.Direction.REVERSE);
 	}
 
 	public void setSpeed(double speed) {

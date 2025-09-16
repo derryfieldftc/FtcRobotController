@@ -381,8 +381,8 @@ public class Drivetrain {
         // get and configure encoders.
         if (USE_ODOMETRY_POD) {
             encoderLeft = hardwareMap.dcMotor.get("motorBL");
-            encoderRight = hardwareMap.dcMotor.get("motorBR");
-            encoderAux = hardwareMap.dcMotor.get("motorFL");
+            encoderRight = hardwareMap.dcMotor.get("intake");
+            encoderAux = hardwareMap.dcMotor.get("motorBR");
 
             encoderLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             encoderRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);

@@ -14,7 +14,7 @@ public class RobotTest extends OpMode {
 
 	@Override
 	public void init() {
-		bot = new Robot(this).enableIntake().enableIntakeSpinner();
+		bot = new Robot(this).enableIntake();
 		mecanumDrive = new MecanumDrive(this);
 		mecanumDrive.init();
 		bot.init();
@@ -25,11 +25,6 @@ public class RobotTest extends OpMode {
 		mecanumDrive.loop();
 		bot.loop();
 
-		bot.intakeSpinner.setPower(gamepad2.left_trigger);
 		bot.intake.setSpeed(gamepad2.right_trigger);
-		bot.intakeSpinner.setRotation(abs(1 - gamepad2.right_stick_y));
-
-		telemetry.addData("spinnerR", bot.intakeSpinner.spinnerSpinner.getPosition());
-		bot.intakeSpinner.dumpColor();
 	}
 }
