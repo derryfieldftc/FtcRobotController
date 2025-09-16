@@ -37,7 +37,7 @@ public class IntakeTestOpMode extends OpMode {
 			reverseDirection = !reverseDirection;
 
 		if (intakeOn) {
-			intake.setPower(gamepad1.right_trigger * .6 * ((reverseDirection) ? -1 : 1));
+			intake.setPower(gamepad1.right_trigger * ((reverseDirection) ? -1 : 1));
 		}
 
 
