@@ -13,7 +13,7 @@ public class RawOdomPodData extends OpMode {
 	@Override
 	public void init() {
 		encoderL = hardwareMap.dcMotor.get("motorBL");
-		encoderR = hardwareMap.dcMotor.get("intake");
+		encoderR = hardwareMap.dcMotor.get("motorFL");
 		encoderAux = hardwareMap.dcMotor.get("motorBR");
 
 	}
