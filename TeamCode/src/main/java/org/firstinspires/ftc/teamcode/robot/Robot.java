@@ -17,8 +17,8 @@ public class Robot {
 	public boolean drivetrainEnabled;
 	public Intake intake;
 	public boolean intakeEnabled;
-	public IntakeSpinner intakeSpinner;
-	public boolean intakeSpinnerEnabled;
+//	public IntakeSpinner intakeSpinner;
+//	public boolean intakeSpinnerEnabled;
 	public Camera camera;
 	public boolean cameraEnabled;
 
@@ -32,7 +32,7 @@ public class Robot {
 		this.telemetry = opMode.telemetry;
 		drivetrain = new Drivetrain(hardwareMap, this.opMode);
 		intake = new Intake(this.opMode);
-		intakeSpinner = new IntakeSpinner(this.opMode);
+//		intakeSpinner = new IntakeSpinner(this.opMode);
 		camera = new Camera(this.opMode);
 	}
 
@@ -46,10 +46,10 @@ public class Robot {
 		return this;
 	}
 
-	public Robot enableIntakeSpinner() {
-		intakeSpinnerEnabled = true;
-		return this;
-	}
+//	public Robot enableIntakeSpinner() {
+//		intakeSpinnerEnabled = true;
+//		return this;
+//	}
 
 	public Robot enableCamera() {
 		cameraEnabled = true;
@@ -59,8 +59,8 @@ public class Robot {
 	public void init() {
 		if (intakeEnabled)
 			intake.init();
-		if (intakeSpinnerEnabled)
-			intakeSpinner.init();
+//		if (intakeSpinnerEnabled)
+//			intakeSpinner.init();
 		if (cameraEnabled)
 			camera.init();
 	}
