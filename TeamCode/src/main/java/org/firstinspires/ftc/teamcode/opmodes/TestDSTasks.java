@@ -78,7 +78,7 @@ public class TestDSTasks extends OpMode
      */
     @Override
     public void init() {
-        String path = "/sdcard/FIRST/dslog.txt";
+        String path = "/sdcard/FIRST/tasks.txt";
         RobotLog.d("TIE: ds_log created (%s)", path);
         telemetry.addData("Status", "Initialized");
 

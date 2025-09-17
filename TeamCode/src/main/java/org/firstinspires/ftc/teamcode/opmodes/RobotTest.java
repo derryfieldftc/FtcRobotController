@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.plugin.plugins.MecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.robot.Tag;
 
 @TeleOp(name = "RobotTest")
 public class RobotTest extends OpMode {
@@ -14,10 +15,12 @@ public class RobotTest extends OpMode {
 
 	@Override
 	public void init() {
-		bot = new Robot(this).enableIntake();
+		bot = new Robot(this).enableIntake().enableTurret().enableCamera();
 		mecanumDrive = new MecanumDrive(this);
 		mecanumDrive.init();
 		bot.init();
+		bot.camera.setTargetTag(Tag.PGP);
+		bot.turret.useCamera();
 	}
 
 	@Override

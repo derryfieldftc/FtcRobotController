@@ -19,8 +19,10 @@ public class Robot {
 	public boolean intakeEnabled;
 //	public IntakeSpinner intakeSpinner;
 //	public boolean intakeSpinnerEnabled;
-	public Camera camera;
+	public Turret.Camera camera;
 	public boolean cameraEnabled;
+	public Turret turret;
+	public boolean turretEnabled;
 
 	/**
 	 * Do not forget to chain this with all of the enable methods
@@ -33,11 +35,17 @@ public class Robot {
 		drivetrain = new Drivetrain(hardwareMap, this.opMode);
 		intake = new Intake(this.opMode);
 //		intakeSpinner = new IntakeSpinner(this.opMode);
-		camera = new Camera(this.opMode);
+		camera = new Turret.Camera(this.opMode);
+		turret = new Turret(this.opMode);
 	}
 
 	public Robot enableDriveTrain() {
 		drivetrainEnabled = true;
+		return this;
+	}
+
+	public Robot enableTurret() {
+		turretEnabled = true;
 		return this;
 	}
 
@@ -63,6 +71,8 @@ public class Robot {
 //			intakeSpinner.init();
 		if (cameraEnabled)
 			camera.init();
+		if (turretEnabled)
+			turret.init();
 	}
 
 	public void loop() {
@@ -70,5 +80,11 @@ public class Robot {
 			intake.loop();
 		if (cameraEnabled)
 			camera.loop();
+		if (turretEnabled)
+			turret.loop();
+		if (turretEnabled && cameraEnabled) {
+			turret.setRotatorPower(Math.pow(camera.getOffsetX() / 30.0, 3)); //TODO! PID
+
+		}
 	}
 }

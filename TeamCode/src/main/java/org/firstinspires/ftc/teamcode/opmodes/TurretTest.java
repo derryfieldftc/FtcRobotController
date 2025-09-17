@@ -1,34 +1,29 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.OpModeGroups;
 import org.firstinspires.ftc.teamcode.plugin.plugins.MecanumDrive;
-import org.firstinspires.ftc.teamcode.robot.Tag;
 import org.firstinspires.ftc.teamcode.robot.Turret;
 
-@TeleOp(name = "AprilTagTest", group = OpModeGroups.TESTS)
-@Disabled
-public class AprilTagTestOpMode extends OpMode {
+@TeleOp(name = "TurretTest", group = OpModeGroups.TESTS)
+public class TurretTest extends OpMode {
 	MecanumDrive mecanumDrive;
-	Turret.Camera camera;
+	Turret turret;
 
 	@Override
 	public void init() {
-		camera = new Turret.Camera(this).setTargetTag(Tag.PGP).setTagLocationTarget(320, 240);
-		camera.init();
-		hardwareMap.getClass(); // needed for setup somehow????
 		mecanumDrive = new MecanumDrive(this);
+		turret = new Turret(this);
+
 		mecanumDrive.init();
+		turret.init();
 	}
 
 	@Override
 	public void loop() {
 		mecanumDrive.loop();
-		camera.loop();
-		camera.telemetry();
-		telemetry.update();
+		turret.loop();
 	}
 }
