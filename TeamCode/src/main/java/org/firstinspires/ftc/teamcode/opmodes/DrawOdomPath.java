@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import org.firstinspires.ftc.teamcode.GamepadManager;
 import org.firstinspires.ftc.teamcode.OpModeGroups;
 import org.firstinspires.ftc.teamcode.plugin.plugins.MecanumDrive;
+import org.firstinspires.ftc.teamcode.plugin.tasks.DelayTask;
 import org.firstinspires.ftc.teamcode.robot.Drivetrain;
 import org.firstinspires.ftc.teamcode.robot.Pose;
 import org.firstinspires.ftc.teamcode.robot.Task;
@@ -55,6 +56,10 @@ public class DrawOdomPath extends OpMode {
 			tasks.remove(tasks.size() - 1);
 		}
 
+		if (mgamepad.justPressed(GamepadManager.Button.X)) {
+			tasks.add(new Task(Task.Type.DELAY, 1000));
+		}
+
 		if (mgamepad.justPressed(GamepadManager.Button.START)) {
 			try {
 				saveToFile();
@@ -81,7 +86,7 @@ public class DrawOdomPath extends OpMode {
 	 * @throws IOException
 	 */
 	private void saveToFile() throws IOException {
-		AtomicReference<String> filename = new AtomicReference<>(new String(Double.toString(this.getRuntime())));
+		AtomicReference<String> filename = new AtomicReference<>("tasks.txt");
 
 		// She might be on to something
 		Iterator<String> allNames = hardwareMap.getAllNames(DistanceSensor.class).stream().iterator();

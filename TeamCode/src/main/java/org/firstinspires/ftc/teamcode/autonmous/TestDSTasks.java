@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.opmodes;
+package org.firstinspires.ftc.teamcode.autonmous;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -35,11 +35,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.GamepadManager;
-import org.firstinspires.ftc.teamcode.robot.DSLog;
 import org.firstinspires.ftc.teamcode.robot.Drivetrain;
 import org.firstinspires.ftc.teamcode.robot.PID;
 import org.firstinspires.ftc.teamcode.robot.Pose;
-import org.firstinspires.ftc.teamcode.robot.RobotData;
 import org.firstinspires.ftc.teamcode.robot.Task;
 import org.firstinspires.ftc.teamcode.robot.TaskList;
 
@@ -101,7 +99,7 @@ public class TestDSTasks extends OpMode
         // import tasks.
         currentTask = null;
         tasks = new TaskList();
-        tasks.importTasks("/sdcard/FIRST/dsTasks.txt");
+        tasks.importTasks(path);
         RobotLog.d("TIE: imported tasks");
 
         // display.

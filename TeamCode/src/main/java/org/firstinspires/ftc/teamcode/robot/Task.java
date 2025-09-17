@@ -19,7 +19,7 @@ public class Task<T> {
         } else if (token.equals("DELAY")) {
             return Type.DELAY;
         } else {
-            throw new InputMismatchException("Error: Unknown Task type!");
+            throw new InputMismatchException("Error: Unknown Task type! Problem Token: " + token);
         }
     }
 
@@ -36,10 +36,10 @@ public class Task<T> {
         }
     }
 
-    public Task(Type type, long period) {
+    public Task(Type type, long periodMS) {
         this(type);
         if (type == Type.DELAY) {
-            this.period = period;
+            this.period = periodMS;
         } else {
             throw new InputMismatchException("A period argument must be used with a task of type DELAY.");
         }
