@@ -4,6 +4,8 @@ import static java.lang.Math.abs;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
+import org.firstinspires.ftc.teamcode.GamepadManager;
 import org.firstinspires.ftc.teamcode.plugin.plugins.MecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.Tag;
@@ -12,6 +14,7 @@ import org.firstinspires.ftc.teamcode.robot.Tag;
 public class RobotTest extends OpMode {
 	Robot bot;
 	MecanumDrive mecanumDrive;
+	GamepadManager mgamepad;
 
 	@Override
 	public void init() {
@@ -21,6 +24,8 @@ public class RobotTest extends OpMode {
 		bot.init();
 		bot.camera.setTargetTag(Tag.PGP);
 		bot.turret.useCamera();
+
+		mgamepad = new GamepadManager(gamepad1);
 	}
 
 	@Override
@@ -28,6 +33,14 @@ public class RobotTest extends OpMode {
 		mecanumDrive.loop();
 		bot.loop();
 
+		bot.camera.telemetry();
 		bot.intake.setSpeed(gamepad2.right_trigger);
+
+		if (mgamepad.justPressed(GamepadManager.Button.A)) {
+			bot.turretEnabled = !bot.turretEnabled;
+		}
+
+		telemetry.update();
+		mgamepad.poll();
 	}
 }

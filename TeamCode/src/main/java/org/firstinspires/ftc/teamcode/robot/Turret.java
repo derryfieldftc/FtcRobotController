@@ -33,6 +33,7 @@ public class Turret {
 	double rotatorPower = 0;
 	boolean useGamePad;
 	boolean useCamera;
+	PID rotation;
 
 	public Turret(OpMode opMode) {
 		this.opMode = opMode;
@@ -58,10 +59,13 @@ public class Turret {
 		rotator.setPower(0);
 		rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		rotator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+		//TODO! Test values
+		rotation = new PID(.33, .33, .33, .01);
 	}
 
 	public void setRotatorPower(double power) {
-		rotatorPower = clamp(power, -.1, .1);
+		rotatorPower = power;
 	}
 
 	public void loop() {
@@ -90,8 +94,8 @@ public class Turret {
 		final static boolean USE_WEBCAM = true;
 		private AprilTagProcessor aprilTag;
 		private VisionPortal visionPortal; //for the driver hub camera view
-		private int cameraMiddleX = 320; //default for the camera
-		private int cameraMiddleY = 240; //default for the camera
+		public int cameraMiddleX = 320; //default for the camera
+		public int cameraMiddleY = 240; //default for the camera
 		private double lastTagX = 0;
 		private double lastTagY = 0;
 		private double tagOffsetX = 0;

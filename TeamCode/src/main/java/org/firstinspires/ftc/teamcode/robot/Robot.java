@@ -17,7 +17,7 @@ public class Robot {
 	public boolean drivetrainEnabled;
 	public Intake intake;
 	public boolean intakeEnabled;
-//	public IntakeSpinner intakeSpinner;
+	//	public IntakeSpinner intakeSpinner;
 //	public boolean intakeSpinnerEnabled;
 	public Turret.Camera camera;
 	public boolean cameraEnabled;
@@ -82,9 +82,7 @@ public class Robot {
 			camera.loop();
 		if (turretEnabled)
 			turret.loop();
-		if (turretEnabled && cameraEnabled) {
-			turret.setRotatorPower(Math.pow(camera.getOffsetX() / 30.0, 3)); //TODO! PID
 
-		}
 	}
 }
+

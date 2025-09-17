@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+@Deprecated
 public class IntakeSpinner {
 	HardwareMap hardwareMap;
 	OpMode opMode;

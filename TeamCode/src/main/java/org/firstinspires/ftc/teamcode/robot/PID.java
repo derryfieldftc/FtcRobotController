@@ -15,6 +15,14 @@ public class PID {
     public double integral, previous_error;
     public double threshold;
 
+    /**
+     * Parameters for the PID controller, sane defaults are around .2 (generally)
+     * set unneeded values to 0
+     * @param kp proportional portion importance (coefficient)
+     * @param ki integral portion importance (coefficient)
+     * @param kd derivative imprtance (coefficient)
+     * @param threshold Error threshold
+     */
     public PID(double kp, double ki, double kd, double threshold) {
         this.kp = kp;
         this.ki = ki;
