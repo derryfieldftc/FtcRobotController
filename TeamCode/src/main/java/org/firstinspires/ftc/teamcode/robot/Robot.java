@@ -25,6 +25,8 @@ public class Robot {
 	public boolean turretEnabled;
 	public HandsOfGod handsOfGod;
 	public boolean handsOfGodEnabled;
+	public PalmsOfGod palmsOfGod;
+	public boolean palmsOfGodEnabled;
 
 	/**
 	 * Do not forget to chain this with all of the enable methods
@@ -40,8 +42,13 @@ public class Robot {
 		camera = new Turret.Camera(this.opMode);
 		turret = new Turret(this.opMode);
 		handsOfGod = new HandsOfGod(this.opMode);
+		palmsOfGod = new PalmsOfGod(this.opMode);
 	}
 
+	public Robot enablePalmsOfGod() {
+		palmsOfGodEnabled = true;
+		return this;
+	}
 	public Robot enableHandsOfGod() {
 		handsOfGodEnabled = true;
 		return this;
@@ -82,6 +89,8 @@ public class Robot {
 			turret.init();
 		if (handsOfGodEnabled)
 			handsOfGod.init();
+		if (palmsOfGodEnabled)
+			palmsOfGod.init();
 	}
 
 	public void loop() {
