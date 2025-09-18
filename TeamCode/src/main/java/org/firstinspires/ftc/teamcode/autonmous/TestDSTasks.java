@@ -84,7 +84,7 @@ public class TestDSTasks extends OpMode
         drivetrain = new Drivetrain(hardwareMap, this);
 
         // set initial pose of drive train.
-        initPose = new Pose(0, 0, 1.57);
+        initPose = new Pose(0, 0, 0);
         drivetrain.setPose(initPose);
 
         // get and set PID controllers for x, y, and theta directions.

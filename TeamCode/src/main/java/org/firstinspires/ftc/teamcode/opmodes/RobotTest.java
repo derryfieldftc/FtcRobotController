@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.GamepadManager;
 import org.firstinspires.ftc.teamcode.plugin.plugins.MecanumDrive;
+import org.firstinspires.ftc.teamcode.robot.HandsOfGod;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.Tag;
 
@@ -15,17 +16,18 @@ public class RobotTest extends OpMode {
 	Robot bot;
 	MecanumDrive mecanumDrive;
 	GamepadManager mgamepad;
+	boolean handsUp = false;
 
 	@Override
 	public void init() {
-		bot = new Robot(this).enableIntake().enableTurret().enableCamera();
+		bot = new Robot(this).enableIntake().enableHandsOfGod();
 		mecanumDrive = new MecanumDrive(this);
 		mecanumDrive.init();
 		bot.init();
 		bot.camera.setTargetTag(Tag.PGP);
 		bot.turret.useCamera();
 
-		mgamepad = new GamepadManager(gamepad1);
+		mgamepad = new GamepadManager(gamepad2);
 	}
 
 	@Override
@@ -33,12 +35,18 @@ public class RobotTest extends OpMode {
 		mecanumDrive.loop();
 		bot.loop();
 
-		bot.camera.telemetry();
+//		bot.camera.telemetry();
 		bot.intake.setSpeed(gamepad2.right_trigger);
 
-		if (mgamepad.justPressed(GamepadManager.Button.A)) {
-			bot.turretEnabled = !bot.turretEnabled;
+//		if (mgamepad.justPressed(GamepadManager.Button.A)) {
+//			bot.turretEnabled = !bot.turretEnabled;
+//		}
+
+		if (mgamepad.justPressed(GamepadManager.Button.X)) {
+			handsUp = !handsUp;
 		}
+
+		bot.handsOfGod.setPosition((handsUp) ? HandsOfGod.Position.Up : HandsOfGod.Position.Down);
 
 		telemetry.update();
 		mgamepad.poll();

@@ -23,6 +23,8 @@ public class Robot {
 	public boolean cameraEnabled;
 	public Turret turret;
 	public boolean turretEnabled;
+	public HandsOfGod handsOfGod;
+	public boolean handsOfGodEnabled;
 
 	/**
 	 * Do not forget to chain this with all of the enable methods
@@ -37,8 +39,13 @@ public class Robot {
 //		intakeSpinner = new IntakeSpinner(this.opMode);
 		camera = new Turret.Camera(this.opMode);
 		turret = new Turret(this.opMode);
+		handsOfGod = new HandsOfGod(this.opMode);
 	}
 
+	public Robot enableHandsOfGod() {
+		handsOfGodEnabled = true;
+		return this;
+	}
 	public Robot enableDriveTrain() {
 		drivetrainEnabled = true;
 		return this;
@@ -73,6 +80,8 @@ public class Robot {
 			camera.init();
 		if (turretEnabled)
 			turret.init();
+		if (handsOfGodEnabled)
+			handsOfGod.init();
 	}
 
 	public void loop() {
@@ -82,6 +91,8 @@ public class Robot {
 			camera.loop();
 		if (turretEnabled)
 			turret.loop();
+		if (handsOfGodEnabled)
+			handsOfGod.loop();
 
 	}
 }
