@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.autonmous;
+package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -76,7 +76,7 @@ public class TestDSTasks extends OpMode
      */
     @Override
     public void init() {
-        String path = "/sdcard/FIRST/tasks.txt";
+        String path = "/sdcard/FIRST/auto/tasks.txt";
         RobotLog.d("TIE: ds_log created (%s)", path);
         telemetry.addData("Status", "Initialized");
 

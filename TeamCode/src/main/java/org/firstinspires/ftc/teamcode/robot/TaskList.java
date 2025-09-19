@@ -19,7 +19,7 @@ public class TaskList {
 
     // import a sequence of tasks from a file.
     // return the sequence as an array list with first task at index = 0.
-    public void importTasks(String path) {
+    public static ArrayList<Task> importTasks(String path) {
         ArrayList <Task> tasks = new ArrayList<>();
         File file = new File(path);
         try(Scanner in = new Scanner(file, StandardCharsets.UTF_8.name())) {
@@ -57,7 +57,7 @@ public class TaskList {
             RobotLog.e("importTasks error: " + e.getMessage());
         }
 
-        this.tasks = tasks;
+        return tasks;
     }
 
     public ArrayList<Task> get() {
