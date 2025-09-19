@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import android.graphics.Color;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -13,6 +16,7 @@ public class Intake {
 	Telemetry telemetry;
 	DcMotor intake;
 	protected double speed = 0;
+	ColorSensor colorSensor;
 
 	public Intake(OpMode opMode) {
 		this.opMode = opMode;
@@ -23,6 +27,11 @@ public class Intake {
 	public void init() {
 		intake = hardwareMap.dcMotor.get("intake");
 		intake.setDirection(DcMotorSimple.Direction.REVERSE);
+		colorSensor = hardwareMap.colorSensor.get("intakeColorSensor");
+	}
+
+	public Field.Ball getBallType() {
+		return Field.Ball.getBallFromColor(colorSensor.argb());
 	}
 
 	public void setSpeed(double speed) {

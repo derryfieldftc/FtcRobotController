@@ -1,12 +1,34 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import android.graphics.Color;
+
 import java.util.ArrayList;
 
 public class Field {
+	/**
+	 * A standard way to represent the type of ball in any place, Unknown is used when it is known
+	 * that there is a ball, but the color could not be determined
+	 */
 	public enum Ball {
 		Green,
 		Purple,
-		None
+		Unknown,
+		None;
+
+		/**
+		 * Gets which type of ball there is based on an argb value
+		 * @param argb
+		 * @return
+		 */
+		public static Ball getBallFromColor(int argb) {
+			int red, green, blue, alpha;
+			alpha = Color.alpha(argb) ;
+			red = Color.red(argb);
+			green = Color.green(argb);
+			blue = Color.blue(argb);
+			//TODO! finish this
+			return None;
+		}
 	}
 	public enum Alliance {
 		Red,

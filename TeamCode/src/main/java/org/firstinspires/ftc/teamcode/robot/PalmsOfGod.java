@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 public class PalmsOfGod {
-	enum Position {
+	public enum Position {
 		Up,
 		Down
 	}
@@ -19,11 +19,17 @@ public class PalmsOfGod {
 	public Servo rightPalm, leftPalm;
 	public double rightUp = .71, rightDown = 1;
 	public double leftUp = .38, leftDown = 0;
+	public boolean useTelemetry = false;
 
 	public PalmsOfGod(OpMode opMode) {
 		this.opMode = opMode;
 		this.hardwareMap = opMode.hardwareMap;
 		this.telemetry = opMode.telemetry;
+	}
+
+	public PalmsOfGod useTelemetry() {
+		useTelemetry = true;
+		return this;
 	}
 
 	public void init() {
@@ -60,9 +66,13 @@ public class PalmsOfGod {
 
 	//TODO! get color sensor working
 	public Field.Ball getLeftBall() {
-		return Field.Ball.None;
+		if (useTelemetry)
+			telemetry.addLine(String.format("left: r: %d, g: %d, b: %d", leftEye.red(), leftEye.green(), leftEye.blue()));
+		return Field.Ball.getBallFromColor(leftEye.argb());
 	}
 	public Field.Ball getRightBall() {
-		return Field.Ball.None;
+		if (useTelemetry)
+			telemetry.addLine(String.format("right: r: %d, g: %d, b: %d", rightEye.red(), rightEye.green(), rightEye.blue()));
+		return Field.Ball.getBallFromColor(rightEye.argb());
 	}
 }
