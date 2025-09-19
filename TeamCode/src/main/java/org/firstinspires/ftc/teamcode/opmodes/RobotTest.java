@@ -22,12 +22,12 @@ public class RobotTest extends OpMode {
 
 	@Override
 	public void init() {
-		bot = new Robot(this).enableIntake().enableHandsOfGod().enablePalmsOfGod();
+		bot = new Robot(this).enableIntake().enableHandsOfGod().enablePalmsOfGod().enableTurret();
 		mecanumDrive = new MecanumDrive(this);
 		mecanumDrive.init();
 		bot.init();
 		bot.camera.setTargetTag(Tag.PGP);
-		bot.turret.useCamera();JLK:
+		bot.turret.useGamepad();
 
 
 		mgamepad = new GamepadManager(gamepad2);

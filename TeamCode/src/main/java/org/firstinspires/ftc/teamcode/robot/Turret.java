@@ -47,6 +47,11 @@ public class Turret {
 		return this;
 	}
 
+	public Turret useGamepad() {
+		useGamePad = true;
+		return this;
+	}
+
 	public void init() {
 		rotator = hardwareMap.dcMotor.get("turretRotator");
 		rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
