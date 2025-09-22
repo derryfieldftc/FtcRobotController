@@ -41,6 +41,8 @@ import org.firstinspires.ftc.teamcode.robot.Pose;
 import org.firstinspires.ftc.teamcode.robot.Task;
 import org.firstinspires.ftc.teamcode.robot.TaskList;
 
+import java.util.ArrayList;
+
 @TeleOp(name="TestDSTasks", group="Drivetrain")
 //@Disabled
 public class TestDSTasks extends OpMode
@@ -61,7 +63,7 @@ public class TestDSTasks extends OpMode
 
     private PID pid = null;
 
-    TaskList tasks = null;
+    ArrayList<Task> tasks = null;
     Task currentTask;
 
     Pose initPose = null;
@@ -88,18 +90,18 @@ public class TestDSTasks extends OpMode
         drivetrain.setPose(initPose);
 
         // get and set PID controllers for x, y, and theta directions.
-        pid = PID.importPID("/sdcard/FIRST/PIDX.txt");
+        pid = PID.importPID("/sdcard/FIRST/pid/pid.txt");
         drivetrain.setPIDX(pid);
-        pid = PID.importPID("/sdcard/FIRST/PIDY.txt");
+        pid = PID.importPID("/sdcard/FIRST/pid/pid.txt");
         drivetrain.setPIDY(pid);
-        pid = PID.importPID("/sdcard/FIRST/PIDTheta.txt");
+        pid = PID.importPID("/sdcard/FIRST/pid/pid.txt");
         drivetrain.setPIDTheta(pid);
         RobotLog.d("TIE: imported PID values for x, y, and theta.");
 
         // import tasks.
         currentTask = null;
-        tasks = new TaskList();
-        tasks.importTasks(path);
+        tasks = new ArrayList<>();
+        tasks = TaskList.importTasks(path);
         RobotLog.d("TIE: imported tasks");
 
         // display.

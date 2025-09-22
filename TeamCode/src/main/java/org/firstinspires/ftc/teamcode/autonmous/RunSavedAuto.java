@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.robot.Drivetrain;
+import org.firstinspires.ftc.teamcode.robot.PID;
 import org.firstinspires.ftc.teamcode.robot.Task;
 import org.firstinspires.ftc.teamcode.robot.TaskList;
 
@@ -30,6 +31,10 @@ public class RunSavedAuto extends OpMode {
 		drivetrain = new Drivetrain(this.hardwareMap, this);
 		tasks = TaskList.importTasks("/sdcard/FIRST/auto/tasks.txt");
 		runtime = new ElapsedTime();
+//		PID pid = PID.importPID("/sdcard/FIRST/pid/pid.txt");
+//		drivetrain.setPIDX(pid);
+//		drivetrain.setPIDY(pid);
+//		drivetrain.setPIDTheta(pid);
 		drivetrain.resetOdometry();
 	}
 

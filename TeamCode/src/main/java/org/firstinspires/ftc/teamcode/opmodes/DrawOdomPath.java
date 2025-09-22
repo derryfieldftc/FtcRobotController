@@ -96,7 +96,7 @@ public class DrawOdomPath extends OpMode {
 			}
 		});
 
-		File file = new File("/sdcard/FIRST/" + filename.get());
+		File file = new File("/sdcard/FIRST/auto/" + filename.get());
 		file.createNewFile();
 		PrintWriter writer = new PrintWriter(file);
 		for (Task task : tasks) {
