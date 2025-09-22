@@ -82,11 +82,6 @@ public class Turret {
 			}
 		}
 
-		if (abs(rotator.getCurrentPosition()) >= maxDelta) {
-			return;
-		}
-		rotator.setPower(rotatorPower);
-
 		telemetry.addData("motorpos", rotator.getCurrentPosition());
 		telemetry.addData("limit", limit.getValue());
 		telemetry.update();

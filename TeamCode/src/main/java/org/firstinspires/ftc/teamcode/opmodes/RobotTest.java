@@ -48,6 +48,10 @@ public class RobotTest extends OpMode {
 			rightPalmOpen = !rightPalmOpen;
 		}
 
+		if (mgamepad.justPressed(GamepadManager.Button.LEFT_BUMPER)) {
+			leftPalmOpen = !leftPalmOpen;
+		}
+
 		bot.handsOfGod.setPosition((handsUp) ? HandsOfGod.Position.Up : HandsOfGod.Position.Down);
 		bot.palmsOfGod.setLeftPalm((leftPalmOpen) ? PalmsOfGod.Position.Up : PalmsOfGod.Position.Down) ;
 		bot.palmsOfGod.setRightPalm((rightPalmOpen) ? PalmsOfGod.Position.Up : PalmsOfGod.Position.Down) ;

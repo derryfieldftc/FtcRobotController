@@ -10,24 +10,26 @@ import org.firstinspires.ftc.teamcode.RR.drive.SampleMecanumDrive;
 
 @Autonomous(name = "RRbox", group = OpModeGroups.AUTO)
 public class RRBoxTest extends OpMode {
-	SampleMecanumDrive mecanumDrive = new SampleMecanumDrive(hardwareMap);
+	SampleMecanumDrive mecanumDrive;
 	Trajectory trajectory;
 
 	@Override
 	public void init() {
+		hardwareMap.getClass();
+		mecanumDrive = new SampleMecanumDrive(hardwareMap);
 		mecanumDrive.setPoseEstimate(new Pose2d());
 	}
 
 	@Override
 	public void loop() {
 		//Splineless
-		trajectory = mecanumDrive.trajectoryBuilder(new Pose2d()).strafeLeft(20).build();
+		trajectory = mecanumDrive.trajectoryBuilder(new Pose2d()).strafeLeft(10).build();
 		mecanumDrive.followTrajectory(trajectory);
-		trajectory = mecanumDrive.trajectoryBuilder(new Pose2d()).forward(20).build();
+		trajectory = mecanumDrive.trajectoryBuilder(trajectory.end()).forward(10).build();
 		mecanumDrive.followTrajectory(trajectory);
-		trajectory = mecanumDrive.trajectoryBuilder(new Pose2d()).strafeRight(20).build();
+		trajectory = mecanumDrive.trajectoryBuilder(trajectory.end()).strafeRight(10).build();
 		mecanumDrive.followTrajectory(trajectory);
-		trajectory = mecanumDrive.trajectoryBuilder(new Pose2d()).back(20).build();
+		trajectory = mecanumDrive.trajectoryBuilder(trajectory.end()).back(10).build();
 		mecanumDrive.followTrajectory(trajectory);
 	}
 }
