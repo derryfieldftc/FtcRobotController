@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode.robot;
 
-import android.graphics.Color;
+import androidx.annotation.NonNull;
 
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -44,5 +46,37 @@ public class Intake {
 
 	public void loop() {
 		intake.setPower(speed);
+	}
+
+	class RR {
+		public Action enable() {
+			return new Action() {
+				@Override
+				public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+					setSpeed(1);
+					return false;
+				}
+			};
+		}
+
+		public Action disable() {
+			return new Action() {
+				@Override
+				public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+					setSpeed(0);
+					return false;
+				}
+			};
+		}
+
+		public Action setSpeed(double speed) {
+			return new Action() {
+				@Override
+				public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+					Intake.this.setSpeed(speed);
+					return false;
+				}
+			};
+		}
 	}
 }

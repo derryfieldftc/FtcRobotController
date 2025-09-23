@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -21,7 +25,7 @@ public class HandsOfGod {
 	public boolean useGamepad = false, useTelemetry = false;
 	private double leftUp = .55;
 	private double leftDown = 1;
-	private double rightUp =  .31;
+	private double rightUp = .31;
 	private double rightDown = 0;
 
 	public HandsOfGod(OpMode opMode) {
@@ -56,6 +60,41 @@ public class HandsOfGod {
 				leftHand.setPosition(leftDown);
 				rightHand.setPosition(rightDown);
 
+		}
+	}
+
+	/**
+	 * Class for all RoadRunner Actions
+	 */
+	class RR {
+		public Action setPositionUp() {
+			return new Action() {
+				@Override
+				public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+					setPosition(Position.Up);
+					return false;
+				}
+			};
+		}
+
+		public Action setPositionDown() {
+			return new Action() {
+				@Override
+				public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+					setPosition(Position.Down);
+					return false;
+				}
+			};
+		}
+
+		public Action setPosition(Position pos) {
+			return new Action() {
+				@Override
+				public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+					HandsOfGod.this.setPosition(pos);
+					return false;
+				}
+			};
 		}
 	}
 
