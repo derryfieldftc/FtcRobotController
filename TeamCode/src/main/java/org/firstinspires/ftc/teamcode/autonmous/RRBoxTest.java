@@ -1,17 +1,31 @@
 package org.firstinspires.ftc.teamcode.autonmous;
 
+import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.ftc.Actions;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.OpModeGroups;
 import org.firstinspires.ftc.teamcode.RR.MecanumDrive;
 
+@Autonomous(name = "RRBoxTest", group = OpModeGroups.TESTS)
 public class RRBoxTest extends LinearOpMode {
 	MecanumDrive mecanumDrive;
+
 	@Override
 	public void runOpMode() throws InterruptedException {
 		mecanumDrive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
-		TrajectoryActionBuilder builder;
+		Action firstMove = mecanumDrive.actionBuilder(new Pose2d(0, 0, 0))
+				.lineToX(20)
+				.waitSeconds(1)
+				.lineToY(20)
+				.waitSeconds(1)
+				.lineToX(-20)
+				.waitSeconds(1)
+				.lineToY(-20)
+				.build();
+
+		Actions.runBlocking(firstMove);
 	}
 }
