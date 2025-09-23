@@ -22,12 +22,12 @@ public class RobotTest extends OpMode {
 
 	@Override
 	public void init() {
-		bot = new Robot(this).enableIntake().enableHandsOfGod().enablePalmsOfGod().enableTurret();
+		bot = new Robot(this).enableIntake().enableHandsOfGod().enablePalmsOfGod();
 		mecanumDrive = new MecanumDrive(this);
 		mecanumDrive.init();
 		bot.init();
 		bot.camera.setTargetTag(Tag.PGP);
-		bot.turret.useGamepad();
+//		bot.turret.useGamepad();
 
 
 		mgamepad = new GamepadManager(gamepad2);
@@ -46,6 +46,10 @@ public class RobotTest extends OpMode {
 
 		if (mgamepad.justPressed(GamepadManager.Button.RIGHT_BUMPER)) {
 			rightPalmOpen = !rightPalmOpen;
+		}
+
+		if (mgamepad.justPressed(GamepadManager.Button.LEFT_BUMPER)) {
+			leftPalmOpen = !leftPalmOpen;
 		}
 
 		bot.handsOfGod.setPosition((handsUp) ? HandsOfGod.Position.Up : HandsOfGod.Position.Down);
