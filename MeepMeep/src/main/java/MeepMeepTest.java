@@ -23,6 +23,8 @@ public class MeepMeepTest {
 						.strafeTo(new Vector2d(24, 24))
 						.strafeTo(new Vector2d(24, 0))
 						.strafeTo(new Vector2d(0, 0))
+						.splineToConstantHeading(new Vector2d(12, 12), 0)
+						.splineToConstantHeading(new Vector2d(48, 48), 0)
 						.build());
 
 
