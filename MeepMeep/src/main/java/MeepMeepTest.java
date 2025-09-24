@@ -1,4 +1,5 @@
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 
 import org.rowlandhall.meepmeep.MeepMeep;
 import org.rowlandhall.meepmeep.roadrunner.DefaultBotBuilder;
@@ -18,10 +19,10 @@ public class MeepMeepTest {
 				// Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
 				.setConstraints(50, 50, Math.toRadians(180), Math.toRadians(180), 16)
 				.followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(new Pose2d(0, 0, 0))
-						.splineTo(new Pose2d(48, 0, Math.toRadians(0)), Math.toRadians(0))
-						.splineTo(new Pose2d(48, 48, Math.toRadians(0)), Math.toRadians(0))
-						.splineTo(new Pose2d(0, 48, Math.toRadians(0)), Math.toRadians(0))
-						.splineTo(new Pose2d(0, 0, Math.toRadians(0)), Math.toRadians(0))
+						.strafeTo(new Vector2d(0, 24))
+						.strafeTo(new Vector2d(24, 24))
+						.strafeTo(new Vector2d(24, 0))
+						.strafeTo(new Vector2d(0, 0))
 						.build());
 
 
