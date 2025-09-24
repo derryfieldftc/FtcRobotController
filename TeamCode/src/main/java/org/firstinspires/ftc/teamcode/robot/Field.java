@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import android.graphics.Color;
 
+import com.acmerobotics.roadrunner.Pose2d;
+
 import java.util.ArrayList;
 
 public class Field {
@@ -17,12 +19,13 @@ public class Field {
 
 		/**
 		 * Gets which type of ball there is based on an argb value
+		 *
 		 * @param argb
 		 * @return
 		 */
 		public static Ball getBallFromColor(int argb) {
 			int red, green, blue, alpha;
-			alpha = Color.alpha(argb) ;
+			alpha = Color.alpha(argb);
 			red = Color.red(argb);
 			green = Color.green(argb);
 			blue = Color.blue(argb);
@@ -30,6 +33,7 @@ public class Field {
 			return None;
 		}
 	}
+
 	public enum Alliance {
 		Red,
 		Blue
@@ -72,6 +76,7 @@ public class Field {
 
 		/**
 		 * Returns the amount of balls in the gutter
+		 *
 		 * @return
 		 */
 		public int addBall(Ball ball) {
@@ -98,6 +103,20 @@ public class Field {
 				return Tag.RED;
 
 			return Tag.BLUE;
+		}
+
+		/**
+		 * Returns the positon of the Alliance Depot in relation to the field, Keep in mind the origin is the center of the field
+		 * Heading can be ignored
+		 *
+		 * @param alliance
+		 * @return
+		 */
+		public Pose2d getPosition(Alliance alliance) {
+			if (alliance == Alliance.Red) {
+				return new Pose2d(60, 60, 0);
+			}
+			return new Pose2d(-60, 60, 0);
 		}
 	}
 }
