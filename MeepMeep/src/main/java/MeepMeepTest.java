@@ -36,6 +36,7 @@ public class MeepMeepTest {
 				.setDarkMode(true)
 				.setBackgroundAlpha(0.95f)
 				.addEntity(myBot)
+				.setShowFPS(true)
 				.start();
 	}
 }
