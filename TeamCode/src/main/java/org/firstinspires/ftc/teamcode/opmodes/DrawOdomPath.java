@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -7,7 +8,6 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import org.firstinspires.ftc.teamcode.GamepadManager;
 import org.firstinspires.ftc.teamcode.OpModeGroups;
 import org.firstinspires.ftc.teamcode.plugin.plugins.MecanumDrive;
-import org.firstinspires.ftc.teamcode.plugin.tasks.DelayTask;
 import org.firstinspires.ftc.teamcode.robot.Drivetrain;
 import org.firstinspires.ftc.teamcode.robot.Pose;
 import org.firstinspires.ftc.teamcode.robot.Task;
@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicReference;
 
 @TeleOp(name = "Draw Odom Path", group = OpModeGroups.TESTS)
+@Disabled
 public class DrawOdomPath extends OpMode {
 	Drivetrain drivetrain;
 	MecanumDrive mecanumDrive;
@@ -71,10 +72,14 @@ public class DrawOdomPath extends OpMode {
 		Pose tempPose = drivetrain.getPose();
 		telemetry.addLine(String.format("x: %.3f y: %.3f t: %.3f", tempPose.x, tempPose.y, tempPose.theta));
 		for (int i = tasks.size() - 1; i >= 0; i--) {
-			if (tasks.get(i).getType() == Task.Type.DELAY) {
-				telemetry.addData("("+i+")", tasks.get(i).getPeriod());
-			} else if (tasks.get(i).getType() ==Task.Type.WAYPOINT) {
-				Pose pose = tasks.get(i).getPose();
+			if (tasks.get(i)
+					.getType() == Task.Type.DELAY) {
+				telemetry.addData("(" + i + ")", tasks.get(i)
+						.getPeriod());
+			} else if (tasks.get(i)
+					.getType() == Task.Type.WAYPOINT) {
+				Pose pose = tasks.get(i)
+						.getPose();
 				telemetry.addLine(String.format("(%d) x: %.3f y: %.3f t: %.3f", i, pose.x, pose.y, pose.theta));
 			}
 		}
@@ -83,13 +88,16 @@ public class DrawOdomPath extends OpMode {
 
 	/**
 	 * Would just use a TaskList now
+	 *
 	 * @throws IOException
 	 */
 	private void saveToFile() throws IOException {
 		AtomicReference<String> filename = new AtomicReference<>("tasks.txt");
 
 		// She might be on to something
-		Iterator<String> allNames = hardwareMap.getAllNames(DistanceSensor.class).stream().iterator();
+		Iterator<String> allNames = hardwareMap.getAllNames(DistanceSensor.class)
+				.stream()
+				.iterator();
 		allNames.forEachRemaining((name) -> {
 			if (name.contains("FNPRE_")) {
 				filename.set(name.substring(6));

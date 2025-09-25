@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.robot;
 
-import static androidx.core.math.MathUtils.clamp;
+import static org.firstinspires.ftc.teamcode.robot.Tag.GPP;
+import static org.firstinspires.ftc.teamcode.robot.Tag.PGP;
+import static org.firstinspires.ftc.teamcode.robot.Tag.PPG;
 import static java.lang.Math.abs;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -20,6 +22,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
+import java.util.Optional;
 
 //Oh boy
 public class Turret {
@@ -112,6 +115,7 @@ public class Turret {
 
 		/**
 		 * Creates a new Camera, used to find april tags
+		 *
 		 * @param opMode
 		 */
 		public Camera(OpMode opMode) {
@@ -123,6 +127,7 @@ public class Turret {
 		/**
 		 * This method is a little funky, but it sets where you want to keep the tag within the camera,
 		 * usually just the center of the camera
+		 *
 		 * @param XPixel
 		 * @param YPixel
 		 * @return
@@ -136,6 +141,7 @@ public class Turret {
 
 		/**
 		 * Sets the tag to search for and track
+		 *
 		 * @param targetTag
 		 */
 		public Camera setTargetTag(Tag targetTag) {
@@ -167,8 +173,28 @@ public class Turret {
 			}
 		}
 
+
+		/**
+		 * Gets what motif the obelisk is set to
+		 *
+		 * @return
+		 */
+		public Optional<Field.Motif> getMotif() {
+			for (AprilTagDetection tag : aprilTag.getDetections()) {
+				if (tag.id == GPP.id) {
+					return Optional.of(Field.Motif.GPP);
+				} else if (tag.id == PGP.id) {
+					return Optional.of(Field.Motif.PGP);
+				} else if (tag.id == PPG.id) {
+					return Optional.of(Field.Motif.PPG);
+				}
+			}
+			return Optional.empty();
+		}
+
 		public void telemetry() {
-			telemetry.addData("tags found", aprilTag.getDetections().size());
+			telemetry.addData("tags found", aprilTag.getDetections()
+					.size());
 			String ids = new String();
 			for (AprilTagDetection tag : aprilTag.getDetections()) {
 				ids += " " + tag.id;
@@ -186,6 +212,7 @@ public class Turret {
 
 		/**
 		 * Get the offset of the tag from your target position, negative means left
+		 *
 		 * @return
 		 */
 		public double getOffsetX() {
@@ -194,6 +221,7 @@ public class Turret {
 
 		/**
 		 * Get the offset of the tag from your target position, negative means down
+		 *
 		 * @return
 		 */
 		public double getOffsetY() {
@@ -202,6 +230,7 @@ public class Turret {
 
 		/**
 		 * Get what x pixel the tag was last recognized
+		 *
 		 * @return
 		 */
 		public double getLastTagX() {
@@ -210,6 +239,7 @@ public class Turret {
 
 		/**
 		 * Get what y pixel the tag was last recognized
+		 *
 		 * @return
 		 */
 		public double getLastTagY() {

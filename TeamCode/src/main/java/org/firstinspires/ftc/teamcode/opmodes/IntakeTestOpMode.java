@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -9,7 +10,8 @@ import org.firstinspires.ftc.teamcode.OpModeGroups;
 import org.firstinspires.ftc.teamcode.plugin.RobotPlugin;
 import org.firstinspires.ftc.teamcode.plugin.plugins.MecanumDrive;
 
-@TeleOp(name="IntakeTestOpMode", group = OpModeGroups.TESTS)
+@TeleOp(name = "IntakeTestOpMode", group = OpModeGroups.TESTS)
+@Disabled
 public class IntakeTestOpMode extends OpMode {
 	RobotPlugin mechanumDrive;
 	DcMotor intake;
@@ -25,7 +27,8 @@ public class IntakeTestOpMode extends OpMode {
 		mechanumDrive.init();
 		intake = hardwareMap.dcMotor.get("intake");
 		intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-		intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT); }
+		intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+	}
 
 	@Override
 	public void loop() {

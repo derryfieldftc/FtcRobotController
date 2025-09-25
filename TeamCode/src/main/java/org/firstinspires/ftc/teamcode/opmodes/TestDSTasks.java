@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -43,221 +44,222 @@ import org.firstinspires.ftc.teamcode.robot.TaskList;
 
 import java.util.ArrayList;
 
-@TeleOp(name="TestDSTasks", group="Drivetrain")
-//@Disabled
+@TeleOp(name = "TestDSTasks", group = "Drivetrain")
+@Disabled
 public class TestDSTasks extends OpMode
-    //
+		//
 {
-    enum Mode {
-        MANUAL,
-        AUTONOMOUS
-    }
+	enum Mode {
+		MANUAL,
+		AUTONOMOUS
+	}
 
-    Mode currMode;
+	Mode currMode;
 
-    // Declare OpMode members.
-    private ElapsedTime runtime = new ElapsedTime();
-    private double start_time;
+	// Declare OpMode members.
+	private ElapsedTime runtime = new ElapsedTime();
+	private double start_time;
 
-    private Drivetrain drivetrain;
+	private Drivetrain drivetrain;
 
-    private PID pid = null;
+	private PID pid = null;
 
-    ArrayList<Task> tasks = null;
-    Task currentTask;
+	ArrayList<Task> tasks = null;
+	Task currentTask;
 
-    Pose initPose = null;
+	Pose initPose = null;
 
-    boolean turboMode = false;
+	boolean turboMode = false;
 
-    private GamepadManager enhanced1 = null;
+	private GamepadManager enhanced1 = null;
 
-    private static final double SNAIL_FACTOR = 0.3;
-    /*
-     * Code to run ONCE when the driver hits INIT
-     */
-    @Override
-    public void init() {
-        String path = "/sdcard/FIRST/auto/tasks.txt";
-        RobotLog.d("TIE: ds_log created (%s)", path);
-        telemetry.addData("Status", "Initialized");
+	private static final double SNAIL_FACTOR = 0.3;
 
-        // create driveTrain Object.
-        drivetrain = new Drivetrain(hardwareMap, this);
+	/*
+	 * Code to run ONCE when the driver hits INIT
+	 */
+	@Override
+	public void init() {
+		String path = "/sdcard/FIRST/auto/tasks.txt";
+		RobotLog.d("TIE: ds_log created (%s)", path);
+		telemetry.addData("Status", "Initialized");
 
-        // set initial pose of drive train.
-        initPose = new Pose(0, 0, 0);
-        drivetrain.setPose(initPose);
+		// create driveTrain Object.
+		drivetrain = new Drivetrain(hardwareMap, this);
 
-        // get and set PID controllers for x, y, and theta directions.
-        pid = PID.importPID("/sdcard/FIRST/pid/pid.txt");
-        drivetrain.setPIDX(pid);
-        pid = PID.importPID("/sdcard/FIRST/pid/pid.txt");
-        drivetrain.setPIDY(pid);
-        pid = PID.importPID("/sdcard/FIRST/pid/pid.txt");
-        drivetrain.setPIDTheta(pid);
-        RobotLog.d("TIE: imported PID values for x, y, and theta.");
+		// set initial pose of drive train.
+		initPose = new Pose(0, 0, 0);
+		drivetrain.setPose(initPose);
 
-        // import tasks.
-        currentTask = null;
-        tasks = new ArrayList<>();
-        tasks = TaskList.importTasks(path);
-        RobotLog.d("TIE: imported tasks");
+		// get and set PID controllers for x, y, and theta directions.
+		pid = PID.importPID("/sdcard/FIRST/pid/pid.txt");
+		drivetrain.setPIDX(pid);
+		pid = PID.importPID("/sdcard/FIRST/pid/pid.txt");
+		drivetrain.setPIDY(pid);
+		pid = PID.importPID("/sdcard/FIRST/pid/pid.txt");
+		drivetrain.setPIDTheta(pid);
+		RobotLog.d("TIE: imported PID values for x, y, and theta.");
 
-        // display.
-        RobotLog.d("TIE: " + tasks.toString());
+		// import tasks.
+		currentTask = null;
+		tasks = new ArrayList<>();
+		tasks = TaskList.importTasks(path);
+		RobotLog.d("TIE: imported tasks");
 
-        // current mode of this op mode.
-        currMode = Mode.MANUAL;
+		// display.
+		RobotLog.d("TIE: " + tasks.toString());
 
-        // use an enhanced gamepad to keep track of button presses.
-        enhanced1 = new GamepadManager(gamepad1);
-    }
+		// current mode of this op mode.
+		currMode = Mode.MANUAL;
 
-    /*
-     * Code to run REPEATEDLY after the driver hits INIT, but before they hit START
-     */
-    @Override
-    public void init_loop() {
-    }
+		// use an enhanced gamepad to keep track of button presses.
+		enhanced1 = new GamepadManager(gamepad1);
+	}
 
-    /*
-     * Code to run ONCE when the driver hits START
-     */
-    @Override
-    public void start() {
-        runtime.reset();
-        start_time = runtime.milliseconds();
-    }
+	/*
+	 * Code to run REPEATEDLY after the driver hits INIT, but before they hit START
+	 */
+	@Override
+	public void init_loop() {
+	}
 
-    /*
-     * Code to run REPEATEDLY after the driver hits START but before they hit STOP
-     */
-    @Override
-    public void loop() {
-        // refresh pose.
-        drivetrain.refreshPose();
+	/*
+	 * Code to run ONCE when the driver hits START
+	 */
+	@Override
+	public void start() {
+		runtime.reset();
+		start_time = runtime.milliseconds();
+	}
 
-        // refresh gamepad data.
-        enhanced1.poll();
+	/*
+	 * Code to run REPEATEDLY after the driver hits START but before they hit STOP
+	 */
+	@Override
+	public void loop() {
+		// refresh pose.
+		drivetrain.refreshPose();
 
-        // reset odometry system?
-        if (enhanced1.justPressed(GamepadManager.Button.X)) {
-            // reset the odometry system.
-            drivetrain.resetOdometry();
+		// refresh gamepad data.
+		enhanced1.poll();
 
-            // reset init pose.
-            drivetrain.setPose(initPose);
-        }
+		// reset odometry system?
+		if (enhanced1.justPressed(GamepadManager.Button.X)) {
+			// reset the odometry system.
+			drivetrain.resetOdometry();
 
-        // enable turbo mode?
-        if (enhanced1.justPressed(GamepadManager.Button.B)) {
-            // toggle between snail mode (slower) and regular mode
-            turboMode = !turboMode;
-        }
+			// reset init pose.
+			drivetrain.setPose(initPose);
+		}
 
-        if (enhanced1.justPressed(GamepadManager.Button.DPAD_UP)){
-            boolean val = drivetrain.getMotorCorrectionEnabled();
-            val = !val;
-            drivetrain.setMotorCorrectionEnabled(val);
-        }
+		// enable turbo mode?
+		if (enhanced1.justPressed(GamepadManager.Button.B)) {
+			// toggle between snail mode (slower) and regular mode
+			turboMode = !turboMode;
+		}
 
-        if (enhanced1.justPressed(GamepadManager.Button.DPAD_DOWN)) {
-            toggleAuto();
-        }
+		if (enhanced1.justPressed(GamepadManager.Button.DPAD_UP)) {
+			boolean val = drivetrain.getMotorCorrectionEnabled();
+			val = !val;
+			drivetrain.setMotorCorrectionEnabled(val);
+		}
 
-        if (currMode == Mode.AUTONOMOUS) {
-            // check current state.
-            switch(drivetrain.getState()) {
-                case IDLE:
-                    // are there any tasks to process?
-                    if (tasks.size() > 0) {
-                        currentTask = tasks.get(0);
-                        tasks.remove(0);
-                        switch (currentTask.getType()) {
-                            case WAYPOINT:
-                                drivetrain.setWaypoint(currentTask.getPose());
-                                drivetrain.setState(Drivetrain.State.NAVIGATING);
-                                RobotLog.d("TIE: WAYPOINT");
-                                break;
-                            case DELAY:
-                                // reset timer.
-                                runtime.reset();
-                                // switch to delaying state.
-                                drivetrain.setState(Drivetrain.State.DELAYING);
-                                RobotLog.d("TIE: DELAY");
-                                break;
-                        }
-                        break;
-                    }
-                    break;
-                case NAVIGATING:
-                    // we are currently auto-navigating.
-                    // apply correction to move towards current waypoint.
-                    if (drivetrain.applyCorrection()) {
-                        // if applyCorrection() returns true, then we have arrived at the waypoint.
-                        drivetrain.stop();
-                        RobotLog.d("TIE: made it to waypoint. Clearing waypoint...");
-                        drivetrain.clearWaypoint();
-                        RobotLog.d("TIE: cleared!");
-                        // go back to idle state.
-                        drivetrain.setState(Drivetrain.State.IDLE);
-                    }
-                    break;
-                case DELAYING:
-                    double milli = runtime.milliseconds();
+		if (enhanced1.justPressed(GamepadManager.Button.DPAD_DOWN)) {
+			toggleAuto();
+		}
+
+		if (currMode == Mode.AUTONOMOUS) {
+			// check current state.
+			switch (drivetrain.getState()) {
+				case IDLE:
+					// are there any tasks to process?
+					if (tasks.size() > 0) {
+						currentTask = tasks.get(0);
+						tasks.remove(0);
+						switch (currentTask.getType()) {
+							case WAYPOINT:
+								drivetrain.setWaypoint(currentTask.getPose());
+								drivetrain.setState(Drivetrain.State.NAVIGATING);
+								RobotLog.d("TIE: WAYPOINT");
+								break;
+							case DELAY:
+								// reset timer.
+								runtime.reset();
+								// switch to delaying state.
+								drivetrain.setState(Drivetrain.State.DELAYING);
+								RobotLog.d("TIE: DELAY");
+								break;
+						}
+						break;
+					}
+					break;
+				case NAVIGATING:
+					// we are currently auto-navigating.
+					// apply correction to move towards current waypoint.
+					if (drivetrain.applyCorrection()) {
+						// if applyCorrection() returns true, then we have arrived at the waypoint.
+						drivetrain.stop();
+						RobotLog.d("TIE: made it to waypoint. Clearing waypoint...");
+						drivetrain.clearWaypoint();
+						RobotLog.d("TIE: cleared!");
+						// go back to idle state.
+						drivetrain.setState(Drivetrain.State.IDLE);
+					}
+					break;
+				case DELAYING:
+					double milli = runtime.milliseconds();
 //                    RobotLog.d(String.format("TIE: DELAYING - milli = %.2f", milli));
 //                    RobotLog.d(String.format("TIE: DELAYING - period = %.2f", (double)currentTask.getPeriod()));
 
-                    if (milli > (double)currentTask.getPeriod()) {
-                        // timer has expired.
-                        // switch back to idle state.
-                        drivetrain.setState(Drivetrain.State.IDLE);
-                        RobotLog.d("TIE: Done DELAYING.");
-                    }
-                    break;
-            }
-        } else {
-            // get driver input.
-            // also get driver input and drive robot.
-            double drive = turboMode ? -gamepad1.left_stick_y : -SNAIL_FACTOR * gamepad1.left_stick_y;
-            double strafe = turboMode ? gamepad1.left_stick_x : SNAIL_FACTOR * gamepad1.left_stick_x;
-            double turn  =  turboMode ? -gamepad1.right_stick_x : -SNAIL_FACTOR * gamepad1.right_stick_x;
-            drivetrain.drive(drive, strafe, turn);
-        }
+					if (milli > (double) currentTask.getPeriod()) {
+						// timer has expired.
+						// switch back to idle state.
+						drivetrain.setState(Drivetrain.State.IDLE);
+						RobotLog.d("TIE: Done DELAYING.");
+					}
+					break;
+			}
+		} else {
+			// get driver input.
+			// also get driver input and drive robot.
+			double drive = turboMode ? -gamepad1.left_stick_y : -SNAIL_FACTOR * gamepad1.left_stick_y;
+			double strafe = turboMode ? gamepad1.left_stick_x : SNAIL_FACTOR * gamepad1.left_stick_x;
+			double turn = turboMode ? -gamepad1.right_stick_x : -SNAIL_FACTOR * gamepad1.right_stick_x;
+			drivetrain.drive(drive, strafe, turn);
+		}
 
-        // update display.
-        telemetry.addData("Instructions", "Dpad down toggle auto");
-        telemetry.addData("Mode", currMode);
-        // display current waypoint.
-        telemetry.addData("Current Waypoint", drivetrain.getCurrentWaypoint());
+		// update display.
+		telemetry.addData("Instructions", "Dpad down toggle auto");
+		telemetry.addData("Mode", currMode);
+		// display current waypoint.
+		telemetry.addData("Current Waypoint", drivetrain.getCurrentWaypoint());
 
-        // Show the elapsed game time and wheel power.
-        telemetry.addData("Turbo Mode", turboMode);
-        telemetry.addData("Motor Correction Enabled", drivetrain.getMotorCorrectionEnabled());
+		// Show the elapsed game time and wheel power.
+		telemetry.addData("Turbo Mode", turboMode);
+		telemetry.addData("Motor Correction Enabled", drivetrain.getMotorCorrectionEnabled());
 
-        // encoder data
-        telemetry.addData("x", drivetrain.pose.x);
-        telemetry.addData("y", drivetrain.pose.y);
-        telemetry.addData("theta", drivetrain.pose.theta);
+		// encoder data
+		telemetry.addData("x", drivetrain.pose.x);
+		telemetry.addData("y", drivetrain.pose.y);
+		telemetry.addData("theta", drivetrain.pose.theta);
 
-        // update telemetry.
-        telemetry.update();
-    }
+		// update telemetry.
+		telemetry.update();
+	}
 
-    /*
-     * Code to run ONCE after the driver hits STOP
-     */
-    @Override
-    public void stop() {
-        RobotLog.d("TIE: ds_log closed.");
-    }
+	/*
+	 * Code to run ONCE after the driver hits STOP
+	 */
+	@Override
+	public void stop() {
+		RobotLog.d("TIE: ds_log closed.");
+	}
 
-    public void toggleAuto() {
-        if (currMode == Mode.AUTONOMOUS) {
-            currMode = Mode.MANUAL;
-        } else {
-            currMode = Mode.AUTONOMOUS;
-        }
-    }
+	public void toggleAuto() {
+		if (currMode == Mode.AUTONOMOUS) {
+			currMode = Mode.MANUAL;
+		} else {
+			currMode = Mode.AUTONOMOUS;
+		}
+	}
 }
