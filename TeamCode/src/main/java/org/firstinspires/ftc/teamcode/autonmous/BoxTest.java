@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.autonmous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.robot.Drivetrain;
@@ -9,6 +10,7 @@ import org.firstinspires.ftc.teamcode.robot.Pose;
 import java.util.ArrayList;
 
 @Autonomous
+@Disabled
 public class BoxTest extends OpMode {
 	Drivetrain drivetrain;
 	ArrayList<Pose> poses = new ArrayList<>();
@@ -32,7 +34,8 @@ public class BoxTest extends OpMode {
 		if (drivetrain.waypoint != null) {
 			if (!drivetrain.applyCorrection()) {
 				telemetry.addData("wp:", drivetrain.waypoint.dump());
-				telemetry.addData("pose: ", drivetrain.getPose().dump());
+				telemetry.addData("pose: ", drivetrain.getPose()
+						.dump());
 			} else {
 				drivetrain.stop();
 				drivetrain.clearWaypoint();

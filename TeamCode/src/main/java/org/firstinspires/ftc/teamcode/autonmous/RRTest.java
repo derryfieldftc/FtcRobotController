@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.OpModeGroups;
 import org.firstinspires.ftc.teamcode.RR.MecanumDrive;
 
 @Autonomous(name = "RRCircle", group = OpModeGroups.TESTS)
-public class RRBoxTest extends LinearOpMode {
+public class RRTest extends LinearOpMode {
 	MecanumDrive mecanumDrive;
 
 	@Override

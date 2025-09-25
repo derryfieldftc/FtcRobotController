@@ -7,6 +7,9 @@ import com.acmerobotics.roadrunner.Pose2d;
 import java.util.ArrayList;
 
 public class Field {
+	public static Alliance alliance;
+	public static Motif motif;
+
 	/**
 	 * A standard way to represent the type of ball in any place, Unknown is used when it is known
 	 * that there is a ball, but the color could not be determined
