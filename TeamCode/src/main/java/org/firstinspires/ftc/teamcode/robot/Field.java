@@ -2,13 +2,15 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import android.graphics.Color;
 
-import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Vector2d;
 
 import java.util.ArrayList;
 
 public class Field {
 	public static Alliance alliance;
 	public static Motif motif;
+//	public final Vector2d bottom_left;
+//	public final Vector2d bottom_right;
 
 	/**
 	 * A standard way to represent the type of ball in any place, Unknown is used when it is known
@@ -110,16 +112,24 @@ public class Field {
 
 		/**
 		 * Returns the positon of the Alliance Depot in relation to the field, Keep in mind the origin is the center of the field
-		 * Heading can be ignored
 		 *
 		 * @param alliance
 		 * @return
 		 */
-		public Pose2d getPosition(Alliance alliance) {
+		public Vector2d getPosition(Alliance alliance) {
 			if (alliance == Alliance.Red) {
-				return new Pose2d(60, 60, 0);
+				return new Vector2d(60, 60);
 			}
-			return new Pose2d(-60, 60, 0);
+			return new Vector2d(-60, 60);
+		}
+
+		/**
+		 * Returns the position of the alliance depot in relation to the field, remeber the origin is at the center of the field.
+		 *
+		 * @return
+		 */
+		public Vector2d getPosition() {
+			return getPosition(alliance);
 		}
 	}
 }
