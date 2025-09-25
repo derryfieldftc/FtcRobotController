@@ -28,7 +28,7 @@ public class Intake {
 
 	public void init() {
 		intake = hardwareMap.dcMotor.get("intake");
-		intake.setDirection(DcMotorSimple.Direction.REVERSE);
+		intake.setDirection(DcMotorSimple.Direction.FORWARD);
 		colorSensor = hardwareMap.colorSensor.get("intakeColorSensor");
 	}
 

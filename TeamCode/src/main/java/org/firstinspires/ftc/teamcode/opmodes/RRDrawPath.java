@@ -31,17 +31,17 @@ public class RRDrawPath extends OpMode {
 	@SuppressLint("DefaultLocale")
 	@Override
 	public void loop() {
-		double strafe = gamepad1.left_stick_x;
-		double drive = -gamepad1.left_stick_y;
-		double angular = gamepad1.right_stick_x;
+		double drive = -gamepad1.left_stick_x;
+		double strafe = -gamepad1.left_stick_y;
+		double angular = -gamepad1.right_stick_x;
 
-		telemetry.addLine(String.format("Powers: x: %.3f, y: %f, a: %.3f"));
+		telemetry.addLine(String.format("Powers: x: %.3f, y: %f, a: %.3f", strafe, drive, angular));
 
 		mecanumDrive.setDrivePowers(new PoseVelocity2d(new Vector2d(strafe, drive), angular));
 		mecanumDrive.updatePoseEstimate();
 
 		Pose2d pose = mecanumDrive.localizer.getPose();
-		telemetry.addLine(String.format("x: %.3f, y: %.3f, i: %.3f, r: %.3f", pose.position.x, pose.position.y, pose.heading.imag, pose.heading.real));
+		telemetry.addLine(String.format("x: %.3f, y: %.3f, r: %.3f", pose.position.x, pose.position.y, pose.heading.toDouble()));
 		telemetry.update();
 
 		mgamepad.poll();
@@ -52,12 +52,18 @@ public class RRDrawPath extends OpMode {
 		}
 
 		if (mgamepad.justPressed(GamepadManager.Button.A)) {
-			Pose2d pose_copy = new Pose2d(mecanumDrive.localizer.getPose().position.x, mecanumDrive.localizer.getPose().position.y, mecanumDrive.localizer.getPose().heading.real);
+			Pose2d pose_copy = new Pose2d(mecanumDrive.localizer.getPose().position.x, mecanumDrive.localizer.getPose().position.y, mecanumDrive.localizer.getPose().heading.toDouble());
 			poses.add(pose_copy);
 		}
 
 		if (mgamepad.justPressed(GamepadManager.Button.B)) {
-			poses.remove(poses.size() - 1);
+			if (!poses.isEmpty())
+				poses.remove(poses.size() - 1);
+		}
+
+		for (int i = poses.size() - 1; i >= 0; i--) {
+			Pose2d temp = poses.get(i);
+			telemetry.addLine(String.format("(%d): x: %.3f, y: %.3f", i, temp.position.x, temp.position.y, temp.heading.toDouble()));
 		}
 	}
 }

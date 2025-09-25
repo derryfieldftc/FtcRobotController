@@ -15,6 +15,7 @@ public class MotifAuto extends OpMode {
 	public void init() {
 		Field.motif = null;
 		robot = new Robot(this).enableCamera();
+		robot.init();
 
 	}
 
@@ -32,5 +33,6 @@ public class MotifAuto extends OpMode {
 	public void loop() {
 		telemetry.addData("motif", Field.motif);
 		telemetry.update();
+		robot.loop();
 	}
 }

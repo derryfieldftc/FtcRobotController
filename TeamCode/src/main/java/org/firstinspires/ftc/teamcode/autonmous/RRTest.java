@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.OpModeGroups;
 import org.firstinspires.ftc.teamcode.RR.MecanumDrive;
+import org.firstinspires.ftc.teamcode.robot.Intake;
 
 @Autonomous(name = "RRCircle", group = OpModeGroups.TESTS)
 public class RRTest extends LinearOpMode {
@@ -16,12 +17,23 @@ public class RRTest extends LinearOpMode {
 
 	@Override
 	public void runOpMode() throws InterruptedException {
-		mecanumDrive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, Math.PI / 2));
-		Action firstMove = mecanumDrive.actionBuilder(new Pose2d(0, 0, Math.PI / 2))
-				.splineTo(new Vector2d(24, 24), 0)
-				.splineTo(new Vector2d(48, 0), -Math.PI / 2)
-				.splineTo(new Vector2d(24, -24), Math.PI)
-				.splineTo(new Vector2d(0, 0), Math.PI / 2)
+		hardwareMap.getClass();
+		Intake intake = new Intake(this);
+		intake.init();
+		intake.setSpeed(1);
+		intake.loop();
+		final Pose2d initalPose = new Pose2d(-6, -60, Math.PI / 2);
+		mecanumDrive = new MecanumDrive(hardwareMap, initalPose);
+		Action firstMove = mecanumDrive.actionBuilder(initalPose)
+				.splineTo(new Vector2d(-35, -35), Math.PI)
+				.splineTo(new Vector2d(-45, -35), Math.PI)
+				.setReversed(true)
+				.splineTo(new Vector2d(-16, -55), -Math.PI / 2)
+				.setReversed(false)
+				.splineTo(new Vector2d(-55, -45), -Math.PI / 2)
+				.splineToConstantHeading(new Vector2d(-60, -60), -Math.PI / 2)
+				.strafeTo(new Vector2d(-16, -55))
+				.turn(Math.PI)
 				.build();
 
 		waitForStart();
