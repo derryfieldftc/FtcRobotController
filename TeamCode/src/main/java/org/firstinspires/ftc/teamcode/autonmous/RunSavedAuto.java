@@ -1,17 +1,14 @@
 package org.firstinspires.ftc.teamcode.autonmous;
 
 import static org.firstinspires.ftc.teamcode.robot.Drivetrain.State.IDLE;
-import static org.firstinspires.ftc.teamcode.robot.Drivetrain.State.valueOf;
-import static org.firstinspires.ftc.teamcode.robot.Task.Type.*;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.robot.Drivetrain;
-import org.firstinspires.ftc.teamcode.robot.PID;
 import org.firstinspires.ftc.teamcode.robot.Task;
 import org.firstinspires.ftc.teamcode.robot.TaskList;
 
@@ -19,6 +16,7 @@ import java.util.ArrayList;
 
 // Eventually add selection in the init phase for which OpMode to run
 @Autonomous(name = "RunSavedAuto")
+@Disabled
 public class RunSavedAuto extends OpMode {
 
 	public Drivetrain drivetrain;
@@ -40,7 +38,7 @@ public class RunSavedAuto extends OpMode {
 
 	@Override
 	public void loop() {
-		switch(drivetrain.getState()) {
+		switch (drivetrain.getState()) {
 			case IDLE:
 				// are there any tasks to process?
 				if (tasks.size() > 0) {
@@ -81,7 +79,7 @@ public class RunSavedAuto extends OpMode {
 //                    RobotLog.d(String.format("TIE: DELAYING - milli = %.2f", milli));
 //                    RobotLog.d(String.format("TIE: DELAYING - period = %.2f", (double)currentTask.getPeriod()));
 
-				if (milli > (double)currentTask.getPeriod()) {
+				if (milli > (double) currentTask.getPeriod()) {
 					// timer has expired.
 					// switch back to idle state.
 					drivetrain.setState(IDLE);

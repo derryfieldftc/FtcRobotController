@@ -15,25 +15,25 @@ public class MeepMeepTest {
 	public static void main(String[] args) {
 		MeepMeep meepMeep = new MeepMeep(800);
 
-		RoadRunnerBotEntity red1 = new DefaultBotBuilder(meepMeep)
-				// Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-				.setConstraints(50, 50, Math.toRadians(180), Math.toRadians(180), 16)
-				.followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(new Pose2d(-16, -60, Math.PI / 2))
-						.waitSeconds(2) // FIRE
-						.splineTo(new Vector2d(-35, -35), Math.PI)
-						.splineTo(new Vector2d(-45, -35), Math.PI)
-						.setReversed(true)
-						.splineTo(new Vector2d(-16, -55), -Math.PI / 2)
-						.setReversed(false)
-						.waitSeconds(2) // FIRE
-						.splineTo(new Vector2d(-60, -45), -Math.PI / 2)
-						.splineToConstantHeading(new Vector2d(-60, -60), -Math.PI / 2)
-						.strafeTo(new Vector2d(-16, -55))
-						.turn(Math.PI)
-						.waitSeconds(2) //FIRE
-						.build());
-
-		RoadRunnerBotEntity blue2 = new DefaultBotBuilder(meepMeep)
+//		RoadRunnerBotEntity red1 = new DefaultBotBuilder(meepMeep)
+//				// Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
+//				.setConstraints(50, 50, Math.toRadians(180), Math.toRadians(180), 16)
+//				.followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(new Pose2d(-16, -60, Math.PI / 2))
+//						.waitSeconds(2) // FIRE
+//						.splineTo(new Vector2d(-35, -35), Math.PI)
+//						.splineTo(new Vector2d(-45, -35), Math.PI)
+//						.setReversed(true)
+//						.splineTo(new Vector2d(-16, -55), -Math.PI / 2)
+//						.setReversed(false)
+//						.waitSeconds(2) // FIRE
+//						.splineTo(new Vector2d(-60, -45), -Math.PI / 2)
+//						.splineToConstantHeading(new Vector2d(-60, -60), -Math.PI / 2)
+//						.strafeTo(new Vector2d(-16, -55))
+//						.turn(Math.PI)
+//						.waitSeconds(2) //FIRE
+//						.build());
+//
+		RoadRunnerBotEntity red2 = new DefaultBotBuilder(meepMeep)
 				// Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
 				.setConstraints(50, 50, Math.toRadians(180), Math.toRadians(180), 16)
 				.followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(new Pose2d(48, 48, -Math.PI / 2))
@@ -96,7 +96,7 @@ public class MeepMeepTest {
 		meepMeep.setBackground(img)
 				.setDarkMode(true)
 				.setBackgroundAlpha(0.95f)
-				.addEntity(blue2.setDimensions(18, 18))
+				.addEntity(red2.setDimensions(18, 18))
 //				.addEntity(red1.setDimensions(18, 18))
 				.exportTrajectoryImage("/home/xela/blue2.png")
 				.setShowFPS(true)

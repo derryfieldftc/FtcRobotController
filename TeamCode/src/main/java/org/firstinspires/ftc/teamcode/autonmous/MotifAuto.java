@@ -27,6 +27,8 @@ public class MotifAuto extends OpMode {
 				tagFound = true;
 			}
 		}
+		telemetry.addData("tag found", tagFound);
+		telemetry.update();
 	}
 
 	@Override
