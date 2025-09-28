@@ -19,7 +19,7 @@ public class Robot {
 	public boolean intakeEnabled;
 	//	public IntakeSpinner intakeSpinner;
 //	public boolean intakeSpinnerEnabled;
-	public Turret.Camera camera;
+	public Camera camera;
 	public boolean cameraEnabled;
 	public Turret turret;
 	public boolean turretEnabled;
@@ -30,6 +30,7 @@ public class Robot {
 
 	/**
 	 * Do not forget to chain this with all of the enable methods
+	 *
 	 * @param opMode
 	 */
 	public Robot(OpMode opMode) {
@@ -39,7 +40,7 @@ public class Robot {
 		drivetrain = new Drivetrain(hardwareMap, this.opMode);
 		intake = new Intake(this.opMode);
 //		intakeSpinner = new IntakeSpinner(this.opMode);
-		camera = new Turret.Camera(this.opMode);
+		camera = new Camera(this.opMode);
 		turret = new Turret(this.opMode);
 		handsOfGod = new HandsOfGod(this.opMode);
 		palmsOfGod = new PalmsOfGod(this.opMode);
@@ -49,10 +50,12 @@ public class Robot {
 		palmsOfGodEnabled = true;
 		return this;
 	}
+
 	public Robot enableHandsOfGod() {
 		handsOfGodEnabled = true;
 		return this;
 	}
+
 	public Robot enableDriveTrain() {
 		drivetrainEnabled = true;
 		return this;

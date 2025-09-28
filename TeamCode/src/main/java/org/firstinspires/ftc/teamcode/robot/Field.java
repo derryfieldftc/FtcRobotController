@@ -118,9 +118,9 @@ public class Field {
 		 */
 		public Vector2d getPosition(Alliance alliance) {
 			if (alliance == Alliance.Red) {
-				return new Vector2d(60, 60);
+				return new Vector2d(70, 70);
 			}
-			return new Vector2d(-60, 60);
+			return new Vector2d(-70, 70);
 		}
 
 		/**

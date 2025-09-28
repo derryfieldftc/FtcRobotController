@@ -13,78 +13,11 @@ import javax.imageio.ImageIO;
 
 public class MeepMeepTest {
 	public static void main(String[] args) {
+		System.setProperty("sun.java2d.opengl", "true"); // for performance
 		MeepMeep meepMeep = new MeepMeep(800);
 
-//		RoadRunnerBotEntity red1 = new DefaultBotBuilder(meepMeep)
-//				// Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-//				.setConstraints(50, 50, Math.toRadians(180), Math.toRadians(180), 16)
-//				.followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(new Pose2d(-16, -60, Math.PI / 2))
-//						.waitSeconds(2) // FIRE
-//						.splineTo(new Vector2d(-35, -35), Math.PI)
-//						.splineTo(new Vector2d(-45, -35), Math.PI)
-//						.setReversed(true)
-//						.splineTo(new Vector2d(-16, -55), -Math.PI / 2)
-//						.setReversed(false)
-//						.waitSeconds(2) // FIRE
-//						.splineTo(new Vector2d(-60, -45), -Math.PI / 2)
-//						.splineToConstantHeading(new Vector2d(-60, -60), -Math.PI / 2)
-//						.strafeTo(new Vector2d(-16, -55))
-//						.turn(Math.PI)
-//						.waitSeconds(2) //FIRE
-//						.build());
-//
-		RoadRunnerBotEntity red2 = new DefaultBotBuilder(meepMeep)
-				// Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-				.setConstraints(50, 50, Math.toRadians(180), Math.toRadians(180), 16)
-				.followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(new Pose2d(48, 48, -Math.PI / 2))
-						.strafeTo(new Vector2d(25, 25))
-						.waitSeconds(2) // FIRE
-						.splineTo(new Vector2d(47, 12), 0) // Collect row 3
-						.setReversed(true)
-						.strafeTo(new Vector2d(15, 11))
-						.waitSeconds(2)// FIRE
-						.setReversed(false)
-						.splineTo(new Vector2d(45, -11), 0) // Collect row 2
-						.splineToConstantHeading(new Vector2d(53, -6), 0)
-						.waitSeconds(1) // Lever
-						.setReversed(true)
-						.splineTo(new Vector2d(15, 11), Math.PI)
-						.waitSeconds(2) // FIRE
-						.strafeTo(new Vector2d(30, -33))
-						.splineToConstantHeading(new Vector2d(45, -35), 0) // Collect row 1
-						.setReversed(true)
-						.splineToConstantHeading(new Vector2d(12, -45), Math.PI)
-						.setReversed(false)
-						.waitSeconds(2)
-						.splineTo(new Vector2d(50, -40), 0)
-						.splineTo(new Vector2d(60, -60), -Math.PI / 2) // Human Player
-						.strafeTo(new Vector2d(15, -60))
-						.waitSeconds(2) // FIRE
-						.build());
-
-		// Alex is stupid
-/*						.splineTo(new Vector2d(-50, 12), Math.PI)
-//						.setReversed(true)
-//						.splineTo(new Vector2d(-25, 12), 0)
-//						.waitSeconds(2) // FIRE
-//						.setReversed(false)
-//						.strafeTo(new Vector2d(-25, -10))
-//						.strafeTo(new Vector2d(-50, -10)) // Collect row 2
-//						.strafeTo(new Vector2d(-30, -10))
-//						.splineToConstantHeading(new Vector2d(-14, -55), Math.PI)
-//						.waitSeconds(2) // FIRE
-//						.splineToConstantHeading(new Vector2d(-35, -35), Math.PI)
-//						.strafeTo(new Vector2d(-50, -35)) // Collect row 3
-//						.setReversed(true)
-//						.splineToConstantHeading(new Vector2d(-16, -55), 0)
-//						.setReversed(false)
-//						.waitSeconds(2) // FIRE
-////						.strafeTo(new Vector2d(-60, -60))
-////						.strafeTo(new Vector2d(-14, -55))
-//						.splineTo(new Vector2d(-60, -45), -Math.PI / 2)
-//						.splineToConstantHeading(new Vector2d(-60, -60), -Math.PI / 2)
-//						.strafeTo(new Vector2d(-16, -55))
-*/
+		RoadRunnerBotEntity bot =
+				red1(meepMeep);
 
 
 		Image img = null;
@@ -96,10 +29,61 @@ public class MeepMeepTest {
 		meepMeep.setBackground(img)
 				.setDarkMode(true)
 				.setBackgroundAlpha(0.95f)
-				.addEntity(red2.setDimensions(18, 18))
+				.addEntity(bot.setDimensions(18, 18))
 //				.addEntity(red1.setDimensions(18, 18))
-				.exportTrajectoryImage("/home/xela/blue2.png")
+//				.exportTrajectoryImage("/home/xela/blue2.png")
 				.setShowFPS(true)
 				.start();
+	}
+
+	// Finish later
+	// Red2 is still almost perfection
+	public static RoadRunnerBotEntity red1(MeepMeep meepMeep) {
+		Pose2d initPose = new Pose2d(20, -57, -Math.PI / 4);
+		return new DefaultBotBuilder(meepMeep)
+				// Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
+				.setConstraints(50, 50, Math.toRadians(180), Math.toRadians(180), 16)
+				.followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(initPose)
+						.waitSeconds(2) // First unload
+						.splineToConstantHeading(new Vector2d(50, -50), -Math.PI / 4)
+						.splineTo(new Vector2d(60, -55), -Math.PI / 2)
+						.splineToConstantHeading(new Vector2d(15, -50), -Math.PI / 2)
+						.waitSeconds(2)
+						.build());
+	}
+
+	public static RoadRunnerBotEntity red2(MeepMeep meepMeep) {
+
+		Pose2d initPose = new Pose2d(45, 50, -Math.PI / 2);
+		return new DefaultBotBuilder(meepMeep)
+				// Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
+				.setConstraints(50, 50, Math.toRadians(180), Math.toRadians(180), 16)
+				.followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(initPose)
+						.strafeTo(new Vector2d(25, 25)) // Away from goal to shootable location
+						.waitSeconds(2) // FIRE
+						.splineTo(new Vector2d(47, 14), 0) // Collect row 3
+						.splineToConstantHeading(new Vector2d(53, 6), 0) // to lever
+						.waitSeconds(1) // Lever
+						.setReversed(true)
+						.strafeTo(new Vector2d(15, 8)) // Back to shootable
+						.waitSeconds(2)// FIRE
+						.setReversed(false)
+						.splineToConstantHeading(new Vector2d(38, -12), 0) // Collect row 2
+						.splineToConstantHeading(new Vector2d(47, -12), 0) // Collect row 2
+						.setReversed(true)
+						.splineToConstantHeading(new Vector2d(15, 8), Math.PI) // Shootable once more
+						.waitSeconds(2) // FIRE
+						.splineToConstantHeading(new Vector2d(30, -34), 0) // Align to row 1
+						.splineToConstantHeading(new Vector2d(45, -36), 0) // Collect row 1
+						.setReversed(true)
+						.splineToConstantHeading(new Vector2d(15, -54), Math.PI) // Back to shootable low
+						.waitSeconds(2) // FIRE
+						.setReversed(false)
+						.splineTo(new Vector2d(50, -40), 0) // above human player zone
+						.splineTo(new Vector2d(60, -65), -Math.PI / 2) // Human Player
+						// Too slow D:
+//						.strafeTo(new Vector2d(10, -60)) // Shootable
+//						.waitSeconds(2) // FIRE
+						.build());
 	}
 }

@@ -6,18 +6,18 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.OpModeGroups;
 import org.firstinspires.ftc.teamcode.plugin.plugins.MecanumDrive;
+import org.firstinspires.ftc.teamcode.robot.Camera;
 import org.firstinspires.ftc.teamcode.robot.Tag;
-import org.firstinspires.ftc.teamcode.robot.Turret;
 
 @TeleOp(name = "AprilTagTest", group = OpModeGroups.TESTS)
 @Disabled
 public class AprilTagTestOpMode extends OpMode {
 	MecanumDrive mecanumDrive;
-	Turret.Camera camera;
+	Camera camera;
 
 	@Override
 	public void init() {
-		camera = new Turret.Camera(this).setTargetTag(Tag.PGP).setTagLocationTarget(320, 240);
+		camera = new Camera(this).setTargetTag(Tag.PGP).setTagLocationTarget(320, 240);
 		camera.init();
 		hardwareMap.getClass(); // needed for setup somehow????
 		mecanumDrive = new MecanumDrive(this);
