@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.OpModeGroups;
 
-@TeleOp(name = "NikashExampleOpmode", group = OpModeGroups.TESTS)
+@TeleOp(name = "NikashExampleOpmode", group = "Nikash")
 public class NikashFirstOpMode extends OpMode {
     DcMotor motorFR, motorFL, motorBR, motorBL;
     Gamepad gamepad;
