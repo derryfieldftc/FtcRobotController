@@ -23,6 +23,7 @@ public class Red2 extends OpMode {
 				.strafeTo(new Vector2d(25, 25)) // Away from goal to shootable location, also get tag here
 				.waitSeconds(2) // FIRE
 				.splineTo(new Vector2d(47, 14), 0) // Collect row 3
+				.splineToConstantHeading(new Vector2d(50, 6), 0) // to lever
 				.splineToConstantHeading(new Vector2d(53, 6), 0) // to lever
 				.waitSeconds(1) // Lever
 				.setReversed(true)

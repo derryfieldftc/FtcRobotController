@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot;
 
-import static java.lang.Math.abs;
-
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -18,26 +18,32 @@ public class Turret {
 	Telemetry telemetry;
 	Gamepad gamepad;
 	TouchSensor limit;
-	int maxDelta = 2000;
+	int maxAbsDelta = 2000;
 	double rotatorPower = 0;
-	boolean useGamePad;
-	boolean useCamera;
-	PID rotation;
+	double rotation = 0;
+	double lastTime;
+	double ticksPerRotation = 2000.0 / (2.0 * Math.PI);
+	boolean useGamepad;
+	boolean trackTarget;
+	PID rotationPID;
+	TurretPose2d pose;
+	Vector2d target = new Vector2d(0, 0);
 
-	public Turret(OpMode opMode) {
+	public Turret(OpMode opMode, TurretPose2d turretPose2d) {
 		this.opMode = opMode;
 		this.hardwareMap = opMode.hardwareMap;
 		this.telemetry = opMode.telemetry;
 		gamepad = opMode.gamepad2;
-	}
-
-	public Turret useCamera() {
-		useCamera = true;
-		return this;
+		pose = turretPose2d;
 	}
 
 	public Turret useGamepad() {
-		useGamePad = true;
+		useGamepad = true;
+		return this;
+	}
+
+	public Turret trackTarget() {
+		trackTarget = true;
 		return this;
 	}
 
@@ -46,16 +52,22 @@ public class Turret {
 		rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		rotator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 		limit = hardwareMap.touchSensor.get("turretLimit");
-		//TODO! Fix this, all of this
-		while (!limit.isPressed()) {
-			rotator.setPower(.1);
-		}
 		rotator.setPower(0);
 		rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		rotator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-		//TODO! Test values
-		rotation = new PID(.33, .33, .33, .01);
+		// If it aint broke dont fix it
+		rotationPID = new PID(.1, .001, 0, .005);
+	}
+
+	public Turret updatePose(Pose2d pose) {
+		this.pose = new TurretPose2d(pose, this.pose.rotation);
+		return this;
+	}
+
+	public Turret setTarget(Vector2d target) {
+		this.target = target;
+		return this;
 	}
 
 	public void setRotatorPower(double power) {
@@ -63,7 +75,7 @@ public class Turret {
 	}
 
 	public void loop() {
-		if (useGamePad) {
+		if (useGamepad) {
 			rotator.setPower(gamepad.right_stick_y);
 			if (gamepad.y) {
 				rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -71,19 +83,30 @@ public class Turret {
 			}
 		}
 
-		if (abs(rotator.getCurrentPosition()) >= maxDelta) {
-			return;
+		if (trackTarget) {
+			if (target == null) {
+				throw new RuntimeException("No target, please set it");
+			}
+			if (pose == null) {
+				throw new RuntimeException("No pose, please set it");
+			}
+
+			rotation = rotator.getCurrentPosition() / ticksPerRotation;
+			pose = new TurretPose2d(pose.pose2d, rotation);
+
+			double targetRotation = pose.getTurretAngleToTargetRelativeToRobot(target);
+			double currentRotation = pose.rotation;
+			double error = rotationPID.calculate(targetRotation - currentRotation, opMode.time - lastTime);
+			lastTime = opMode.time;
+			telemetry.addData("target", targetRotation);
+			telemetry.addData("current", currentRotation);
+			telemetry.addData("error", error);
+			rotator.setPower(error * 10);
 		}
-		rotator.setPower(rotatorPower);
+
 
 		telemetry.addData("motorpos", rotator.getCurrentPosition());
 		telemetry.addData("limit", limit.getValue());
 		telemetry.update();
 	}
-
-	// TODO how many encode ticks to do a full rotation
-	public double getRotation() {
-		return 0;
-	}
-
 }

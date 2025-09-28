@@ -23,7 +23,7 @@ public class PalmsOfGod {
 	public ColorSensor rightEye, leftEye;
 	public Servo rightPalm, leftPalm;
 	public double rightUp = .71, rightDown = 1;
-	public double leftUp = .38, leftDown = 0;
+	public double leftUp = .33, leftDown = 0;
 	public boolean useTelemetry = false;
 
 	public PalmsOfGod(OpMode opMode) {

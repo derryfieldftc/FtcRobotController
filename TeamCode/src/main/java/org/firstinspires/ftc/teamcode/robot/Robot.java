@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -41,7 +42,7 @@ public class Robot {
 		intake = new Intake(this.opMode);
 //		intakeSpinner = new IntakeSpinner(this.opMode);
 		camera = new Camera(this.opMode);
-		turret = new Turret(this.opMode);
+		turret = new Turret(this.opMode, new TurretPose2d(new Pose2d(0, 0, 0), 0));
 		handsOfGod = new HandsOfGod(this.opMode);
 		palmsOfGod = new PalmsOfGod(this.opMode);
 	}

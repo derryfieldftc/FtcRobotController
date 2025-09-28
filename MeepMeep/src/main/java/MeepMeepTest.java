@@ -17,7 +17,7 @@ public class MeepMeepTest {
 		MeepMeep meepMeep = new MeepMeep(800);
 
 		RoadRunnerBotEntity bot =
-				red1(meepMeep);
+				red2(meepMeep);
 
 
 		Image img = null;
@@ -62,6 +62,7 @@ public class MeepMeepTest {
 						.strafeTo(new Vector2d(25, 25)) // Away from goal to shootable location
 						.waitSeconds(2) // FIRE
 						.splineTo(new Vector2d(47, 14), 0) // Collect row 3
+						.splineToConstantHeading(new Vector2d(51, 6), 0) // to lever
 						.splineToConstantHeading(new Vector2d(53, 6), 0) // to lever
 						.waitSeconds(1) // Lever
 						.setReversed(true)

@@ -23,9 +23,9 @@ public class HandsOfGod {
 	private Gamepad gamepad;
 	public Servo leftHand, rightHand;
 	public boolean useGamepad = false, useTelemetry = false;
-	private double leftUp = .39;
+	private double leftUp = .65;
 	private double leftDown = 1;
-	private double rightUp = .56;
+	private double rightUp = .38;
 	private double rightDown = 0;
 
 	public HandsOfGod(OpMode opMode) {
