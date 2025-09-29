@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.teamcode.RR.MecanumDrive;
 
 //Oh boy
 public class Turret {
@@ -118,10 +119,11 @@ public class Turret {
 	/**
 	 * This is action should never finish until the stopAutoTracking Action is called
 	 */
-	public Action autoTracking() {
+	public Action autoTracking(MecanumDrive mecanumDrive) {
 		return new Action() {
 			@Override
 			public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+				updatePose(mecanumDrive.localizer.getPose());
 				if (target == null) {
 					throw new RuntimeException("No target, please set it");
 				}
@@ -139,8 +141,10 @@ public class Turret {
 				telemetry.addData("target", targetRotation);
 				telemetry.addData("current", currentRotation);
 				telemetry.addData("error", error);
+				telemetry.addLine(String.format("x: %.3f, y: %.3f, t: %.3f", pose.pose2d.position.x, pose.pose2d.position.y, pose.pose2d.heading.toDouble()));
 				rotator.setPower(error * 10);
-				return autoTrack;
+				telemetry.update();
+				return true;
 			}
 		};
 	}

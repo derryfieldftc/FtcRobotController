@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.autonmous;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -26,7 +25,8 @@ public class Red2 extends OpMode {
 	public void init() {
 		Depot depot = new Depot(Field.Alliance.Red);
 		mecanumDrive = new MecanumDrive(hardwareMap, initPose);
-		turret = new Turret(this, new TurretPose2d(initPose, 0)).setTarget(depot.getPosition());
+		turret = new Turret(this, new TurretPose2d(initPose, 0)).setTarget(depot.getPosition())
+				.trackTarget();
 		turret.init();
 
 		route = mecanumDrive.actionBuilder(initPose)
@@ -62,7 +62,11 @@ public class Red2 extends OpMode {
 
 	@Override
 	public void start() {
-		Actions.runBlocking(new ParallelAction(new SequentialAction(route, turret.stopAutoTracking()), turret.autoTracking()));
+		// <3 composable actions I think I'm in love
+		Actions.runBlocking(
+				new ParallelAction(
+						route,
+						turret.autoTracking(mecanumDrive)));
 		stop();
 	}
 

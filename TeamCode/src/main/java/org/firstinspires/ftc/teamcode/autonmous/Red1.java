@@ -15,31 +15,36 @@ public class Red1 extends OpMode {
 	Action route;
 	Pose2d initPose = new Pose2d(20, -57, Math.PI / 4);
 
+	// Odometry is definitly not perfect yet. These values are all subject to change, and a lot of RR
+	// Classes need finer tuning
+
 	@Override
 	public void init() {
-		mecanumDrive.actionBuilder(initPose)
-				.waitSeconds(2) // FIRE
-				.splineToConstantHeading(new Vector2d(50, -50), Math.PI / 4) // collecting human player zone balls
+		mecanumDrive = new MecanumDrive(hardwareMap, initPose);
+		route = mecanumDrive.actionBuilder(initPose)
+				.splineToConstantHeading(new Vector2d(50, -55), Math.PI / 4) // collecting human player zone balls
 				.splineTo(new Vector2d(60, -55), -Math.PI / 2)
-				.splineTo(new Vector2d(60, -60), -Math.PI / 2)
+				.splineTo(new Vector2d(60, -62), -Math.PI / 2)
 				.setReversed(true)
 				.splineToConstantHeading(new Vector2d(15, -50), Math.PI / 2)
 				.setReversed(false)
-				.turn(Math.PI / 2) // FIRE
-				.splineToConstantHeading(new Vector2d(41, -11), 0) // Collect row 2
-				.splineToConstantHeading(new Vector2d(57, -4), 0) // lever
+				.strafeTo(new Vector2d(15, -50))
+				.turn(Math.PI / 2)
+				.splineToConstantHeading(new Vector2d(35, -5), 0) // Collect row 2
+				.splineToConstantHeading(new Vector2d(41, -5), 0) // Collect row 2
+				.splineToConstantHeading(new Vector2d(57, -2), 0) // lever
 				.waitSeconds(1)
 				.setReversed(true)
 				.splineToConstantHeading(new Vector2d(10, 0), Math.PI) // Back to shootable
 				.waitSeconds(2) // FIRE
 				.setReversed(false)
-				.splineToConstantHeading(new Vector2d(41, 12), 0)
-				.splineTo(new Vector2d(47, 12), 0) // Collect row 1
+				.splineToConstantHeading(new Vector2d(39, 15), 0)
+				.splineTo(new Vector2d(50, 16), 0) // Collect row 3
 				.setReversed(true)
 				.splineToConstantHeading(new Vector2d(10, 0), Math.PI) // Back to shootable
 				.waitSeconds(2) // FIRE
 				.setReversed(false)
-				.splineToConstantHeading(new Vector2d(44, -35), 0)
+				.splineToConstantHeading(new Vector2d(46, -35), 0) // collect 1
 				.setReversed(true)
 				.splineToConstantHeading(new Vector2d(20, -57), Math.PI)
 				.build();
