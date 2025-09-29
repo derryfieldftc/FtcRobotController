@@ -1,23 +1,33 @@
 package org.firstinspires.ftc.teamcode.autonmous;
 
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.RR.MecanumDrive;
+import org.firstinspires.ftc.teamcode.robot.Depot;
+import org.firstinspires.ftc.teamcode.robot.Field;
+import org.firstinspires.ftc.teamcode.robot.Turret;
+import org.firstinspires.ftc.teamcode.robot.TurretPose2d;
 
 @Autonomous(name = "Red2test")
 public class Red2 extends OpMode {
 	MecanumDrive mecanumDrive;
 	Action route;
 	Pose2d initPose = new Pose2d(45, 50, -Math.PI / 2);
+	Turret turret;
 
 	@Override
 	public void init() {
+		Depot depot = new Depot(Field.Alliance.Red);
 		mecanumDrive = new MecanumDrive(hardwareMap, initPose);
+		turret = new Turret(this, new TurretPose2d(initPose, 0)).setTarget(depot.getPosition());
+		turret.init();
 
 		route = mecanumDrive.actionBuilder(initPose)
 				.strafeTo(new Vector2d(25, 25)) // Away from goal to shootable location, also get tag here
@@ -52,7 +62,7 @@ public class Red2 extends OpMode {
 
 	@Override
 	public void start() {
-		Actions.runBlocking(route);
+		Actions.runBlocking(new ParallelAction(new SequentialAction(route, turret.stopAutoTracking()), turret.autoTracking()));
 		stop();
 	}
 
