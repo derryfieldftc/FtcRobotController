@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -25,6 +29,7 @@ public class Turret {
 	double ticksPerRotation = 2000.0 / (2.0 * Math.PI);
 	boolean useGamepad;
 	boolean trackTarget;
+	boolean autoTrack = true;
 	PID rotationPID;
 	TurretPose2d pose;
 	Vector2d target = new Vector2d(0, 0);
@@ -108,5 +113,45 @@ public class Turret {
 		telemetry.addData("motorpos", rotator.getCurrentPosition());
 		telemetry.addData("limit", limit.getValue());
 		telemetry.update();
+	}
+
+	/**
+	 * This is action should never finish until the stopAutoTracking Action is called
+	 */
+	public Action autoTracking() {
+		return new Action() {
+			@Override
+			public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+				if (target == null) {
+					throw new RuntimeException("No target, please set it");
+				}
+				if (pose == null) {
+					throw new RuntimeException("No pose, please set it");
+				}
+
+				rotation = rotator.getCurrentPosition() / ticksPerRotation;
+				pose = new TurretPose2d(pose.pose2d, rotation);
+
+				double targetRotation = pose.getTurretAngleToTargetRelativeToRobot(target);
+				double currentRotation = pose.rotation;
+				double error = rotationPID.calculate(targetRotation - currentRotation, opMode.time - lastTime);
+				lastTime = opMode.time;
+				telemetry.addData("target", targetRotation);
+				telemetry.addData("current", currentRotation);
+				telemetry.addData("error", error);
+				rotator.setPower(error * 10);
+				return autoTrack;
+			}
+		};
+	}
+
+	public Action stopAutoTracking() {
+		return new Action() {
+			@Override
+			public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+				autoTrack = false;
+				return false;
+			}
+		};
 	}
 }
