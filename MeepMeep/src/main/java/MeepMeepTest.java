@@ -17,7 +17,7 @@ public class MeepMeepTest {
 		MeepMeep meepMeep = new MeepMeep(800);
 
 		RoadRunnerBotEntity bot =
-				red2(meepMeep);
+				red1(meepMeep);
 
 
 		Image img = null;
@@ -39,16 +39,35 @@ public class MeepMeepTest {
 	// Finish later
 	// Red2 is still almost perfection
 	public static RoadRunnerBotEntity red1(MeepMeep meepMeep) {
-		Pose2d initPose = new Pose2d(20, -57, -Math.PI / 4);
+		Pose2d initPose = new Pose2d(20, -57, Math.PI / 4);
 		return new DefaultBotBuilder(meepMeep)
 				// Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
 				.setConstraints(50, 50, Math.toRadians(180), Math.toRadians(180), 16)
 				.followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(initPose)
-						.waitSeconds(2) // First unload
-						.splineToConstantHeading(new Vector2d(50, -50), -Math.PI / 4)
+						.waitSeconds(2) // FIRE
+						.splineToConstantHeading(new Vector2d(50, -50), Math.PI / 4) // collecting human player zone balls
 						.splineTo(new Vector2d(60, -55), -Math.PI / 2)
-						.splineToConstantHeading(new Vector2d(15, -50), -Math.PI / 2)
-						.waitSeconds(2)
+						.splineTo(new Vector2d(60, -60), -Math.PI / 2)
+						.setReversed(true)
+						.splineToConstantHeading(new Vector2d(15, -50), Math.PI / 2)
+						.setReversed(false)
+						.turn(Math.PI / 2) // FIRE
+						.splineToConstantHeading(new Vector2d(41, -11), 0) // Collect row 2
+						.splineToConstantHeading(new Vector2d(57, -4), 0) // lever
+						.waitSeconds(1)
+						.setReversed(true)
+						.splineToConstantHeading(new Vector2d(10, 0), Math.PI) // Back to shootable
+						.waitSeconds(2) // FIRE
+						.setReversed(false)
+						.splineToConstantHeading(new Vector2d(41, 12), 0)
+						.splineTo(new Vector2d(47, 12), 0) // Collect row 1
+						.setReversed(true)
+						.splineToConstantHeading(new Vector2d(10, 0), Math.PI) // Back to shootable
+						.waitSeconds(2) // FIRE
+						.setReversed(false)
+						.splineToConstantHeading(new Vector2d(44, -35), 0)
+						.setReversed(true)
+						.splineToConstantHeading(new Vector2d(20, -57), Math.PI)
 						.build());
 	}
 
