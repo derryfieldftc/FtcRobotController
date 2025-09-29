@@ -26,7 +26,7 @@ public class Turret {
 	int maxAbsDelta = 2000;
 	double rotatorPower = 0;
 	double rotation = 0;
-	double lastTime;
+	double lastTime = .05;
 	double ticksPerRotation = 2000.0 / (2.0 * Math.PI);
 	boolean useGamepad;
 	boolean trackTarget;
@@ -62,8 +62,9 @@ public class Turret {
 		rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		rotator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+
 		// If it aint broke dont fix it
-		rotationPID = new PID(.1, .001, 0, .005);
+		rotationPID = new PID(.1, 0, 0, .005);
 	}
 
 	public Turret updatePose(Pose2d pose) {
@@ -137,7 +138,8 @@ public class Turret {
 				double targetRotation = pose.getTurretAngleToTargetRelativeToRobot(target);
 				double currentRotation = pose.rotation;
 				double error = rotationPID.calculate(targetRotation - currentRotation, opMode.time - lastTime);
-				lastTime = opMode.time;
+				telemetry.addLine(String.format("deltar: %.3f, dt: %.3f", targetRotation - currentRotation, opMode.time - lastTime));
+				lastTime = opMode.getRuntime();
 				telemetry.addData("target", targetRotation);
 				telemetry.addData("current", currentRotation);
 				telemetry.addData("error", error);
