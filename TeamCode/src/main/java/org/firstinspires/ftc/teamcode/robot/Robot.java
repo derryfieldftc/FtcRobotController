@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import static org.firstinspires.ftc.teamcode.robot.Field.Ball;
 import static org.firstinspires.ftc.teamcode.robot.Field.Ball.None;
+import static org.firstinspires.ftc.teamcode.robot.Field.motif;
 
 import androidx.annotation.NonNull;
 
@@ -139,25 +140,6 @@ public class Robot {
 			handsOfGod.loop();
 	}
 
-	/**
-	 * Shoot a ball, order is hands then right then left, returns true if it needs to be ran again
-	 *
-	 * @return
-	 */
-	public boolean shoot() {
-		if (handBall != None) {
-			shoot(BallPosition.Hands);
-			handBall = None;
-		} else if (rightBall != None) {
-			shoot(BallPosition.Right);
-			rightBall = None;
-		} else if (leftBall != None) {
-			shoot(BallPosition.Left);
-			leftBall = None;
-		}
-		return false;
-	}
-
 	private double waitTime = 0;
 	private double startTime = 0;
 
@@ -203,6 +185,7 @@ public class Robot {
 				waitTime = handMoveSeconds;
 				startTime = opMode.getRuntime();
 				justShot = false;
+				handBall = None;
 				return false;
 			}
 			return false;
@@ -229,6 +212,7 @@ public class Robot {
 				waitTime = handMoveSeconds;
 				startTime = opMode.getRuntime();
 				justShot = false;
+				rightBall = None;
 				return false;
 			}
 			return false;
@@ -255,12 +239,49 @@ public class Robot {
 				waitTime = handMoveSeconds;
 				startTime = opMode.getRuntime();
 				justShot = false;
+				leftBall = None;
 				return false;
 			}
 			return false;
 		}
 
 		return false;
+	}
+
+	public Action shootAction(BallPosition position) {
+		return new Action() {
+			@Override
+			public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+				return shoot(position);
+			}
+		};
+	}
+
+	/**
+	 * Shoot all balls whilst trying to match the motif
+	 *
+	 * @return
+	 */
+	public Action shootAllTryingMotif() {
+		return new Action() {
+			@Override
+			public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+				if (handBall != None) {
+					return shoot(BallPosition.Hands);
+				} else {
+					if (motif.getBall(1) == rightBall) {
+						return shoot(BallPosition.Right);
+					} else {
+						if (leftBall != None) {
+							return shoot(BallPosition.Left);
+						} else if (rightBall != None) {
+							return shoot(BallPosition.Right);
+						}
+					}
+				}
+				return handBall != None || rightBall != None || leftBall != None;
+			}
+		};
 	}
 
 	/**
