@@ -42,6 +42,21 @@ public class RobotTest extends OpMode {
 			handsUp = !handsUp;
 		}
 
+		if (gamepad1.a) {
+			while (bot.shoot(Robot.BallPosition.Hands)) {
+			}
+		}
+
+		if (gamepad1.b) {
+			while (bot.shoot(Robot.BallPosition.Right)) {
+			}
+		}
+
+		if (gamepad1.x) {
+			while (bot.shoot(Robot.BallPosition.Left)) {
+			}
+		}
+
 		if (mgamepad.justPressed(GamepadManager.Button.RIGHT_BUMPER)) {
 			rightPalmOpen = !rightPalmOpen;
 		}

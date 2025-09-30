@@ -1,5 +1,12 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import static org.firstinspires.ftc.teamcode.robot.Field.Ball;
+import static org.firstinspires.ftc.teamcode.robot.Field.Ball.None;
+
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -14,20 +21,44 @@ public class Robot {
 	private OpMode opMode;
 	private HardwareMap hardwareMap;
 	private Telemetry telemetry;
-	public Drivetrain drivetrain;
-	public boolean drivetrainEnabled;
-	public Intake intake;
-	public boolean intakeEnabled;
+	public static Drivetrain drivetrain;
+	public static boolean drivetrainEnabled;
+	public static Intake intake;
+	public static boolean intakeEnabled;
 	//	public IntakeSpinner intakeSpinner;
 //	public boolean intakeSpinnerEnabled;
-	public Camera camera;
-	public boolean cameraEnabled;
-	public Turret turret;
-	public boolean turretEnabled;
-	public HandsOfGod handsOfGod;
-	public boolean handsOfGodEnabled;
-	public PalmsOfGod palmsOfGod;
-	public boolean palmsOfGodEnabled;
+	public static Camera camera;
+	public static boolean cameraEnabled;
+	public static Turret turret;
+	public static boolean turretEnabled;
+	public static HandsOfGod handsOfGod;
+	public static boolean handsOfGodEnabled;
+	public static PalmsOfGod palmsOfGod;
+	public static boolean palmsOfGodEnabled;
+
+	/**
+	 * 1
+	 * 3   2
+	 */
+	public static final Ball[] balls = {None, None, None};
+	public static Ball handBall = balls[0];
+	public static Ball rightBall = balls[1];
+	public static Ball leftBall = balls[2];
+
+	public enum BallPosition {
+		Hands(handBall),
+		Right(rightBall),
+		Left(leftBall);
+
+		public final Ball ball = None;
+
+		BallPosition(Ball ball) {
+		}
+
+		public Ball getBall() {
+			return this.ball;
+		}
+	}
 
 	/**
 	 * Do not forget to chain this with all of the enable methods
@@ -106,7 +137,152 @@ public class Robot {
 			turret.loop();
 		if (handsOfGodEnabled)
 			handsOfGod.loop();
+	}
 
+	/**
+	 * Shoot a ball, order is hands then right then left, returns true if it needs to be ran again
+	 *
+	 * @return
+	 */
+	public boolean shoot() {
+		if (handBall != None) {
+			shoot(BallPosition.Hands);
+			handBall = None;
+		} else if (rightBall != None) {
+			shoot(BallPosition.Right);
+			rightBall = None;
+		} else if (leftBall != None) {
+			shoot(BallPosition.Left);
+			leftBall = None;
+		}
+		return false;
+	}
+
+	private double waitTime = 0;
+	private double startTime = 0;
+
+	private double handMoveSeconds = .5;
+	private double palmMoveSeconds = .5;
+
+	private boolean justShot = false;
+
+	/**
+	 * Shoot a ball at an arbritrary position, will shoot ball in hands position if it is blocking the path
+	 * returns true if it needs to run again
+	 *
+	 * @param position
+	 * @return
+	 */
+	public boolean shoot(BallPosition position) {
+		telemetry.addLine("rt: " + opMode.getRuntime() + " st " + startTime + " wt " + waitTime);
+		telemetry.update();
+		if (opMode.getRuntime() - startTime < waitTime) return true;
+
+		// If we are not shooting the hand ball but it is in the way we shoot the hand ball instead
+		if (position != BallPosition.Hands) {
+			if (handBall != None) {
+				shoot(BallPosition.Hands);
+			}
+		}
+
+		// If there is no ball in that position there is no reason to shoot
+//		if (position.ball == None) {
+//			return false;
+//		}
+
+		if (position == BallPosition.Hands) {
+			if (handsOfGod.getPosition() != HandsOfGod.Position.Up && !justShot) {
+				handsOfGod.setPosition(HandsOfGod.Position.Up);
+				waitTime = handMoveSeconds;
+				startTime = opMode.getRuntime();
+				justShot = true;
+				return true;
+			}
+			if (justShot) {
+				handsOfGod.setPosition(HandsOfGod.Position.Down);
+				waitTime = handMoveSeconds;
+				startTime = opMode.getRuntime();
+				justShot = false;
+				return false;
+			}
+			return false;
+		}
+
+		if (position == BallPosition.Right) {
+			// is this palm down
+			if (palmsOfGod.getPalm(PalmsOfGod.Palm.Right) == PalmsOfGod.Position.Down) {
+				waitTime = palmMoveSeconds;
+				startTime = opMode.getRuntime();
+				palmsOfGod.setRightPalm(PalmsOfGod.Position.Up);
+				return true;
+			}
+
+			if (handsOfGod.getPosition() != HandsOfGod.Position.Up && !justShot) {
+				handsOfGod.setPosition(HandsOfGod.Position.Up);
+				waitTime = handMoveSeconds;
+				startTime = opMode.getRuntime();
+				justShot = true;
+				return true;
+			}
+			if (justShot) {
+				handsOfGod.setPosition(HandsOfGod.Position.Down);
+				waitTime = handMoveSeconds;
+				startTime = opMode.getRuntime();
+				justShot = false;
+				return false;
+			}
+			return false;
+		}
+
+		if (position == BallPosition.Left) {
+			// is this palm down
+			if (palmsOfGod.getPalm(PalmsOfGod.Palm.Left) == PalmsOfGod.Position.Down) {
+				waitTime = palmMoveSeconds;
+				startTime = opMode.getRuntime();
+				palmsOfGod.setLeftPalm(PalmsOfGod.Position.Up);
+				return true;
+			}
+
+			if (handsOfGod.getPosition() != HandsOfGod.Position.Up && !justShot) {
+				handsOfGod.setPosition(HandsOfGod.Position.Up);
+				waitTime = handMoveSeconds;
+				startTime = opMode.getRuntime();
+				justShot = true;
+				return true;
+			}
+			if (justShot) {
+				handsOfGod.setPosition(HandsOfGod.Position.Down);
+				waitTime = handMoveSeconds;
+				startTime = opMode.getRuntime();
+				justShot = false;
+				return false;
+			}
+			return false;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Hands, Right, Left
+	 *
+	 * @param balls
+	 */
+	public void setBalls(Ball... balls) {
+		System.arraycopy(balls, 0, Robot.balls, 0, 3);
+	}
+
+	public Action unloadBasedOnMotif() {
+		return new Action() {
+			Field.Motif motif = Field.motif;
+			boolean unloading = true;
+
+			@Override
+			public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+
+				return unloading;
+			}
+		};
 	}
 }
 

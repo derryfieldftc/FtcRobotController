@@ -1,9 +1,5 @@
 package org.firstinspires.ftc.teamcode.robot;
 
-import androidx.annotation.NonNull;
-
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -25,6 +21,13 @@ public class PalmsOfGod {
 	public double rightUp = .71, rightDown = 1;
 	public double leftUp = .33, leftDown = 0;
 	public boolean useTelemetry = false;
+	public Position leftPalmPos;
+	public Position rightPalmPos;
+
+	public enum Palm {
+		Right,
+		Left
+	}
 
 	public PalmsOfGod(OpMode opMode) {
 		this.opMode = opMode;
@@ -46,6 +49,7 @@ public class PalmsOfGod {
 	}
 
 	public PalmsOfGod setRightPalm(Position pos) {
+		rightPalmPos = pos;
 		switch (pos) {
 			case Up:
 				rightPalm.setPosition(rightUp);
@@ -58,6 +62,7 @@ public class PalmsOfGod {
 	}
 
 	public PalmsOfGod setLeftPalm(Position pos) {
+		leftPalmPos = pos;
 		switch (pos) {
 			case Up:
 				leftPalm.setPosition(leftUp);
@@ -82,15 +87,12 @@ public class PalmsOfGod {
 		return Field.Ball.getBallFromColor(rightEye.argb());
 	}
 
-	class RR {
-		public Action setLeftPalm(Position pos) {
-			return new Action() {
-				@Override
-				public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-					PalmsOfGod.this.setLeftPalm(pos);
-					return false;
-				}
-			};
+	public Position getPalm(Palm palm) {
+		Position ret;
+
+		if (palm == Palm.Right) {
+			return rightPalmPos;
 		}
+		return leftPalmPos;
 	}
 }

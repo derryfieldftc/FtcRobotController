@@ -23,9 +23,10 @@ public class HandsOfGod {
 	private Gamepad gamepad;
 	public Servo leftHand, rightHand;
 	public boolean useGamepad = false, useTelemetry = false;
-	private double leftUp = .65;
+	private Position position;
+	private double leftUp = .58;
 	private double leftDown = 1;
-	private double rightUp = .38;
+	private double rightUp = .46;
 	private double rightDown = 0;
 
 	public HandsOfGod(OpMode opMode) {
@@ -51,6 +52,7 @@ public class HandsOfGod {
 	}
 
 	public void setPosition(Position pos) {
+		this.position = pos;
 		switch (pos) {
 			case Up:
 				leftHand.setPosition(leftUp);
@@ -63,39 +65,38 @@ public class HandsOfGod {
 		}
 	}
 
-	/**
-	 * Class for all RoadRunner Actions
-	 */
-	class RR {
-		public Action setPositionUp() {
-			return new Action() {
-				@Override
-				public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-					setPosition(Position.Up);
-					return false;
-				}
-			};
-		}
+	public Action RR_setPositionUp() {
+		return new Action() {
+			@Override
+			public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+				setPosition(Position.Up);
+				return false;
+			}
+		};
+	}
 
-		public Action setPositionDown() {
-			return new Action() {
-				@Override
-				public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-					setPosition(Position.Down);
-					return false;
-				}
-			};
-		}
+	public Action RR_setPositionDown() {
+		return new Action() {
+			@Override
+			public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+				setPosition(Position.Down);
+				return false;
+			}
+		};
+	}
 
-		public Action setPosition(Position pos) {
-			return new Action() {
-				@Override
-				public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-					HandsOfGod.this.setPosition(pos);
-					return false;
-				}
-			};
-		}
+	public Action RR_setPosition(Position pos) {
+		return new Action() {
+			@Override
+			public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+				HandsOfGod.this.setPosition(pos);
+				return false;
+			}
+		};
+	}
+
+	public Position getPosition() {
+		return this.position;
 	}
 
 	/**
