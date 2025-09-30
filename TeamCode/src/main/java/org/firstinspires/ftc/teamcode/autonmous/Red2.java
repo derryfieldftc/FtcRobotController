@@ -33,7 +33,7 @@ public class Red2 extends OpMode {
 
 		route = mecanumDrive.actionBuilder(initPose)
 				.strafeTo(new Vector2d(25, 25)) // Away from goal to shootable location, also get tag here
-				.waitSeconds(2) // FIRE
+				.stopAndAdd(turret.shoot())
 				.splineTo(new Vector2d(47, 14), 0) // Collect row 3
 				.splineToConstantHeading(new Vector2d(50, 6), 0) // to lever
 				.splineToConstantHeading(new Vector2d(53, 6), 0) // to lever

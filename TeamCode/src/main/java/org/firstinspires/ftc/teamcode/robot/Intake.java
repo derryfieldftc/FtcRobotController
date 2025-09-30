@@ -38,6 +38,7 @@ public class Intake {
 
 	public void setSpeed(double speed) {
 		this.speed = speed;
+		intake.setPower(speed);
 	}
 
 	public double getSpeed() {
@@ -48,35 +49,33 @@ public class Intake {
 		intake.setPower(speed);
 	}
 
-	class RR {
-		public Action enable() {
-			return new Action() {
-				@Override
-				public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-					setSpeed(1);
-					return false;
-				}
-			};
-		}
+	public Action enable() {
+		return new Action() {
+			@Override
+			public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+				setSpeed(1);
+				return false;
+			}
+		};
+	}
 
-		public Action disable() {
-			return new Action() {
-				@Override
-				public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-					setSpeed(0);
-					return false;
-				}
-			};
-		}
+	public Action disable() {
+		return new Action() {
+			@Override
+			public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+				setSpeed(0);
+				return false;
+			}
+		};
+	}
 
-		public Action setSpeed(double speed) {
-			return new Action() {
-				@Override
-				public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-					Intake.this.setSpeed(speed);
-					return false;
-				}
-			};
-		}
+	public Action RR_setSpeed(double speed) {
+		return new Action() {
+			@Override
+			public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+				Intake.this.setSpeed(speed);
+				return false;
+			}
+		};
 	}
 }

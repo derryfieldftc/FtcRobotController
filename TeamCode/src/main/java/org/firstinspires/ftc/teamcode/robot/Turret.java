@@ -160,4 +160,14 @@ public class Turret {
 			}
 		};
 	}
+
+	public Action shoot() {
+		return new Action() {
+			@Override
+			public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+				// TODO! do this
+				return false;
+			}
+		};
+	}
 }
