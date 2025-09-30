@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.autonmous;
 
+import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -20,6 +21,7 @@ public class Red2 extends OpMode {
 	Action route;
 	Pose2d initPose = new Pose2d(45, 50, -Math.PI / 2);
 	Turret turret;
+	Action action;
 
 	@Override
 	public void init() {
@@ -57,16 +59,17 @@ public class Red2 extends OpMode {
 //						.strafeTo(new Vector2d(10, -60)) // Shootable
 //						.waitSeconds(2) // FIRE
 				.build();
+		action = new ParallelAction(
+				route,
+				turret.autoTracking(mecanumDrive));
 
+		action.preview(new Canvas()); // TEST
 	}
 
 	@Override
 	public void start() {
 		// <3 composable actions I think I'm in love
-		Actions.runBlocking(
-				new ParallelAction(
-						route,
-						turret.autoTracking(mecanumDrive)));
+		Actions.runBlocking(action);
 		stop();
 	}
 
