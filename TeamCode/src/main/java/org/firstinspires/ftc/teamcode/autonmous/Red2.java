@@ -12,6 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.teamcode.RR.MecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.Depot;
 import org.firstinspires.ftc.teamcode.robot.Field;
+import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.Turret;
 import org.firstinspires.ftc.teamcode.robot.TurretPose2d;
 
@@ -20,11 +21,14 @@ public class Red2 extends OpMode {
 	MecanumDrive mecanumDrive;
 	Action route;
 	Pose2d initPose = new Pose2d(45, 50, -Math.PI / 2);
+	Robot bot;
 	Turret turret;
 	Action action;
 
 	@Override
 	public void init() {
+		bot = new Robot(this).enablePalmsOfGod().enableHandsOfGod().enableIntake();
+		bot.init();
 		Depot depot = new Depot(Field.Alliance.Red);
 		mecanumDrive = new MecanumDrive(hardwareMap, initPose);
 		turret = new Turret(this, new TurretPose2d(initPose, 0)).setTarget(depot.getPosition())
@@ -35,11 +39,16 @@ public class Red2 extends OpMode {
 				.strafeTo(new Vector2d(25, 25)) // Away from goal to shootable location, also get tag here
 				.stopAndAdd(turret.shoot())
 				.splineTo(new Vector2d(47, 14), 0) // Collect row 3
+				.stopAndAdd(telemetryPacket -> {
+					bot.setBalls(new Field.Ball[]{Field.Ball.Purple, Field.Ball.Green, Field.Ball.Purple});
+					return false;
+				})
 				.splineToConstantHeading(new Vector2d(50, 6), 0) // to lever
 				.splineToConstantHeading(new Vector2d(53, 6), 0) // to lever
 				.waitSeconds(1) // Lever
 				.setReversed(true)
 				.strafeTo(new Vector2d(15, 8)) // Back to shootable
+				.stopAndAdd(bot.shootAllTryingMotif())
 				.waitSeconds(2)// FIRE
 				.setReversed(false)
 				.splineToConstantHeading(new Vector2d(38, -12), 0) // Collect row 2
@@ -69,6 +78,7 @@ public class Red2 extends OpMode {
 	@Override
 	public void start() {
 		// <3 composable actions I think I'm in love
+		Robot.intake.setSpeed(1);
 		Actions.runBlocking(action);
 		stop();
 	}

@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import android.graphics.Color;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -33,7 +35,9 @@ public class Intake {
 	}
 
 	public Field.Ball getBallType() {
-		return Field.Ball.getBallFromColor(colorSensor.argb());
+		float[] temp = {0f, 0f, 0f};
+		Color.RGBToHSV(colorSensor.red(), colorSensor.green(), colorSensor.blue(), temp);
+		return Field.Ball.getBallFromColor(temp);
 	}
 
 	public void setSpeed(double speed) {

@@ -17,7 +17,7 @@ public class Red1 extends OpMode {
 	Action route;
 	Pose2d initPose = new Pose2d(20, -57, Math.PI / 4);
 
-	// Odometry is definitly not perfect yet. These values are all subject to change, and a lot of RR
+	// Odometry is definitely not perfect yet. These values are all subject to change, and a lot of RR
 	// Classes need finer tuning
 
 	@Override

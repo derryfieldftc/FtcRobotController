@@ -1,10 +1,8 @@
 package org.firstinspires.ftc.teamcode.robot;
 
-import android.graphics.Color;
-
 public class Field {
 	public static Alliance alliance;
-	public static Motif motif;
+	public static Motif motif = Motif.PGP; // default
 //	public final Vector2d bottom_left;
 //	public final Vector2d bottom_right;
 
@@ -21,16 +19,22 @@ public class Field {
 		/**
 		 * Gets which type of ball there is based on an argb value
 		 *
-		 * @param argb
+		 * @param hsv
 		 * @return
 		 */
-		public static Ball getBallFromColor(int argb) {
-			int red, green, blue, alpha;
-			alpha = Color.alpha(argb);
-			red = Color.red(argb);
-			green = Color.green(argb);
-			blue = Color.blue(argb);
-			//TODO! finish this
+		public static Ball getBallFromColor(float[] hsv) {
+			float[] purpleHSV = {210.0403078f, 0.549924593f, 1.282462609f};
+			float[] purpleHSV_STD = {17.48066683f, 0.07041663864f, 1.213211678f};
+			float[] greenHSV = {162.5922055f, 0.6858531926f, 0.7229373997f};
+			float[] greenHSV_STD = {3.660891619f, 0.0595187757f, 0.3784698006f};
+			// I frankly could not care less about s and v
+
+			if (purpleHSV[0] - 2 * purpleHSV_STD[0] < hsv[0] && hsv[0] < purpleHSV[0] + 2 * purpleHSV_STD[0])
+				return Purple;
+
+			if (greenHSV[0] - 2 * greenHSV_STD[0] < hsv[0] && hsv[0] < greenHSV[0] + 2 * greenHSV_STD[0])
+				return Green;
+
 			return None;
 		}
 	}

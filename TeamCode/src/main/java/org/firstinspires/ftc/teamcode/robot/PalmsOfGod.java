@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import android.graphics.Color;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -78,13 +80,17 @@ public class PalmsOfGod {
 	public Field.Ball getLeftBall() {
 		if (useTelemetry)
 			telemetry.addLine(String.format("left: r: %d, g: %d, b: %d", leftEye.red(), leftEye.green(), leftEye.blue()));
-		return Field.Ball.getBallFromColor(leftEye.argb());
+		float[] temp = {0f, 0f, 0f};
+		Color.RGBToHSV(leftEye.red(), leftEye.green(), leftEye.blue(), temp);
+		return Field.Ball.getBallFromColor(temp);
 	}
 
 	public Field.Ball getRightBall() {
 		if (useTelemetry)
 			telemetry.addLine(String.format("right: r: %d, g: %d, b: %d", rightEye.red(), rightEye.green(), rightEye.blue()));
-		return Field.Ball.getBallFromColor(rightEye.argb());
+		float[] temp = {0f, 0f, 0f};
+		Color.RGBToHSV(rightEye.red(), rightEye.green(), rightEye.blue(), temp);
+		return Field.Ball.getBallFromColor(temp);
 	}
 
 	public Position getPalm(Palm palm) {

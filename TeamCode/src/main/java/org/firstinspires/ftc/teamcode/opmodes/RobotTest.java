@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.GamepadManager;
 import org.firstinspires.ftc.teamcode.plugin.plugins.MecanumDrive;
+import org.firstinspires.ftc.teamcode.robot.Field;
 import org.firstinspires.ftc.teamcode.robot.HandsOfGod;
 import org.firstinspires.ftc.teamcode.robot.PalmsOfGod;
 import org.firstinspires.ftc.teamcode.robot.Robot;
@@ -57,6 +58,16 @@ public class RobotTest extends OpMode {
 			}
 		}
 
+		if (gamepad1.start) {
+			while (bot.shootAllTryingMotif().run(null)) {
+			}
+		}
+
+		telemetry.addData("Ball", Robot.intake.getBallType().toString());
+		telemetry.update();
+
+		if (gamepad1.y)
+			bot.setBalls(new Field.Ball[]{Field.Ball.Purple, Field.Ball.Green, Field.Ball.Purple});
 		if (mgamepad.justPressed(GamepadManager.Button.RIGHT_BUMPER)) {
 			rightPalmOpen = !rightPalmOpen;
 		}

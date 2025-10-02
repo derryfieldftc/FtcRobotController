@@ -26,8 +26,6 @@ public class Robot {
 	public static boolean drivetrainEnabled;
 	public static Intake intake;
 	public static boolean intakeEnabled;
-	//	public IntakeSpinner intakeSpinner;
-//	public boolean intakeSpinnerEnabled;
 	public static Camera camera;
 	public static boolean cameraEnabled;
 	public static Turret turret;
@@ -41,6 +39,7 @@ public class Robot {
 	 * 1
 	 * 3   2
 	 */
+	// lol final = immutable yeah sure man
 	public static final Ball[] balls = {None, None, None};
 	public static Ball handBall = balls[0];
 	public static Ball rightBall = balls[1];
@@ -72,7 +71,6 @@ public class Robot {
 		this.telemetry = opMode.telemetry;
 		drivetrain = new Drivetrain(hardwareMap, this.opMode);
 		intake = new Intake(this.opMode);
-//		intakeSpinner = new IntakeSpinner(this.opMode);
 		camera = new Camera(this.opMode);
 		turret = new Turret(this.opMode, new TurretPose2d(new Pose2d(0, 0, 0), 0));
 		handsOfGod = new HandsOfGod(this.opMode);
@@ -279,7 +277,7 @@ public class Robot {
 						}
 					}
 				}
-				return handBall != None || rightBall != None || leftBall != None;
+				return handBall != None || rightBall != None || leftBall != None; // Should be redundant
 			}
 		};
 	}
