@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -21,6 +22,8 @@ public class Intake {
 	DcMotor intake;
 	protected double speed = 0;
 	ColorSensor colorSensor;
+	Servo intakeLift;
+	protected double height = 0;
 
 	public Intake(OpMode opMode) {
 		this.opMode = opMode;
@@ -32,6 +35,7 @@ public class Intake {
 		intake = hardwareMap.dcMotor.get("intake");
 		intake.setDirection(DcMotorSimple.Direction.FORWARD);
 		colorSensor = hardwareMap.colorSensor.get("intakeColorSensor");
+		intakeLift = hardwareMap.servo.get("intakeLift");
 	}
 
 	public Field.Ball getBallType() {
@@ -40,9 +44,15 @@ public class Intake {
 		return Field.Ball.getBallFromColor(temp);
 	}
 
-	public void setSpeed(double speed) {
+	public Intake setSpeed(double speed) {
 		this.speed = speed;
 		intake.setPower(speed);
+		return this;
+	}
+
+	public Intake setHeight(double height) {
+		this.height = height;
+		return this;
 	}
 
 	public double getSpeed() {
@@ -51,6 +61,7 @@ public class Intake {
 
 	public void loop() {
 		intake.setPower(speed);
+		intakeLift.setPosition(height);
 	}
 
 	public Action enable() {
