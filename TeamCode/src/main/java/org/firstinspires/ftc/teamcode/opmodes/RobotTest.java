@@ -37,7 +37,7 @@ public class RobotTest extends OpMode {
 		mecanumDrive.loop();
 		bot.loop();
 
-		bot.intake.setSpeed(gamepad2.right_trigger);
+		bot.intake.setSpeed(gamepad2.right_trigger * ((gamepad2.y) ? -1 : 1));
 
 		if (mgamepad.justPressed(GamepadManager.Button.X)) {
 			handsUp = !handsUp;
@@ -57,6 +57,8 @@ public class RobotTest extends OpMode {
 			while (bot.shoot(Robot.BallPosition.Left)) {
 			}
 		}
+
+		Robot.intake.setHeight(gamepad2.left_trigger);
 
 		if (gamepad1.start) {
 			while (bot.shootAllTryingMotif().run(null)) {
