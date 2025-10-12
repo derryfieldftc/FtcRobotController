@@ -21,10 +21,11 @@ public class RobotTest extends OpMode {
 
 	@Override
 	public void init() {
-		bot = new Robot(this).enableIntake().enableHandsOfGod().enablePalmsOfGod();
+		bot = new Robot(this).enableIntake().enableHandsOfGod().enablePalmsOfGod().enableTurret();
 		mecanumDrive = new MecanumDrive(this);
 		mecanumDrive.init();
 		bot.init();
+		Robot.turret.useGamepad();
 		bot.camera.setTargetTag(Tag.PGP);
 //		bot.turret.useGamepad();
 
@@ -58,12 +59,16 @@ public class RobotTest extends OpMode {
 			}
 		}
 
-		Robot.intake.setHeight(gamepad2.left_trigger);
+		Robot.intake.setHeight(-gamepad2.right_stick_y);
+
+		Robot.turret.setAngle(-gamepad2.left_stick_y);
+		Robot.turret.setSpeed(gamepad2.left_trigger);
 
 		if (gamepad1.start) {
 			while (bot.shootAllTryingMotif().run(null)) {
 			}
 		}
+
 
 		telemetry.addData("Ball", Robot.intake.getBallType().toString());
 		telemetry.update();

@@ -11,6 +11,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -34,6 +35,7 @@ public class Robot {
 	public static boolean handsOfGodEnabled;
 	public static PalmsOfGod palmsOfGod;
 	public static boolean palmsOfGodEnabled;
+	public static VoltageSensor voltageSensor;
 
 	/**
 	 * 1
@@ -75,6 +77,8 @@ public class Robot {
 		turret = new Turret(this.opMode, new TurretPose2d(new Pose2d(0, 0, 0), 0));
 		handsOfGod = new HandsOfGod(this.opMode);
 		palmsOfGod = new PalmsOfGod(this.opMode);
+		voltageSensor = hardwareMap.voltageSensor.iterator()
+				.next(); // funky but also how RR gets voltage sensor
 	}
 
 	public Robot enablePalmsOfGod() {
@@ -106,6 +110,10 @@ public class Robot {
 //		intakeSpinnerEnabled = true;
 //		return this;
 //	}
+
+	public double getVoltage() {
+		return voltageSensor.getVoltage();
+	}
 
 	public Robot enableCamera() {
 		cameraEnabled = true;

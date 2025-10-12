@@ -150,6 +150,17 @@ public class Turret {
 		telemetry.update();
 	}
 
+	public Turret setSpeed(double speed) {
+		spinner0.setPower(speed);
+		spinner1.setPower(speed);
+		return this;
+	}
+
+	public Turret setAngle(double angle) {
+		this.angle.setPosition(angle);
+		return this;
+	}
+
 	/**
 	 * This is action should never finish until the stopAutoTracking Action is called
 	 */
