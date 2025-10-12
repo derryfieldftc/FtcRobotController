@@ -5,9 +5,7 @@ import static org.firstinspires.ftc.teamcode.robot.Tag.PGP;
 import static org.firstinspires.ftc.teamcode.robot.Tag.PPG;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -23,7 +21,7 @@ import java.util.Optional;
 /**
  * A Camera to track april tags, please make sure to call init(), setTargetTag(), and loop()
  */
-public class Camera {
+public class Camera extends RobotPart {
 	final static boolean USE_WEBCAM = true;
 	private AprilTagProcessor aprilTag;
 	private VisionPortal visionPortal; //for the driver hub camera view
@@ -34,9 +32,6 @@ public class Camera {
 	private double tagOffsetX = 0;
 	private double tagOffsetY = 0;
 	private Tag targetTag;
-	private OpMode opMode;
-	private HardwareMap hardwareMap;
-	private Telemetry telemetry;
 
 	/**
 	 * Creates a new Camera, used to find april tags
@@ -44,9 +39,7 @@ public class Camera {
 	 * @param opMode
 	 */
 	public Camera(OpMode opMode) {
-		this.opMode = opMode;
-		this.hardwareMap = opMode.hardwareMap;
-		this.telemetry = opMode.telemetry;
+		super(opMode);
 	}
 
 	/**

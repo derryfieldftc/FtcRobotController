@@ -10,15 +10,9 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-
-public class Intake {
-	OpMode opMode;
-	HardwareMap hardwareMap;
-	Telemetry telemetry;
+public class Intake extends RobotPart {
 	DcMotor intake;
 	protected double speed = 0;
 	ColorSensor colorSensor;
@@ -26,9 +20,7 @@ public class Intake {
 	protected double height = 0;
 
 	public Intake(OpMode opMode) {
-		this.opMode = opMode;
-		this.hardwareMap = opMode.hardwareMap;
-		this.telemetry = opMode.telemetry;
+		super(opMode);
 	}
 
 	public void init() {

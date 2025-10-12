@@ -6,20 +6,14 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-
-public class HandsOfGod {
+public class HandsOfGod extends RobotPart {
 	public enum Position {
 		Up,
 		Down
 	}
 
-	private OpMode opMode;
-	private HardwareMap hardwareMap;
-	private Telemetry telemetry;
 	private Gamepad gamepad;
 	public Servo leftHand, rightHand;
 	public boolean useGamepad = false, useTelemetry = false;
@@ -30,9 +24,7 @@ public class HandsOfGod {
 	private double rightDown = 0;
 
 	public HandsOfGod(OpMode opMode) {
-		this.opMode = opMode;
-		this.hardwareMap = opMode.hardwareMap;
-		this.telemetry = opMode.telemetry;
+		super(opMode);
 		this.gamepad = opMode.gamepad2;
 	}
 

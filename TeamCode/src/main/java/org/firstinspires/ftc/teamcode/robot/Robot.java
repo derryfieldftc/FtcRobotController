@@ -10,19 +10,12 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
-
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 /**
  * Class meant to easily hold all other robot classes, define positions and add methods as necessary
  * If you run into any null pointers check your enabled parts of the robot
  */
-public class Robot {
-	private OpMode opMode;
-	private HardwareMap hardwareMap;
-	private Telemetry telemetry;
+public class Robot extends RobotPart {
 	public static Drivetrain drivetrain;
 	public static boolean drivetrainEnabled;
 	public static Intake intake;
@@ -35,7 +28,6 @@ public class Robot {
 	public static boolean handsOfGodEnabled;
 	public static PalmsOfGod palmsOfGod;
 	public static boolean palmsOfGodEnabled;
-	public static VoltageSensor voltageSensor;
 
 	/**
 	 * 1
@@ -68,9 +60,7 @@ public class Robot {
 	 * @param opMode
 	 */
 	public Robot(OpMode opMode) {
-		this.opMode = opMode;
-		this.hardwareMap = opMode.hardwareMap;
-		this.telemetry = opMode.telemetry;
+		super(opMode);
 		drivetrain = new Drivetrain(hardwareMap, this.opMode);
 		intake = new Intake(this.opMode);
 		camera = new Camera(this.opMode);

@@ -13,21 +13,16 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.RR.MecanumDrive;
 
 //Oh boy
-public class Turret {
+public class Turret extends RobotPart {
 	DcMotor rotator; //25 to 95 ratio, 1 full rotation is 2k steps
 	DcMotor spinner0, spinner1;
 	Servo angle;
-	OpMode opMode;
-	HardwareMap hardwareMap;
-	Telemetry telemetry;
 	Gamepad gamepad;
 	TouchSensor limit;
 	int maxAbsDelta = 2000;
@@ -48,9 +43,7 @@ public class Turret {
 	Vector2d adjustedTarget;
 
 	public Turret(OpMode opMode, TurretPose2d turretPose2d) {
-		this.opMode = opMode;
-		this.hardwareMap = opMode.hardwareMap;
-		this.telemetry = opMode.telemetry;
+		super(opMode);
 		gamepad = opMode.gamepad2;
 		pose = turretPose2d;
 	}

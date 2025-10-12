@@ -4,20 +4,14 @@ import android.graphics.Color;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-
-public class PalmsOfGod {
+public class PalmsOfGod extends RobotPart {
 	public enum Position {
 		Up,
 		Down
 	}
 
-	private OpMode opMode;
-	private HardwareMap hardwareMap;
-	private Telemetry telemetry;
 	public ColorSensor rightEye, leftEye;
 	public Servo rightPalm, leftPalm;
 	public double rightUp = .71, rightDown = 1;
@@ -32,9 +26,7 @@ public class PalmsOfGod {
 	}
 
 	public PalmsOfGod(OpMode opMode) {
-		this.opMode = opMode;
-		this.hardwareMap = opMode.hardwareMap;
-		this.telemetry = opMode.telemetry;
+		super(opMode);
 	}
 
 	public PalmsOfGod useTelemetry() {
