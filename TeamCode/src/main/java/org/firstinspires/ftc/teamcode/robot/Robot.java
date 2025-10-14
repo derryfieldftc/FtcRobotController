@@ -125,7 +125,11 @@ public class Robot extends RobotPart {
 			palmsOfGod.init();
 	}
 
+	double currentTime = 0;
+
 	public void loop() {
+		telemetry.addData("time since last poll", opMode.getRuntime() - currentTime);
+		currentTime = opMode.getRuntime();
 		if (intakeEnabled)
 			intake.loop();
 		if (cameraEnabled)
@@ -134,6 +138,7 @@ public class Robot extends RobotPart {
 			turret.loop();
 		if (handsOfGodEnabled)
 			handsOfGod.loop();
+		telemetry.update();
 	}
 
 	private double waitTime = 0;
