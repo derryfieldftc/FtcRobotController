@@ -106,7 +106,7 @@ public class Turret extends RobotPart {
 
 	public void loop() {
 		if (useGamepad) {
-			rotator.setPower(gamepad.right_stick_y);
+			rotator.setPower(gamepad.right_stick_y / 5);
 			if (gamepad.y) {
 				rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 				rotator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -139,8 +139,6 @@ public class Turret extends RobotPart {
 
 
 		telemetry.addData("motorpos", rotator.getCurrentPosition());
-		telemetry.addData("limit", limit.getValue());
-		telemetry.update();
 	}
 
 	public Turret setSpeed(double speed) {
@@ -183,7 +181,6 @@ public class Turret extends RobotPart {
 				telemetry.addData("error", error);
 				telemetry.addLine(String.format("x: %.3f, y: %.3f, t: %.3f", pose.pose2d.position.x, pose.pose2d.position.y, pose.pose2d.heading.toDouble()));
 				rotator.setPower(error * 10);
-				telemetry.update();
 				return true;
 			}
 		};

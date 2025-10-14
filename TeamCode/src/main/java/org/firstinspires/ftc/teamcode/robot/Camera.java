@@ -124,7 +124,6 @@ public class Camera extends RobotPart {
 			telemetry.addData("Y offset", tagOffsetY);
 			telemetry.addLine("move " + ((tagOffsetY > 0) ? "up" : "down"));
 		}
-		telemetry.update();
 
 	}
 
