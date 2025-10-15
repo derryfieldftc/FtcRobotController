@@ -35,6 +35,16 @@ public class RobotTest extends OpMode {
 
 	@Override
 	public void loop() {
+		// enable or disable parts of the robot
+		if (gamepad2.dpad_up)
+			Robot.turretEnabled = !Robot.turretEnabled;
+		if (gamepad2.dpad_right)
+			Robot.intakeEnabled = !Robot.intakeEnabled;
+		if (gamepad2.dpad_down)
+			Robot.handsOfGodEnabled = !Robot.handsOfGodEnabled;
+		if (gamepad2.dpad_left)
+			Robot.drivetrainEnabled = !Robot.drivetrainEnabled;
+
 		mecanumDrive.loop();
 		bot.loop();
 
@@ -69,9 +79,7 @@ public class RobotTest extends OpMode {
 			}
 		}
 
-
 		telemetry.addData("Ball", Robot.intake.getBallType().toString());
-		telemetry.update();
 
 		if (gamepad1.y)
 			bot.setBalls(new Field.Ball[]{Field.Ball.Purple, Field.Ball.Green, Field.Ball.Purple});

@@ -158,7 +158,6 @@ public class Robot extends RobotPart {
 	 */
 	public boolean shoot(BallPosition position) {
 		telemetry.addLine("rt: " + opMode.getRuntime() + " st " + startTime + " wt " + waitTime);
-		telemetry.update();
 		if (opMode.getRuntime() - startTime < waitTime) return true;
 
 		// If we are not shooting the hand ball but it is in the way we shoot the hand ball instead

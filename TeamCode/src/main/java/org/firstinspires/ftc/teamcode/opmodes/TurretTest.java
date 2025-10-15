@@ -19,7 +19,9 @@ public class TurretTest extends OpMode {
 	@Override
 	public void init() {
 		mecanumDrive = new MecanumDrive(hardwareMap, new Pose2d(0, 0, Math.PI / 2));
-		turret = new Turret(this, new TurretPose2d(new Pose2d(0, 0, Math.PI / 2), 0)).useGamepad()
+		turret = new Turret(this, new TurretPose2d(new Pose2d(0, 0, Math.PI / 2), 0))
+				.useGamepad()
+				.trackTarget()
 				.updatePose(new Pose2d(0, 0, Math.PI / 2))
 				.setTarget(new Vector2d(0, 0));
 
