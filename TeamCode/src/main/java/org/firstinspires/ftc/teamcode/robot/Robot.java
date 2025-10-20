@@ -268,16 +268,15 @@ public class Robot extends RobotPart {
 			public boolean run(@NonNull TelemetryPacket telemetryPacket) {
 				if (handBall != None) {
 					return shoot(BallPosition.Hands);
-				} else {
-					if (motif.getBall(1) == rightBall) {
-						return shoot(BallPosition.Right);
-					} else {
-						if (leftBall != None) {
-							return shoot(BallPosition.Left);
-						} else if (rightBall != None) {
-							return shoot(BallPosition.Right);
-						}
-					}
+				}
+
+				if (motif.getBall(1) == rightBall) {
+					return shoot(BallPosition.Right);
+				}
+				if (leftBall != None) {
+					return shoot(BallPosition.Left);
+				} else if (rightBall != None) {
+					return shoot(BallPosition.Right);
 				}
 				return handBall != None || rightBall != None || leftBall != None; // Should be redundant
 			}

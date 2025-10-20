@@ -35,7 +35,7 @@ public class RobotTest extends OpMode {
 
 	@Override
 	public void loop() {
-		// enable or disable parts of the robot
+		// enable or disable parts of the robot, this does not fully shut parts off, intake.setSpeed() will still change the motor speed, this is an okay sacrifice as imo disabling parts like this are niche
 		if (gamepad2.dpad_up)
 			Robot.turretEnabled = !Robot.turretEnabled;
 		if (gamepad2.dpad_right)
@@ -69,9 +69,9 @@ public class RobotTest extends OpMode {
 			}
 		}
 
-		Robot.intake.setHeight(-gamepad2.right_stick_y);
+		Robot.intake.setHeight(gamepad1.right_trigger);
 
-		Robot.turret.setAngle(-gamepad2.left_stick_y);
+		Robot.turret.tuneAngle(-gamepad2.left_stick_y);
 		Robot.turret.setSpeed(gamepad2.left_trigger);
 
 		if (gamepad1.start) {
@@ -79,7 +79,7 @@ public class RobotTest extends OpMode {
 			}
 		}
 
-		telemetry.addData("Ball", Robot.intake.getBallType().toString());
+		telemetry.addLine("Ball" + Robot.palmsOfGod.getLeftBall());
 
 		if (gamepad1.y)
 			bot.setBalls(new Field.Ball[]{Field.Ball.Purple, Field.Ball.Green, Field.Ball.Purple});

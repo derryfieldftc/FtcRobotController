@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import static androidx.core.math.MathUtils.clamp;
 import static java.lang.Math.atan;
 import static java.lang.Math.pow;
 import static java.lang.Math.sqrt;
@@ -12,6 +13,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -23,6 +25,7 @@ public class Turret extends RobotPart {
 	DcMotor rotator; //25 to 95 ratio, 1 full rotation is 2k steps
 	DcMotor spinner0, spinner1;
 	Servo angle;
+	double angleAngle = 0;
 	Gamepad gamepad;
 	TouchSensor limit;
 	int maxAbsDelta = 2000;
@@ -68,6 +71,7 @@ public class Turret extends RobotPart {
 		rotator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 		spinner0 = hardwareMap.dcMotor.get("spinny0");
 		spinner1 = hardwareMap.dcMotor.get("spinny1");
+		spinner0.setDirection(DcMotorSimple.Direction.REVERSE);
 		angle = hardwareMap.servo.get("turretAngle");
 
 
@@ -100,6 +104,14 @@ public class Turret extends RobotPart {
 		return this;
 	}
 
+	/**
+	 * Changes angle by angle units, clamped to 0-1
+	 * @param angle
+	 */
+	public void tuneAngle(double angle) {
+		this.angleAngle = clamp(angleAngle + angle / 30, 0, 1);
+	}
+
 	public void setRotatorPower(double power) {
 		rotatorPower = power;
 	}
@@ -113,7 +125,9 @@ public class Turret extends RobotPart {
 			}
 			spinner0.setPower(gamepad.left_trigger * ((gamepad.x) ? -1 : 1));
 			spinner1.setPower(gamepad.left_trigger * ((gamepad.x) ? -1 : 1));
-			angle.setPosition((gamepad.left_stick_y + 1) / 2.0);
+			angleAngle = clamp(angleAngle + -gamepad.left_stick_y / 30, -1, 1);
+			telemetry.addData("Angle", angleAngle);
+			angle.setPosition(angleAngle);
 		}
 
 		if (trackTarget) {
