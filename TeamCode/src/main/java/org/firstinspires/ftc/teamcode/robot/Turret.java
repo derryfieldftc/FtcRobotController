@@ -35,9 +35,11 @@ public class Turret extends RobotPart {
 	double ticksPerRotation = 2000.0 / (2.0 * Math.PI);
 	double timeOfLastUpdate = 0;
 	double deltaTimeOfLastUpdate = 0;
+	double targetAngle;
 	boolean useGamepad;
 	boolean trackTarget;
 	boolean autoTrack = true;
+	boolean targetSet = false;
 	MecanumDrive mecanumDrive;
 	PID rotationPID;
 	TurretPose2d pose;
@@ -72,6 +74,8 @@ public class Turret extends RobotPart {
 		spinner0 = hardwareMap.dcMotor.get("spinny0");
 		spinner1 = hardwareMap.dcMotor.get("spinny1");
 		spinner0.setDirection(DcMotorSimple.Direction.REVERSE);
+		spinner0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		spinner1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 		angle = hardwareMap.servo.get("turretAngle");
 
 
@@ -101,6 +105,7 @@ public class Turret extends RobotPart {
 
 	public Turret setTarget(Vector2d target) {
 		this.target = target;
+		targetSet = true;
 		return this;
 	}
 
@@ -141,11 +146,12 @@ public class Turret extends RobotPart {
 			rotation = rotator.getCurrentPosition() / ticksPerRotation;
 			pose = new TurretPose2d(pose.pose2d, rotation);
 
-			double targetRotation = pose.getTurretAngleToTargetRelativeToRobot(adjustedTarget);
+			if (targetSet)
+				targetAngle = pose.getTurretAngleToTargetRelativeToRobot(adjustedTarget);
 			double currentRotation = pose.rotation;
-			double error = rotationPID.calculate(targetRotation - currentRotation, opMode.time - lastTime);
+			double error = rotationPID.calculate(targetAngle - currentRotation, opMode.time - lastTime);
 			lastTime = opMode.time;
-			telemetry.addData("target", targetRotation);
+			telemetry.addData("target", targetAngle);
 			telemetry.addData("current", currentRotation);
 			telemetry.addData("error", error);
 			rotator.setPower(error * 10);
@@ -154,6 +160,10 @@ public class Turret extends RobotPart {
 
 		telemetry.addData("motorpos", rotator.getCurrentPosition());
 	}
+
+	public void setTargetAngle(double angle) {
+		this.targetAngle = angle;
+	};
 
 	public Turret setSpeed(double speed) {
 		spinner0.setPower(speed);
