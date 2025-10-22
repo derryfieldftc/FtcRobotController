@@ -25,7 +25,7 @@ public class Turret extends RobotPart {
 	DcMotor rotator; //25 to 95 ratio, 1 full rotation is 2k steps
 	DcMotor spinner0, spinner1;
 	Servo angle;
-	double angleAngle = 0;
+	double angleAngle = 0; // max .3
 	Gamepad gamepad;
 	TouchSensor limit;
 	int maxAbsDelta = 2000;
@@ -74,6 +74,8 @@ public class Turret extends RobotPart {
 		spinner0 = hardwareMap.dcMotor.get("spinny0");
 		spinner1 = hardwareMap.dcMotor.get("spinny1");
 		spinner0.setDirection(DcMotorSimple.Direction.REVERSE);
+		spinner0.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+		spinner1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 		spinner0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 		spinner1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 		angle = hardwareMap.servo.get("turretAngle");
@@ -158,7 +160,6 @@ public class Turret extends RobotPart {
 		}
 
 
-		telemetry.addData("motorpos", rotator.getCurrentPosition());
 	}
 
 	public void setTargetAngle(double angle) {

@@ -128,7 +128,6 @@ public class Robot extends RobotPart {
 	double currentTime = 0;
 
 	public void loop() {
-		telemetry.addData("time since last poll", opMode.getRuntime() - currentTime);
 		currentTime = opMode.getRuntime();
 		if (intakeEnabled)
 			intake.loop();
@@ -145,7 +144,7 @@ public class Robot extends RobotPart {
 	private double startTime = 0;
 
 	private double handMoveSeconds = .5;
-	private double palmMoveSeconds = .5;
+	private double palmMoveSeconds = .3;
 
 	private boolean justShot = false;
 
@@ -157,6 +156,7 @@ public class Robot extends RobotPart {
 	 * @return
 	 */
 	public boolean shoot(BallPosition position) {
+		turret.setSpeed(.7);
 		telemetry.addLine("rt: " + opMode.getRuntime() + " st " + startTime + " wt " + waitTime);
 		if (opMode.getRuntime() - startTime < waitTime) return true;
 

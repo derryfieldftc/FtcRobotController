@@ -22,25 +22,29 @@ public class Red2 extends OpMode {
 	Action route;
 	Pose2d initPose = new Pose2d(45, 50, -Math.PI / 2);
 	Robot bot;
+	Depot depot = new Depot(Field.Alliance.Red);
 	Turret turret;
 	Action action;
 
 	@Override
 	public void init() {
-		bot = new Robot(this).enablePalmsOfGod().enableHandsOfGod().enableIntake();
+		bot = new Robot(this).enablePalmsOfGod().enableHandsOfGod().enableIntake().enableTurret();
+		turret = Robot.turret;
 		bot.init();
+		Robot.turret.trackTarget().setTarget(depot.getPosition());
 		Depot depot = new Depot(Field.Alliance.Red);
 		mecanumDrive = new MecanumDrive(hardwareMap, initPose);
-		turret = new Turret(this, new TurretPose2d(initPose, 0)).setTarget(depot.getPosition())
-				.trackTarget();
-		turret.init();
+		bot.setBalls(Field.Ball.Purple, Field.Ball.Green, Field.Ball.Purple);
 
 		route = mecanumDrive.actionBuilder(initPose)
 				.strafeTo(new Vector2d(25, 25)) // Away from goal to shootable location, also get tag here
-				.stopAndAdd(turret.shoot())
+				.waitSeconds(1)
+				.stopAndAdd(bot.shootAction(Robot.BallPosition.Hands))
+				.stopAndAdd(bot.shootAction(Robot.BallPosition.Right))
+				.stopAndAdd(bot.shootAction(Robot.BallPosition.Left))
 				.splineTo(new Vector2d(47, 14), 0) // Collect row 3
-				.stopAndAdd(telemetryPacket -> {
-					bot.setBalls(new Field.Ball[]{Field.Ball.Purple, Field.Ball.Green, Field.Ball.Purple});
+				.stopAndAdd(telemetryPacket -> { // Lambda actions work if they are instantaneous
+					bot.setBalls(Field.Ball.Purple, Field.Ball.Green, Field.Ball.Purple);
 					return false;
 				})
 				.splineToConstantHeading(new Vector2d(50, 6), 0) // to lever
@@ -48,7 +52,6 @@ public class Red2 extends OpMode {
 				.waitSeconds(1) // Lever
 				.setReversed(true)
 				.strafeTo(new Vector2d(15, 8)) // Back to shootable
-				.stopAndAdd(bot.shootAllTryingMotif())
 				.waitSeconds(2)// FIRE
 				.setReversed(false)
 				.splineToConstantHeading(new Vector2d(38, -12), 0) // Collect row 2
@@ -72,13 +75,11 @@ public class Red2 extends OpMode {
 				route,
 				turret.autoTracking(mecanumDrive));
 
-		action.preview(new Canvas()); // TEST
 	}
 
 	@Override
 	public void start() {
 		// <3 composable actions I think I'm in love
-		Robot.intake.setSpeed(1);
 		Actions.runBlocking(action);
 		stop();
 	}

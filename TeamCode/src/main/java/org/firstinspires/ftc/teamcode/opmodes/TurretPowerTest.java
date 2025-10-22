@@ -35,9 +35,9 @@ public class TurretPowerTest extends OpMode {
 			speed = clamp(speed + .05, 0, 1);
 
 		if (mgamepad2.justPressed(GamepadManager.Button.DPAD_LEFT))
-			angle = clamp(speed - .05, 0, 1);
+			angle = clamp(angle - .05, 0, 1);
 		if (mgamepad2.justPressed(GamepadManager.Button.DPAD_RIGHT))
-			angle = clamp(speed + .05, 0, 1);
+			angle = clamp(angle + .05, 0, 1);
 
 		if (mgamepad2.justPressed(GamepadManager.Button.X)) {
 			handsUp = !handsUp;
@@ -52,5 +52,6 @@ public class TurretPowerTest extends OpMode {
 
 		telemetry.addData("speed", speed);
 		telemetry.addData("angle", angle);
+		telemetry.update();
 	}
 }

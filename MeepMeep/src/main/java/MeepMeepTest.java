@@ -17,7 +17,7 @@ public class MeepMeepTest {
 		MeepMeep meepMeep = new MeepMeep(800);
 
 		RoadRunnerBotEntity bot =
-				red2(meepMeep);
+				red1(meepMeep);
 
 
 		Image img = null;
