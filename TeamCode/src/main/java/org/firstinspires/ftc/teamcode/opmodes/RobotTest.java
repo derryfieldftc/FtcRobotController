@@ -17,6 +17,7 @@ public class RobotTest extends OpMode {
 	MecanumDrive mecanumDrive;
 	GamepadManager mgamepad;
 	boolean handsUp = false;
+	boolean shootRight, shootHands, shootLeft;
 	boolean leftPalmOpen = false, rightPalmOpen = false;
 
 	@Override
@@ -25,7 +26,6 @@ public class RobotTest extends OpMode {
 		mecanumDrive = new MecanumDrive(this);
 		mecanumDrive.init();
 		bot.init();
-		Robot.turret.useGamepad();
 		bot.camera.setTargetTag(Tag.PGP);
 //		bot.turret.useGamepad();
 
@@ -55,24 +55,29 @@ public class RobotTest extends OpMode {
 		}
 
 		if (gamepad1.a) {
-			while (bot.shoot(Robot.BallPosition.Hands)) {
-			}
+			shootHands = true;
 		}
 
 		if (gamepad1.b) {
-			while (bot.shoot(Robot.BallPosition.Right)) {
-			}
+			shootRight = true;
 		}
 
 		if (gamepad1.x) {
-			while (bot.shoot(Robot.BallPosition.Left)) {
-			}
+			shootLeft = true;
 		}
+
+		if (shootHands)
+			shootHands = bot.shoot(Robot.BallPosition.Hands);
+
+		if (shootLeft)
+			shootLeft = bot.shoot(Robot.BallPosition.Left);
+
+		if (shootRight)
+			shootRight = bot.shoot(Robot.BallPosition.Right);
 
 		Robot.intake.setHeight(gamepad1.right_trigger);
 
-		Robot.turret.tuneAngle(-gamepad2.left_stick_y);
-		Robot.turret.setSpeed(gamepad2.left_trigger);
+		Robot.turret.setSpeed(-gamepad2.left_stick_y);
 
 		if (gamepad1.start) {
 			while (bot.shootAllTryingMotif().run(null)) {

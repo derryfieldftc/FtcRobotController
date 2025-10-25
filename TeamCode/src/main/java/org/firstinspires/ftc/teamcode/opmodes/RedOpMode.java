@@ -1,21 +1,29 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.GamepadManager;
 import org.firstinspires.ftc.teamcode.plugin.plugins.MecanumDrive;
+import org.firstinspires.ftc.teamcode.robot.Depot;
 import org.firstinspires.ftc.teamcode.robot.Field;
 import org.firstinspires.ftc.teamcode.robot.HandsOfGod;
 import org.firstinspires.ftc.teamcode.robot.PalmsOfGod;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.Tag;
+import org.firstinspires.ftc.teamcode.robot.Turret;
+import org.firstinspires.ftc.teamcode.robot.TurretPose2d;
 
-@TeleOp(name = "RobotTest")
+import java.util.Objects;
+
+@TeleOp(name = "RedOpMode")
 public class RedOpMode extends OpMode {
 	Robot bot;
 	MecanumDrive mecanumDrive;
+	org.firstinspires.ftc.teamcode.RR.MecanumDrive rr_Mecanum;
 	GamepadManager mgamepad;
+	double speedTrim = 0;
 	boolean handsUp = false;
 	boolean shootRight, shootHands, shootLeft;
 	boolean leftPalmOpen = false, rightPalmOpen = false;
@@ -23,10 +31,17 @@ public class RedOpMode extends OpMode {
 	@Override
 	public void init() {
 		bot = new Robot(this).enableIntake().enableHandsOfGod().enablePalmsOfGod().enableTurret();
+		bot.init();
+		try {
+			rr_Mecanum = new org.firstinspires.ftc.teamcode.RR.MecanumDrive(hardwareMap, Turret.getSavedPosition().pose2d);
+			Robot.turret = new Turret(this, Turret.getSavedPosition());
+			Robot.turret.init();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+		Robot.turret.setTarget(new Depot(Field.Alliance.Red).getPosition()).trackTarget().autoTracking(rr_Mecanum).run(null);
 		mecanumDrive = new MecanumDrive(this);
 		mecanumDrive.init();
-		bot.init();
-		Robot.turret.useGamepad();
 		bot.camera.setTargetTag(Tag.PGP);
 //		bot.turret.useGamepad();
 
@@ -36,18 +51,10 @@ public class RedOpMode extends OpMode {
 
 	@Override
 	public void loop() {
-		// enable or disable parts of the robot, this does not fully shut parts off, intake.setSpeed() will still change the motor speed, this is an okay sacrifice as imo disabling parts like this are niche
-		if (gamepad2.dpad_up)
-			Robot.turretEnabled = !Robot.turretEnabled;
-		if (gamepad2.dpad_right)
-			Robot.intakeEnabled = !Robot.intakeEnabled;
-		if (gamepad2.dpad_down)
-			Robot.handsOfGodEnabled = !Robot.handsOfGodEnabled;
-		if (gamepad2.dpad_left)
-			Robot.drivetrainEnabled = !Robot.drivetrainEnabled;
-
 		mecanumDrive.loop();
+		rr_Mecanum.updatePoseEstimate();
 		bot.loop();
+		Robot.turret.autoTracking(rr_Mecanum).run(null);
 
 		bot.intake.setSpeed(gamepad2.right_trigger * ((gamepad2.y) ? -1 : 1));
 
@@ -55,15 +62,15 @@ public class RedOpMode extends OpMode {
 			handsUp = !handsUp;
 		}
 
-		if (gamepad1.a) {
+		if (gamepad2.a) {
 			shootHands = true;
 		}
 
-		if (gamepad1.b) {
+		if (gamepad2.b) {
 			shootRight = true;
 		}
 
-		if (gamepad1.x) {
+		if (gamepad2.x) {
 			shootLeft = true;
 		}
 
@@ -80,15 +87,8 @@ public class RedOpMode extends OpMode {
 
 		Robot.turret.setSpeed(-gamepad2.left_stick_y);
 
-		if (gamepad1.start) {
-			while (bot.shootAllTryingMotif().run(null)) {
-			}
-		}
-
 		telemetry.addLine("Ball" + Robot.palmsOfGod.getLeftBall());
 
-		if (gamepad1.y)
-			bot.setBalls(new Field.Ball[]{Field.Ball.Purple, Field.Ball.Green, Field.Ball.Purple});
 		if (mgamepad.justPressed(GamepadManager.Button.RIGHT_BUMPER)) {
 			rightPalmOpen = !rightPalmOpen;
 		}

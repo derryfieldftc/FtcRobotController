@@ -5,6 +5,8 @@ import static java.lang.Math.atan;
 import static java.lang.Math.pow;
 import static java.lang.Math.sqrt;
 
+import android.annotation.SuppressLint;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -19,6 +21,10 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.teamcode.RR.MecanumDrive;
+
+import java.io.File;
+import java.io.PrintWriter;
+import java.util.Scanner;
 
 //Oh boy
 public class Turret extends RobotPart {
@@ -46,6 +52,16 @@ public class Turret extends RobotPart {
 	Vector2d robotMovement = null;
 	Vector2d target = new Vector2d(0, 0);
 	Vector2d adjustedTarget;
+
+	enum SpeedByDistance {
+		Max (1),
+		None (0),
+		Close (.5),
+		Far (.6);
+		final double power;
+
+		SpeedByDistance(double power) {this.power = power;};
+	}
 
 	public Turret(OpMode opMode, TurretPose2d turretPose2d) {
 		super(opMode);
@@ -76,6 +92,8 @@ public class Turret extends RobotPart {
 		spinner0.setDirection(DcMotorSimple.Direction.REVERSE);
 		spinner0.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 		spinner1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+		spinner0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+		spinner1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		spinner0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 		spinner1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 		angle = hardwareMap.servo.get("turretAngle");
@@ -123,6 +141,10 @@ public class Turret extends RobotPart {
 		rotatorPower = power;
 	}
 
+	public double getRotation() {
+		return this.rotation;
+	}
+
 	public void loop() {
 		if (useGamepad) {
 			rotator.setPower(gamepad.right_stick_y / 5);
@@ -151,8 +173,8 @@ public class Turret extends RobotPart {
 			if (targetSet)
 				targetAngle = pose.getTurretAngleToTargetRelativeToRobot(adjustedTarget);
 			double currentRotation = pose.rotation;
-			double error = rotationPID.calculate(targetAngle - currentRotation, opMode.time - lastTime);
-			lastTime = opMode.time;
+			double error = rotationPID.calculate(targetAngle - currentRotation, opMode.getRuntime() - lastTime);
+			lastTime = opMode.getRuntime();
 			telemetry.addData("target", targetAngle);
 			telemetry.addData("current", currentRotation);
 			telemetry.addData("error", error);
@@ -198,7 +220,7 @@ public class Turret extends RobotPart {
 
 				double targetRotation = pose.getTurretAngleToTargetRelativeToRobot(adjustedTarget);
 				double currentRotation = pose.rotation;
-				double error = rotationPID.calculate(targetRotation - currentRotation, opMode.time - lastTime);
+				double error = rotationPID.calculate(targetRotation - currentRotation, opMode.getRuntime() - lastTime);
 				telemetry.addLine(String.format("deltar: %.3f, dt: %.3f", targetRotation - currentRotation, opMode.time - lastTime));
 				lastTime = opMode.getRuntime();
 				telemetry.addData("target", targetRotation);
@@ -253,4 +275,32 @@ public class Turret extends RobotPart {
 		vi = sqrt(pow(vix, 2) + pow(viy, 2));
 		angle = atan(viy / vix);
 	}
+
+	@SuppressLint("DefaultLocale")
+	public void savePosition() {
+		File file = new File("sdcard/FIRST/lastPose");
+
+		try {
+			PrintWriter writer = new PrintWriter(file);
+			file.createNewFile();
+
+			writer.println(String.format("%f %f %f %f", pose.pose2d.position.x, pose.pose2d.position.y, pose.pose2d.heading.toDouble(), pose.rotation));
+			writer.flush();
+			writer.close();
+
+		} catch (Exception ignored) {} // beautiful exception handleing
+	}
+
+	public static TurretPose2d getSavedPosition() throws Exception {
+		try {
+			File file = new File("/sdcard/FIRST/lastPose");
+			Scanner scanner = new Scanner(file);
+			return new TurretPose2d(
+					new Pose2d(scanner.nextDouble(),	// x
+					scanner.nextDouble(),				// y
+					scanner.nextDouble()),				// r
+					scanner.nextDouble()				// t
+			);
+		} catch (Exception ignored) {throw new Exception(ignored);}
+	};
 }

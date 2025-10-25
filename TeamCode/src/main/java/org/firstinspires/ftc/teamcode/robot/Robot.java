@@ -4,12 +4,17 @@ import static org.firstinspires.ftc.teamcode.robot.Field.Ball;
 import static org.firstinspires.ftc.teamcode.robot.Field.Ball.None;
 import static org.firstinspires.ftc.teamcode.robot.Field.motif;
 
+import android.annotation.SuppressLint;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+
+import java.io.File;
+import java.io.PrintWriter;
 
 /**
  * Class meant to easily hold all other robot classes, define positions and add methods as necessary
@@ -28,6 +33,7 @@ public class Robot extends RobotPart {
 	public static boolean handsOfGodEnabled;
 	public static PalmsOfGod palmsOfGod;
 	public static boolean palmsOfGodEnabled;
+	public static TurretPose2d finalPose;
 
 	/**
 	 * 1
@@ -143,8 +149,8 @@ public class Robot extends RobotPart {
 	private double waitTime = 0;
 	private double startTime = 0;
 
-	private double handMoveSeconds = .5;
-	private double palmMoveSeconds = .3;
+	private double handMoveSeconds = .6;
+	private double palmMoveSeconds = .5;
 
 	private boolean justShot = false;
 
@@ -156,7 +162,6 @@ public class Robot extends RobotPart {
 	 * @return
 	 */
 	public boolean shoot(BallPosition position) {
-		turret.setSpeed(.7);
 		telemetry.addLine("rt: " + opMode.getRuntime() + " st " + startTime + " wt " + waitTime);
 		if (opMode.getRuntime() - startTime < waitTime) return true;
 
@@ -301,6 +306,30 @@ public class Robot extends RobotPart {
 			public boolean run(@NonNull TelemetryPacket telemetryPacket) {
 
 				return unloading;
+			}
+		};
+	}
+
+	public Action setPalms(PalmsOfGod.Position left, PalmsOfGod.Position right) {
+		return new Action() {
+			@Override
+			public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+				palmsOfGod.setLeftPalm(left);
+				palmsOfGod.setRightPalm(right);
+				return false;
+			}
+		};
+	}
+
+	public Action savePosition(TurretPose2d pose) {
+		return new Action() {
+			@SuppressLint("DefaultLocale")
+			@Override
+			public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+				try {
+					turret.savePosition();
+				} catch (Exception ignored) {}
+				return true;
 			}
 		};
 	}

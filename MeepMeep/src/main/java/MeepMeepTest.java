@@ -17,7 +17,7 @@ public class MeepMeepTest {
 		MeepMeep meepMeep = new MeepMeep(800);
 
 		RoadRunnerBotEntity bot =
-				red1(meepMeep);
+				blue1(meepMeep);
 
 
 		Image img = null;
@@ -35,18 +35,52 @@ public class MeepMeepTest {
 				.start();
 	}
 
+	public static RoadRunnerBotEntity blue1(MeepMeep meepMeep) {
+		Pose2d initPose = new Pose2d(-20, -57, -Math.PI / 4);
+		return new DefaultBotBuilder(meepMeep)
+				// Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
+				.setConstraints(50, 50, Math.toRadians(180), Math.toRadians(180), 16)
+				.followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(initPose)
+						.splineToConstantHeading(new Vector2d(-50, -55), -Math.PI / 4) // collecting human player zone balls
+						.splineTo(new Vector2d(-60, -55), Math.PI / 2)
+						.splineTo(new Vector2d(-60, -62), Math.PI / 2)
+						.setReversed(true)
+						.splineToConstantHeading(new Vector2d(-15, -50), -Math.PI / 2) // shoot
+						.setReversed(false)
+						.strafeTo(new Vector2d(-15, -50))
+						.turn(-Math.PI / 2)
+						.splineToConstantHeading(new Vector2d(-35, -5), 0) // Collect row 2
+						.splineToConstantHeading(new Vector2d(-41, -5), 0) // Collect row 2
+						.splineToConstantHeading(new Vector2d(-62, -2), 0) // lever
+						.setReversed(true)
+						.splineToConstantHeading(new Vector2d(-10, 0), Math.PI) // Back to shootable
+						.setReversed(false)
+						.splineToConstantHeading(new Vector2d(-39, 15), 0)
+						.splineTo(new Vector2d(-50, 16), 0) // Collect row 3
+						.setReversed(true)
+						.splineToConstantHeading(new Vector2d(-10, 0), Math.PI) // Back to shootable
+						.setReversed(false)
+						.splineToConstantHeading(new Vector2d(-46, -35), 0) // collect 1
+						.setReversed(true)
+						.splineToConstantHeading(new Vector2d(-20, -57), -Math.PI)
+						.build());
+
+	}
+
 	public static RoadRunnerBotEntity red1(MeepMeep meepMeep) {
 		Pose2d initPose = new Pose2d(20, -57, Math.PI / 4);
 		return new DefaultBotBuilder(meepMeep)
 				// Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
 				.setConstraints(50, 50, Math.toRadians(180), Math.toRadians(180), 16)
 				.followTrajectorySequence(drive -> drive.trajectorySequenceBuilder(initPose)
+						//Shoot all
 						.splineToConstantHeading(new Vector2d(50, -55), Math.PI / 4) // collecting human player zone balls
 						.splineTo(new Vector2d(60, -55), -Math.PI / 2)
 						.splineTo(new Vector2d(60, -62), -Math.PI / 2)
 						.setReversed(true)
 						.splineToConstantHeading(new Vector2d(15, -50), Math.PI / 2)
 						.setReversed(false)
+						// shoot whilst turning
 						.turn(Math.PI / 2)
 						.splineToConstantHeading(new Vector2d(35, -5), 0) // Collect row 2
 						.splineToConstantHeading(new Vector2d(41, -5), 0) // Collect row 2
@@ -64,7 +98,7 @@ public class MeepMeepTest {
 						.setReversed(false)
 						.splineToConstantHeading(new Vector2d(46, -35), 0) // collect 1
 						.setReversed(true)
-						.splineToConstantHeading(new Vector2d(20, -57), Math.PI)
+						.splineToConstantHeading(new Vector2d(20, -57), Math.PI) // shoot here too
 						.build());
 	}
 
