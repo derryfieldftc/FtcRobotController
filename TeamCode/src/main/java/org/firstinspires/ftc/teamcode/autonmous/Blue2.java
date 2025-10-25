@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.autonmous;
 
-import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -15,15 +14,14 @@ import org.firstinspires.ftc.teamcode.robot.Field;
 import org.firstinspires.ftc.teamcode.robot.PalmsOfGod;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.Turret;
-import org.firstinspires.ftc.teamcode.robot.TurretPose2d;
 
-@Autonomous(name = "Red2")
-public class Red2 extends OpMode {
+@Autonomous(name = "Blue2")
+public class Blue2 extends OpMode {
 	MecanumDrive mecanumDrive;
 	Action route;
 	Pose2d initPose = new Pose2d(45, 50, -Math.PI / 2);
 	Robot bot;
-	Depot depot = new Depot(Field.Alliance.Red);
+	Depot depot = new Depot(Field.Alliance.Blue);
 	Turret turret;
 	Action action;
 
@@ -38,7 +36,7 @@ public class Red2 extends OpMode {
 		Robot.palmsOfGod.setLeftPalm(PalmsOfGod.Position.Down);
 		Robot.palmsOfGod.setRightPalm(PalmsOfGod.Position.Down);
 
-		route = mecanumDrive.actionBuilder(initPose)
+		route = mecanumDrive.actionBuilder(initPose, AutoFunctions::mirror)
 				.stopAndAdd(telemetryPacket -> {Robot.turret.setSpeed(.4); return false;})
 				.strafeTo(new Vector2d(25, 25)) // Away from goal to shootable location, also get tag here
 				.stopAndAdd(bot.shootAction(Robot.BallPosition.Hands))

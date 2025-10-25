@@ -4,8 +4,10 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.Arclength;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Pose2dDual;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -21,14 +23,14 @@ import org.firstinspires.ftc.teamcode.robot.PalmsOfGod;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.TurretPose2d;
 
-@Autonomous(name = "Red1")
-public class Red1 extends OpMode {
+@Autonomous(name = "Blue1")
+public class Blue1 extends OpMode {
 	MecanumDrive mecanumDrive;
 	Action action;
 	Robot bot;
 	Intake intake;
 	PalmsOfGod palms;
-	Depot depot = new Depot(Field.Alliance.Red);
+	Depot depot = new Depot(Field.Alliance.Blue);
 	Action route;
 	Pose2d initPose = new Pose2d(20, -57, Math.PI / 4);
 
@@ -40,44 +42,40 @@ public class Red1 extends OpMode {
 		bot = new Robot(this).enableTurret().enableHandsOfGod().enablePalmsOfGod().enableIntake();
 		bot.init();
 		Robot.turret.trackTarget().setTarget(depot.getPosition());
-		Robot.turret.trackTarget().setTarget(depot.getPosition());
 		intake = Robot.intake;
 		palms = Robot.palmsOfGod;
 		mecanumDrive = new MecanumDrive(hardwareMap, initPose);
 
 
-		route = mecanumDrive.actionBuilder(initPose)
-				.stopAndAdd(telemetryPacket -> {Robot.turret.setSpeed(.6); return false;})
+		route = mecanumDrive.actionBuilder(initPose, AutoFunctions::mirror)
+				.stopAndAdd(telemetryPacket -> {Robot.turret.setSpeed(.7); return false;})
 				.waitSeconds(.5)
-				.stopAndAdd(shootFar())
+				.stopAndAdd(shoot())
 				.turn(-Math.PI / 4)
 				.stopAndAdd(intake.enable())
 				.splineToConstantHeading(new Vector2d(35, -5), 0) // Collect row 2
 				.splineToConstantHeading(new Vector2d(41, -5), 0) // Collect row 2
 				.splineToConstantHeading(new Vector2d(62, -2), 0) // lever
-				.stopAndAdd(intake.disable())
-				.stopAndAdd(telemetryPacket -> {Robot.turret.setSpeed(.54); return false;})
+				.stopAndAdd(telemetryPacket -> {Robot.turret.setSpeed(.6); return false;})
 				.waitSeconds(1)
 				.setReversed(true)
 				.splineToConstantHeading(new Vector2d(10, 0), Math.PI) // Back to shootable
-				.stopAndAdd(shootFar())
+				.stopAndAdd(shoot())
 				.setReversed(false)
 				.stopAndAdd(intake.enable())
 				.splineToConstantHeading(new Vector2d(39, 15), 0)
 				.splineToConstantHeading(new Vector2d(50, 16), 0) // Collect row 3
-				.stopAndAdd(intake.disable())
 				.setReversed(true)
 				.splineToConstantHeading(new Vector2d(10, 0), Math.PI) // Back to shootable
-				.stopAndAdd(shootFar())
+				.stopAndAdd(shoot())
 				.setReversed(false)
 				.stopAndAdd(intake.enable())
 				.splineToConstantHeading(new Vector2d(46, -35), 0) // collect 1
-				.stopAndAdd(intake.disable())
 				.setReversed(true)
 				.splineToConstantHeading(new Vector2d(20, -57), Math.PI)
-				.stopAndAdd(shootFar())
+				.stopAndAdd(shoot())
 				.build();
-		action = new ParallelAction(bot.savePosition(new TurretPose2d(mecanumDrive.localizer.getPose(), Robot.turret.getRotation())), route, Robot.turret.autoTracking(mecanumDrive));
+		action = new ParallelAction(updateLastKnownPose(), route, Robot.turret.autoTracking(mecanumDrive));
 	}
 
 	@Override
@@ -87,18 +85,7 @@ public class Red1 extends OpMode {
 		stop();
 	}
 
-	public Action shootFar() {
-		return new SequentialAction(bot.shootAction(Robot.BallPosition.Hands),
-				telemetryPacket -> {palms.setRightPalm(PalmsOfGod.Position.Up); return false;},
-				new SleepAction(.5),
-				bot.shootAction(Robot.BallPosition.Hands),
-				telemetryPacket -> {palms.setLeftPalm(PalmsOfGod.Position.Up); return false;},
-				new SleepAction(.5),
-				bot.shootAction(Robot.BallPosition.Hands),
-				bot.setPalms(PalmsOfGod.Position.Down, PalmsOfGod.Position.Down));
-	}
-
-	public Action shootClose() {
+	public Action shoot() {
 		return new SequentialAction(bot.shootAction(Robot.BallPosition.Hands),
 				telemetryPacket -> {palms.setRightPalm(PalmsOfGod.Position.Up); return false;},
 				new SleepAction(.5),
@@ -113,4 +100,13 @@ public class Red1 extends OpMode {
 	public void loop() {
 	}
 
+	public Action updateLastKnownPose() {
+		return new Action() {
+			@Override
+			public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+				Robot.finalPose = new TurretPose2d(mecanumDrive.localizer.getPose(), Robot.turret.getRotation());
+				return true;
+			}
+		};
+	}
 }
