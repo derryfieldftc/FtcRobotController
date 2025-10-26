@@ -40,7 +40,6 @@ public class Red1 extends OpMode {
 		bot = new Robot(this).enableTurret().enableHandsOfGod().enablePalmsOfGod().enableIntake();
 		bot.init();
 		Robot.turret.trackTarget().setTarget(depot.getPosition());
-		Robot.turret.trackTarget().setTarget(depot.getPosition());
 		intake = Robot.intake;
 		palms = Robot.palmsOfGod;
 		mecanumDrive = new MecanumDrive(hardwareMap, initPose);

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot;
 
 import static androidx.core.math.MathUtils.clamp;
+import static java.lang.Math.PI;
 import static java.lang.Math.atan;
 import static java.lang.Math.pow;
 import static java.lang.Math.sqrt;
@@ -12,6 +13,7 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -35,6 +37,7 @@ public class Turret extends RobotPart {
 	Gamepad gamepad;
 	TouchSensor limit;
 	int maxAbsDelta = 2000;
+	public double rotationTrim;
 	double rotatorPower = 0;
 	double rotation = 0;
 	double lastTime = .05;
@@ -53,12 +56,12 @@ public class Turret extends RobotPart {
 	Vector2d target = new Vector2d(0, 0);
 	Vector2d adjustedTarget;
 
-	enum SpeedByDistance {
+	public enum SpeedByDistance {
 		Max (1),
 		None (0),
-		Close (.5),
+		Close (.54),
 		Far (.6);
-		final double power;
+		public final double power;
 
 		SpeedByDistance(double power) {this.power = power;};
 	}
@@ -76,6 +79,11 @@ public class Turret extends RobotPart {
 
 	public Turret trackTarget() {
 		trackTarget = true;
+		return this;
+	}
+
+	public Turret setAngleTrim(double rotationTrim) {
+		this.rotationTrim = rotationTrim;
 		return this;
 	}
 
@@ -172,6 +180,7 @@ public class Turret extends RobotPart {
 
 			if (targetSet)
 				targetAngle = pose.getTurretAngleToTargetRelativeToRobot(adjustedTarget);
+			targetAngle += rotationTrim;
 			double currentRotation = pose.rotation;
 			double error = rotationPID.calculate(targetAngle - currentRotation, opMode.getRuntime() - lastTime);
 			lastTime = opMode.getRuntime();
@@ -220,6 +229,8 @@ public class Turret extends RobotPart {
 
 				double targetRotation = pose.getTurretAngleToTargetRelativeToRobot(adjustedTarget);
 				double currentRotation = pose.rotation;
+				if (targetRotation > 2 * Math.PI - PI / 6)
+					targetRotation = 2 * PI - PI / 6;
 				double error = rotationPID.calculate(targetRotation - currentRotation, opMode.getRuntime() - lastTime);
 				telemetry.addLine(String.format("deltar: %.3f, dt: %.3f", targetRotation - currentRotation, opMode.time - lastTime));
 				lastTime = opMode.getRuntime();
@@ -227,7 +238,7 @@ public class Turret extends RobotPart {
 				telemetry.addData("current", currentRotation);
 				telemetry.addData("error", error);
 				telemetry.addLine(String.format("x: %.3f, y: %.3f, t: %.3f", pose.pose2d.position.x, pose.pose2d.position.y, pose.pose2d.heading.toDouble()));
-				rotator.setPower(error * 10);
+					rotator.setPower(error * 10);
 				return true;
 			}
 		};
@@ -296,9 +307,10 @@ public class Turret extends RobotPart {
 			File file = new File("/sdcard/FIRST/lastPose");
 			Scanner scanner = new Scanner(file);
 			return new TurretPose2d(
-					new Pose2d(scanner.nextDouble(),	// x
-					scanner.nextDouble(),				// y
-					scanner.nextDouble()),				// r
+					new Pose2d(
+					new Vector2d(scanner.nextDouble(),	// x
+					scanner.nextDouble()),				// y
+					Rotation2d.fromDouble(scanner.nextDouble())),				// r
 					scanner.nextDouble()				// t
 			);
 		} catch (Exception ignored) {throw new Exception(ignored);}

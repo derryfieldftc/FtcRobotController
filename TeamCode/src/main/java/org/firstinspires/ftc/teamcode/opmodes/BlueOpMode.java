@@ -17,8 +17,8 @@ import org.firstinspires.ftc.teamcode.robot.TurretPose2d;
 
 import java.util.Objects;
 
-@TeleOp(name = "RedOpMode")
-public class RedOpMode extends OpMode {
+@TeleOp(name = "BlueOpMode")
+public class BlueOpMode extends OpMode {
 	Robot bot;
 	MecanumDrive mecanumDrive;
 	org.firstinspires.ftc.teamcode.RR.MecanumDrive rr_Mecanum;
@@ -38,7 +38,7 @@ public class RedOpMode extends OpMode {
 			rr_Mecanum = new org.firstinspires.ftc.teamcode.RR.MecanumDrive(hardwareMap, Turret.getSavedPosition().pose2d);
 			Robot.turret = new Turret(this, Turret.getSavedPosition());
 			Robot.turret.init();
-			Robot.turret.trackTarget().setTarget(new Depot(Field.Alliance.Red).getPosition()).autoTracking(rr_Mecanum).run(null);
+			Robot.turret.trackTarget().setTarget(new Depot(Field.Alliance.Blue).getPosition()).autoTracking(rr_Mecanum).run(null);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}

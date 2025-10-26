@@ -80,6 +80,7 @@ public class Red2 extends OpMode {
 //						.waitSeconds(2) // FIRE
 				.build();
 		action = new ParallelAction(
+				bot.savePosition(new TurretPose2d(mecanumDrive.localizer.getPose(), turret.getRotation())),
 				route,
 				turret.autoTracking(mecanumDrive));
 

@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.robot.Field;
 import org.firstinspires.ftc.teamcode.robot.PalmsOfGod;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.Turret;
+import org.firstinspires.ftc.teamcode.robot.TurretPose2d;
 
 @Autonomous(name = "Blue2")
 public class Blue2 extends OpMode {
@@ -78,6 +79,7 @@ public class Blue2 extends OpMode {
 //						.waitSeconds(2) // FIRE
 				.build();
 		action = new ParallelAction(
+				bot.savePosition(new TurretPose2d(mecanumDrive.localizer.getPose(), turret.getRotation())),
 				route,
 				turret.autoTracking(mecanumDrive));
 
