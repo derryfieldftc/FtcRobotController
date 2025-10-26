@@ -20,6 +20,7 @@ import org.firstinspires.ftc.teamcode.robot.Intake;
 import org.firstinspires.ftc.teamcode.robot.PalmsOfGod;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.TurretPose2d;
+import static org.firstinspires.ftc.teamcode.autonmous.AutoFunctions.*;
 
 @Autonomous(name = "Red1")
 public class Red1 extends OpMode {
@@ -30,7 +31,7 @@ public class Red1 extends OpMode {
 	PalmsOfGod palms;
 	Depot depot = new Depot(Field.Alliance.Red);
 	Action route;
-	Pose2d initPose = new Pose2d(20, -57, Math.PI / 4);
+	Pose2d initPose = RedPoses.Init.pose;
 
 	// Odometry is definitely not perfect yet. These values are all subject to change, and a lot of RR
 	// Classes need finer tuning

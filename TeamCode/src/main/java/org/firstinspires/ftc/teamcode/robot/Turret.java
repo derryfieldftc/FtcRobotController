@@ -42,6 +42,7 @@ public class Turret extends RobotPart {
 	double rotation = 0;
 	double lastTime = .05;
 	double ticksPerRotation = 2000.0 / (2.0 * Math.PI);
+	public boolean refreshEncoder = true;
 	double timeOfLastUpdate = 0;
 	double deltaTimeOfLastUpdate = 0;
 	double targetAngle;
@@ -89,12 +90,16 @@ public class Turret extends RobotPart {
 
 	public void init() {
 		rotator = hardwareMap.dcMotor.get("turretRotator");
-		rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-		rotator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		if (refreshEncoder) {
+			rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+			rotator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		}
 		limit = hardwareMap.touchSensor.get("turretLimit");
 		rotator.setPower(0);
-		rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-		rotator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		if (refreshEncoder) {
+			rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+			rotator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		}
 		spinner0 = hardwareMap.dcMotor.get("spinny0");
 		spinner1 = hardwareMap.dcMotor.get("spinny1");
 		spinner0.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -178,10 +183,13 @@ public class Turret extends RobotPart {
 			rotation = rotator.getCurrentPosition() / ticksPerRotation;
 			pose = new TurretPose2d(pose.pose2d, rotation);
 
-			if (targetSet)
-				targetAngle = pose.getTurretAngleToTargetRelativeToRobot(adjustedTarget);
-			targetAngle += rotationTrim;
 			double currentRotation = pose.rotation;
+			if (targetSet && adjustedTarget != null) {
+				targetAngle = pose.getTurretAngleToTargetRelativeToRobot(adjustedTarget);
+			} else {
+				targetAngle = currentRotation;
+			}
+			targetAngle += rotationTrim;
 			double error = rotationPID.calculate(targetAngle - currentRotation, opMode.getRuntime() - lastTime);
 			lastTime = opMode.getRuntime();
 			telemetry.addData("target", targetAngle);
@@ -288,7 +296,7 @@ public class Turret extends RobotPart {
 	}
 
 	@SuppressLint("DefaultLocale")
-	public void savePosition() {
+public void savePosition() {
 		File file = new File("sdcard/FIRST/lastPose");
 
 		try {

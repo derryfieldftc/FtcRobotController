@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import static com.qualcomm.robotcore.util.RobotLog.d;
+
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -29,13 +31,15 @@ public class BlueOpMode extends OpMode {
 
 	@Override
 	public void init() {
-		bot = new Robot(this).enableIntake().enableHandsOfGod().enablePalmsOfGod().enableTurret();
+		bot = new Robot(this).enableIntake().enableHandsOfGod().enablePalmsOfGod();
 		bot.init();
+		d("AHM init");
 		try {
 			rr_Mecanum = new org.firstinspires.ftc.teamcode.RR.MecanumDrive(hardwareMap, Turret.getSavedPosition().pose2d);
 			Robot.turret = new Turret(this, Turret.getSavedPosition());
+			Robot.turret.refreshEncoder = false;
 			Robot.turret.init();
-			Robot.turret.trackTarget().setTarget(new Depot(Field.Alliance.Blue).getPosition()).autoTracking(rr_Mecanum).run(null);
+//			Robot.turret.trackTarget().setTarget(new Depot(Field.Alliance.Blue).getPosition());
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -53,17 +57,19 @@ public class BlueOpMode extends OpMode {
 		mecanumDrive.loop();
 		rr_Mecanum.updatePoseEstimate();
 		bot.loop();
-		if (autoTracking) {
-			Robot.turret.trackTarget = false;
-			Robot.turret.autoTrack = false;
-			Robot.turret.autoTracking(rr_Mecanum).run(null); // The lion does not concern herself with @NotNull
-		} else {
-			Robot.turret.stopAutoTracking().run(null);
-			Robot.turret.trackTarget = false;
-			Robot.turret.autoTrack = false;
-		}
+//		if (autoTracking) {
+//			Robot.turret.trackTarget = true;
+//			Robot.turret.autoTrack = true;
+//			Robot.turret.autoTracking(rr_Mecanum).run(null); // The lion does not concern herself with @NotNull
+//		} else {
+//			Robot.turret.stopAutoTracking().run(null);
+//			Robot.turret.trackTarget = false;
+//			Robot.turret.autoTrack = false;
+//			Robot.turret.setRotatorPower(gamepad2.right_stick_y / 5);
+//		}
 
 		bot.intake.setSpeed(gamepad2.right_trigger * ((gamepad2.y) ? -1 : 1));
+		Robot.turret.setRotatorPower(gamepad2.right_stick_y / 5);
 
 		if (mgamepad.justPressed(GamepadManager.Button.X)) {
 			handsUp = !handsUp;

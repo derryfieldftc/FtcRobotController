@@ -18,6 +18,8 @@ import org.firstinspires.ftc.teamcode.robot.PalmsOfGod;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.TurretPose2d;
 
+import static org.firstinspires.ftc.teamcode.autonmous.AutoFunctions.*;
+
 @Autonomous(name = "Blue1")
 public class Blue1 extends OpMode {
 	MecanumDrive mecanumDrive;
@@ -27,7 +29,7 @@ public class Blue1 extends OpMode {
 	PalmsOfGod palms;
 	Depot depot = new Depot(Field.Alliance.Blue);
 	Action route;
-	Pose2d initPose = new Pose2d(20, -57, Math.PI / 4);
+	Pose2d initPose = BluePoses.Init.pose;
 
 	// Odometry is definitely not perfect yet. These values are all subject to change, and a lot of RR
 	// Classes need finer tuning
@@ -42,35 +44,35 @@ public class Blue1 extends OpMode {
 		mecanumDrive = new MecanumDrive(hardwareMap, initPose);
 
 
-		route = mecanumDrive.actionBuilder(initPose, AutoFunctions::mirror)
+		route = mecanumDrive.actionBuilder(initPose)
 				.stopAndAdd(telemetryPacket -> {Robot.turret.setSpeed(.6); return false;})
 				.waitSeconds(.5)
 				.stopAndAdd(shootFar())
-				.turn(-Math.PI / 4)
+				.turn(Math.PI / 4)
 				.stopAndAdd(intake.enable())
-				.splineToConstantHeading(new Vector2d(35, -5), 0) // Collect row 2
-				.splineToConstantHeading(new Vector2d(41, -5), 0) // Collect row 2
-				.splineToConstantHeading(new Vector2d(62, -2), 0) // lever
+				.splineToConstantHeading(BluePoses.Row2CollectionSetup.pose.position, BluePoses.Row2CollectionSetup.pose.heading) // Collect row 2
+				.splineToConstantHeading(BluePoses.Row2Collection.pose.position, BluePoses.Row2Collection.pose.heading) // Collect row 2
+				.splineToConstantHeading(BluePoses.Lever.pose.position, BluePoses.Lever.pose.heading) // lever
 				.stopAndAdd(intake.disable())
 				.stopAndAdd(telemetryPacket -> {Robot.turret.setSpeed(.54); return false;})
 				.waitSeconds(1)
 				.setReversed(true)
-				.splineToConstantHeading(new Vector2d(10, 0), Math.PI) // Back to shootable
+				.splineToConstantHeading(BluePoses.ShootableMid.pose.position, BluePoses.ShootableMid.pose.heading) // Back to shootable
 				.stopAndAdd(shootFar())
 				.setReversed(false)
 				.stopAndAdd(intake.enable())
-				.splineToConstantHeading(new Vector2d(39, 15), 0)
-				.splineToConstantHeading(new Vector2d(50, 16), 0) // Collect row 3
+				.splineToConstantHeading(BluePoses.AwayFromLever.pose.position, BluePoses.AwayFromLever.pose.heading)
+				.splineToConstantHeading(BluePoses.Row3.pose.position, BluePoses.Row3.pose.heading) // Collect row 3
 				.stopAndAdd(intake.disable())
 				.setReversed(true)
-				.splineToConstantHeading(new Vector2d(10, 0), Math.PI) // Back to shootable
+				.splineToConstantHeading(BluePoses.ShootableMid2.pose.position, BluePoses.ShootableMid2.pose.heading) // Back to shootable
 				.stopAndAdd(shootFar())
 				.setReversed(false)
 				.stopAndAdd(intake.enable())
-				.splineToConstantHeading(new Vector2d(46, -35), 0) // collect 1
+				.splineToConstantHeading(BluePoses.Row1Collection.pose.position, BluePoses.Row1Collection.pose.heading) // collect 1
 				.stopAndAdd(intake.disable())
 				.setReversed(true)
-				.splineToConstantHeading(new Vector2d(20, -57), Math.PI)
+				.splineToConstantHeading(BluePoses.FarShootingPosition.pose.position, BluePoses.FarShootingPosition.pose.heading)
 				.stopAndAdd(shootFar())
 				.build();
 		action = new ParallelAction(bot.savePosition(new TurretPose2d(mecanumDrive.localizer.getPose(), Robot.turret.getRotation())), route, Robot.turret.autoTracking(mecanumDrive));
