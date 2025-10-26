@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Rotation2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -57,9 +58,13 @@ public class RedOpMode extends OpMode {
 		rr_Mecanum.updatePoseEstimate();
 		bot.loop();
 		if (autoTracking) {
+			Robot.turret.trackTarget = false;
+			Robot.turret.autoTrack = false;
 			Robot.turret.autoTracking(rr_Mecanum).run(null); // The lion does not concern herself with @NotNull
 		} else {
 			Robot.turret.stopAutoTracking().run(null);
+			Robot.turret.trackTarget = false;
+			Robot.turret.autoTrack = false;
 		}
 
 		bot.intake.setSpeed(gamepad2.right_trigger * ((gamepad2.y) ? -1 : 1));
@@ -111,6 +116,14 @@ public class RedOpMode extends OpMode {
 
 		bot.palmsOfGod.getLeftBall();
 		bot.palmsOfGod.getRightBall();
+
+		telemetry.clearAll();
+		Pose2d pose = rr_Mecanum.localizer.getPose();
+		telemetry.addData("x", pose.position.x);
+		telemetry.addData("y", pose.position.y);
+		telemetry.addData("r", pose.heading.toDouble());
+		telemetry.addData("t", Robot.turret.getRotation());
+		telemetry.addData("autoTrack", autoTracking);
 
 		telemetry.update();
 		mgamepad.poll();

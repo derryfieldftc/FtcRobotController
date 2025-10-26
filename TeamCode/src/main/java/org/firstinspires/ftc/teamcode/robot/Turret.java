@@ -46,8 +46,8 @@ public class Turret extends RobotPart {
 	double deltaTimeOfLastUpdate = 0;
 	double targetAngle;
 	boolean useGamepad;
-	boolean trackTarget;
-	boolean autoTrack = true;
+	public boolean trackTarget;
+	public boolean autoTrack = true;
 	boolean targetSet = false;
 	MecanumDrive mecanumDrive;
 	PID rotationPID;
