@@ -1,23 +1,17 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Rotation2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.GamepadManager;
 import org.firstinspires.ftc.teamcode.plugin.plugins.MecanumDrive;
-import org.firstinspires.ftc.teamcode.robot.Depot;
-import org.firstinspires.ftc.teamcode.robot.Field;
 import org.firstinspires.ftc.teamcode.robot.HandsOfGod;
 import org.firstinspires.ftc.teamcode.robot.PalmsOfGod;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.Tag;
 import org.firstinspires.ftc.teamcode.robot.Turret;
 import static com.qualcomm.robotcore.util.RobotLog.*;
-import org.firstinspires.ftc.teamcode.robot.TurretPose2d;
-
-import java.util.Objects;
 
 @TeleOp(name = "RedOpMode")
 public class RedOpMode extends OpMode {
