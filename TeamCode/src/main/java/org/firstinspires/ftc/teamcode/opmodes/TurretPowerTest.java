@@ -30,9 +30,9 @@ public class TurretPowerTest extends OpMode {
 		mgamepad2.poll();
 
 		if (mgamepad2.justPressed(GamepadManager.Button.DPAD_DOWN))
-			speed = clamp(speed - .05, 0, 1);
+			speed = clamp(speed - .05, -1, 1);
 		if (mgamepad2.justPressed(GamepadManager.Button.DPAD_UP))
-			speed = clamp(speed + .05, 0, 1);
+			speed = clamp(speed + .05, -1, 1);
 
 		if (mgamepad2.justPressed(GamepadManager.Button.DPAD_LEFT))
 			angle = clamp(angle - .05, 0, 1);
