@@ -46,6 +46,7 @@ import static org.firstinspires.ftc.teamcode.binarybot.EnhancedGamepad.Button.Y;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.boxingBot.boxingBot;
 import org.firstinspires.ftc.teamcode.boxingBot.EnhancedGamepad;
@@ -56,10 +57,14 @@ public class TeleBoxingBot extends LinearOpMode {
     private boxingBot bot;
     private EnhancedGamepad epad2 = null;
     private  EnhancedGamepad epad1 = null;
+    Servo left, right;
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
+        left= hardwareMap.servo.get("left");
+
+        right= hardwareMap.servo.get("right");
 
         // create a new robot object.
         bot = new boxingBot(hardwareMap);
@@ -74,6 +79,8 @@ public class TeleBoxingBot extends LinearOpMode {
             epad1.poll();
             epad2.poll();
             // get gamepad input for mecanum drive
+            right.setPosition((gamepad1.right_bumper) ? 1 : .85);
+            left.setPosition((gamepad1.left_bumper) ? 1 : 0);
 
             //drive
             bot.drive(-gamepad1.left_stick_y, gamepad1.left_stick_x, -gamepad1.right_stick_x);
