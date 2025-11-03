@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 @TeleOp(name = "TurretMotorTest")
+@Depricated
 public class TurretMotorTest extends OpMode {
 	DcMotor spinner1, spinner0;
 

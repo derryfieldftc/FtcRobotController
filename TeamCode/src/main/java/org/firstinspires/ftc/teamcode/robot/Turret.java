@@ -31,7 +31,7 @@ import java.util.Scanner;
 //Oh boy
 public class Turret extends RobotPart {
 	DcMotor rotator; //25 to 95 ratio, 1 full rotation is 2k steps
-	DcMotor spinner0, spinner1;
+	DcMotor spinner0;
 	Servo angle;
 	double angleAngle = 0; // max .3
 	Gamepad gamepad;
@@ -101,14 +101,10 @@ public class Turret extends RobotPart {
 			rotator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 		}
 		spinner0 = hardwareMap.dcMotor.get("spinny0");
-		spinner1 = hardwareMap.dcMotor.get("spinny1");
 		spinner0.setDirection(DcMotorSimple.Direction.REVERSE);
 		spinner0.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-		spinner1.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 		spinner0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-		spinner1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		spinner0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-		spinner1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 		angle = hardwareMap.servo.get("turretAngle");
 
 
@@ -166,7 +162,6 @@ public class Turret extends RobotPart {
 				rotator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 			}
 			spinner0.setPower(gamepad.left_trigger * ((gamepad.x) ? -1 : 1));
-			spinner1.setPower(gamepad.left_trigger * ((gamepad.x) ? -1 : 1));
 			angleAngle = clamp(angleAngle + -gamepad.left_stick_y / 30, -1, 1);
 			telemetry.addData("Angle", angleAngle);
 			angle.setPosition(angleAngle);
@@ -207,7 +202,6 @@ public class Turret extends RobotPart {
 
 	public Turret setSpeed(double speed) {
 		spinner0.setPower(speed);
-		spinner1.setPower(speed);
 		return this;
 	}
 
