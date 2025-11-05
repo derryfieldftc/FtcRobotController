@@ -291,17 +291,21 @@ public class Turret extends RobotPart {
 
 	@SuppressLint("DefaultLocale")
 public void savePosition() {
-		File file = new File("sdcard/FIRST/lastPose");
+		File file = new File("/sdcard/FIRST/lastPose");
 
 		try {
 			PrintWriter writer = new PrintWriter(file);
 			file.createNewFile();
+			mecanumDrive.localizer.update();
+			updatePose(mecanumDrive.localizer.getPose());
 
 			writer.println(String.format("%f %f %f %f", pose.pose2d.position.x, pose.pose2d.position.y, pose.pose2d.heading.toDouble(), pose.rotation));
 			writer.flush();
 			writer.close();
 
-		} catch (Exception ignored) {} // beautiful exception handleing
+		} catch (Exception ignored) {
+			throw new RuntimeException(ignored);
+		} // beautiful exception handleing
 	}
 
 	public static TurretPose2d getSavedPosition() throws Exception {

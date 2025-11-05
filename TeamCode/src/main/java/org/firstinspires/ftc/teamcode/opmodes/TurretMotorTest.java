@@ -1,11 +1,12 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 @TeleOp(name = "TurretMotorTest")
-@Deprecated
+@Disabled
 public class TurretMotorTest extends OpMode {
 	DcMotor spinner1, spinner0;
 
