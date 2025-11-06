@@ -41,7 +41,6 @@ public class RedOpMode extends OpMode {
 		}
 		mecanumDrive = new MecanumDrive(this);
 		mecanumDrive.init();
-		bot.camera.setTargetTag(Tag.PGP);
 //		bot.turret.useGamepad();
 
 

@@ -25,8 +25,8 @@ public class Robot extends RobotPart {
 	public static boolean drivetrainEnabled;
 	public static Intake intake;
 	public static boolean intakeEnabled;
-	public static Camera camera;
-	public static boolean cameraEnabled;
+//	public static Camera camera;
+//	public static boolean cameraEnabled;
 	public static Turret turret;
 	public static boolean turretEnabled;
 	public static HandsOfGod handsOfGod;
@@ -69,7 +69,7 @@ public class Robot extends RobotPart {
 		super(opMode);
 		drivetrain = new Drivetrain(hardwareMap, this.opMode);
 		intake = new Intake(this.opMode);
-		camera = new Camera(this.opMode);
+//		camera = new Camera(this.opMode);
 		turret = new Turret(this.opMode, new TurretPose2d(new Pose2d(0, 0, 0), 0));
 		handsOfGod = new HandsOfGod(this.opMode);
 		palmsOfGod = new PalmsOfGod(this.opMode);
@@ -111,18 +111,18 @@ public class Robot extends RobotPart {
 		return voltageSensor.getVoltage();
 	}
 
-	public Robot enableCamera() {
-		cameraEnabled = true;
-		return this;
-	}
+//	public Robot enableCamera() {
+//		cameraEnabled = true;
+//		return this;
+//	}
 
 	public void init() {
 		if (intakeEnabled)
 			intake.init();
 //		if (intakeSpinnerEnabled)
 //			intakeSpinner.init();
-		if (cameraEnabled)
-			camera.init();
+//		if (cameraEnabled)
+//			camera.init();
 		if (turretEnabled)
 			turret.init();
 		if (handsOfGodEnabled)
@@ -137,8 +137,8 @@ public class Robot extends RobotPart {
 		currentTime = opMode.getRuntime();
 		if (intakeEnabled)
 			intake.loop();
-		if (cameraEnabled)
-			camera.loop();
+//		if (cameraEnabled)
+//			camera.loop();
 		if (turretEnabled)
 			turret.loop();
 		if (handsOfGodEnabled)

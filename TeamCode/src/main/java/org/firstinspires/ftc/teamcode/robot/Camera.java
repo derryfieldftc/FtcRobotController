@@ -21,6 +21,7 @@ import java.util.Optional;
 /**
  * A Camera to track april tags, please make sure to call init(), setTargetTag(), and loop()
  */
+@Deprecated
 public class Camera extends RobotPart {
 	final static boolean USE_WEBCAM = true;
 	private AprilTagProcessor aprilTag;

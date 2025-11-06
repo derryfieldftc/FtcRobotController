@@ -26,7 +26,6 @@ public class RobotTest extends OpMode {
 		mecanumDrive = new MecanumDrive(this);
 		mecanumDrive.init();
 		bot.init();
-		bot.camera.setTargetTag(Tag.PGP);
 //		bot.turret.useGamepad();
 
 
