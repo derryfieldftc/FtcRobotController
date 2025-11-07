@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.robot.Field;
 import org.firstinspires.ftc.teamcode.robot.Intake;
 import org.firstinspires.ftc.teamcode.robot.PalmsOfGod;
 import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.robot.Turret;
 import org.firstinspires.ftc.teamcode.robot.TurretPose2d;
 
 import static org.firstinspires.ftc.teamcode.autonmous.AutoFunctions.*;
@@ -45,7 +46,7 @@ public class Blue1 extends OpMode {
 
 
 		route = mecanumDrive.actionBuilder(initPose)
-				.stopAndAdd(telemetryPacket -> {Robot.turret.setSpeed(.6); return false;})
+				.stopAndAdd(telemetryPacket -> {Robot.turret.setSpeed(Turret.SpeedByDistance.Far.power); return false;})
 				.waitSeconds(.5)
 				.stopAndAdd(shootFar())
 				.turn(Math.PI / 4)
@@ -54,7 +55,7 @@ public class Blue1 extends OpMode {
 				.splineToConstantHeading(BluePoses.Row2Collection.pose.position, BluePoses.Row2Collection.pose.heading) // Collect row 2
 				.splineToConstantHeading(BluePoses.Lever.pose.position, BluePoses.Lever.pose.heading) // lever
 				.stopAndAdd(intake.disable())
-				.stopAndAdd(telemetryPacket -> {Robot.turret.setSpeed(.54); return false;})
+				.stopAndAdd(telemetryPacket -> {Robot.turret.setSpeed(Turret.SpeedByDistance.Close.power); return false;})
 				.waitSeconds(1)
 				.setReversed(true)
 				.splineToConstantHeading(BluePoses.ShootableMid.pose.position, BluePoses.ShootableMid.pose.heading) // Back to shootable

@@ -104,20 +104,30 @@ public class RedOpMode extends OpMode {
 			d("AHM got ll results, size: " + ll.getResults().getFiducialResults().size());
 			LLResult llr = ll.getResults();
 
-			for (LLResultTypes.FiducialResult result : llr.getFiducialResults()) {
-				d("AHM tag number " + result.getFiducialId());
-				if (result.getFiducialId() == targetTag.id) {
-					d("AHM matches target tag");
-					telemetry.addData("tx", result.getTargetXDegrees());
-					double tx = -result.getTargetXDegrees();
-					d("AHM tx " + tx);
-					Robot.turret.rotator.setPower(tx / 50 * ((gamepad2.start) ? 0 : 1));
-					d("AHM power " + tx / 50);
-					tagMatch = true;
+			if (!gamepad2.start) {
+				for (LLResultTypes.FiducialResult result : llr.getFiducialResults()) {
+					d("AHM tag number " + result.getFiducialId());
+					if (result.getFiducialId() == targetTag.id) {
+						d("AHM matches target tag");
+						telemetry.addData("tx", result.getTargetXDegrees());
+						double tx = -result.getTargetXDegrees();
+						d("AHM tx " + tx);
+						Robot.turret.rotator.setPower(tx / 50 * ((gamepad2.start) ? 0 : 1));
+						d("AHM power " + tx / 50);
+						tagMatch = true;
+					}
 				}
-			};
+				;
+			}
+
 			if (!tagMatch || gamepad2.start)
 				Robot.turret.rotator.setPower(0);
+
+			if (tagMatch) {
+				gamepad2.setLedColor(0, 255, 0, 300);
+			} else {
+				gamepad2.setLedColor(255, 0, 0, 300);
+			}
 		}
 
 
@@ -138,6 +148,11 @@ public class RedOpMode extends OpMode {
 
 		if (mgamepad.justPressed(GamepadManager.Button.LEFT_BUMPER)) {
 			leftPalmOpen = !leftPalmOpen;
+		}
+
+		if (gamepad2.b) {
+			leftPalmOpen = false;
+			rightPalmOpen = false;
 		}
 
 		if (gamepad2.right_stick_button) {
