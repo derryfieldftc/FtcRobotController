@@ -30,7 +30,7 @@ import java.util.Scanner;
 
 //Oh boy
 public class Turret extends RobotPart {
-	DcMotor rotator; //25 to 95 ratio, 1 full rotation is 2k steps
+	public DcMotor rotator; //25 to 95 ratio, 1 full rotation is 2k steps
 	DcMotor spinner0;
 	Servo angle;
 	double angleAngle = 0; // max .3
@@ -60,8 +60,8 @@ public class Turret extends RobotPart {
 	public enum SpeedByDistance {
 		Max (1),
 		None (0),
-		Close (.54),
-		Far (.6);
+		Close (.44),
+		Far (.56);
 		public final double power;
 
 		SpeedByDistance(double power) {this.power = power;};
@@ -101,7 +101,6 @@ public class Turret extends RobotPart {
 			rotator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 		}
 		spinner0 = hardwareMap.dcMotor.get("spinny0");
-		spinner0.setDirection(DcMotorSimple.Direction.REVERSE);
 		spinner0.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 		spinner0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		spinner0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
