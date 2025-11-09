@@ -121,7 +121,7 @@ public class RedOpMode extends OpMode {
 			}
 
 			if (!tagMatch || gamepad2.start)
-				Robot.turret.rotator.setPower(0);
+				Robot.turret.rotator.setPower(gamepad2.right_stick_x);
 
 			if (tagMatch) {
 				gamepad2.setLedColor(0, 255, 0, 300);

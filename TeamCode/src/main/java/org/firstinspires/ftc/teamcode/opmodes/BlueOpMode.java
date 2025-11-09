@@ -83,6 +83,7 @@ public class BlueOpMode extends OpMode {
 
 		if (gamepad1.a && ! lastA)
 			ll.debugSnapshot();
+
 		lastA = gamepad1.a;
 
 		if (gamepad2.a) {
@@ -121,7 +122,7 @@ public class BlueOpMode extends OpMode {
 			}
 
 			if (!tagMatch || gamepad2.start)
-				Robot.turret.rotator.setPower(0);
+				Robot.turret.rotator.setPower(gamepad2.left_stick_x);
 
 			if (tagMatch) {
 				gamepad2.setLedColor(0, 255, 0, 300);
