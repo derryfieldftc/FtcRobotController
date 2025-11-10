@@ -78,11 +78,6 @@ public class RobotTest extends OpMode {
 
 		bot.turret.setSpeed(-gamepad2.left_stick_y);
 
-		if (gamepad1.start) {
-			while (bot.shootAllTryingMotif().run(null)) {
-			}
-		}
-
 		telemetry.addLine("Ball" + bot.palmsOfGod.getLeftBall());
 
 		if (gamepad1.y)

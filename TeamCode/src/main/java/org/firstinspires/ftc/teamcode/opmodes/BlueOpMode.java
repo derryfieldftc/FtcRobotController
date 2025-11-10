@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -23,7 +22,6 @@ import static java.lang.Math.abs;
 public class BlueOpMode extends OpMode {
 	Robot bot;
 	MecanumDrive mecanumDrive;
-	org.firstinspires.ftc.teamcode.RR.MecanumDrive rr_Mecanum;
 	GamepadManager mgamepad;
 	double speedTrim = 0;
 	boolean handsUp = false;
@@ -52,7 +50,6 @@ public class BlueOpMode extends OpMode {
 			lastPose = new TurretPose2d(new Pose2d(0, 0, 0), 0);
 		}
 
-		rr_Mecanum = new org.firstinspires.ftc.teamcode.RR.MecanumDrive(hardwareMap, lastPose.pose2d);
 		bot.turret = new Turret(this, lastPose);
 		bot.turret.refreshEncoder = false;
 		bot.turret.init();
@@ -67,7 +64,6 @@ public class BlueOpMode extends OpMode {
 	@Override
 	public void loop() {
 		mecanumDrive.loop();
-		rr_Mecanum.updatePoseEstimate();
 		bot.loop();
 		telemetry.clearAll(); // Disables telemetry from the turret
 

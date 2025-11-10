@@ -10,19 +10,12 @@ import android.annotation.SuppressLint;
 
 import androidx.annotation.NonNull;
 
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Rotation2d;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
-
-import org.firstinspires.ftc.teamcode.RR.MecanumDrive;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -50,7 +43,6 @@ public class Turret extends RobotPart {
 	public boolean trackTarget;
 	public boolean autoTrack = true;
 	boolean targetSet = false;
-	MecanumDrive mecanumDrive;
 	PID rotationPID;
 	TurretPose2d pose;
 	Vector2d robotMovement = null;

@@ -4,8 +4,6 @@ import static org.firstinspires.ftc.teamcode.robot.Field.Alliance;
 import static org.firstinspires.ftc.teamcode.robot.Field.Ball;
 import static org.firstinspires.ftc.teamcode.robot.Field.Motif;
 
-import com.acmerobotics.roadrunner.Vector2d;
-
 import java.util.ArrayList;
 
 public class Depot {

@@ -1,8 +1,5 @@
 package org.firstinspires.ftc.teamcode.robot;
 
-import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Vector2d;
-
 /**
  * A way to represnt both the turret and the pose of the robot, the rotation is relative to the front of the robot
  */
