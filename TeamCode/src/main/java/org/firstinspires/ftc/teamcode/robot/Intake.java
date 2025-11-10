@@ -53,34 +53,4 @@ public class Intake extends RobotPart {
 		intake.setPower(speed);
 		intakeLift.setPosition(height);
 	}
-
-	public Action enable() {
-		return new Action() {
-			@Override
-			public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-				setSpeed(1);
-				return false;
-			}
-		};
-	}
-
-	public Action disable() {
-		return new Action() {
-			@Override
-			public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-				setSpeed(0);
-				return false;
-			}
-		};
-	}
-
-	public Action RR_setSpeed(double speed) {
-		return new Action() {
-			@Override
-			public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-				Intake.this.setSpeed(speed);
-				return false;
-			}
-		};
-	}
 }

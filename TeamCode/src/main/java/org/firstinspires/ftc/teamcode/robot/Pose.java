@@ -15,6 +15,10 @@ public class Pose {
         this.theta = theta;
     }
 
+    public Vector toVector() {
+        return new Vector(x, y);
+    }
+
     public String dump() {
         return String.format("x: %.3f y: %.3f t: %.3f", x, y, theta);
     }

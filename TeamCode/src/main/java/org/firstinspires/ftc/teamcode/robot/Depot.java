@@ -53,11 +53,11 @@ public class Depot {
 	 * @param alliance
 	 * @return
 	 */
-	public Vector2d getPosition(Alliance alliance) {
+	public Vector getPosition(Alliance alliance) {
 		if (alliance == Alliance.Red) {
-			return new Vector2d(70, 70);
+			return new Vector(70, 70);
 		}
-		return new Vector2d(-70, 70);
+		return new Vector(-70, 70);
 	}
 
 	/**
@@ -65,7 +65,7 @@ public class Depot {
 	 *
 	 * @return
 	 */
-	public Vector2d getPosition() {
+	public Vector getPosition() {
 		return getPosition(alliance);
 	}
 }

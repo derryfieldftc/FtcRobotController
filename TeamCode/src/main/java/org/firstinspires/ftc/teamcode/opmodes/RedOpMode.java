@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.plugin.plugins.MecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.HandsOfGod;
 import org.firstinspires.ftc.teamcode.robot.LimeLight;
 import org.firstinspires.ftc.teamcode.robot.PalmsOfGod;
+import org.firstinspires.ftc.teamcode.robot.Pose;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.Tag;
 import org.firstinspires.ftc.teamcode.robot.Turret;
@@ -47,7 +48,7 @@ public class RedOpMode extends OpMode {
 		try {
 			lastPose = Turret.getSavedPosition();
 		} catch (Exception e) {
-			lastPose = new TurretPose2d(new Pose2d(0, 0, 0), 0);
+			lastPose = new TurretPose2d(new Pose(0, 0, 0), 0);
 		}
 
 		bot.turret = new Turret(this, lastPose);
@@ -159,12 +160,12 @@ public class RedOpMode extends OpMode {
 		bot.palmsOfGod.getLeftBall();
 		bot.palmsOfGod.getRightBall();
 
-		Pose2d pose = rr_Mecanum.localizer.getPose();
-		telemetry.addData("x", pose.position.x);
-		telemetry.addData("y", pose.position.y);
-		telemetry.addData("r", pose.heading.toDouble());
-		telemetry.addData("t", bot.turret.getRotation());
-		telemetry.addData("autoTrack", autoTracking);
+//		TODO! figure this out
+//		telemetry.addData("x", pose.position.x);
+//		telemetry.addData("y", pose.position.y);
+//		telemetry.addData("r", pose.heading.toDouble());
+//		telemetry.addData("t", bot.turret.getRotation());
+//		telemetry.addData("autoTrack", autoTracking);
 
 		telemetry.update();
 		mgamepad.poll();

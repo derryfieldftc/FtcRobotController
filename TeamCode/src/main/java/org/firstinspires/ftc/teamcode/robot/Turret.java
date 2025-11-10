@@ -45,9 +45,9 @@ public class Turret extends RobotPart {
 	boolean targetSet = false;
 	PID rotationPID;
 	TurretPose2d pose;
-	Vector2d robotMovement = null;
-	Vector2d target = new Vector2d(0, 0);
-	Vector2d adjustedTarget;
+	Vector robotMovement = null;
+	Vector target = new Vector(0, 0);
+	Vector adjustedTarget;
 
 	public enum SpeedByDistance {
 		Max (1),
@@ -103,27 +103,7 @@ public class Turret extends RobotPart {
 		rotationPID = new PID(.1, 0, 0, .005);
 	}
 
-	public Turret updatePose(Pose2d pose) {
-		if (robotMovement == null) {
-			robotMovement = new Vector2d(pose.position.x, pose.position.y);
-			deltaTimeOfLastUpdate = 0;
-			timeOfLastUpdate = opMode.getRuntime();
-		} else {
-			// Vector from last position to this one
-			double xdiff = pose.position.x - this.pose.pose2d.position.x;
-			double ydiff = pose.position.y - this.pose.pose2d.position.y;
-			deltaTimeOfLastUpdate = opMode.getRuntime() - timeOfLastUpdate;
-			robotMovement = new Vector2d(xdiff, ydiff).div(deltaTimeOfLastUpdate);
-			timeOfLastUpdate = opMode.getRuntime();
-		}
-		double deltaTime = opMode.getRuntime() - timeOfLastUpdate;
-		deltaTime = deltaTime * 10;
-		adjustedTarget = target.minus(new Vector2d(robotMovement.x * deltaTime, robotMovement.y * deltaTime));
-		this.pose = new TurretPose2d(pose, this.pose.rotation);
-		return this;
-	}
-
-	public Turret setTarget(Vector2d target) {
+	public Turret setTarget(Vector target) {
 		this.target = target;
 		targetSet = true;
 		return this;
@@ -157,34 +137,7 @@ public class Turret extends RobotPart {
 			telemetry.addData("Angle", angleAngle);
 			angle.setPosition(angleAngle);
 		}
-
-		if (trackTarget) {
-			if (target == null) {
-				throw new RuntimeException("No target, please set it");
-			}
-			if (pose == null) {
-				throw new RuntimeException("No pose, please set it");
-			}
-
-			rotation = rotator.getCurrentPosition() / ticksPerRotation;
-			pose = new TurretPose2d(pose.pose2d, rotation);
-
-			double currentRotation = pose.rotation;
-			if (targetSet && adjustedTarget != null) {
-				targetAngle = pose.getTurretAngleToTargetRelativeToRobot(adjustedTarget);
-			} else {
-				targetAngle = currentRotation;
-			}
-			targetAngle += rotationTrim;
-			double error = rotationPID.calculate(targetAngle - currentRotation, opMode.getRuntime() - lastTime);
-			lastTime = opMode.getRuntime();
-			telemetry.addData("target", targetAngle);
-			telemetry.addData("current", currentRotation);
-			telemetry.addData("error", error);
-			rotator.setPower(error * 10);
-		}
-
-
+		//TODO! tracking... again
 	}
 
 	public void setTargetAngle(double angle) {
@@ -204,59 +157,6 @@ public class Turret extends RobotPart {
 	/**
 	 * This is action should never finish until the stopAutoTracking Action is called
 	 */
-	public Action autoTracking(MecanumDrive mecanumDrive) {
-		return new Action() {
-			@Override
-			public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-				Turret.this.mecanumDrive = mecanumDrive;
-				updatePose(mecanumDrive.localizer.getPose());
-				if (target == null) {
-					throw new RuntimeException("No target, please set it");
-				}
-				if (pose == null) {
-					throw new RuntimeException("No pose, please set it");
-				}
-
-				rotation = rotator.getCurrentPosition() / ticksPerRotation;
-				pose = new TurretPose2d(pose.pose2d, rotation);
-
-				double targetRotation = pose.getTurretAngleToTargetRelativeToRobot(adjustedTarget);
-				double currentRotation = pose.rotation;
-				if (targetRotation > 2 * Math.PI - PI / 6)
-					targetRotation = 2 * PI - PI / 6;
-				double error = rotationPID.calculate(targetRotation - currentRotation, opMode.getRuntime() - lastTime);
-				telemetry.addLine(String.format("deltar: %.3f, dt: %.3f", targetRotation - currentRotation, opMode.time - lastTime));
-				lastTime = opMode.getRuntime();
-				telemetry.addData("target", targetRotation);
-				telemetry.addData("current", currentRotation);
-				telemetry.addData("error", error);
-				telemetry.addLine(String.format("x: %.3f, y: %.3f, t: %.3f", pose.pose2d.position.x, pose.pose2d.position.y, pose.pose2d.heading.toDouble()));
-					rotator.setPower(error * 10);
-				return true;
-			}
-		};
-	}
-
-	public Action stopAutoTracking() {
-		return new Action() {
-			@Override
-			public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-				autoTrack = false;
-				return false;
-			}
-		};
-	}
-
-	public Action shoot() {
-		return new Action() {
-			@Override
-			public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-				// TODO! do this
-				return false;
-			}
-		};
-	}
-
 	double turretHeight = 12, goalHeight = 38.75, a = -386.22; // in/s^2
 
 	/*
@@ -273,7 +173,7 @@ public class Turret extends RobotPart {
 
 		viy = sqrt(-2 * a * dy); // From CAE's
 		t = -viy / a; // vfy is 0
-		dx = sqrt(pow(pose.pose2d.position.x - target.x, 2) + pow(pose.pose2d.position.y - target.y, 2)); // x distance not taking movement into account
+		dx = sqrt(pow(pose.pose.x - target.x, 2) + pow(pose.pose.y - target.y, 2)); // x distance not taking movement into account
 		vix = dx / t;
 
 		vi = sqrt(pow(vix, 2) + pow(viy, 2));
@@ -287,10 +187,9 @@ public void savePosition() {
 		try {
 			PrintWriter writer = new PrintWriter(file);
 			file.createNewFile();
-			mecanumDrive.localizer.update();
-			updatePose(mecanumDrive.localizer.getPose());
+			//TODO! fix localizer with pedro
 
-			writer.println(String.format("%f %f %f %f", pose.pose2d.position.x, pose.pose2d.position.y, pose.pose2d.heading.toDouble(), pose.rotation));
+			writer.println(String.format("%f %f %f %f", pose.pose.x, pose.pose.y, pose.pose.theta, pose.rotation));
 			writer.flush();
 			writer.close();
 
@@ -303,13 +202,8 @@ public void savePosition() {
 		try {
 			File file = new File("/sdcard/FIRST/lastPose");
 			Scanner scanner = new Scanner(file);
-			return new TurretPose2d(
-					new Pose2d(
-					new Vector2d(scanner.nextDouble(),	// x
-					scanner.nextDouble()),				// y
-					Rotation2d.fromDouble(scanner.nextDouble())),				// r
-					scanner.nextDouble()				// t
-			);
+			//TODO! fix this method
+			return null;
 		} catch (Exception ignored) {throw new Exception(ignored);}
 	};
 }

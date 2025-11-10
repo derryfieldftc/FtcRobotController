@@ -55,36 +55,6 @@ public class HandsOfGod extends RobotPart {
 		}
 	}
 
-	public Action RR_setPositionUp() {
-		return new Action() {
-			@Override
-			public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-				setPosition(Position.Up);
-				return false;
-			}
-		};
-	}
-
-	public Action RR_setPositionDown() {
-		return new Action() {
-			@Override
-			public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-				setPosition(Position.Down);
-				return false;
-			}
-		};
-	}
-
-	public Action RR_setPosition(Position pos) {
-		return new Action() {
-			@Override
-			public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-				HandsOfGod.this.setPosition(pos);
-				return false;
-			}
-		};
-	}
-
 	public Position getPosition() {
 		return this.position;
 	}

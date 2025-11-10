@@ -67,7 +67,7 @@ public class Robot extends RobotPart {
 		drivetrain = new Drivetrain(hardwareMap, this.opMode);
 		intake = new Intake(this.opMode);
 //		camera = new Camera(this.opMode);
-		turret = new Turret(this.opMode, new TurretPose2d(new Pose2d(0, 0, 0), 0));
+		turret = new Turret(this.opMode, new TurretPose2d(new Pose(0, 0, 0), 0));
 		handsOfGod = new HandsOfGod(this.opMode);
 		palmsOfGod = new PalmsOfGod(this.opMode);
 		voltageSensor = hardwareMap.voltageSensor.iterator()
@@ -250,41 +250,6 @@ public class Robot extends RobotPart {
 		return false;
 	}
 
-	public Action shootAction(BallPosition position) {
-		return new Action() {
-			@Override
-			public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-				return shoot(position);
-			}
-		};
-	}
-
-	/**
-	 * Shoot all balls whilst trying to match the motif
-	 *
-	 * @return
-	 */
-	public Action shootAllTryingMotif() {
-		return new Action() {
-			@Override
-			public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-				if (handBall != None) {
-					return shoot(BallPosition.Hands);
-				}
-
-				if (motif.getBall(1) == rightBall) {
-					return shoot(BallPosition.Right);
-				}
-				if (leftBall != None) {
-					return shoot(BallPosition.Left);
-				} else if (rightBall != None) {
-					return shoot(BallPosition.Right);
-				}
-				return handBall != None || rightBall != None || leftBall != None; // Should be redundant
-			}
-		};
-	}
-
 	/**
 	 * Hands, Right, Left
 	 *
@@ -292,43 +257,6 @@ public class Robot extends RobotPart {
 	 */
 	public void setBalls(Ball... balls) {
 		System.arraycopy(balls, 0, Robot.balls, 0, 3);
-	}
-
-	public Action unloadBasedOnMotif() {
-		return new Action() {
-			Field.Motif motif = Field.motif;
-			boolean unloading = true;
-
-			@Override
-			public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-
-				return unloading;
-			}
-		};
-	}
-
-	public Action setPalms(PalmsOfGod.Position left, PalmsOfGod.Position right) {
-		return new Action() {
-			@Override
-			public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-				palmsOfGod.setLeftPalm(left);
-				palmsOfGod.setRightPalm(right);
-				return false;
-			}
-		};
-	}
-
-	public Action savePosition(TurretPose2d pose) {
-		return new Action() {
-			@SuppressLint("DefaultLocale")
-			@Override
-			public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-				try {
-					turret.savePosition();
-				} catch (Exception ignored) {}
-				return true;
-			}
-		};
 	}
 }
 

@@ -5,14 +5,14 @@ package org.firstinspires.ftc.teamcode.robot;
  */
 public class TurretPose2d {
 	public double rotation;
-	public Pose2d pose2d;
+	public Pose pose;
 
 	/**
 	 * @param pose2d   Robot position
 	 * @param rotation inital rotation
 	 */
-	public TurretPose2d(Pose2d pose2d, double rotation) {
-		this.pose2d = pose2d;
+	public TurretPose2d(Pose pose2d, double rotation) {
+		this.pose = pose2d;
 		this.rotation = rotation;
 	}
 
@@ -22,8 +22,8 @@ public class TurretPose2d {
 	 * @param target
 	 * @return angle of the turret to the target relative to the robot
 	 */
-	public double getTurretAngleToTargetRelativeToRobot(Vector2d target) {
-		double angle = Math.atan2((target.y - pose2d.position.y), (target.x - pose2d.position.x));
-		return angle - pose2d.heading.toDouble(); // Subtract because angle is relative to forward on the robot
+	public double getTurretAngleToTargetRelativeToRobot(Pose target) {
+		double angle = Math.atan2((target.y - pose.y), (target.x - pose.x));
+		return angle - pose.theta; // Subtract because angle is relative to forward on the robot
 	}
 }
