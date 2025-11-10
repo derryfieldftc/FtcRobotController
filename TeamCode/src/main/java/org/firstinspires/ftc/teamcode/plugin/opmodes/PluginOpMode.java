@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.plugin.opmodes;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.plugin.RobotPlugin;
-import org.firstinspires.ftc.teamcode.ThreadPool;
 
 public abstract class PluginOpMode extends LinearOpMode {
 
