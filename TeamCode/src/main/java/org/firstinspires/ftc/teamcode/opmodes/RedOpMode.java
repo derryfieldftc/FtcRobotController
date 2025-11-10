@@ -14,6 +14,8 @@ import org.firstinspires.ftc.teamcode.robot.PalmsOfGod;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.Tag;
 import org.firstinspires.ftc.teamcode.robot.Turret;
+import org.firstinspires.ftc.teamcode.robot.TurretPose2d;
+
 import static com.qualcomm.robotcore.util.RobotLog.*;
 import static java.lang.Math.abs;
 
@@ -33,6 +35,7 @@ public class RedOpMode extends OpMode {
 	Turret.SpeedByDistance distance = Turret.SpeedByDistance.Far;
 	LimeLight ll;
 	Tag targetTag = Tag.RED;
+	TurretPose2d lastPose;
 
 	@Override
 	public void init() {
@@ -42,14 +45,16 @@ public class RedOpMode extends OpMode {
 		ll.init();
 		ll.setMode(LimeLight.LimeLightMode.AprilTag);
 		d("AHM init");
+
 		try {
-			rr_Mecanum = new org.firstinspires.ftc.teamcode.RR.MecanumDrive(hardwareMap, Turret.getSavedPosition().pose2d);
-			Robot.turret = new Turret(this, Turret.getSavedPosition());
-			Robot.turret.refreshEncoder = false;
-			Robot.turret.init();
+			lastPose = Turret.getSavedPosition();
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			lastPose = new TurretPose2d(new Pose2d(0, 0, 0), 0);
 		}
+
+		rr_Mecanum = new org.firstinspires.ftc.teamcode.RR.MecanumDrive(hardwareMap, lastPose.pose2d);
+		bot.turret = new Turret(this, lastPose);
+		bot.turret.init();
 		mecanumDrive = new MecanumDrive(this);
 		mecanumDrive.init();
 //		bot.turret.useGamepad();
@@ -63,17 +68,7 @@ public class RedOpMode extends OpMode {
 		mecanumDrive.loop();
 		rr_Mecanum.updatePoseEstimate();
 		bot.loop();
-		telemetry.clearAll(); // Disables telemetry from the bot
-//		if (autoTracking) {
-//			Robot.turret.trackTarget = true;
-//			Robot.turret.autoTrack = true;
-//			Robot.turret.autoTracking(rr_Mecanum).run(null); // The lion does not concern herself with @NotNull
-//		} else {
-//			Robot.turret.stopAutoTracking().run(null);
-//			Robot.turret.trackTarget = false;
-//			Robot.turret.autoTrack = false;
-//			Robot.turret.setRotatorPower(gamepad2.right_stick_y / 5);
-//		}
+		telemetry.clearAll(); // Disables telemetry from the Turret
 
 		bot.intake.setSpeed(gamepad2.right_trigger * ((gamepad2.y) ? -1 : 1));
 
@@ -93,9 +88,9 @@ public class RedOpMode extends OpMode {
 			shootHands = bot.shoot(Robot.BallPosition.Hands);
 
 
-		Robot.intake.setHeight(gamepad1.right_trigger);
+		bot.intake.setHeight(gamepad1.right_trigger);
 
-		Robot.turret.setSpeed(distance.power + -gamepad2.left_stick_y / 10);
+		bot.turret.setSpeed(distance.power + -gamepad2.left_stick_y / 10);
 
 		tagMatch = false;
 		if (ll.getResults() != null && ll.getResults().isValid() && !ll.getResults()
@@ -112,7 +107,7 @@ public class RedOpMode extends OpMode {
 						telemetry.addData("tx", result.getTargetXDegrees());
 						double tx = -result.getTargetXDegrees();
 						d("AHM tx " + tx);
-						Robot.turret.rotator.setPower(tx / 50 * ((gamepad2.start) ? 0 : 1));
+						bot.turret.rotator.setPower(tx / 50 * ((gamepad2.start) ? 0 : 1));
 						d("AHM power " + tx / 50);
 						tagMatch = true;
 					}
@@ -121,7 +116,7 @@ public class RedOpMode extends OpMode {
 			}
 
 			if (!tagMatch || gamepad2.start)
-				Robot.turret.rotator.setPower(gamepad2.right_stick_x);
+				bot.turret.rotator.setPower(gamepad2.right_stick_x);
 
 			if (tagMatch) {
 				gamepad2.setLedColor(0, 255, 0, 300);
@@ -140,7 +135,7 @@ public class RedOpMode extends OpMode {
 		if (gamepad2.dpad_left)
 			distance = Turret.SpeedByDistance.None;
 
-		telemetry.addLine("Ball" + Robot.palmsOfGod.getLeftBall());
+		telemetry.addLine("Ball" + bot.palmsOfGod.getLeftBall());
 
 		if (mgamepad.justPressed(GamepadManager.Button.RIGHT_BUMPER)) {
 			rightPalmOpen = !rightPalmOpen;
@@ -159,7 +154,7 @@ public class RedOpMode extends OpMode {
 			autoTracking = !autoTracking;
 		}
 
-		Robot.turret.setAngleTrim((Robot.turret.rotationTrim + gamepad2.right_stick_y / 17.5) * ((gamepad2.right_stick_button) ? 0 : 1)); // the lion does not concern herself with the math
+		bot.turret.setAngleTrim((bot.turret.rotationTrim + gamepad2.right_stick_y / 17.5) * ((gamepad2.right_stick_button) ? 0 : 1)); // the lion does not concern herself with the math
 
 		bot.handsOfGod.setPosition((handsUp) ? HandsOfGod.Position.Up : HandsOfGod.Position.Down);
 		bot.palmsOfGod.setLeftPalm((leftPalmOpen) ? PalmsOfGod.Position.Up : PalmsOfGod.Position.Down);
@@ -172,7 +167,7 @@ public class RedOpMode extends OpMode {
 		telemetry.addData("x", pose.position.x);
 		telemetry.addData("y", pose.position.y);
 		telemetry.addData("r", pose.heading.toDouble());
-		telemetry.addData("t", Robot.turret.getRotation());
+		telemetry.addData("t", bot.turret.getRotation());
 		telemetry.addData("autoTrack", autoTracking);
 
 		telemetry.update();

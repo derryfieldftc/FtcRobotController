@@ -39,14 +39,14 @@ public class Blue1 extends OpMode {
 	public void init() {
 		bot = new Robot(this).enableTurret().enableHandsOfGod().enablePalmsOfGod().enableIntake();
 		bot.init();
-		Robot.turret.trackTarget().setTarget(depot.getPosition());
-		intake = Robot.intake;
-		palms = Robot.palmsOfGod;
+		bot.turret.trackTarget().setTarget(depot.getPosition());
+		intake = bot.intake;
+		palms = bot.palmsOfGod;
 		mecanumDrive = new MecanumDrive(hardwareMap, initPose);
 
 
 		route = mecanumDrive.actionBuilder(initPose)
-				.stopAndAdd(telemetryPacket -> {Robot.turret.setSpeed(Turret.SpeedByDistance.Far.power); return false;})
+				.stopAndAdd(telemetryPacket -> {bot.turret.setSpeed(Turret.SpeedByDistance.Far.power); return false;})
 				.waitSeconds(.5)
 				.stopAndAdd(shootFar())
 				.turn(Math.PI / 4)
@@ -55,7 +55,7 @@ public class Blue1 extends OpMode {
 				.splineToConstantHeading(BluePoses.Row2Collection.pose.position, BluePoses.Row2Collection.pose.heading) // Collect row 2
 				.splineToConstantHeading(BluePoses.Lever.pose.position, BluePoses.Lever.pose.heading) // lever
 				.stopAndAdd(intake.disable())
-				.stopAndAdd(telemetryPacket -> {Robot.turret.setSpeed(Turret.SpeedByDistance.Close.power); return false;})
+				.stopAndAdd(telemetryPacket -> {bot.turret.setSpeed(Turret.SpeedByDistance.Close.power); return false;})
 				.waitSeconds(1)
 				.setReversed(true)
 				.splineToConstantHeading(BluePoses.ShootableMid.pose.position, BluePoses.ShootableMid.pose.heading) // Back to shootable
@@ -76,12 +76,12 @@ public class Blue1 extends OpMode {
 				.splineToConstantHeading(BluePoses.FarShootingPosition.pose.position, BluePoses.FarShootingPosition.pose.heading)
 				.stopAndAdd(shootFar())
 				.build();
-		action = new ParallelAction(bot.savePosition(new TurretPose2d(mecanumDrive.localizer.getPose(), Robot.turret.getRotation())), route, Robot.turret.autoTracking(mecanumDrive));
+		action = new ParallelAction(bot.savePosition(new TurretPose2d(mecanumDrive.localizer.getPose(), bot.turret.getRotation())), route, bot.turret.autoTracking(mecanumDrive));
 	}
 
 	@Override
 	public void start() {
-		Robot.turret.setSpeed(.3);
+		bot.turret.setSpeed(.3);
 		Actions.runBlocking(action);
 		stop();
 	}

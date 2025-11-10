@@ -21,19 +21,19 @@ import java.io.PrintWriter;
  * If you run into any null pointers check your enabled parts of the robot
  */
 public class Robot extends RobotPart {
-	public static Drivetrain drivetrain;
-	public static boolean drivetrainEnabled;
-	public static Intake intake;
-	public static boolean intakeEnabled;
-//	public static Camera camera;
-//	public static boolean cameraEnabled;
-	public static Turret turret;
-	public static boolean turretEnabled;
-	public static HandsOfGod handsOfGod;
-	public static boolean handsOfGodEnabled;
-	public static PalmsOfGod palmsOfGod;
-	public static boolean palmsOfGodEnabled;
-	public static TurretPose2d finalPose;
+	public Drivetrain drivetrain;
+	public boolean drivetrainEnabled;
+	public Intake intake;
+	public boolean intakeEnabled;
+//	public Camera camera;
+//	public boolean cameraEnabled;
+	public Turret turret;
+	public boolean turretEnabled;
+	public HandsOfGod handsOfGod;
+	public boolean handsOfGodEnabled;
+	public PalmsOfGod palmsOfGod;
+	public boolean palmsOfGodEnabled;
+	public TurretPose2d finalPose;
 
 	/**
 	 * 1

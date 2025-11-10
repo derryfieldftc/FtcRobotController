@@ -41,14 +41,14 @@ public class Red1 extends OpMode {
 	public void init() {
 		bot = new Robot(this).enableTurret().enableHandsOfGod().enablePalmsOfGod().enableIntake();
 		bot.init();
-		Robot.turret.trackTarget().setTarget(depot.getPosition());
-		intake = Robot.intake;
-		palms = Robot.palmsOfGod;
+		bot.turret.trackTarget().setTarget(depot.getPosition());
+		intake = bot.intake;
+		palms = bot.palmsOfGod;
 		mecanumDrive = new MecanumDrive(hardwareMap, initPose);
 
 
 		route = mecanumDrive.actionBuilder(initPose)
-				.stopAndAdd(telemetryPacket -> {Robot.turret.setSpeed(Turret.SpeedByDistance.Far.power); return false;})
+				.stopAndAdd(telemetryPacket -> {bot.turret.setSpeed(Turret.SpeedByDistance.Far.power); return false;})
 				.waitSeconds(.5)
 				.stopAndAdd(shootFar())
 				.turn(-Math.PI / 4)
@@ -57,7 +57,7 @@ public class Red1 extends OpMode {
 				.splineToConstantHeading(new Vector2d(41, -5), 0) // Collect row 2
 				.splineToConstantHeading(new Vector2d(62, -2), 0) // lever
 				.stopAndAdd(intake.disable())
-				.stopAndAdd(telemetryPacket -> {Robot.turret.setSpeed(Turret.SpeedByDistance.Close.power); return false;})
+				.stopAndAdd(telemetryPacket -> {bot.turret.setSpeed(Turret.SpeedByDistance.Close.power); return false;})
 				.waitSeconds(1)
 				.setReversed(true)
 				.splineToConstantHeading(new Vector2d(10, 0), Math.PI) // Back to shootable
@@ -78,12 +78,12 @@ public class Red1 extends OpMode {
 				.splineToConstantHeading(new Vector2d(20, -57), Math.PI)
 				.stopAndAdd(shootFar())
 				.build();
-		action = new ParallelAction(bot.savePosition(new TurretPose2d(mecanumDrive.localizer.getPose(), Robot.turret.getRotation())), route, Robot.turret.autoTracking(mecanumDrive));
+		action = new ParallelAction(bot.savePosition(new TurretPose2d(mecanumDrive.localizer.getPose(), bot.turret.getRotation())), route, bot.turret.autoTracking(mecanumDrive));
 	}
 
 	@Override
 	public void start() {
-		Robot.turret.setSpeed(.3);
+		bot.turret.setSpeed(.3);
 		Actions.runBlocking(action);
 		stop();
 	}

@@ -43,12 +43,12 @@ public class TurretPowerTest extends OpMode {
 			handsUp = !handsUp;
 		}
 
-		Robot.intake.setSpeed(gamepad2.right_trigger);
+		bot.intake.setSpeed(gamepad2.right_trigger);
 
 		bot.handsOfGod.setPosition((handsUp) ? HandsOfGod.Position.Up : HandsOfGod.Position.Down);
 
-		Robot.turret.setSpeed(speed);
-		Robot.turret.setAngle(angle);
+		bot.turret.setSpeed(speed);
+		bot.turret.setAngle(angle);
 
 		telemetry.addData("speed", speed);
 		telemetry.addData("angle", angle);

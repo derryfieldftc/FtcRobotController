@@ -29,26 +29,26 @@ public class Blue2 extends OpMode {
 	@Override
 	public void init() {
 		bot = new Robot(this).enablePalmsOfGod().enableHandsOfGod().enableIntake().enableTurret();
-		turret = Robot.turret;
+		turret = bot.turret;
 		bot.init();
-		Robot.turret.trackTarget().setTarget(depot.getPosition());
+		bot.turret.trackTarget().setTarget(depot.getPosition());
 		mecanumDrive = new MecanumDrive(hardwareMap, initPose);
 		bot.setBalls(Field.Ball.Purple, Field.Ball.Green, Field.Ball.Purple);
-		Robot.palmsOfGod.setLeftPalm(PalmsOfGod.Position.Down);
-		Robot.palmsOfGod.setRightPalm(PalmsOfGod.Position.Down);
+		bot.palmsOfGod.setLeftPalm(PalmsOfGod.Position.Down);
+		bot.palmsOfGod.setRightPalm(PalmsOfGod.Position.Down);
 
 		route = mecanumDrive.actionBuilder(initPose, AutoFunctions::mirror)
-				.stopAndAdd(telemetryPacket -> {Robot.turret.setSpeed(.4); return false;})
+				.stopAndAdd(telemetryPacket -> {bot.turret.setSpeed(.4); return false;})
 				.strafeTo(new Vector2d(25, 25)) // Away from goal to shootable location, also get tag here
 				.stopAndAdd(bot.shootAction(Robot.BallPosition.Hands))
 				.waitSeconds(1)
-				.stopAndAdd(telemetryPacket -> {Robot.palmsOfGod.setRightPalm(PalmsOfGod.Position.Up); return false;})
+				.stopAndAdd(telemetryPacket -> {bot.palmsOfGod.setRightPalm(PalmsOfGod.Position.Up); return false;})
 				.waitSeconds(1)
 				.stopAndAdd(bot.shootAction(Robot.BallPosition.Right))
 				.waitSeconds(1)
-				.stopAndAdd(telemetryPacket -> {Robot.palmsOfGod.setLeftPalm(PalmsOfGod.Position.Up); return false;})
+				.stopAndAdd(telemetryPacket -> {bot.palmsOfGod.setLeftPalm(PalmsOfGod.Position.Up); return false;})
 				.stopAndAdd(bot.shootAction(Robot.BallPosition.Left))
-				.stopAndAdd(telemetryPacket -> {Robot.turret.setSpeed(.4); return false;})
+				.stopAndAdd(telemetryPacket -> {bot.turret.setSpeed(.4); return false;})
 				.splineTo(new Vector2d(47, 14), 0) // Collect row 3
 				.stopAndAdd(telemetryPacket -> { // Lambda actions work if they are instantaneous
 					bot.setBalls(Field.Ball.Purple, Field.Ball.Green, Field.Ball.Purple);

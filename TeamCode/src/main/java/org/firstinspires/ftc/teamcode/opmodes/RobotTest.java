@@ -36,13 +36,13 @@ public class RobotTest extends OpMode {
 	public void loop() {
 		// enable or disable parts of the robot, this does not fully shut parts off, intake.setSpeed() will still change the motor speed, this is an okay sacrifice as imo disabling parts like this are niche
 		if (gamepad2.dpad_up)
-			Robot.turretEnabled = !Robot.turretEnabled;
+			bot.turretEnabled = !bot.turretEnabled;
 		if (gamepad2.dpad_right)
-			Robot.intakeEnabled = !Robot.intakeEnabled;
+			bot.intakeEnabled = !bot.intakeEnabled;
 		if (gamepad2.dpad_down)
-			Robot.handsOfGodEnabled = !Robot.handsOfGodEnabled;
+			bot.handsOfGodEnabled = !bot.handsOfGodEnabled;
 		if (gamepad2.dpad_left)
-			Robot.drivetrainEnabled = !Robot.drivetrainEnabled;
+			bot.drivetrainEnabled = !bot.drivetrainEnabled;
 
 		mecanumDrive.loop();
 		bot.loop();
@@ -74,16 +74,16 @@ public class RobotTest extends OpMode {
 		if (shootRight)
 			shootRight = bot.shoot(Robot.BallPosition.Right);
 
-		Robot.intake.setHeight(gamepad1.right_trigger);
+		bot.intake.setHeight(gamepad1.right_trigger);
 
-		Robot.turret.setSpeed(-gamepad2.left_stick_y);
+		bot.turret.setSpeed(-gamepad2.left_stick_y);
 
 		if (gamepad1.start) {
 			while (bot.shootAllTryingMotif().run(null)) {
 			}
 		}
 
-		telemetry.addLine("Ball" + Robot.palmsOfGod.getLeftBall());
+		telemetry.addLine("Ball" + bot.palmsOfGod.getLeftBall());
 
 		if (gamepad1.y)
 			bot.setBalls(new Field.Ball[]{Field.Ball.Purple, Field.Ball.Green, Field.Ball.Purple});
