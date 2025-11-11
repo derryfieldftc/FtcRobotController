@@ -27,8 +27,8 @@ public class HandsOfGod extends RobotPart {
 	}
 
 	public void init() {
-		leftHand = hardwareMap.servo.get("leftHand");
-		rightHand = hardwareMap.servo.get("rightHand");
+		leftHand = hardwareMap.servo.get(Robot.Part.LeftHand.name);
+		rightHand = hardwareMap.servo.get(Robot.Part.RightHand.name);
 	}
 
 	public HandsOfGod useTelemetry() {

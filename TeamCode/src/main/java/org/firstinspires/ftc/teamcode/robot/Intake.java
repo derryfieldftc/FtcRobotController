@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import static org.firstinspires.ftc.teamcode.robot.Robot.Part;
 
 public class Intake extends RobotPart {
 	DcMotor intake;
@@ -22,10 +23,10 @@ public class Intake extends RobotPart {
 	}
 
 	public void init() {
-		intake = hardwareMap.dcMotor.get("intake");
+		intake = hardwareMap.dcMotor.get(Part.Intake.name);
 		intake.setDirection(DcMotorSimple.Direction.FORWARD);
 		colorSensor = hardwareMap.colorSensor.get("intakeColorSensor");
-		intakeLift = hardwareMap.servo.get("intakeLift");
+		intakeLift = hardwareMap.servo.get(Part.IntakeLift.name);
 	}
 
 	public Field.Ball getBallType() {

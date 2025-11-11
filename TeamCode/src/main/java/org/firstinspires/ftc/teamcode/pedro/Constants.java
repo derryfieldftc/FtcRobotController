@@ -6,6 +6,7 @@ import com.pedropathing.ftc.FollowerBuilder;
 import com.pedropathing.ftc.drivetrains.MecanumConstants;
 import com.pedropathing.ftc.localization.Encoder;
 import com.pedropathing.ftc.localization.constants.ThreeWheelConstants;
+import com.pedropathing.ftc.localization.localizers.ThreeWheelLocalizer;
 import com.pedropathing.paths.PathConstraints;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -42,7 +43,7 @@ public class Constants {
         return new FollowerBuilder(followerConstants, hardwareMap)
                 .mecanumDrivetrain(mecanumDrive)
                 .pathConstraints(pathConstraints)
-                .threeWheelLocalizer(threeWheelLocalizer)
+                .setLocalizer(new ThreeWheelLocalizer(hardwareMap, threeWheelLocalizer))
                 .build();
     }
 }

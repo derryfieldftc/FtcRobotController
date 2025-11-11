@@ -13,7 +13,6 @@ import org.firstinspires.ftc.teamcode.robot.Robot;
 public class TurretPowerTest extends OpMode {
 	Robot bot;
 	double speed;
-	double angle;
 	boolean handsUp;
 	GamepadManager mgamepad2;
 
@@ -34,11 +33,6 @@ public class TurretPowerTest extends OpMode {
 		if (mgamepad2.justPressed(GamepadManager.Button.DPAD_UP))
 			speed = clamp(speed + .05, -1, 1);
 
-		if (mgamepad2.justPressed(GamepadManager.Button.DPAD_LEFT))
-			angle = clamp(angle - .05, 0, 1);
-		if (mgamepad2.justPressed(GamepadManager.Button.DPAD_RIGHT))
-			angle = clamp(angle + .05, 0, 1);
-
 		if (mgamepad2.justPressed(GamepadManager.Button.X)) {
 			handsUp = !handsUp;
 		}
@@ -48,10 +42,8 @@ public class TurretPowerTest extends OpMode {
 		bot.handsOfGod.setPosition((handsUp) ? HandsOfGod.Position.Up : HandsOfGod.Position.Down);
 
 		bot.turret.setSpeed(speed);
-		bot.turret.setAngle(angle);
 
 		telemetry.addData("speed", speed);
-		telemetry.addData("angle", angle);
 		telemetry.update();
 	}
 }

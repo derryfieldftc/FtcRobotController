@@ -20,34 +20,25 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.Scanner;
+import static org.firstinspires.ftc.teamcode.robot.Robot.*;
 
 //Oh boy
 public class Turret extends RobotPart {
 	public DcMotor rotator; //25 to 95 ratio, 1 full rotation is 2k steps
 	DcMotor spinner0;
-	Servo angle;
-	double angleAngle = 0; // max .3
 	Gamepad gamepad;
 	TouchSensor limit;
-	int maxAbsDelta = 2000;
 	public double rotationTrim;
 	double rotatorPower = 0;
 	double rotation = 0;
-	double lastTime = .05;
 	double ticksPerRotation = 2000.0 / (2.0 * Math.PI);
 	public boolean refreshEncoder = true;
-	double timeOfLastUpdate = 0;
-	double deltaTimeOfLastUpdate = 0;
-	double targetAngle;
 	boolean useGamepad;
 	public boolean trackTarget;
-	public boolean autoTrack = true;
 	boolean targetSet = false;
 	PID rotationPID;
 	TurretPose2d pose;
-	Vector robotMovement = null;
 	Vector target = new Vector(0, 0);
-	Vector adjustedTarget;
 
 	public enum SpeedByDistance {
 		Max (1),
@@ -81,7 +72,7 @@ public class Turret extends RobotPart {
 	}
 
 	public void init() {
-		rotator = hardwareMap.dcMotor.get("turretRotator");
+		rotator = hardwareMap.dcMotor.get(Part.TurretRotator.name);
 		if (refreshEncoder) {
 			rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 			rotator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -92,11 +83,10 @@ public class Turret extends RobotPart {
 			rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 			rotator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 		}
-		spinner0 = hardwareMap.dcMotor.get("spinny0");
+		spinner0 = hardwareMap.dcMotor.get(Part.LaunchMotor.name);
 		spinner0.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 		spinner0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		spinner0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-		angle = hardwareMap.servo.get("turretAngle");
 
 
 		// If it aint broke dont fix it
@@ -107,14 +97,6 @@ public class Turret extends RobotPart {
 		this.target = target;
 		targetSet = true;
 		return this;
-	}
-
-	/**
-	 * Changes angle by angle units, clamped to 0-1
-	 * @param angle
-	 */
-	public void tuneAngle(double angle) {
-		this.angleAngle = clamp(angleAngle + angle / 30, 0, 1);
 	}
 
 	public void setRotatorPower(double power) {
@@ -133,26 +115,15 @@ public class Turret extends RobotPart {
 				rotator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 			}
 			spinner0.setPower(gamepad.left_trigger * ((gamepad.x) ? -1 : 1));
-			angleAngle = clamp(angleAngle + -gamepad.left_stick_y / 30, -1, 1);
-			telemetry.addData("Angle", angleAngle);
-			angle.setPosition(angleAngle);
 		}
 		//TODO! tracking... again
 	}
-
-	public void setTargetAngle(double angle) {
-		this.targetAngle = angle;
-	};
 
 	public Turret setSpeed(double speed) {
 		spinner0.setPower(speed);
 		return this;
 	}
 
-	public Turret setAngle(double angle) {
-		this.angle.setPosition(angle);
-		return this;
-	}
 
 	/**
 	 * This is action should never finish until the stopAutoTracking Action is called
