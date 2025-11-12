@@ -2,14 +2,11 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import android.graphics.Color;
 
-import androidx.annotation.NonNull;
-
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
-import static org.firstinspires.ftc.teamcode.robot.Robot.Part;
 
 public class Intake extends RobotPart {
 	DcMotor intake;

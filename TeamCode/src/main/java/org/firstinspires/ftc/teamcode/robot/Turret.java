@@ -1,26 +1,20 @@
 package org.firstinspires.ftc.teamcode.robot;
 
 import static androidx.core.math.MathUtils.clamp;
-import static java.lang.Math.PI;
 import static java.lang.Math.atan;
 import static java.lang.Math.pow;
 import static java.lang.Math.sqrt;
 
 import android.annotation.SuppressLint;
 
-import androidx.annotation.NonNull;
-
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.Scanner;
-import static org.firstinspires.ftc.teamcode.robot.Robot.*;
 
 //Oh boy
 public class Turret extends RobotPart {

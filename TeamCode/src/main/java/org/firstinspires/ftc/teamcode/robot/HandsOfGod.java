@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.robot;
 
-import androidx.annotation.NonNull;
-
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -27,8 +25,8 @@ public class HandsOfGod extends RobotPart {
 	}
 
 	public void init() {
-		leftHand = hardwareMap.servo.get(Robot.Part.LeftHand.name);
-		rightHand = hardwareMap.servo.get(Robot.Part.RightHand.name);
+		leftHand = hardwareMap.servo.get(RobotPart.Part.LeftHand.name);
+		rightHand = hardwareMap.servo.get(RobotPart.Part.RightHand.name);
 	}
 
 	public HandsOfGod useTelemetry() {

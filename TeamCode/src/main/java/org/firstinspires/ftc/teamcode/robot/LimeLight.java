@@ -24,7 +24,7 @@ public class LimeLight extends RobotPart {
 	}
 
 	public void init() {
-		ll = (Limelight3A) hardwareMap.get(Robot.Part.LimeLight.type, Robot.Part.LimeLight.name);
+		ll = (Limelight3A) hardwareMap.get(RobotPart.Part.LimeLight.type, RobotPart.Part.LimeLight.name);
 		ll.start();
 	}
 
