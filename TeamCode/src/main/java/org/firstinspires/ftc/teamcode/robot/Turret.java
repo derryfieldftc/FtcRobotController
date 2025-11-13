@@ -6,6 +6,8 @@ import static java.lang.Math.pow;
 import static java.lang.Math.sqrt;
 
 import android.annotation.SuppressLint;
+import com.pedropathing.geometry.Pose;
+import com.pedropathing.math.Vector;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -138,7 +140,7 @@ public class Turret extends RobotPart {
 
 		viy = sqrt(-2 * a * dy); // From CAE's
 		t = -viy / a; // vfy is 0
-		dx = sqrt(pow(pose.pose.x - target.x, 2) + pow(pose.pose.y - target.y, 2)); // x distance not taking movement into account
+		dx = sqrt(pow(pose.pose.getX() - target.getXComponent(), 2) + pow(pose.pose.getY() - target.getYComponent(), 2)); // x distance not taking movement into account
 		vix = dx / t;
 
 		vi = sqrt(pow(vix, 2) + pow(viy, 2));
@@ -154,7 +156,7 @@ public void savePosition() {
 			file.createNewFile();
 			//TODO! fix localizer with pedro
 
-			writer.println(String.format("%f %f %f %f", pose.pose.x, pose.pose.y, pose.pose.theta, pose.rotation));
+			writer.println(String.format("%f %f %f %f", pose.pose.getX(), pose.pose.getY(), pose.pose.getHeading(), pose.rotation));
 			writer.flush();
 			writer.close();
 

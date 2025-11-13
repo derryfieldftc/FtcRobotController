@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.robot;
 import static org.firstinspires.ftc.teamcode.robot.Field.Ball;
 import static org.firstinspires.ftc.teamcode.robot.Field.Ball.None;
 
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 /**
@@ -10,8 +11,6 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
  * If you run into any null pointers check your enabled parts of the robot
  */
 public class Robot extends RobotPart {
-	public Drivetrain drivetrain;
-	public boolean drivetrainEnabled;
 	public Intake intake;
 	public boolean intakeEnabled;
 	public Turret turret;
@@ -55,9 +54,7 @@ public class Robot extends RobotPart {
 	 */
 	public Robot(OpMode opMode) {
 		super(opMode);
-		drivetrain = new Drivetrain(hardwareMap, this.opMode);
 		intake = new Intake(this.opMode);
-//		camera = new Camera(this.opMode);
 		turret = new Turret(this.opMode, new TurretPose2d(new Pose(0, 0, 0), 0));
 		handsOfGod = new HandsOfGod(this.opMode);
 		palmsOfGod = new PalmsOfGod(this.opMode);
@@ -75,11 +72,6 @@ public class Robot extends RobotPart {
 		return this;
 	}
 
-	public Robot enableDriveTrain() {
-		drivetrainEnabled = true;
-		return this;
-	}
-
 	public Robot enableTurret() {
 		turretEnabled = true;
 		return this;
@@ -90,27 +82,13 @@ public class Robot extends RobotPart {
 		return this;
 	}
 
-//	public Robot enableIntakeSpinner() {
-//		intakeSpinnerEnabled = true;
-//		return this;
-//	}
-
 	public double getVoltage() {
 		return voltageSensor.getVoltage();
 	}
 
-//	public Robot enableCamera() {
-//		cameraEnabled = true;
-//		return this;
-//	}
-
 	public void init() {
 		if (intakeEnabled)
 			intake.init();
-//		if (intakeSpinnerEnabled)
-//			intakeSpinner.init();
-//		if (cameraEnabled)
-//			camera.init();
 		if (turretEnabled)
 			turret.init();
 		if (handsOfGodEnabled)
@@ -125,8 +103,6 @@ public class Robot extends RobotPart {
 		currentTime = opMode.getRuntime();
 		if (intakeEnabled)
 			intake.loop();
-//		if (cameraEnabled)
-//			camera.loop();
 		if (turretEnabled)
 			turret.loop();
 		if (handsOfGodEnabled)

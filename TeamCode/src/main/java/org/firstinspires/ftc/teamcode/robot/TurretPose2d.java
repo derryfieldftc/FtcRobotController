@@ -1,7 +1,8 @@
 package org.firstinspires.ftc.teamcode.robot;
+import com.pedropathing.geometry.Pose;
 
 /**
- * A way to represnt both the turret and the pose of the robot, the rotation is relative to the front of the robot
+ * A way to represent both the turret and the pose of the robot, the rotation is relative to the front of the robot
  */
 public class TurretPose2d {
 	public double rotation;
@@ -23,7 +24,7 @@ public class TurretPose2d {
 	 * @return angle of the turret to the target relative to the robot
 	 */
 	public double getTurretAngleToTargetRelativeToRobot(Pose target) {
-		double angle = Math.atan2((target.y - pose.y), (target.x - pose.x));
-		return angle - pose.theta; // Subtract because angle is relative to forward on the robot
+		double angle = Math.atan2((target.getY() - pose.getY()), (target.getX() - pose.getX()));
+		return angle - pose.getHeading(); // Subtract because angle is relative to forward on the robot
 	}
 }

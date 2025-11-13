@@ -41,8 +41,6 @@ public class RobotTest extends OpMode {
 			bot.intakeEnabled = !bot.intakeEnabled;
 		if (gamepad2.dpad_down)
 			bot.handsOfGodEnabled = !bot.handsOfGodEnabled;
-		if (gamepad2.dpad_left)
-			bot.drivetrainEnabled = !bot.drivetrainEnabled;
 
 		mecanumDrive.loop();
 		bot.loop();
