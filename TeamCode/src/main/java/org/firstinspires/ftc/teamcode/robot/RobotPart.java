@@ -65,7 +65,7 @@ public class RobotPart {
 		/**
 		 * Encoder that measures strafe on the robot
 		 */
-		StrafeEncoder 		("motorBR", DcMotor.class),
+		StrafeEncoder 		("motorFR", DcMotor.class),
 		/**
 		 * Encoder that measures drive on the left side of the robot
 		 */
@@ -73,7 +73,7 @@ public class RobotPart {
 		/**
 		 * Encoder that measures drive on the right side of the robot
 		 */
-		RightDriveEncoder 	("intake", DcMotor.class),
+		RightDriveEncoder 	("motorBR", DcMotor.class),
 		LeftPalm	("leftPalm", Servo.class),
 		RightPalm	("rightPalm", Servo.class),
 		LeftHand	("leftHand", Servo.class),
@@ -106,7 +106,19 @@ public class RobotPart {
 
 		//Note that methods can also be created
 		public static List<Part> Servos() {
-			return Stream.of(Part.values()).filter(part -> part.type == Servo.class).collect(Collectors.toList());
+			return Stream.of(Part.values()).filter(Part::isServo).collect(Collectors.toList());
+		}
+
+		public static List<Part> Motors() {
+			return Stream.of(Part.values()).filter(Part::isMotor).collect(Collectors.toList());
+		}
+
+		public boolean isServo() {
+			return this.type == Servo.class;
+		}
+
+		public boolean isMotor() {
+			return this.type == DcMotor.class;
 		}
 
 		// Don't know when you would use this, its more of an example
@@ -132,7 +144,7 @@ public class RobotPart {
 		/**
 		 * Checks to make sure every Part is valid / exists
 		 * @param hardwareMap
-		 * @return
+		 * @return if all Parts are valid
 		 */
 		public static boolean validateAll(HardwareMap hardwareMap) {
 			return Stream.of(Part.values()).anyMatch(part -> !part.exists(hardwareMap));

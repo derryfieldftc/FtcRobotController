@@ -58,7 +58,7 @@ public class MecanumDrive extends RobotPlugin {
 		motorFL.setDirection(DcMotorSimple.Direction.FORWARD);
 		motorBL.setDirection(DcMotorSimple.Direction.FORWARD);
 		motorFR.setDirection(DcMotorSimple.Direction.FORWARD);
-		motorBR.setDirection(DcMotorSimple.Direction.REVERSE);
+		motorBR.setDirection(DcMotorSimple.Direction.FORWARD);
 	}
 
 	public void loop() {

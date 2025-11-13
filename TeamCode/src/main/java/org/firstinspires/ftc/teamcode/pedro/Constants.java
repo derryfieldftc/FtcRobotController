@@ -11,31 +11,42 @@ import com.pedropathing.paths.PathConstraints;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.teamcode.robot.RobotPart;
+
 public class Constants {
-    public static FollowerConstants followerConstants = new FollowerConstants();
+    public static FollowerConstants followerConstants = new FollowerConstants()
+            .forwardZeroPowerAcceleration(-28.571047441654848)
+            .lateralZeroPowerAcceleration(-73.4325534098);
+
     public static MecanumConstants mecanumDrive = new MecanumConstants().maxPower(1)
-            .rightFrontMotorName("motorFR")
-            .rightRearMotorName("motorBR")
-            .leftRearMotorName("motorBL")
-            .leftFrontMotorName("motorFL")
-            .leftFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
-            .leftRearMotorDirection(DcMotorSimple.Direction.REVERSE)
+            .rightFrontMotorName(RobotPart.Part.MotorFR.name)
+            .rightRearMotorName(RobotPart.Part.MotorBR.name)
+            .leftRearMotorName(RobotPart.Part.MotorBL.name)
+            .leftFrontMotorName(RobotPart.Part.MotorFL.name)
+            .leftFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
+            .leftRearMotorDirection(DcMotorSimple.Direction.FORWARD)
             .rightFrontMotorDirection(DcMotorSimple.Direction.FORWARD)
-            .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD);
+            .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD)
+            .xVelocity(66.84776316581288)
+            .yVelocity(54.147475146056685);
+
 
     public static ThreeWheelConstants threeWheelLocalizer = new ThreeWheelConstants()
-            .forwardTicksToInches(.001989436789)
-            .strafeTicksToInches(.001989436789)
-            .turnTicksToInches(.001989436789)
             .leftPodY(8)
             .rightPodY(-8)
-            .strafePodX(-0)
-            .leftEncoder_HardwareMapName("motorBL")
-            .rightEncoder_HardwareMapName("intake")
-            .strafeEncoder_HardwareMapName("motorBR")
+            .strafePodX(-7)
+            .leftEncoder_HardwareMapName(RobotPart.Part.LeftDriveEncoder.name)
+            .rightEncoder_HardwareMapName(RobotPart.Part.RightDriveEncoder.name)
+            .strafeEncoder_HardwareMapName(RobotPart.Part.StrafeEncoder.name)
             .leftEncoderDirection(Encoder.FORWARD)
             .rightEncoderDirection(Encoder.FORWARD)
-            .strafeEncoderDirection(Encoder.REVERSE);
+            .strafeEncoderDirection(Encoder.FORWARD)
+            .forwardTicksToInches(0.0019895402114732674)
+            .strafeTicksToInches(0.0019896225811645574)
+            .turnTicksToInches(0.00197568911474871);
+
+
+
 
     public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
 
