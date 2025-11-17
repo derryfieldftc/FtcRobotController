@@ -1,17 +1,16 @@
 package org.firstinspires.ftc.teamcode.autonmous;
 
+import com.pedropathing.follower.Follower;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import org.firstinspires.ftc.teamcode.pedro.Constants;
 
 @Autonomous
-public class PedroTest extends AutoOpMode {
-	@Override
-	public void autoInit() {
-
-	}
+public class PedroTest extends LinearOpMode {
 
 	@Override
-	public void loop() {
-		drive.activateDrive();
-	}
+	public void runOpMode() throws InterruptedException {
 
+	}
 }

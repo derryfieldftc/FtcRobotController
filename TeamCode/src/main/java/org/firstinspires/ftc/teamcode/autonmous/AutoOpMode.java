@@ -14,7 +14,7 @@ import java.util.Stack;
 public abstract class AutoOpMode extends OpMode {
 	public Follower drive;
 
-	public enum Positions {
+	public enum Position {
 		InitalPose (new Pose(50, 12, 3 * Math.PI / 4)), //Make sure all of these are correct
 		RowOne (new Pose(24, 36, Math.PI / 2)),
 		RowTwo (new Pose(24, 60, Math.PI / 2)),
@@ -23,8 +23,8 @@ public abstract class AutoOpMode extends OpMode {
 		CloseShot (new Pose(60, 72, Math.PI)),
 		FarShot (new Pose(60, 24, Math.PI));
 
-		public Pose pose;
-		Positions(Pose pose) {
+		public final Pose pose;
+		Position(Pose pose) {
 			this.pose = pose;
 		}
 	}

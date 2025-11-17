@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.autonmous.actions;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import java.util.concurrent.Callable;
+
 /**
  * Meant to replicate the way RR does actions
  */
@@ -18,5 +20,15 @@ public abstract class Action {
 	 */
 	public static void runBlocking(Action action) {
 		while (action.run()) {}
+	}
+
+	public static Action from(Runnable function) {
+		return new Action() {
+			@Override
+			boolean run() {
+				function.run();
+				return false;
+			}
+		};
 	}
 }
