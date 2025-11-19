@@ -6,17 +6,18 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * This action concatenates actions into one that runs each child every time it is called. Once one of the children processes returns false it will stop being run
+ */
 public class ParallelAction extends Action {
-	private final AutoOpMode autoOpMode;
 	List<Action> actions;
 
-	public ParallelAction(AutoOpMode autoOpMode, Action... actions) {
-		this.autoOpMode = autoOpMode;
+	public ParallelAction(Action... actions) {
 		this.actions = Arrays.asList(actions);
 	}
 
 	@Override
-	boolean run() {
+	public boolean run() {
 		actions = actions.stream().filter(Action::run).collect(Collectors.toList());
 		return !actions.isEmpty();
 	}

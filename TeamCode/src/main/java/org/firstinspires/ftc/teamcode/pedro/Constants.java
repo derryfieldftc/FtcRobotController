@@ -15,10 +15,12 @@ import org.firstinspires.ftc.teamcode.robot.RobotPart;
 
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
+            .mass(10.4326) //KG
             .forwardZeroPowerAcceleration(-28.571047441654848)
             .lateralZeroPowerAcceleration(-73.4325534098);
 
-    public static MecanumConstants mecanumDrive = new MecanumConstants().maxPower(1)
+    public static MecanumConstants mecanumDrive = new MecanumConstants()
+            .maxPower(1)
             .rightFrontMotorName(RobotPart.Part.MotorFR.name)
             .rightRearMotorName(RobotPart.Part.MotorBR.name)
             .leftRearMotorName(RobotPart.Part.MotorBL.name)

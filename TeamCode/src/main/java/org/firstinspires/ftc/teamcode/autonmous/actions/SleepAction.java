@@ -16,7 +16,7 @@ public class SleepAction extends Action {
 	}
 
 	@Override
-	boolean run() {
+	public boolean run() {
 		if (startTime == -1)
 			startTime = System.currentTimeMillis();
 

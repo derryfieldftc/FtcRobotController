@@ -14,10 +14,10 @@ public class HandsOfGod extends RobotPart {
 	public Servo leftHand, rightHand;
 	public boolean useGamepad = false, useTelemetry = false;
 	private Position position;
-	private double leftUp = .0;
-	private double leftDown = 1;
-	private double rightUp = 1;
-	private double rightDown = 0;
+	private double leftUp = 1;
+	private double leftDown = 0.45;
+	private double rightUp = 0;
+	private double rightDown = .55;
 
 	public HandsOfGod(OpMode opMode) {
 		super(opMode);

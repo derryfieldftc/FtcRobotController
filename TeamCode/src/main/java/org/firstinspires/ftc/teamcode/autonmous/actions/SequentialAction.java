@@ -12,7 +12,7 @@ public class SequentialAction extends Action {
 	}
 
 	@Override
-	boolean run() {
+	public boolean run() {
 		if (!actions.peek().run()) {
 			actions.pop();
 		}

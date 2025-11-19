@@ -20,6 +20,7 @@ import java.util.Scanner;
 
 //Oh boy
 public class Turret extends RobotPart {
+	//call it a radius of 6in
 	public DcMotor rotator; //25 to 95 ratio, 1 full rotation is 2k steps
 	DcMotor spinner0;
 	Gamepad gamepad;

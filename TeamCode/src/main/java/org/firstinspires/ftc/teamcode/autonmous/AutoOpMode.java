@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.autonmous;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.autonmous.actions.Action;
@@ -14,6 +15,9 @@ import java.util.Stack;
 public abstract class AutoOpMode extends OpMode {
 	public Follower drive;
 
+	/**
+	 * Mostly redundant with the path planner
+	 */
 	public enum Position {
 		InitalPose (new Pose(50, 12, 3 * Math.PI / 4)), //Make sure all of these are correct
 		RowOne (new Pose(24, 36, Math.PI / 2)),
