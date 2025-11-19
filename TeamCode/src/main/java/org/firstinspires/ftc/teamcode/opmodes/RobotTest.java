@@ -64,13 +64,13 @@ public class RobotTest extends OpMode {
 		}
 
 		if (shootHands)
-			shootHands = bot.shoot(Robot.BallPosition.Hands);
+			shootHands = bot.shoot(Robot.BallPosition.Hands).run();
 
 		if (shootLeft)
-			shootLeft = bot.shoot(Robot.BallPosition.Left);
+			shootLeft = bot.shoot(Robot.BallPosition.Left).run();
 
 		if (shootRight)
-			shootRight = bot.shoot(Robot.BallPosition.Right);
+			shootRight = bot.shoot(Robot.BallPosition.Right).run();
 
 		bot.intake.setHeight(gamepad1.right_trigger);
 

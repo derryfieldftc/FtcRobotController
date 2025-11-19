@@ -6,6 +6,8 @@ import static org.firstinspires.ftc.teamcode.robot.Field.Ball.None;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.teamcode.autonmous.actions.Action;
+
 /**
  * Class meant to easily hold all other robot classes, define positions and add methods as necessary
  * If you run into any null pointers check your enabled parts of the robot
@@ -125,96 +127,100 @@ public class Robot extends RobotPart {
 	 * @param position
 	 * @return
 	 */
-	public boolean shoot(BallPosition position) {
-		telemetry.addLine("rt: " + opMode.getRuntime() + " st " + startTime + " wt " + waitTime);
-		if (opMode.getRuntime() - startTime < waitTime) return true;
+	public Action shoot(BallPosition position) {
+		return new Action() {
+			@Override
+			public boolean run() {
+				telemetry.addLine("rt: " + opMode.getRuntime() + " st " + startTime + " wt " + waitTime);
+				if (opMode.getRuntime() - startTime < waitTime) return true;
 
-		// If we are not shooting the hand ball but it is in the way we shoot the hand ball instead
-		if (position != BallPosition.Hands) {
-			if (handBall != None) {
-				shoot(BallPosition.Hands);
-			}
-		}
+				// If we are not shooting the hand ball but it is in the way we shoot the hand ball instead
+				if (position != BallPosition.Hands) {
+					if (handBall != None) {
+						shoot(BallPosition.Hands);
+					}
+				}
 
-		// If there is no ball in that position there is no reason to shoot
+				// If there is no ball in that position there is no reason to shoot
 //		if (position.ball == None) {
 //			return false;
 //		}
 
-		if (position == BallPosition.Hands) {
-			if (handsOfGod.getPosition() != HandsOfGod.Position.Up && !justShot) {
-				handsOfGod.setPosition(HandsOfGod.Position.Up);
-				waitTime = handMoveSeconds;
-				startTime = opMode.getRuntime();
-				justShot = true;
-				return true;
-			}
-			if (justShot) {
-				handsOfGod.setPosition(HandsOfGod.Position.Down);
-				waitTime = handMoveSeconds;
-				startTime = opMode.getRuntime();
-				justShot = false;
-				handBall = None;
+				if (position == BallPosition.Hands) {
+					if (handsOfGod.getPosition() != HandsOfGod.Position.Up && !justShot) {
+						handsOfGod.setPosition(HandsOfGod.Position.Up);
+						waitTime = handMoveSeconds;
+						startTime = opMode.getRuntime();
+						justShot = true;
+						return true;
+					}
+					if (justShot) {
+						handsOfGod.setPosition(HandsOfGod.Position.Down);
+						waitTime = handMoveSeconds;
+						startTime = opMode.getRuntime();
+						justShot = false;
+						handBall = None;
+						return false;
+					}
+					return false;
+				}
+
+				if (position == BallPosition.Right) {
+					// is this palm down
+					if (palmsOfGod.getPalm(PalmsOfGod.Palm.Right) == PalmsOfGod.Position.Down) {
+						waitTime = palmMoveSeconds;
+						startTime = opMode.getRuntime();
+						palmsOfGod.setRightPalm(PalmsOfGod.Position.Up);
+						return true;
+					}
+
+					if (handsOfGod.getPosition() != HandsOfGod.Position.Up && !justShot) {
+						handsOfGod.setPosition(HandsOfGod.Position.Up);
+						waitTime = handMoveSeconds;
+						startTime = opMode.getRuntime();
+						justShot = true;
+						return true;
+					}
+					if (justShot) {
+						handsOfGod.setPosition(HandsOfGod.Position.Down);
+						waitTime = handMoveSeconds;
+						startTime = opMode.getRuntime();
+						justShot = false;
+						rightBall = None;
+						return false;
+					}
+					return false;
+				}
+
+				if (position == BallPosition.Left) {
+					// is this palm down
+					if (palmsOfGod.getPalm(PalmsOfGod.Palm.Left) == PalmsOfGod.Position.Down) {
+						waitTime = palmMoveSeconds;
+						startTime = opMode.getRuntime();
+						palmsOfGod.setLeftPalm(PalmsOfGod.Position.Up);
+						return true;
+					}
+
+					if (handsOfGod.getPosition() != HandsOfGod.Position.Up && !justShot) {
+						handsOfGod.setPosition(HandsOfGod.Position.Up);
+						waitTime = handMoveSeconds;
+						startTime = opMode.getRuntime();
+						justShot = true;
+						return true;
+					}
+					if (justShot) {
+						handsOfGod.setPosition(HandsOfGod.Position.Down);
+						waitTime = handMoveSeconds;
+						startTime = opMode.getRuntime();
+						justShot = false;
+						leftBall = None;
+						return false;
+					}
+					return false;
+				}
 				return false;
 			}
-			return false;
-		}
-
-		if (position == BallPosition.Right) {
-			// is this palm down
-			if (palmsOfGod.getPalm(PalmsOfGod.Palm.Right) == PalmsOfGod.Position.Down) {
-				waitTime = palmMoveSeconds;
-				startTime = opMode.getRuntime();
-				palmsOfGod.setRightPalm(PalmsOfGod.Position.Up);
-				return true;
-			}
-
-			if (handsOfGod.getPosition() != HandsOfGod.Position.Up && !justShot) {
-				handsOfGod.setPosition(HandsOfGod.Position.Up);
-				waitTime = handMoveSeconds;
-				startTime = opMode.getRuntime();
-				justShot = true;
-				return true;
-			}
-			if (justShot) {
-				handsOfGod.setPosition(HandsOfGod.Position.Down);
-				waitTime = handMoveSeconds;
-				startTime = opMode.getRuntime();
-				justShot = false;
-				rightBall = None;
-				return false;
-			}
-			return false;
-		}
-
-		if (position == BallPosition.Left) {
-			// is this palm down
-			if (palmsOfGod.getPalm(PalmsOfGod.Palm.Left) == PalmsOfGod.Position.Down) {
-				waitTime = palmMoveSeconds;
-				startTime = opMode.getRuntime();
-				palmsOfGod.setLeftPalm(PalmsOfGod.Position.Up);
-				return true;
-			}
-
-			if (handsOfGod.getPosition() != HandsOfGod.Position.Up && !justShot) {
-				handsOfGod.setPosition(HandsOfGod.Position.Up);
-				waitTime = handMoveSeconds;
-				startTime = opMode.getRuntime();
-				justShot = true;
-				return true;
-			}
-			if (justShot) {
-				handsOfGod.setPosition(HandsOfGod.Position.Down);
-				waitTime = handMoveSeconds;
-				startTime = opMode.getRuntime();
-				justShot = false;
-				leftBall = None;
-				return false;
-			}
-			return false;
-		}
-
-		return false;
+		};
 	}
 
 	/**

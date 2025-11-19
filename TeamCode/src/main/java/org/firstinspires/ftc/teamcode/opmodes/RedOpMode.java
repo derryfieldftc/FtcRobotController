@@ -82,7 +82,7 @@ public class RedOpMode extends OpMode {
 		}
 
 		if (shootHands)
-			shootHands = bot.shoot(Robot.BallPosition.Hands);
+			shootHands = bot.shoot(Robot.BallPosition.Hands).run();
 
 
 		bot.intake.setHeight(gamepad1.right_trigger);
