@@ -28,10 +28,9 @@ public class Turret extends RobotPart {
 	public double rotationTrim;
 	double rotatorPower = 0;
 	double rotation = 0;
-	double ticksPerRotation = 2000.0 / (2.0 * Math.PI);
+	double ticksPerRotation = 2000.0;
 	public boolean refreshEncoder = true;
 	boolean useGamepad;
-	public boolean trackTarget;
 	boolean targetSet = false;
 	PID rotationPID;
 	TurretPose2d pose;
@@ -55,11 +54,6 @@ public class Turret extends RobotPart {
 
 	public Turret useGamepad() {
 		useGamepad = true;
-		return this;
-	}
-
-	public Turret trackTarget() {
-		trackTarget = true;
 		return this;
 	}
 
@@ -96,14 +90,6 @@ public class Turret extends RobotPart {
 		return this;
 	}
 
-	public void setRotatorPower(double power) {
-		rotatorPower = power;
-	}
-
-	public double getRotation() {
-		return this.rotation;
-	}
-
 	public void loop() {
 		if (useGamepad) {
 			rotator.setPower(gamepad.right_stick_y / 5);
@@ -128,7 +114,7 @@ public class Turret extends RobotPart {
 	double turretHeight = 12, goalHeight = 38.75, a = -386.22; // in/s^2
 
 	/*
-	 * Thank you Mr. Cousineau, KVD, and the great tomeng70
+	 * Thank you Mr. Cousineau, KVD, and tomeng70
 	 *
 	 * A brief explanation:
 	 * The turret knows where it is at all times. It knows this because it knows where it isn't. By subtracting where it is from where it isn't, or where it isn't from where it is (whichever is greater), it obtains a difference, or deviation. The guidance subsystem uses deviations to generate corrective commands to drive the turret from a position where it is to a position where it isn't, and arriving at a position where it wasn't, it now is. Consequently, the position where it is, is now the position that it wasn't, and it follows that the position that it was, is now the position that it isn't.

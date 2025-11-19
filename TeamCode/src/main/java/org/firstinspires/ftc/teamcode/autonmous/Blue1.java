@@ -10,69 +10,34 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-
-import org.firstinspires.ftc.teamcode.autonmous.actions.Action;
-import org.firstinspires.ftc.teamcode.autonmous.actions.FollowPathAction;
-import org.firstinspires.ftc.teamcode.autonmous.actions.SequentialAction;
-import org.firstinspires.ftc.teamcode.autonmous.actions.SleepAction;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
-import org.firstinspires.ftc.teamcode.robot.Robot;
 
 @Autonomous()
 @Configurable // Panels
-public class Blue2 extends OpMode {
+public class Blue1 extends OpMode {
 
 	private TelemetryManager panelsTelemetry; // Panels Telemetry instance
 	public Follower follower; // Pedro Pathing follower instance
 	private int pathState; // Current autonomous path state (state machine)
 	private Paths paths; // Paths defined in the Paths class
-	boolean completed = true;
-	Action action;
-	Robot robot;
 
 	@Override
 	public void init() {
-		robot = new Robot(this);
-
 		panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
 		follower = Constants.createFollower(hardwareMap);
-		follower.setStartingPose(new Pose(48, 8, Math.toRadians(135)));
+		follower.setStartingPose(new Pose(72, 8, Math.toRadians(90)));
 
 		paths = new Paths(follower); // Build paths
 
 		panelsTelemetry.debug("Status", "Initialized");
 		panelsTelemetry.update(telemetry);
-
-		action = new SequentialAction(
-				robot.shootAll(),
-				robot.setIntakeSpeed(1),
-				new FollowPathAction(follower, paths.Pickup1),
-				robot.setIntakeSpeed(0),
-				new FollowPathAction(follower, paths.Lever2),
-				new SleepAction(1000),
-				new FollowPathAction(follower, paths.CloseShot3),
-				robot.shootAll(),
-				robot.setIntakeSpeed(1),
-				new FollowPathAction(follower, paths.PickUpBackRow4),
-				robot.setIntakeSpeed(0),
-				new FollowPathAction(follower, paths.CloseShot5),
-				robot.shootAll(),
-				robot.setIntakeSpeed(1),
-				new FollowPathAction(follower, paths.PickUpFrontRow6),
-				robot.setIntakeSpeed(0),
-				new FollowPathAction(follower, paths.FarShot7),
-				robot.shootAll(),
-				new FollowPathAction(follower, paths.Middle8)
-		);
 	}
 
 	@Override
 	public void loop() {
 		follower.update(); // Update Pedro Pathing
 		pathState = autonomousPathUpdate(); // Update autonomous state machine
-		if (!completed)
-			completed = action.run();
 
 		// Log values to Panels and Driver Station
 		panelsTelemetry.debug("Path State", pathState);
@@ -84,98 +49,110 @@ public class Blue2 extends OpMode {
 
 	public static class Paths {
 
-		public PathChain Pickup1;
-		public PathChain Lever2;
-		public PathChain CloseShot3;
-		public PathChain PickUpBackRow4;
-		public PathChain CloseShot5;
-		public PathChain PickUpFrontRow6;
-		public PathChain FarShot7;
-		public PathChain Middle8;
+		public PathChain CloseShot1;
+		public PathChain Pickup2;
+		public PathChain Lever4;
+		public PathChain CloseShot4;
+		public PathChain PickupBackRow5;
+		public PathChain CloseShot6;
+		public PathChain PickupFirstRow7;
+		public PathChain CloseShot8;
+		public PathChain Middle9;
 
 		public Paths(Follower follower) {
-			Pickup1 = follower
+			CloseShot1 = follower
 					.pathBuilder()
 					.addPath(
-							new BezierCurve(
-									new Pose(48.000, 12.000),
-									new Pose(74.025, 73.863),
-									new Pose(42.601, 58.799),
-									new Pose(23.973, 60.094)
-							)
+							new BezierLine(new Pose(23.487, 119.379), new Pose(51.996, 83.744))
 					)
-					.setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
+					.setConstantHeadingInterpolation(Math.toRadians(180))
 					.build();
 
-			Lever2 = follower
+			Pickup2 = follower
 					.pathBuilder()
 					.addPath(
 							new BezierCurve(
-									new Pose(23.973, 60.094),
-									new Pose(23.163, 68.355),
-									new Pose(16.036, 69.651)
+									new Pose(51.996, 83.744),
+									new Pose(50.214, 56.693),
+									new Pose(61.714, 58.637),
+									new Pose(22.515, 59.285)
 							)
 					)
 					.setConstantHeadingInterpolation(Math.toRadians(180))
 					.build();
 
-			CloseShot3 = follower
+			Lever4 = follower
 					.pathBuilder()
 					.addPath(
 							new BezierCurve(
-									new Pose(16.036, 69.651),
-									new Pose(49.404, 65.440),
-									new Pose(53.939, 77.264)
-							)
-					)
-					.setConstantHeadingInterpolation(Math.toRadians(180))
-					.setReversed()
-					.build();
-
-			PickUpBackRow4 = follower
-					.pathBuilder()
-					.addPath(
-							new BezierCurve(
-									new Pose(53.939, 77.264),
-									new Pose(51.186, 86.173),
-									new Pose(20.733, 84.067)
+									new Pose(22.515, 59.285),
+									new Pose(21.867, 67.384),
+									new Pose(16.360, 65.926)
 							)
 					)
 					.setConstantHeadingInterpolation(Math.toRadians(180))
 					.build();
 
-			CloseShot5 = follower
-					.pathBuilder()
-					.addPath(
-							new BezierLine(new Pose(20.733, 84.067), new Pose(53.939, 77.264))
-					)
-					.setConstantHeadingInterpolation(Math.toRadians(180))
-					.build();
-
-			PickUpFrontRow6 = follower
+			CloseShot4 = follower
 					.pathBuilder()
 					.addPath(
 							new BezierCurve(
-									new Pose(53.939, 77.264),
-									new Pose(66.898, 25.917),
-									new Pose(20.247, 35.474)
+									new Pose(16.360, 65.926),
+									new Pose(47.460, 60.256),
+									new Pose(51.996, 84.067)
 							)
 					)
 					.setConstantHeadingInterpolation(Math.toRadians(180))
 					.build();
 
-			FarShot7 = follower
+			PickupBackRow5 = follower
 					.pathBuilder()
 					.addPath(
-							new BezierLine(new Pose(20.247, 35.474), new Pose(58.475, 21.543))
+							new BezierLine(new Pose(51.996, 84.067), new Pose(18.628, 83.906))
 					)
 					.setConstantHeadingInterpolation(Math.toRadians(180))
 					.build();
 
-			Middle8 = follower
+			CloseShot6 = follower
 					.pathBuilder()
 					.addPath(
-							new BezierLine(new Pose(58.475, 21.543), new Pose(26.403, 66.736))
+							new BezierLine(new Pose(18.628, 83.906), new Pose(54.749, 84.067))
+					)
+					.setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(270))
+					.build();
+
+			PickupFirstRow7 = follower
+					.pathBuilder()
+					.addPath(
+							new BezierCurve(
+									new Pose(54.749, 84.067),
+									new Pose(63.982, 32.720),
+									new Pose(18.790, 35.312)
+							)
+					)
+					.setTangentHeadingInterpolation()
+					.build();
+
+			CloseShot8 = follower
+					.pathBuilder()
+					.addPath(
+							new BezierCurve(
+									new Pose(18.790, 35.312),
+									new Pose(59.123, 30.938),
+									new Pose(57.017, 83.906)
+							)
+					)
+					.setConstantHeadingInterpolation(Math.toRadians(180))
+					.build();
+
+			Middle9 = follower
+					.pathBuilder()
+					.addPath(
+							new BezierCurve(
+									new Pose(57.017, 83.906),
+									new Pose(57.179, 67.870),
+									new Pose(32.882, 69.003)
+							)
 					)
 					.setConstantHeadingInterpolation(Math.toRadians(180))
 					.build();

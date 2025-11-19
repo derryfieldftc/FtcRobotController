@@ -7,6 +7,7 @@ import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.autonmous.actions.Action;
+import org.firstinspires.ftc.teamcode.autonmous.actions.SequentialAction;
 
 /**
  * Class meant to easily hold all other robot classes, define positions and add methods as necessary
@@ -121,7 +122,15 @@ public class Robot extends RobotPart {
 	private boolean justShot = false;
 
 	/**
-	 * Shoot a ball at an arbritrary position, will shoot ball in hands position if it is blocking the path
+	 * Shoots all balls, with no respect to sorting.
+	 * @return
+	 */
+	public Action shootAll() {
+		return new SequentialAction(shoot(BallPosition.Hands), shoot(BallPosition.Left), shoot(BallPosition.Right));
+	}
+
+	/**
+	 * Shoot a ball at an arbitrary position, will shoot ball in hands position if it is blocking the path
 	 * returns true if it needs to run again
 	 *
 	 * @param position
@@ -218,6 +227,16 @@ public class Robot extends RobotPart {
 					}
 					return false;
 				}
+				return false;
+			}
+		};
+	}
+
+	public Action setIntakeSpeed(double speed) {
+		return new Action() {
+			@Override
+			public boolean run() {
+				intake.setSpeed(speed);
 				return false;
 			}
 		};
