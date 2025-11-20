@@ -19,6 +19,7 @@ public class FollowPathAction extends Action {
 	@Override
 	public boolean run() {
 		follower.followPath(paths.get(currentPath));
+		follower.update();
 		if (!follower.isBusy()) {
 			currentPath += 1;
 		}
