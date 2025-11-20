@@ -23,6 +23,6 @@ public class FollowPathAction extends Action {
 			currentPath += 1;
 		}
 
-		return currentPath >= paths.size();
+		return currentPath <= paths.size();
 	}
 }

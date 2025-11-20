@@ -45,7 +45,7 @@ public abstract class Action {
 	 * @param otherAction
 	 * @return
 	 */
-	public final ParallelAction whileAlso(Action otherAction) {
+	public final ParallelAction andAlso(Action otherAction) {
 		return new ParallelAction(this, otherAction);
 	}
 

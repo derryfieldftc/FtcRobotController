@@ -10,6 +10,7 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.autonmous.actions.Action;
 import org.firstinspires.ftc.teamcode.autonmous.actions.FollowPathAction;
@@ -17,6 +18,7 @@ import org.firstinspires.ftc.teamcode.autonmous.actions.SequentialAction;
 import org.firstinspires.ftc.teamcode.autonmous.actions.SleepAction;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.robot.Turret;
 
 @Autonomous()
 @Configurable // Panels
@@ -32,12 +34,13 @@ public class Blue2 extends OpMode {
 
 	@Override
 	public void init() {
-		robot = new Robot(this);
+		robot = new Robot(this).enableTurret().enableIntake().enableHandsOfGod();
+		robot.init();
 
 		panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
 		follower = Constants.createFollower(hardwareMap);
-		follower.setStartingPose(new Pose(48, 8, Math.toRadians(135)));
+		follower.setStartingPose(new Pose(48, 12, Math.toRadians(135)));
 
 		paths = new Paths(follower); // Build paths
 
@@ -45,7 +48,9 @@ public class Blue2 extends OpMode {
 		panelsTelemetry.update(telemetry);
 
 		action = new SequentialAction(
+				robot.setTurretSpeed(Turret.SpeedByDistance.Far.power),
 				robot.shootAll(),
+				robot.setTurretSpeed(Turret.SpeedByDistance.Close.power),
 				robot.setIntakeSpeed(1),
 				new FollowPathAction(follower, paths.Pickup1),
 				robot.setIntakeSpeed(0),
@@ -71,8 +76,10 @@ public class Blue2 extends OpMode {
 	public void loop() {
 		follower.update(); // Update Pedro Pathing
 		pathState = autonomousPathUpdate(); // Update autonomous state machine
-		if (!completed)
+		if (completed)
 			completed = action.run();
+
+		panelsTelemetry.debug("action status", completed);
 
 		// Log values to Panels and Driver Station
 		panelsTelemetry.debug("Path State", pathState);

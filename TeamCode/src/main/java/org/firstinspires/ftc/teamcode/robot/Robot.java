@@ -35,6 +35,21 @@ public class Robot extends RobotPart {
 	public static Ball rightBall = balls[1];
 	public static Ball leftBall = balls[2];
 
+	/**
+	 * This action sets a speed for the turret
+	 * @param speed
+	 * @return
+	 */
+	public Action setTurretSpeed(double speed) {
+		return new Action() {
+			@Override
+			public boolean run() {
+				turret.setSpeed(speed);
+				return false;
+			}
+		};
+	}
+
 	public enum BallPosition {
 		Hands(handBall),
 		Right(rightBall),

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
@@ -7,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.GamepadManager;
+import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.plugin.plugins.MecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.HandsOfGod;
 import org.firstinspires.ftc.teamcode.robot.LimeLight;
@@ -22,7 +24,7 @@ import static java.lang.Math.abs;
 @TeleOp(name = "BlueOpMode")
 public class BlueOpMode extends OpMode {
 	Robot bot;
-	MecanumDrive mecanumDrive;
+	Follower follower;
 	GamepadManager mgamepad;
 	double speedTrim = 0;
 	boolean handsUp = false;
@@ -38,6 +40,7 @@ public class BlueOpMode extends OpMode {
 
 	@Override
 	public void init() {
+		follower = Constants.createFollower(hardwareMap);
 		bot = new Robot(this).enableIntake().enableHandsOfGod().enablePalmsOfGod();
 		bot.init();
 		ll = new LimeLight(this);
@@ -54,17 +57,13 @@ public class BlueOpMode extends OpMode {
 		bot.turret = new Turret(this, lastPose);
 		bot.turret.refreshEncoder = false;
 		bot.turret.init();
-		mecanumDrive = new MecanumDrive(this);
-		mecanumDrive.init();
-//		bot.turret.useGamepad();
-
 
 		mgamepad = new GamepadManager(gamepad2);
 	}
 
 	@Override
 	public void loop() {
-		mecanumDrive.loop();
+		follower.setTeleOpDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.b);
 		bot.loop();
 		telemetry.clearAll(); // Disables telemetry from the turret
 
@@ -111,7 +110,8 @@ public class BlueOpMode extends OpMode {
 						tagMatch = true;
 					}
 				}
-				;
+			} else {
+				bot.turret.rotator.setPower(0);
 			}
 
 			if (!tagMatch || gamepad2.start)
