@@ -24,7 +24,7 @@ import static java.lang.Math.abs;
 @TeleOp(name = "BlueOpMode")
 public class BlueOpMode extends OpMode {
 	Robot bot;
-	Follower follower;
+	MecanumDrive mecanumDrive;
 	GamepadManager mgamepad;
 	double speedTrim = 0;
 	boolean handsUp = false;
@@ -40,8 +40,9 @@ public class BlueOpMode extends OpMode {
 
 	@Override
 	public void init() {
-		follower = Constants.createFollower(hardwareMap);
 		bot = new Robot(this).enableIntake().enableHandsOfGod().enablePalmsOfGod();
+		mecanumDrive = new MecanumDrive(this);
+		mecanumDrive.init();
 		bot.init();
 		ll = new LimeLight(this);
 		ll.init();
@@ -63,7 +64,7 @@ public class BlueOpMode extends OpMode {
 
 	@Override
 	public void loop() {
-		follower.setTeleOpDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, gamepad1.b);
+		mecanumDrive.loop();
 		bot.loop();
 		telemetry.clearAll(); // Disables telemetry from the turret
 
@@ -113,15 +114,15 @@ public class BlueOpMode extends OpMode {
 			} else {
 				bot.turret.rotator.setPower(0);
 			}
+		}
 
-			if (!tagMatch || gamepad2.start)
-				bot.turret.rotator.setPower(gamepad2.left_stick_x);
+		if (!tagMatch || gamepad2.start)
+			bot.turret.rotator.setPower(gamepad2.left_stick_x);
 
-			if (tagMatch) {
-				gamepad2.setLedColor(0, 255, 0, 300);
-			} else {
-				gamepad2.setLedColor(255, 0, 0, 300);
-			}
+		if (tagMatch) {
+			gamepad2.setLedColor(0, 255, 0, 300);
+		} else {
+			gamepad2.setLedColor(255, 0, 0, 300);
 		}
 
 

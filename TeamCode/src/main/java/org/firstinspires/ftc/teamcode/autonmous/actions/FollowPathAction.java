@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.autonmous.actions;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.paths.PathChain;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,7 +10,7 @@ import java.util.Arrays;
 public class FollowPathAction extends Action {
 	ArrayList<PathChain> paths;
 	Follower follower;
-	int currentPath = 0;
+	int currentPath = -1;
 
 	public FollowPathAction(Follower follower, PathChain... paths) {
 		this.follower = follower;
@@ -18,10 +19,13 @@ public class FollowPathAction extends Action {
 
 	@Override
 	public boolean run() {
-		follower.followPath(paths.get(currentPath));
 		follower.update();
 		if (!follower.isBusy()) {
 			currentPath += 1;
+			if (currentPath == paths.size())
+				return false;
+			follower.followPath(paths.get(currentPath), true);
+			RobotLog.d("AHM PATH increased");
 		}
 
 		return currentPath <= paths.size();

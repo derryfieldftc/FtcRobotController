@@ -1,17 +1,19 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.robot.RobotPart;
 
-public class PalmsOfGodTest extends OpMode {
+@TeleOp
+public class HandsOfGodPositionTest extends OpMode {
 	Servo left, right;
 
 	@Override
 	public void init() {
-		left = hardwareMap.servo.get(RobotPart.Part.LeftPalm.name);
-		right = hardwareMap.servo.get(RobotPart.Part.RightPalm.name);
+		left = hardwareMap.servo.get(RobotPart.Part.LeftHand.name);
+		right = hardwareMap.servo.get(RobotPart.Part.RightHand.name);
 
 	}
 

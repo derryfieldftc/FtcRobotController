@@ -13,12 +13,10 @@ public class SequentialAction extends Action {
 
 	public SequentialAction(Action... actions) {
 		this.actions = new ArrayList<>(Arrays.asList(actions));
-		RobotLog.d("AHM", "SLGjfdljg", Arrays.toString(actions));
 	}
 
 	@Override
 	public boolean run() {
-		RobotLog.d("AHM %d", index);
 		if (actions.isEmpty()) {
 			return false;
 		}

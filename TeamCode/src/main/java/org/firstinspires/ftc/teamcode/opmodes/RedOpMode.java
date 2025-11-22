@@ -109,17 +109,16 @@ public class RedOpMode extends OpMode {
 						tagMatch = true;
 					}
 				}
-				;
 			}
+		}
 
-			if (!tagMatch || gamepad2.start)
-				bot.turret.rotator.setPower(gamepad2.right_stick_x);
+		if (!tagMatch || gamepad2.start)
+			bot.turret.rotator.setPower(gamepad2.right_stick_x);
 
-			if (tagMatch) {
-				gamepad2.setLedColor(0, 255, 0, 300);
-			} else {
-				gamepad2.setLedColor(255, 0, 0, 300);
-			}
+		if (tagMatch) {
+			gamepad2.setLedColor(0, 255, 0, 300);
+		} else {
+			gamepad2.setLedColor(255, 0, 0, 300);
 		}
 
 

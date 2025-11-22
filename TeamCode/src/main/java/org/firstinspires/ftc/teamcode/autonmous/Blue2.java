@@ -40,7 +40,7 @@ public class Blue2 extends OpMode {
 		panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
 		follower = Constants.createFollower(hardwareMap);
-		follower.setStartingPose(new Pose(48, 12, Math.toRadians(135)));
+		follower.setStartingPose(new Pose(46, 16, Math.toRadians(135)));
 
 		paths = new Paths(follower); // Build paths
 
@@ -49,6 +49,7 @@ public class Blue2 extends OpMode {
 
 		action = new SequentialAction(
 				robot.setTurretSpeed(Turret.SpeedByDistance.Far.power),
+				new SleepAction(500),
 				robot.shootAll(),
 				robot.setTurretSpeed(Turret.SpeedByDistance.Close.power),
 				robot.setIntakeSpeed(1),
@@ -120,7 +121,7 @@ public class Blue2 extends OpMode {
 							new BezierCurve(
 									new Pose(23.973, 60.094),
 									new Pose(23.163, 68.355),
-									new Pose(16.036, 69.651)
+									new Pose(14.036, 69.651)
 							)
 					)
 					.setConstantHeadingInterpolation(Math.toRadians(180))
@@ -136,7 +137,6 @@ public class Blue2 extends OpMode {
 							)
 					)
 					.setConstantHeadingInterpolation(Math.toRadians(180))
-					.setReversed()
 					.build();
 
 			PickUpBackRow4 = follower
@@ -174,7 +174,7 @@ public class Blue2 extends OpMode {
 			FarShot7 = follower
 					.pathBuilder()
 					.addPath(
-							new BezierLine(new Pose(20.247, 35.474), new Pose(58.475, 21.543))
+							new BezierLine(new Pose(18.247, 35.474), new Pose(54.475, 21.543))
 					)
 					.setConstantHeadingInterpolation(Math.toRadians(180))
 					.build();

@@ -141,7 +141,25 @@ public class Robot extends RobotPart {
 	 * @return
 	 */
 	public Action shootAll() {
-		return new SequentialAction(shoot(BallPosition.Hands), shoot(BallPosition.Left), shoot(BallPosition.Right));
+		return new SequentialAction(
+				shoot(BallPosition.Hands),
+				new Action() {
+					@Override
+					public boolean run() {
+						palmsOfGod.setLeftPalm(PalmsOfGod.Position.Up);
+						shoot(BallPosition.Hands);
+						return false;
+					}
+				},
+				new Action() {
+					@Override
+					public boolean run() {
+						palmsOfGod.setRightPalm(PalmsOfGod.Position.Up);
+						shoot(BallPosition.Hands);
+						return false;
+					}
+				}
+		);
 	}
 
 	/**
