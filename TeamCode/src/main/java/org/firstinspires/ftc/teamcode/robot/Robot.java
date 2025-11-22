@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.autonmous.actions.Action;
 import org.firstinspires.ftc.teamcode.autonmous.actions.SequentialAction;
+import org.firstinspires.ftc.teamcode.autonmous.actions.SleepAction;
 
 /**
  * Class meant to easily hold all other robot classes, define positions and add methods as necessary
@@ -147,18 +148,19 @@ public class Robot extends RobotPart {
 					@Override
 					public boolean run() {
 						palmsOfGod.setLeftPalm(PalmsOfGod.Position.Up);
-						shoot(BallPosition.Hands);
 						return false;
 					}
 				},
+				shoot(BallPosition.Hands),
 				new Action() {
 					@Override
 					public boolean run() {
 						palmsOfGod.setRightPalm(PalmsOfGod.Position.Up);
-						shoot(BallPosition.Hands);
 						return false;
 					}
-				}
+				},
+				new SleepAction(500),
+				shoot(BallPosition.Hands)
 		);
 	}
 

@@ -10,7 +10,6 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.autonmous.actions.Action;
@@ -26,14 +25,14 @@ import org.firstinspires.ftc.teamcode.robot.Turret;
 
 @Autonomous()
 @Configurable // Panels
-public class Blue2 extends OpMode {
+public class Red2 extends OpMode {
 
 	private TelemetryManager panelsTelemetry; // Panels Telemetry instance
 	public Follower follower; // Pedro Pathing follower instance
 	private int pathState; // Current autonomous path state (state machine)
 	private Paths paths; // Paths defined in the Paths class
 	boolean completed = true;
-	Tag targetTag = Tag.BLUE;
+	Tag targetTag = Tag.RED;
 	LimeLight ll;
 	Action action;
 	Robot robot;
@@ -49,7 +48,7 @@ public class Blue2 extends OpMode {
 		panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
 		follower = Constants.createFollower(hardwareMap);
-		follower.setStartingPose(new Pose(46, 16, Math.toRadians(135)));
+		follower.setStartingPose(new Pose(46, 16, Math.toRadians(135)).mirror());
 
 		paths = new Paths(follower); // Build paths
 
@@ -124,85 +123,85 @@ public class Blue2 extends OpMode {
 					.pathBuilder()
 					.addPath(
 							new BezierCurve(
-									new Pose(48.000, 12.000),
-									new Pose(74.025, 73.863),
-									new Pose(42.601, 58.799),
-									new Pose(23.973, 60.094)
+									new Pose(48.000, 12.000).mirror(),
+									new Pose(74.025, 73.863).mirror(),
+									new Pose(42.601, 58.799).mirror(),
+									new Pose(23.973, 60.094).mirror()
 							)
 					)
-					.setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(180))
+					.setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
 					.build();
 
 			Lever2 = follower
 					.pathBuilder()
 					.addPath(
 							new BezierCurve(
-									new Pose(23.973, 60.094),
-									new Pose(23.163, 68.355),
-									new Pose(14.036, 69.651)
+									new Pose(23.973, 60.094).mirror(),
+									new Pose(23.163, 68.355).mirror(),
+									new Pose(14.036, 69.651).mirror()
 							)
 					)
-					.setConstantHeadingInterpolation(Math.toRadians(180))
+					.setConstantHeadingInterpolation(Math.toRadians(0))
 					.build();
 
 			CloseShot3 = follower
 					.pathBuilder()
 					.addPath(
 							new BezierCurve(
-									new Pose(16.036, 69.651),
-									new Pose(49.404, 65.440),
-									new Pose(53.939, 77.264)
+									new Pose(16.036, 69.651).mirror(),
+									new Pose(49.404, 65.440).mirror(),
+									new Pose(53.939, 77.264).mirror()
 							)
 					)
-					.setConstantHeadingInterpolation(Math.toRadians(180))
+					.setConstantHeadingInterpolation(Math.toRadians(0))
 					.build();
 
 			PickUpBackRow4 = follower
 					.pathBuilder()
 					.addPath(
 							new BezierCurve(
-									new Pose(53.939, 77.264),
-									new Pose(51.186, 86.173),
-									new Pose(20.733, 84.067)
+									new Pose(53.939, 77.264).mirror(),
+									new Pose(51.186, 86.173).mirror(),
+									new Pose(20.733, 84.067).mirror()
 							)
 					)
-					.setConstantHeadingInterpolation(Math.toRadians(180))
+					.setConstantHeadingInterpolation(Math.toRadians(0))
 					.build();
 
 			CloseShot5 = follower
 					.pathBuilder()
 					.addPath(
-							new BezierLine(new Pose(20.733, 84.067), new Pose(53.939, 77.264))
+							new BezierLine(new Pose(20.733, 84.067).mirror(), new Pose(53.939, 77.264).mirror())
 					)
-					.setConstantHeadingInterpolation(Math.toRadians(180))
+					.setConstantHeadingInterpolation(Math.toRadians(0))
 					.build();
 
 			PickUpFrontRow6 = follower
 					.pathBuilder()
 					.addPath(
 							new BezierCurve(
-									new Pose(53.939, 77.264),
-									new Pose(66.898, 25.917),
-									new Pose(20.247, 35.474)
+									new Pose(53.939, 77.264).mirror(),
+									new Pose(66.898, 25.917).mirror(),
+									new Pose(20.247, 35.474).mirror()
 							)
 					)
-					.setConstantHeadingInterpolation(Math.toRadians(180))
+					.setConstantHeadingInterpolation(Math.toRadians(0))
 					.build();
 
 			FarShot7 = follower
 					.pathBuilder()
 					.addPath(
-							new BezierLine(new Pose(18.247, 35.474), new Pose(54.475, 21.543))
+							new BezierLine(new Pose(18.247, 35.474).mirror(), new Pose(54.475, 21.543).mirror())
 					)
-					.setConstantHeadingInterpolation(Math.toRadians(180))
+					.setConstantHeadingInterpolation(Math.toRadians(0))
 					.build();
 
 			Middle8 = follower
 					.pathBuilder()
 					.addPath(
-							new BezierLine(new Pose(58.475, 21.543), new Pose(26.403, 66.736))
+							new BezierLine(new Pose(58.475, 21.543).mirror(), new Pose(26.403, 66.736).mirror())
 					)
-					.setConstantHeadingInterpolation(Math.toRadians(180))
+					.setConstantHeadingInterpolation(Math.toRadians(0))
 					.build();
 		}
 	}

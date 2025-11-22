@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.autonmous.actions;
 
+import com.qualcomm.robotcore.util.RobotLog;
+
 import org.firstinspires.ftc.teamcode.autonmous.AutoOpMode;
 
 import java.util.Arrays;
@@ -18,7 +20,10 @@ public class ParallelAction extends Action {
 
 	@Override
 	public boolean run() {
-		actions = actions.stream().filter(Action::run).collect(Collectors.toList());
+		for (Action action : actions) {
+			action.run();
+		}
+		RobotLog.d("AHM parrallal");
 		return !actions.isEmpty();
 	}
 }

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot;
 
 import static androidx.core.math.MathUtils.clamp;
+import static com.qualcomm.robotcore.util.RobotLog.d;
 import static java.lang.Math.atan;
 import static java.lang.Math.pow;
 import static java.lang.Math.sqrt;
@@ -9,10 +10,16 @@ import android.annotation.SuppressLint;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.math.Vector;
 
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.TouchSensor;
+import com.qualcomm.robotcore.util.RobotLog;
+
+import org.firstinspires.ftc.teamcode.autonmous.actions.Action;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -31,6 +38,7 @@ public class Turret extends RobotPart {
 	double ticksPerRotation = 2000.0;
 	public boolean refreshEncoder = true;
 	boolean useGamepad;
+	public boolean tracking = false;
 	boolean targetSet = false;
 	PID rotationPID;
 	TurretPose2d pose;
@@ -135,7 +143,7 @@ public class Turret extends RobotPart {
 	}
 
 	@SuppressLint("DefaultLocale")
-public void savePosition() {
+	public void savePosition() {
 		File file = new File("/sdcard/FIRST/lastPose");
 
 		try {
@@ -150,6 +158,34 @@ public void savePosition() {
 		} catch (Exception ignored) {
 			throw new RuntimeException(ignored);
 		} // beautiful exception handleing
+	}
+
+	public Action trackTag(LimeLight ll, Tag target) {
+		return new Action() {
+			@Override
+			public boolean run() {
+				RobotLog.d("AHM ALJKHSGFSLKJDJLGKSJLKJGLK");
+				if (ll.getResults() != null && ll.getResults().isValid() && !ll.getResults()
+						.getFiducialResults().isEmpty()) {
+
+					d("AHM got ll results, size: " + ll.getResults().getFiducialResults().size());
+					LLResult llr = ll.getResults();
+
+					for (LLResultTypes.FiducialResult result : llr.getFiducialResults()) {
+						d("AHM tag number " + result.getFiducialId());
+						if (result.getFiducialId() == target.id) {
+							d("AHM matches target tag");
+							telemetry.addData("tx", result.getTargetXDegrees());
+							double tx = -result.getTargetXDegrees();
+							d("AHM tx " + tx);
+							rotator.setPower(tx / 50);
+							d("AHM power " + tx / 50);
+						}
+					}
+				}
+				return tracking;
+			}
+		};
 	}
 
 	public static TurretPose2d getSavedPosition() throws Exception {
