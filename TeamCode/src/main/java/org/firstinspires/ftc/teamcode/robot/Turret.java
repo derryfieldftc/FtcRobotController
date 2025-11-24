@@ -48,7 +48,7 @@ public class Turret extends RobotPart {
 		Max (1),
 		None (0),
 		Close (.44),
-		Far (.56);
+		Far (.52);
 		public final double power;
 
 		SpeedByDistance(double power) {this.power = power;};

@@ -51,6 +51,17 @@ public class Robot extends RobotPart {
 		};
 	}
 
+	public Action resetPalms() {
+		return new Action() {
+			@Override
+			public boolean run() {
+				palmsOfGod.setRightPalm(PalmsOfGod.Position.Down);
+				palmsOfGod.setLeftPalm(PalmsOfGod.Position.Down);
+				return false;
+			}
+		};
+	}
+
 	public enum BallPosition {
 		Hands(handBall),
 		Right(rightBall),
@@ -143,6 +154,7 @@ public class Robot extends RobotPart {
 	 */
 	public Action shootAll() {
 		return new SequentialAction(
+				new SleepAction(100),
 				shoot(BallPosition.Hands),
 				new Action() {
 					@Override
@@ -151,7 +163,9 @@ public class Robot extends RobotPart {
 						return false;
 					}
 				},
+				new SleepAction(700),
 				shoot(BallPosition.Hands),
+				new SleepAction(100),
 				new Action() {
 					@Override
 					public boolean run() {
@@ -159,7 +173,7 @@ public class Robot extends RobotPart {
 						return false;
 					}
 				},
-				new SleepAction(500),
+				new SleepAction(700),
 				shoot(BallPosition.Hands)
 		);
 	}
