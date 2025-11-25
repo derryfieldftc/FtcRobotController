@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
@@ -8,7 +7,6 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.GamepadManager;
-import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.plugin.plugins.MecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.HandsOfGod;
 import org.firstinspires.ftc.teamcode.robot.LimeLight;
@@ -16,7 +14,7 @@ import org.firstinspires.ftc.teamcode.robot.PalmsOfGod;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.Tag;
 import org.firstinspires.ftc.teamcode.robot.Turret;
-import org.firstinspires.ftc.teamcode.robot.TurretPose2d;
+import org.firstinspires.ftc.teamcode.robot.TurretPose;
 
 import static com.qualcomm.robotcore.util.RobotLog.*;
 import static java.lang.Math.abs;
@@ -36,7 +34,7 @@ public class BlueOpMode extends OpMode {
 	Turret.SpeedByDistance distance = Turret.SpeedByDistance.Far;
 	LimeLight ll;
 	Tag targetTag = Tag.BLUE;
-	TurretPose2d lastPose;
+	TurretPose lastPose;
 
 	@Override
 	public void init() {
@@ -52,7 +50,7 @@ public class BlueOpMode extends OpMode {
 		try {
 			lastPose = Turret.getSavedPosition();
 		} catch (Exception e) {
-			lastPose = new TurretPose2d(new Pose(0, 0, 0), 0);
+			lastPose = new TurretPose(new Pose(0, 0, 0), 0);
 		}
 
 		bot.turret = new Turret(this, lastPose);

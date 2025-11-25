@@ -2,17 +2,17 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import static androidx.core.math.MathUtils.clamp;
 import static com.qualcomm.robotcore.util.RobotLog.d;
-import static java.lang.Math.atan;
-import static java.lang.Math.pow;
-import static java.lang.Math.sqrt;
+
+import static java.lang.Math.PI;
+import static java.lang.Math.atan2;
 
 import android.annotation.SuppressLint;
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.localization.Localizer;
 import com.pedropathing.math.Vector;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -33,16 +33,20 @@ public class Turret extends RobotPart {
 	Gamepad gamepad;
 	TouchSensor limit;
 	public double rotationTrim;
-	double rotatorPower = 0;
-	double rotation = 0;
 	double ticksPerRotation = 2000.0;
 	public boolean refreshEncoder = true;
-	boolean useGamepad;
-	public boolean tracking = false;
-	boolean targetSet = false;
+	TrackingState tracking;
 	PID rotationPID;
-	TurretPose2d pose;
-	Vector target = new Vector(0, 0);
+	TurretPose pose;
+	double rotation;
+	private double targetAngle;
+
+	// oooh wow look a state machine-ish
+	private enum TrackingState {
+		STOPPING,
+		TRACKING,
+		NOT_TRACKING
+	}
 
 	public enum SpeedByDistance {
 		Max (1),
@@ -54,17 +58,11 @@ public class Turret extends RobotPart {
 		SpeedByDistance(double power) {this.power = power;};
 	}
 
-	public Turret(OpMode opMode, TurretPose2d turretPose2d) {
+	public Turret(OpMode opMode, TurretPose turretPose2d) {
 		super(opMode);
 		gamepad = opMode.gamepad2;
 		pose = turretPose2d;
 	}
-
-	public Turret useGamepad() {
-		useGamepad = true;
-		return this;
-	}
-
 	public Turret setAngleTrim(double rotationTrim) {
 		this.rotationTrim = rotationTrim;
 		return this;
@@ -72,42 +70,18 @@ public class Turret extends RobotPart {
 
 	public void init() {
 		rotator = hardwareMap.dcMotor.get(Part.TurretRotator.name);
-		if (refreshEncoder) {
-			rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-			rotator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-		}
 		limit = hardwareMap.touchSensor.get("turretLimit");
 		rotator.setPower(0);
-		if (refreshEncoder) {
-			rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-			rotator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-		}
+		rotator.setTargetPosition(0);
+		rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+		rotator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 		spinner0 = hardwareMap.dcMotor.get(Part.LaunchMotor.name);
 		spinner0.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 		spinner0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		spinner0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-
 		// If it aint broke dont fix it
 		rotationPID = new PID(.1, 0, 0, .005);
-	}
-
-	public Turret setTarget(Vector target) {
-		this.target = target;
-		targetSet = true;
-		return this;
-	}
-
-	public void loop() {
-		if (useGamepad) {
-			rotator.setPower(gamepad.right_stick_y / 5);
-			if (gamepad.y) {
-				rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-				rotator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-			}
-			spinner0.setPower(gamepad.left_trigger * ((gamepad.x) ? -1 : 1));
-		}
-		//TODO! tracking... again
 	}
 
 	public Turret setSpeed(double speed) {
@@ -119,27 +93,30 @@ public class Turret extends RobotPart {
 	/**
 	 * This is action should never finish until the stopAutoTracking Action is called
 	 */
-	double turretHeight = 12, goalHeight = 38.75, a = -386.22; // in/s^2
+	public Action trackTarget(Vector target, Localizer localizer) {
+		return new Action() {
+			@Override
+			public boolean run() {
+				if (tracking == TrackingState.NOT_TRACKING)
+					tracking = TrackingState.TRACKING;
+				updatePose(localizer.getPose());
 
-	/*
-	 * Thank you Mr. Cousineau, KVD, and tomeng70
-	 *
-	 * A brief explanation:
-	 * The turret knows where it is at all times. It knows this because it knows where it isn't. By subtracting where it is from where it isn't, or where it isn't from where it is (whichever is greater), it obtains a difference, or deviation. The guidance subsystem uses deviations to generate corrective commands to drive the turret from a position where it is to a position where it isn't, and arriving at a position where it wasn't, it now is. Consequently, the position where it is, is now the position that it wasn't, and it follows that the position that it was, is now the position that it isn't.
-	 * In the event that the position that it is in is not the position that it wasn't, the system has acquired a variation, the variation being the difference between where the turret is, and where it wasn't. If variation is considered to be a significant factor, it too may be corrected by the GEA. However, the turret must also know where it was.
-	 * The turret guidance computer scenario works as follows. Because a variation has modified some of the information the turret has obtained, it is not sure just where it is. However, it is sure where it isn't, within reason, and it knows where it was. It now subtracts where it should be from where it wasn't, or vice-versa, and by differentiating this from the algebraic sum of where it shouldn't be, and where it was, it is able to obtain the deviation and its variation, which is called error.
-	 */
-	public void updateTurretAngles() {
-		double viy, vix, dx, dy, t, vi, angle;
-		dy = goalHeight - turretHeight;
+				double angleToTarget = atan2(pose.pose.getY() - target.getYComponent(), pose.pose.getX() - target.getXComponent());
+				RobotLog.d("AHM TRACKING target angle %f", angleToTarget);
+				targetAngle = angleToTarget + rotationTrim;
 
-		viy = sqrt(-2 * a * dy); // From CAE's
-		t = -viy / a; // vfy is 0
-		dx = sqrt(pow(pose.pose.getX() - target.getXComponent(), 2) + pow(pose.pose.getY() - target.getYComponent(), 2)); // x distance not taking movement into account
-		vix = dx / t;
+				return tracking == TrackingState.TRACKING;
+			}
+		};
+	}
 
-		vi = sqrt(pow(vix, 2) + pow(viy, 2));
-		angle = atan(viy / vix);
+	public void updateRotation(double targetRotation) {
+		rotator.setTargetPosition((int) (targetRotation * ticksPerRotation));
+	}
+
+	private void updatePose(Pose pose) {
+		rotation = (rotation + (rotator.getCurrentPosition() / ticksPerRotation)) % (2 * PI);
+		this.pose = new TurretPose(pose, rotation);
 	}
 
 	@SuppressLint("DefaultLocale")
@@ -164,6 +141,8 @@ public class Turret extends RobotPart {
 		return new Action() {
 			@Override
 			public boolean run() {
+				if (tracking == TrackingState.NOT_TRACKING)
+					tracking = TrackingState.TRACKING;
 				RobotLog.d("AHM ALJKHSGFSLKJDJLGKSJLKJGLK");
 				if (ll.getResults() != null && ll.getResults().isValid() && !ll.getResults()
 						.getFiducialResults().isEmpty()) {
@@ -183,12 +162,12 @@ public class Turret extends RobotPart {
 						}
 					}
 				}
-				return tracking;
+				return tracking == TrackingState.TRACKING;
 			}
 		};
 	}
 
-	public static TurretPose2d getSavedPosition() throws Exception {
+	public static TurretPose getSavedPosition() throws Exception {
 		try {
 			File file = new File("/sdcard/FIRST/lastPose");
 			Scanner scanner = new Scanner(file);

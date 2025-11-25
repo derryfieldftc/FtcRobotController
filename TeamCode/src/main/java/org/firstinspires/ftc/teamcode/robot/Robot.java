@@ -3,7 +3,9 @@ package org.firstinspires.ftc.teamcode.robot;
 import static org.firstinspires.ftc.teamcode.robot.Field.Ball;
 import static org.firstinspires.ftc.teamcode.robot.Field.Ball.None;
 
+import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.localization.Localizer;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.autonmous.actions.Action;
@@ -23,7 +25,6 @@ public class Robot extends RobotPart {
 	public boolean handsOfGodEnabled;
 	public PalmsOfGod palmsOfGod;
 	public boolean palmsOfGodEnabled;
-	public TurretPose2d finalPose;
 
 
 	/**
@@ -85,7 +86,7 @@ public class Robot extends RobotPart {
 	public Robot(OpMode opMode) {
 		super(opMode);
 		intake = new Intake(this.opMode);
-		turret = new Turret(this.opMode, new TurretPose2d(new Pose(0, 0, 0), 0));
+		turret = new Turret(this.opMode, new TurretPose(new Pose(0, 0, 0), 0));
 		handsOfGod = new HandsOfGod(this.opMode);
 		palmsOfGod = new PalmsOfGod(this.opMode);
 		voltageSensor = hardwareMap.voltageSensor.iterator()
@@ -133,8 +134,6 @@ public class Robot extends RobotPart {
 		currentTime = opMode.getRuntime();
 		if (intakeEnabled)
 			intake.loop();
-		if (turretEnabled)
-			turret.loop();
 		if (handsOfGodEnabled)
 			handsOfGod.loop();
 		telemetry.update();

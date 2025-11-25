@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.robot.PalmsOfGod;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.Tag;
 import org.firstinspires.ftc.teamcode.robot.Turret;
-import org.firstinspires.ftc.teamcode.robot.TurretPose2d;
+import org.firstinspires.ftc.teamcode.robot.TurretPose;
 import com.pedropathing.geometry.Pose;
 
 import static com.qualcomm.robotcore.util.RobotLog.*;
@@ -34,7 +34,7 @@ public class RedOpMode extends OpMode {
 	Turret.SpeedByDistance distance = Turret.SpeedByDistance.Far;
 	LimeLight ll;
 	Tag targetTag = Tag.RED;
-	TurretPose2d lastPose;
+	TurretPose lastPose;
 
 	@Override
 	public void init() {
@@ -48,7 +48,7 @@ public class RedOpMode extends OpMode {
 		try {
 			lastPose = Turret.getSavedPosition();
 		} catch (Exception e) {
-			lastPose = new TurretPose2d(new Pose(0, 0, 0), 0);
+			lastPose = new TurretPose(new Pose(0, 0, 0), 0);
 		}
 
 		bot.turret = new Turret(this, lastPose);

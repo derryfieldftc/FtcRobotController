@@ -4,7 +4,7 @@ import com.pedropathing.geometry.Pose;
 /**
  * A way to represent both the turret and the pose of the robot, the rotation is relative to the front of the robot
  */
-public class TurretPose2d {
+public class TurretPose {
 	public double rotation;
 	public Pose pose;
 
@@ -12,7 +12,7 @@ public class TurretPose2d {
 	 * @param pose2d   Robot position
 	 * @param rotation inital rotation
 	 */
-	public TurretPose2d(Pose pose2d, double rotation) {
+	public TurretPose(Pose pose2d, double rotation) {
 		this.pose = pose2d;
 		this.rotation = rotation;
 	}

@@ -5,6 +5,8 @@ import static org.firstinspires.ftc.teamcode.robot.Field.Ball;
 import static org.firstinspires.ftc.teamcode.robot.Field.Motif;
 
 import java.util.ArrayList;
+
+import com.pedropathing.geometry.Pose;
 import com.pedropathing.math.Vector;
 
 public class Depot {
@@ -56,9 +58,9 @@ public class Depot {
 	 */
 	public Vector getPosition(Alliance alliance) {
 		if (alliance == Alliance.Red) {
-			return new Vector(70, 70);
+			return new Vector(new Pose(8, 136));
 		}
-		return new Vector(-70, 70);
+		return new Vector(new Pose(136, 136));
 	}
 
 	/**

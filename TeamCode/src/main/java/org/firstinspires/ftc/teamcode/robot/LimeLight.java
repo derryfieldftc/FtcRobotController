@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import com.pedropathing.localization.Localizer;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -41,5 +42,8 @@ public class LimeLight extends RobotPart {
 		ll.captureSnapshot(String.valueOf(opMode.getRuntime()));
 	}
 
+	//TODO! these
+	public void updateLocalizer(Localizer localizer, double rotation) {}
+	public void updateLocalizer(Localizer localizer) {}
 
 }
