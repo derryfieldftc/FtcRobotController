@@ -1,12 +1,17 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import com.pedropathing.follower.Follower;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.Const;
 import org.firstinspires.ftc.teamcode.GamepadManager;
+import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.plugin.plugins.MecanumDrive;
+import org.firstinspires.ftc.teamcode.robot.Depot;
+import org.firstinspires.ftc.teamcode.robot.Field;
 import org.firstinspires.ftc.teamcode.robot.HandsOfGod;
 import org.firstinspires.ftc.teamcode.robot.LimeLight;
 import org.firstinspires.ftc.teamcode.robot.PalmsOfGod;
@@ -24,6 +29,7 @@ public class RedOpMode extends OpMode {
 	Robot bot;
 	MecanumDrive mecanumDrive;
 	GamepadManager mgamepad;
+	Follower drivetrain;
 	double speedTrim = 0;
 	boolean handsUp = false;
 	boolean autoTracking = true;
@@ -31,7 +37,6 @@ public class RedOpMode extends OpMode {
 	boolean leftPalmOpen = false, rightPalmOpen = false;
 	boolean tagMatch = false;
 	boolean lastA;
-	Turret.SpeedByDistance distance = Turret.SpeedByDistance.Far;
 	LimeLight ll;
 	Tag targetTag = Tag.RED;
 	TurretPose lastPose;
@@ -44,6 +49,8 @@ public class RedOpMode extends OpMode {
 		ll.init();
 		ll.setMode(LimeLight.LimeLightMode.AprilTag);
 		d("AHM init");
+		drivetrain = Constants.createFollower(hardwareMap);
+		drivetrain.setStartingPose(new Pose(72, 72, 0)); //TODO THIS IS FOR TESTING
 
 		try {
 			lastPose = Turret.getSavedPosition();
@@ -63,9 +70,13 @@ public class RedOpMode extends OpMode {
 
 	@Override
 	public void loop() {
+		drivetrain.update();
 		mecanumDrive.loop();
 		bot.loop();
 		telemetry.clearAll(); // Disables telemetry from the Turret
+		bot.turret.trackTarget(Depot.getPosition(Field.Alliance.Red), drivetrain.getPoseTracker()
+				.getLocalizer()).run();
+		bot.turret.setRotationPower(.5);
 
 		bot.intake.setSpeed(gamepad2.right_trigger * ((gamepad2.y) ? -1 : 1));
 
@@ -87,49 +98,7 @@ public class RedOpMode extends OpMode {
 
 		bot.intake.setHeight(gamepad1.right_trigger);
 
-		bot.turret.setSpeed(distance.power + -gamepad2.left_stick_y / 10);
-
-		tagMatch = false;
-		if (ll.getResults() != null && ll.getResults().isValid() && !ll.getResults()
-				.getFiducialResults().isEmpty()) {
-
-			d("AHM got ll results, size: " + ll.getResults().getFiducialResults().size());
-			LLResult llr = ll.getResults();
-
-			if (!gamepad2.start) {
-				for (LLResultTypes.FiducialResult result : llr.getFiducialResults()) {
-					d("AHM tag number " + result.getFiducialId());
-					if (result.getFiducialId() == targetTag.id) {
-						d("AHM matches target tag");
-						telemetry.addData("tx", result.getTargetXDegrees());
-						double tx = -result.getTargetXDegrees();
-						d("AHM tx " + tx);
-						bot.turret.rotator.setPower(tx / 50 * ((gamepad2.start) ? 0 : 1));
-						d("AHM power " + tx / 50);
-						tagMatch = true;
-					}
-				}
-			}
-		}
-
-		if (!tagMatch || gamepad2.start)
-			bot.turret.rotator.setPower(gamepad2.left_stick_x);
-
-		if (tagMatch) {
-			gamepad2.setLedColor(0, 255, 0, 300);
-		} else {
-			gamepad2.setLedColor(255, 0, 0, 300);
-		}
-
-
-		if (gamepad2.dpad_down)
-			distance = Turret.SpeedByDistance.Close;
-		if (gamepad2.dpad_up)
-			distance = Turret.SpeedByDistance.Far;
-		if (gamepad2.dpad_right)
-			distance = Turret.SpeedByDistance.Max;
-		if (gamepad2.dpad_left)
-			distance = Turret.SpeedByDistance.None;
+		bot.turret.setSpeed(bot.turret.getSpeedByDistance(bot.turret.getDistance(Depot.getPosition(Field.Alliance.Red))));
 
 		telemetry.addLine("Ball" + bot.palmsOfGod.getLeftBall());
 
@@ -158,13 +127,6 @@ public class RedOpMode extends OpMode {
 
 		bot.palmsOfGod.getLeftBall();
 		bot.palmsOfGod.getRightBall();
-
-//		TODO! figure this out
-//		telemetry.addData("x", pose.position.x);
-//		telemetry.addData("y", pose.position.y);
-//		telemetry.addData("r", pose.heading.toDouble());
-//		telemetry.addData("t", bot.turret.getRotation());
-//		telemetry.addData("autoTrack", autoTracking);
 
 		telemetry.update();
 		mgamepad.poll();

@@ -56,11 +56,11 @@ public class Depot {
 	 * @param alliance
 	 * @return
 	 */
-	public Vector getPosition(Alliance alliance) {
+	public static Vector getPosition(Alliance alliance) {
 		if (alliance == Alliance.Red) {
-			return new Vector(new Pose(8, 136));
+			return new Vector(new Pose(136, 136));
 		}
-		return new Vector(new Pose(136, 136));
+		return new Vector(new Pose(8, 136));
 	}
 
 	/**

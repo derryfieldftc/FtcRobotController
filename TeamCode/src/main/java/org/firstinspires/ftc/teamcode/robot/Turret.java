@@ -4,7 +4,9 @@ import static androidx.core.math.MathUtils.clamp;
 import static com.qualcomm.robotcore.util.RobotLog.d;
 
 import static java.lang.Math.PI;
+import static java.lang.Math.abs;
 import static java.lang.Math.atan2;
+import static java.lang.Math.sqrt;
 
 import android.annotation.SuppressLint;
 import com.pedropathing.geometry.Pose;
@@ -15,6 +17,7 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.RobotLog;
@@ -28,18 +31,23 @@ import java.util.Scanner;
 //Oh boy
 public class Turret extends RobotPart {
 	//call it a radius of 6in
-	public DcMotor rotator; //25 to 95 ratio, 1 full rotation is 2k steps
-	DcMotor spinner0;
+	public DcMotor rotator;
+	public DcMotorEx spinner0;
 	Gamepad gamepad;
-	TouchSensor limit;
 	public double rotationTrim;
-	double ticksPerRotation = 2000.0;
+	double ticksPerRotation = 2000.0; //25 to 95 ratio, 1 full rotation is 2k steps
 	public boolean refreshEncoder = true;
 	TrackingState tracking;
 	PID rotationPID;
 	TurretPose pose;
 	double rotation;
+	double targetPower;
 	private double targetAngle;
+	IndicatorLight light;
+
+	public Turret(OpMode opMode) {
+		this(opMode, new TurretPose(new Pose(0, 0, 0), 0));
+	}
 
 	// oooh wow look a state machine-ish
 	private enum TrackingState {
@@ -48,6 +56,7 @@ public class Turret extends RobotPart {
 		NOT_TRACKING
 	}
 
+	@Deprecated
 	public enum SpeedByDistance {
 		Max (1),
 		None (0),
@@ -68,14 +77,17 @@ public class Turret extends RobotPart {
 		return this;
 	}
 
+	public void setRotationPower(double power) {
+		rotator.setPower(power);
+	}
+
 	public void init() {
 		rotator = hardwareMap.dcMotor.get(Part.TurretRotator.name);
-		limit = hardwareMap.touchSensor.get("turretLimit");
 		rotator.setPower(0);
 		rotator.setTargetPosition(0);
 		rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		rotator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-		spinner0 = hardwareMap.dcMotor.get(Part.LaunchMotor.name);
+		spinner0 = (DcMotorEx) hardwareMap.get(Part.LaunchMotor.type, Part.LaunchMotor.name);
 		spinner0.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 		spinner0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		spinner0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -85,10 +97,27 @@ public class Turret extends RobotPart {
 	}
 
 	public Turret setSpeed(double speed) {
+		targetPower = speed;
 		spinner0.setPower(speed);
 		return this;
 	}
 
+	public double getSpeedByDistance(double distance) {
+		return clamp(0.0017258 * distance + 0.315965, 0, 1); // found empirically
+	}
+
+	public void updateLight() {
+		double speedDiff = targetPower - spinner0.getVelocity();
+		IndicatorLight.Color color;
+		if (speedDiff > 0.005) {
+			color = IndicatorLight.Color.Orange;
+		} else if (speedDiff < 0.005) {
+			color = IndicatorLight.Color.Indigo;
+		} else {
+			color = IndicatorLight.Color.Green;
+		}
+		light.setColor(color);
+	}
 
 	/**
 	 * This is action should never finish until the stopAutoTracking Action is called
@@ -101,17 +130,32 @@ public class Turret extends RobotPart {
 					tracking = TrackingState.TRACKING;
 				updatePose(localizer.getPose());
 
-				double angleToTarget = atan2(pose.pose.getY() - target.getYComponent(), pose.pose.getX() - target.getXComponent());
-				RobotLog.d("AHM TRACKING target angle %f", angleToTarget);
-				targetAngle = angleToTarget + rotationTrim;
+				double angleToTarget = atan2(target.getYComponent() - pose.pose.getY(), target.getXComponent() - pose.pose.getX());
+				targetAngle = (angleToTarget + rotationTrim - pose.pose.getHeading()) % (PI * 2);
+				updateRotation(targetAngle);
+				RobotLog.d("AHM TRACKING target angle %f", targetAngle);
 
 				return tracking == TrackingState.TRACKING;
 			}
 		};
 	}
 
+	/**
+	 * Compute distance between robot pose and target
+	 * @param target
+	 * @return
+	 */
+	public double getDistance(Vector target) {
+		double ydiff = this.pose.pose.getY() - target.getYComponent();
+		double xdiff = this.pose.pose.getX() - target.getXComponent();
+		return sqrt((xdiff * xdiff) + (ydiff * ydiff));
+	}
+
 	public void updateRotation(double targetRotation) {
-		rotator.setTargetPosition((int) (targetRotation * ticksPerRotation));
+		d("AHM TRACKING poseition %f", (targetRotation / (2 * PI)) * ticksPerRotation);
+		d("AHM TRACKIN ROTATOR ticks %d", rotator.getCurrentPosition());
+		d("AHM TRACKING MODE " + rotator.getMode());
+		rotator.setTargetPosition((int) ((targetRotation / (2 * PI)) * ticksPerRotation));
 	}
 
 	private void updatePose(Pose pose) {
@@ -137,36 +181,6 @@ public class Turret extends RobotPart {
 		} // beautiful exception handleing
 	}
 
-	public Action trackTag(LimeLight ll, Tag target) {
-		return new Action() {
-			@Override
-			public boolean run() {
-				if (tracking == TrackingState.NOT_TRACKING)
-					tracking = TrackingState.TRACKING;
-				RobotLog.d("AHM ALJKHSGFSLKJDJLGKSJLKJGLK");
-				if (ll.getResults() != null && ll.getResults().isValid() && !ll.getResults()
-						.getFiducialResults().isEmpty()) {
-
-					d("AHM got ll results, size: " + ll.getResults().getFiducialResults().size());
-					LLResult llr = ll.getResults();
-
-					for (LLResultTypes.FiducialResult result : llr.getFiducialResults()) {
-						d("AHM tag number " + result.getFiducialId());
-						if (result.getFiducialId() == target.id) {
-							d("AHM matches target tag");
-							telemetry.addData("tx", result.getTargetXDegrees());
-							double tx = -result.getTargetXDegrees();
-							d("AHM tx " + tx);
-							rotator.setPower(tx / 50);
-							d("AHM power " + tx / 50);
-						}
-					}
-				}
-				return tracking == TrackingState.TRACKING;
-			}
-		};
-	}
-
 	public static TurretPose getSavedPosition() throws Exception {
 		try {
 			File file = new File("/sdcard/FIRST/lastPose");
@@ -176,3 +190,35 @@ public class Turret extends RobotPart {
 		} catch (Exception ignored) {throw new Exception(ignored);}
 	};
 }
+//
+//		tagMatch = false;
+//		if (ll.getResults() != null && ll.getResults().isValid() && !ll.getResults()
+//				.getFiducialResults().isEmpty()) {
+//
+//			d("AHM got ll results, size: " + ll.getResults().getFiducialResults().size());
+//			LLResult llr = ll.getResults();
+//
+//			if (!gamepad2.start) {
+//				for (LLResultTypes.FiducialResult result : llr.getFiducialResults()) {
+//					d("AHM tag number " + result.getFiducialId());
+//					if (result.getFiducialId() == targetTag.id) {
+//						d("AHM matches target tag");
+//						telemetry.addData("tx", result.getTargetXDegrees());
+//						double tx = -result.getTargetXDegrees();
+//						d("AHM tx " + tx);
+//						bot.turret.rotator.setPower(tx / 50 * ((gamepad2.start) ? 0 : 1));
+//						d("AHM power " + tx / 50);
+//						tagMatch = true;
+//					}
+//				}
+//			}
+//		}
+//
+//		if (!tagMatch || gamepad2.start)
+//			bot.turret.rotator.setPower(gamepad2.left_stick_x);
+//
+//		if (tagMatch) {
+//			gamepad2.setLedColor(0, 255, 0, 300);
+//		} else {
+//			gamepad2.setLedColor(255, 0, 0, 300);
+//		}

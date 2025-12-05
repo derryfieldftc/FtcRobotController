@@ -84,15 +84,7 @@ public class Blue2 extends OpMode {
 						new FollowPathAction(follower, paths.FarShot7),
 						robot.shootAll(),
 						robot.resetPalms(),
-						new FollowPathAction(follower, paths.Middle8)),
-				robot.turret.trackTag(ll, targetTag),
-				new Action() {
-					@Override
-					public boolean run() {
-						RobotLog.d("AHHHHHH");
-						return true;
-					}
-				}
+						new FollowPathAction(follower, paths.Middle8))
 		);
 	}
 
@@ -111,6 +103,12 @@ public class Blue2 extends OpMode {
 		panelsTelemetry.debug("Y", follower.getPose().getY());
 		panelsTelemetry.debug("Heading", follower.getPose().getHeading());
 		panelsTelemetry.update(telemetry);
+	}
+
+	@Override
+	public void stop() {
+		robot.turret.savePosition();
+		super.stop();
 	}
 
 	public static class Paths {

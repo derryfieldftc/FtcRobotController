@@ -84,7 +84,6 @@ public class Red2 extends OpMode {
 						robot.shootAll(),
 						robot.resetPalms(),
 						new FollowPathAction(follower, paths.Middle8)),
-				robot.turret.trackTag(ll, targetTag),
 				new Action() {
 					@Override
 					public boolean run() {

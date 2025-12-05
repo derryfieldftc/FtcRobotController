@@ -42,6 +42,7 @@ public class TurretPowerTest extends OpMode {
 		bot.handsOfGod.setPosition((handsUp) ? HandsOfGod.Position.Up : HandsOfGod.Position.Down);
 
 		bot.turret.setSpeed(speed);
+		telemetry.addData("velocity", bot.turret.spinner0.getVelocity()); // bad
 
 		telemetry.addData("speed", speed);
 		telemetry.update();

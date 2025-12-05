@@ -4,6 +4,7 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -81,7 +82,7 @@ public class RobotPart {
 		/**
 		 * Motor for accelerating balls
 		 */
-		LaunchMotor	("spinny0", DcMotor.class),
+		LaunchMotor	("spinny0", DcMotorEx.class),
 		/**
 		 * Motor for rotating the turret
 		 */
@@ -93,7 +94,9 @@ public class RobotPart {
 		/**
 		 * This is the limelight camera, it is used for all sorts of april tag tracking, computer vision and localization, among other things.
 		 */
-		LimeLight	("limelight", Limelight3A.class);
+		LimeLight	("limelight", Limelight3A.class),
+		IndicatorLightTurret	("RGB_Turret", Servo.class), // not actually a servo
+		;
 		//TODO! make this list exhaustive
 
 		public final String name;
