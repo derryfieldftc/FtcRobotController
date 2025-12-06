@@ -1,7 +1,8 @@
-package org.firstinspires.ftc.teamcode.opmodes;
+package org.firstinspires.ftc.teamcode.opmodes.Tests;
 
 import static com.pedropathing.math.MathFunctions.clamp;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -10,6 +11,7 @@ import org.firstinspires.ftc.teamcode.robot.HandsOfGod;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 @TeleOp(name="TurretPowerTest")
+@Disabled
 public class TurretPowerTest extends OpMode {
 	Robot bot;
 	double speed;

@@ -35,11 +35,10 @@ public class RedOpMode extends OpMode {
 	boolean autoTracking = true;
 	boolean shootHands;
 	boolean leftPalmOpen = false, rightPalmOpen = false;
-	boolean tagMatch = false;
 	boolean lastA;
 	LimeLight ll;
-	Tag targetTag = Tag.RED;
 	TurretPose lastPose;
+	private boolean turretOn = true;
 
 	@Override
 	public void init() {
@@ -50,7 +49,6 @@ public class RedOpMode extends OpMode {
 		ll.setMode(LimeLight.LimeLightMode.AprilTag);
 		d("AHM init");
 		drivetrain = Constants.createFollower(hardwareMap);
-		drivetrain.setStartingPose(new Pose(72, 72, 0)); //TODO THIS IS FOR TESTING
 
 		try {
 			lastPose = Turret.getSavedPosition();
@@ -59,11 +57,11 @@ public class RedOpMode extends OpMode {
 		}
 
 		bot.turret = new Turret(this, lastPose);
+		bot.turret.refreshEncoder = false;
 		bot.turret.init();
 		mecanumDrive = new MecanumDrive(this);
 		mecanumDrive.init();
-//		bot.turret.useGamepad();
-
+		drivetrain.setStartingPose(lastPose.pose);
 
 		mgamepad = new GamepadManager(gamepad2);
 	}
@@ -76,7 +74,12 @@ public class RedOpMode extends OpMode {
 		telemetry.clearAll(); // Disables telemetry from the Turret
 		bot.turret.trackTarget(Depot.getPosition(Field.Alliance.Red), drivetrain.getPoseTracker()
 				.getLocalizer()).run();
-		bot.turret.setRotationPower(.5);
+		if (autoTracking) {
+			bot.turret.setRotationPower(0);
+		} else {
+			bot.turret.setRotationPower(.5);
+
+		}
 
 		bot.intake.setSpeed(gamepad2.right_trigger * ((gamepad2.y) ? -1 : 1));
 
@@ -88,6 +91,19 @@ public class RedOpMode extends OpMode {
 			ll.debugSnapshot();
 		lastA = gamepad1.a;
 
+		if (mgamepad.justPressed(GamepadManager.Button.DPAD_UP)) {
+			speedTrim += .02;
+		}
+		if (mgamepad.justPressed(GamepadManager.Button.DPAD_DOWN)) {
+			speedTrim -= .02;
+		}
+		if (mgamepad.justPressed(GamepadManager.Button.DPAD_RIGHT)) {
+			speedTrim = 0;
+		}
+
+		if (mgamepad.justPressed(GamepadManager.Button.Y))
+			turretOn = !turretOn;
+
 		if (gamepad2.a) {
 			shootHands = true;
 		}
@@ -95,12 +111,9 @@ public class RedOpMode extends OpMode {
 		if (shootHands)
 			shootHands = bot.shoot(Robot.BallPosition.Hands).run();
 
-
 		bot.intake.setHeight(gamepad1.right_trigger);
 
-		bot.turret.setSpeed(bot.turret.getSpeedByDistance(bot.turret.getDistance(Depot.getPosition(Field.Alliance.Red))));
-
-		telemetry.addLine("Ball" + bot.palmsOfGod.getLeftBall());
+		bot.turret.setSpeed((speedTrim + bot.turret.getSpeedByDistance(bot.turret.getDistance(Depot.getPosition(Field.Alliance.Red)))) * ((turretOn) ? 0 : 1));
 
 		if (mgamepad.justPressed(GamepadManager.Button.RIGHT_BUMPER)) {
 			rightPalmOpen = !rightPalmOpen;
@@ -115,7 +128,7 @@ public class RedOpMode extends OpMode {
 			rightPalmOpen = false;
 		}
 
-		if (gamepad2.right_stick_button) {
+		if (mgamepad.justPressed(GamepadManager.Button.DPAD_LEFT)) {
 			autoTracking = !autoTracking;
 		}
 
@@ -125,8 +138,14 @@ public class RedOpMode extends OpMode {
 		bot.palmsOfGod.setLeftPalm((leftPalmOpen) ? PalmsOfGod.Position.Up : PalmsOfGod.Position.Down);
 		bot.palmsOfGod.setRightPalm((rightPalmOpen) ? PalmsOfGod.Position.Up : PalmsOfGod.Position.Down);
 
-		bot.palmsOfGod.getLeftBall();
-		bot.palmsOfGod.getRightBall();
+		telemetry.addData("turretOn", turretOn);
+		telemetry.addData("speedTrim", speedTrim);
+		telemetry.addData("angleTrim", bot.turret.rotationTrim);
+		telemetry.addData("autoTracking", autoTracking);
+		telemetry.addData("distance", bot.turret.getDistance(Depot.getPosition(Field.Alliance.Red)));
+		telemetry.addData("velocity", bot.turret.spinner0.getVelocity());
+
+		bot.turret.dumpTelemetry(telemetry);
 
 		telemetry.update();
 		mgamepad.poll();

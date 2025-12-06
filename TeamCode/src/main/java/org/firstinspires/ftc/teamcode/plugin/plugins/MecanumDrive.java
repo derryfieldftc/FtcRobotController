@@ -70,10 +70,12 @@ public class MecanumDrive extends RobotPlugin {
 		double powerFR = y - x - rx;
 		double powerBR = y + x - rx;
 
-		motorFL.setPower(clamp(1, -1, powerFL));
-		motorBL.setPower(clamp(1, -1, powerBL));
-		motorFR.setPower(clamp(1, -1, powerFR));
-		motorBR.setPower(clamp(1, -1, powerBR));
+		double multiplier = 1 - gamepad.right_trigger;
+
+		motorFL.setPower(clamp(1, -1, powerFL) * multiplier);
+		motorBL.setPower(clamp(1, -1, powerBL) * multiplier);
+		motorFR.setPower(clamp(1, -1, powerFR) * multiplier);
+		motorBR.setPower(clamp(1, -1, powerBR) * multiplier);
 
 	}
 

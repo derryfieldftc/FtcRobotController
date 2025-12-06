@@ -18,10 +18,13 @@ import org.firstinspires.ftc.teamcode.autonmous.actions.ParallelAction;
 import org.firstinspires.ftc.teamcode.autonmous.actions.SequentialAction;
 import org.firstinspires.ftc.teamcode.autonmous.actions.SleepAction;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
+import org.firstinspires.ftc.teamcode.robot.Depot;
+import org.firstinspires.ftc.teamcode.robot.Field;
 import org.firstinspires.ftc.teamcode.robot.LimeLight;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.Tag;
 import org.firstinspires.ftc.teamcode.robot.Turret;
+import org.firstinspires.ftc.teamcode.robot.TurretPose;
 
 @Autonomous()
 @Configurable // Panels
@@ -42,7 +45,7 @@ public class Red2 extends OpMode {
 		ll = new LimeLight(this);
 		ll.init();
 		ll.setMode(LimeLight.LimeLightMode.AprilTag);
-		robot = new Robot(this).enableTurret().enableIntake().enableHandsOfGod().enablePalmsOfGod();
+		robot = new Robot(this).enableTurret().enableIntake().enableHandsOfGod().enablePalmsOfGod().setTurretPose(new TurretPose(new Pose(46, 16, Math.toRadians(135)).mirror(), 0));
 		robot.init();
 
 		panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
@@ -54,6 +57,7 @@ public class Red2 extends OpMode {
 
 		panelsTelemetry.debug("Status", "Initialized");
 		panelsTelemetry.update(telemetry);
+		robot.turret.setRotationPower(.5);
 
 		action = new ParallelAction(
 				new SequentialAction(
@@ -84,10 +88,12 @@ public class Red2 extends OpMode {
 						robot.shootAll(),
 						robot.resetPalms(),
 						new FollowPathAction(follower, paths.Middle8)),
+				robot.turret.trackTarget(Depot.getPosition(Field.Alliance.Red), follower.poseTracker.getLocalizer()),
+//				robot.setTurretSpeed(robot.turret.getSpeedByDistance(robot.turret.getDistance(Depot.getPosition(Field.Alliance.Red)))),
 				new Action() {
 					@Override
 					public boolean run() {
-						RobotLog.d("AHHHHHH");
+						robot.turret.savePosition();
 						return true;
 					}
 				}

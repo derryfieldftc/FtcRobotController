@@ -14,8 +14,8 @@ public class PalmsOfGod extends RobotPart {
 
 	public ColorSensor rightEye, leftEye;
 	public Servo rightPalm, leftPalm;
-	public double rightUp = .37, rightDown = .3;
-	public double leftUp = .35, leftDown = .4;
+	public double rightUp = .55, rightDown = .3;
+	public double leftUp = .23, leftDown = .4;
 	public boolean useTelemetry = false;
 	public Position leftPalmPos;
 	public Position rightPalmPos;

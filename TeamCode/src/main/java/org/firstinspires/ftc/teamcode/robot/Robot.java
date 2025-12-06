@@ -3,9 +3,7 @@ package org.firstinspires.ftc.teamcode.robot;
 import static org.firstinspires.ftc.teamcode.robot.Field.Ball;
 import static org.firstinspires.ftc.teamcode.robot.Field.Ball.None;
 
-import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
-import com.pedropathing.localization.Localizer;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.autonmous.actions.Action;
@@ -25,6 +23,7 @@ public class Robot extends RobotPart {
 	public boolean handsOfGodEnabled;
 	public PalmsOfGod palmsOfGod;
 	public boolean palmsOfGodEnabled;
+	public TurretPose turretPose;
 
 
 	/**
@@ -61,6 +60,11 @@ public class Robot extends RobotPart {
 				return false;
 			}
 		};
+	}
+
+	public Robot setTurretPose(TurretPose pose) {
+		turret.setPose(pose);
+		return this;
 	}
 
 	public enum BallPosition {
@@ -122,10 +126,15 @@ public class Robot extends RobotPart {
 			intake.init();
 		if (turretEnabled)
 			turret.init();
-		if (handsOfGodEnabled)
+		if (handsOfGodEnabled) {
 			handsOfGod.init();
-		if (palmsOfGodEnabled)
+			handsOfGod.setPosition(HandsOfGod.Position.Down);
+		}
+		if (palmsOfGodEnabled) {
 			palmsOfGod.init();
+			palmsOfGod.setRightPalm(PalmsOfGod.Position.Down);
+			palmsOfGod.setLeftPalm(PalmsOfGod.Position.Down);
+		}
 	}
 
 	double currentTime = 0;
@@ -153,8 +162,8 @@ public class Robot extends RobotPart {
 	 */
 	public Action shootAll() {
 		return new SequentialAction(
-				new SleepAction(100),
 				shoot(BallPosition.Hands),
+				new SleepAction(200),
 				new Action() {
 					@Override
 					public boolean run() {
@@ -164,7 +173,7 @@ public class Robot extends RobotPart {
 				},
 				new SleepAction(700),
 				shoot(BallPosition.Hands),
-				new SleepAction(100),
+				new SleepAction(200),
 				new Action() {
 					@Override
 					public boolean run() {

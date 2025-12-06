@@ -1,8 +1,8 @@
-package org.firstinspires.ftc.teamcode.opmodes;
+package org.firstinspires.ftc.teamcode.opmodes.Tests;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
-import com.pedropathing.math.Vector;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -11,11 +11,11 @@ import org.firstinspires.ftc.teamcode.plugin.plugins.MecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.Depot;
 import org.firstinspires.ftc.teamcode.robot.Field;
 import org.firstinspires.ftc.teamcode.robot.LimeLight;
-import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.Turret;
 import org.firstinspires.ftc.teamcode.robot.TurretPose;
 
 @TeleOp
+@Disabled
 public class TurretAngleTest extends OpMode {
 	Turret turret;
 	LimeLight ll;

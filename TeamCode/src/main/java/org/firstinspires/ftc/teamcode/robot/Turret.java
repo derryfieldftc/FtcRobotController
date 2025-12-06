@@ -2,7 +2,10 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import static androidx.core.math.MathUtils.clamp;
 import static com.qualcomm.robotcore.util.RobotLog.d;
+import static com.qualcomm.robotcore.util.RobotLog.i;
+import static com.qualcomm.robotcore.util.RobotLog.w;
 
+import static org.firstinspires.ftc.teamcode.robot.RobotPart.Part.IndicatorLightTurret;
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;
 import static java.lang.Math.atan2;
@@ -13,15 +16,13 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.localization.Localizer;
 import com.pedropathing.math.Vector;
 
-import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.RobotLog;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.autonmous.actions.Action;
 
 import java.io.File;
@@ -42,11 +43,15 @@ public class Turret extends RobotPart {
 	TurretPose pose;
 	double rotation;
 	double targetPower;
-	private double targetAngle;
+	private double targetRotation;
 	IndicatorLight light;
 
 	public Turret(OpMode opMode) {
 		this(opMode, new TurretPose(new Pose(0, 0, 0), 0));
+	}
+
+	public void setPose(TurretPose pose) {
+		this.pose = pose;
 	}
 
 	// oooh wow look a state machine-ish
@@ -85,12 +90,15 @@ public class Turret extends RobotPart {
 		rotator = hardwareMap.dcMotor.get(Part.TurretRotator.name);
 		rotator.setPower(0);
 		rotator.setTargetPosition(0);
-		rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-		rotator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+		if (refreshEncoder) {
+			rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+			rotator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+		}
 		spinner0 = (DcMotorEx) hardwareMap.get(Part.LaunchMotor.type, Part.LaunchMotor.name);
 		spinner0.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 		spinner0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		spinner0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		light = new IndicatorLight(opMode, IndicatorLightTurret.name);
 
 		// If it aint broke dont fix it
 		rotationPID = new PID(.1, 0, 0, .005);
@@ -107,16 +115,26 @@ public class Turret extends RobotPart {
 	}
 
 	public void updateLight() {
-		double speedDiff = targetPower - spinner0.getVelocity();
+		double error = rotation - targetRotation;
+		double maxAllowedError = .7;
+		d("AHM light error %f", error);
+
 		IndicatorLight.Color color;
-		if (speedDiff > 0.005) {
+		if (error > maxAllowedError) {
 			color = IndicatorLight.Color.Orange;
-		} else if (speedDiff < 0.005) {
+		} else if (error < -maxAllowedError) {
 			color = IndicatorLight.Color.Indigo;
 		} else {
 			color = IndicatorLight.Color.Green;
 		}
 		light.setColor(color);
+	}
+
+	public void dumpTelemetry(Telemetry telemetry) {
+		telemetry.addData("X", pose.pose.getX());
+		telemetry.addData("Y", pose.pose.getY());
+		telemetry.addData("R", pose.pose.getHeading());
+		telemetry.addData("T", pose.rotation);
 	}
 
 	/**
@@ -131,9 +149,10 @@ public class Turret extends RobotPart {
 				updatePose(localizer.getPose());
 
 				double angleToTarget = atan2(target.getYComponent() - pose.pose.getY(), target.getXComponent() - pose.pose.getX());
-				targetAngle = (angleToTarget + rotationTrim - pose.pose.getHeading()) % (PI * 2);
-				updateRotation(targetAngle);
-				RobotLog.d("AHM TRACKING target angle %f", targetAngle);
+				targetRotation = (angleToTarget + rotationTrim - pose.pose.getHeading()) % (PI * 2);
+				updateRotation(targetRotation);
+				RobotLog.d("AHM TRACKING target angle %f", targetRotation);
+				updateLight();
 
 				return tracking == TrackingState.TRACKING;
 			}
@@ -152,14 +171,13 @@ public class Turret extends RobotPart {
 	}
 
 	public void updateRotation(double targetRotation) {
-		d("AHM TRACKING poseition %f", (targetRotation / (2 * PI)) * ticksPerRotation);
-		d("AHM TRACKIN ROTATOR ticks %d", rotator.getCurrentPosition());
-		d("AHM TRACKING MODE " + rotator.getMode());
-		rotator.setTargetPosition((int) ((targetRotation / (2 * PI)) * ticksPerRotation));
+		this.targetRotation = targetRotation % (2 * PI);
+		rotator.setTargetPosition((int) ((this.targetRotation / (2 * PI)) * ticksPerRotation));
 	}
 
 	private void updatePose(Pose pose) {
-		rotation = (rotation + (rotator.getCurrentPosition() / ticksPerRotation)) % (2 * PI);
+		rotation = ((rotator.getCurrentPosition() / ticksPerRotation)) % (2 * PI);
+		d("AHM rotation %f", rotation);
 		this.pose = new TurretPose(pose, rotation);
 	}
 
@@ -170,13 +188,14 @@ public class Turret extends RobotPart {
 		try {
 			PrintWriter writer = new PrintWriter(file);
 			file.createNewFile();
-			//TODO! fix localizer with pedro
 
 			writer.println(String.format("%f %f %f %f", pose.pose.getX(), pose.pose.getY(), pose.pose.getHeading(), pose.rotation));
 			writer.flush();
 			writer.close();
+			d("AHM WROTE");
 
 		} catch (Exception ignored) {
+			d("AHM WRITE FAIL " + ignored);
 			throw new RuntimeException(ignored);
 		} // beautiful exception handleing
 	}
@@ -185,8 +204,11 @@ public class Turret extends RobotPart {
 		try {
 			File file = new File("/sdcard/FIRST/lastPose");
 			Scanner scanner = new Scanner(file);
-			//TODO! fix this method
-			return null;
+			double x = scanner.nextDouble();
+			double y = scanner.nextDouble();
+			double r = scanner.nextDouble();
+			double t = scanner.nextDouble();
+			return new TurretPose(new Pose(x, y, r), t);
 		} catch (Exception ignored) {throw new Exception(ignored);}
 	};
 }

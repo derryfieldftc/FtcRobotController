@@ -84,7 +84,14 @@ public class Blue2 extends OpMode {
 						new FollowPathAction(follower, paths.FarShot7),
 						robot.shootAll(),
 						robot.resetPalms(),
-						new FollowPathAction(follower, paths.Middle8))
+						new FollowPathAction(follower, paths.Middle8)),
+				new Action() {
+					@Override
+					public boolean run() {
+						robot.turret.savePosition();
+						return true;
+					}
+				}
 		);
 	}
 

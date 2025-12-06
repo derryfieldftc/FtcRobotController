@@ -1,5 +1,6 @@
-package org.firstinspires.ftc.teamcode.opmodes;
+package org.firstinspires.ftc.teamcode.opmodes.Tests;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -7,6 +8,7 @@ import org.firstinspires.ftc.teamcode.OpModeGroups;
 import org.firstinspires.ftc.teamcode.robot.HandsOfGod;
 
 @TeleOp(name = "HandsOfGodTest", group = OpModeGroups.TESTS)
+@Disabled
 public class HandsOfGodTest extends OpMode {
 	HandsOfGod handsOfGod;
 
