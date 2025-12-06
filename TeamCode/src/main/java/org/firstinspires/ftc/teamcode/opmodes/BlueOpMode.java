@@ -1,51 +1,49 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import static com.qualcomm.robotcore.util.RobotLog.d;
+
+import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
-import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.GamepadManager;
+import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.plugin.plugins.MecanumDrive;
+import org.firstinspires.ftc.teamcode.robot.Depot;
+import org.firstinspires.ftc.teamcode.robot.Field;
 import org.firstinspires.ftc.teamcode.robot.HandsOfGod;
 import org.firstinspires.ftc.teamcode.robot.LimeLight;
 import org.firstinspires.ftc.teamcode.robot.PalmsOfGod;
 import org.firstinspires.ftc.teamcode.robot.Robot;
-import org.firstinspires.ftc.teamcode.robot.Tag;
 import org.firstinspires.ftc.teamcode.robot.Turret;
 import org.firstinspires.ftc.teamcode.robot.TurretPose;
-
-import static com.qualcomm.robotcore.util.RobotLog.*;
-import static java.lang.Math.abs;
 
 @TeleOp(name = "BlueOpMode")
 public class BlueOpMode extends OpMode {
 	Robot bot;
 	MecanumDrive mecanumDrive;
 	GamepadManager mgamepad;
+	Follower drivetrain;
 	double speedTrim = 0;
 	boolean handsUp = false;
 	boolean autoTracking = true;
 	boolean shootHands;
 	boolean leftPalmOpen = false, rightPalmOpen = false;
-	boolean tagMatch = false;
 	boolean lastA;
-	Turret.SpeedByDistance distance = Turret.SpeedByDistance.Far;
 	LimeLight ll;
-	Tag targetTag = Tag.BLUE;
 	TurretPose lastPose;
+	private boolean turretOn = true;
 
 	@Override
 	public void init() {
 		bot = new Robot(this).enableIntake().enableHandsOfGod().enablePalmsOfGod();
-		mecanumDrive = new MecanumDrive(this);
-		mecanumDrive.init();
 		bot.init();
 		ll = new LimeLight(this);
 		ll.init();
 		ll.setMode(LimeLight.LimeLightMode.AprilTag);
 		d("AHM init");
+		drivetrain = Constants.createFollower(hardwareMap);
 
 		try {
 			lastPose = Turret.getSavedPosition();
@@ -56,15 +54,27 @@ public class BlueOpMode extends OpMode {
 		bot.turret = new Turret(this, lastPose);
 		bot.turret.refreshEncoder = false;
 		bot.turret.init();
+		mecanumDrive = new MecanumDrive(this);
+		mecanumDrive.init();
+		drivetrain.setStartingPose(lastPose.pose);
 
 		mgamepad = new GamepadManager(gamepad2);
 	}
 
 	@Override
 	public void loop() {
+		drivetrain.update();
 		mecanumDrive.loop();
 		bot.loop();
-		telemetry.clearAll(); // Disables telemetry from the turret
+		telemetry.clearAll(); // Disables telemetry from the Turret
+		bot.turret.trackTarget(Depot.getPosition(Field.Alliance.Blue), drivetrain.getPoseTracker()
+				.getLocalizer()).run();
+		if (autoTracking) {
+			bot.turret.setRotationPower(0);
+		} else {
+			bot.turret.setRotationPower(.5);
+
+		}
 
 		bot.intake.setSpeed(gamepad2.right_trigger * ((gamepad2.y) ? -1 : 1));
 
@@ -74,8 +84,20 @@ public class BlueOpMode extends OpMode {
 
 		if (gamepad1.a && ! lastA)
 			ll.debugSnapshot();
-
 		lastA = gamepad1.a;
+
+		if (mgamepad.justPressed(GamepadManager.Button.DPAD_UP)) {
+			speedTrim += .02;
+		}
+		if (mgamepad.justPressed(GamepadManager.Button.DPAD_DOWN)) {
+			speedTrim -= .02;
+		}
+		if (mgamepad.justPressed(GamepadManager.Button.DPAD_RIGHT)) {
+			speedTrim = 0;
+		}
+
+		if (mgamepad.justPressed(GamepadManager.Button.Y))
+			turretOn = !turretOn;
 
 		if (gamepad2.a) {
 			shootHands = true;
@@ -84,56 +106,9 @@ public class BlueOpMode extends OpMode {
 		if (shootHands)
 			shootHands = bot.shoot(Robot.BallPosition.Hands).run();
 
-
 		bot.intake.setHeight(gamepad1.right_trigger);
 
-		bot.turret.setSpeed(distance.power + -gamepad2.left_stick_y / 10);
-
-		tagMatch = false;
-		if (ll.getResults() != null && ll.getResults().isValid() && !ll.getResults()
-				.getFiducialResults().isEmpty()) {
-
-			d("AHM got ll results, size: " + ll.getResults().getFiducialResults().size());
-			LLResult llr = ll.getResults();
-
-			if (!gamepad2.start) {
-				for (LLResultTypes.FiducialResult result : llr.getFiducialResults()) {
-					d("AHM tag number " + result.getFiducialId());
-					if (result.getFiducialId() == targetTag.id) {
-						d("AHM matches target tag");
-						telemetry.addData("tx", result.getTargetXDegrees());
-						double tx = -result.getTargetXDegrees();
-						d("AHM tx " + tx);
-						bot.turret.rotator.setPower(tx / 50 * ((gamepad2.start) ? 0 : 1));
-						d("AHM power " + tx / 50);
-						tagMatch = true;
-					}
-				}
-			} else {
-				bot.turret.rotator.setPower(0);
-			}
-		}
-
-		if (!tagMatch || gamepad2.start)
-			bot.turret.rotator.setPower(gamepad2.left_stick_x);
-
-		if (tagMatch) {
-			gamepad2.setLedColor(0, 255, 0, 300);
-		} else {
-			gamepad2.setLedColor(255, 0, 0, 300);
-		}
-
-
-		if (gamepad2.dpad_down)
-			distance = Turret.SpeedByDistance.Close;
-		if (gamepad2.dpad_up)
-			distance = Turret.SpeedByDistance.Far;
-		if (gamepad2.dpad_right)
-			distance = Turret.SpeedByDistance.Max;
-		if (gamepad2.dpad_left)
-			distance = Turret.SpeedByDistance.None;
-
-		telemetry.addLine("Ball" + bot.palmsOfGod.getLeftBall());
+		bot.turret.setSpeed((speedTrim + bot.turret.getSpeedByDistance(bot.turret.getDistance(Depot.getPosition(Field.Alliance.Blue)))) * ((turretOn) ? 0 : 1));
 
 		if (mgamepad.justPressed(GamepadManager.Button.RIGHT_BUMPER)) {
 			rightPalmOpen = !rightPalmOpen;
@@ -148,7 +123,7 @@ public class BlueOpMode extends OpMode {
 			rightPalmOpen = false;
 		}
 
-		if (gamepad2.right_stick_button) {
+		if (mgamepad.justPressed(GamepadManager.Button.DPAD_LEFT)) {
 			autoTracking = !autoTracking;
 		}
 
@@ -158,15 +133,14 @@ public class BlueOpMode extends OpMode {
 		bot.palmsOfGod.setLeftPalm((leftPalmOpen) ? PalmsOfGod.Position.Up : PalmsOfGod.Position.Down);
 		bot.palmsOfGod.setRightPalm((rightPalmOpen) ? PalmsOfGod.Position.Up : PalmsOfGod.Position.Down);
 
-		bot.palmsOfGod.getLeftBall();
-		bot.palmsOfGod.getRightBall();
+		telemetry.addData("turretOn", turretOn);
+		telemetry.addData("speedTrim", speedTrim);
+		telemetry.addData("angleTrim", bot.turret.rotationTrim);
+		telemetry.addData("autoTracking", autoTracking);
+		telemetry.addData("distance", bot.turret.getDistance(Depot.getPosition(Field.Alliance.Blue)));
+		telemetry.addData("velocity", bot.turret.spinner0.getVelocity());
 
-		//TODO! figure out
-//		telemetry.addData("x", pose.position.x);
-//		telemetry.addData("y", pose.position.y);
-//		telemetry.addData("r", pose.heading.toDouble());
-//		telemetry.addData("t", bot.turret.getRotation());
-//		telemetry.addData("autoTrack", autoTracking);
+		bot.turret.dumpTelemetry(telemetry);
 
 		telemetry.update();
 		mgamepad.poll();

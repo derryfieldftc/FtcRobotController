@@ -29,13 +29,16 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
-//Oh boy
 public class Turret extends RobotPart {
 	//call it a radius of 6in
 	public DcMotor rotator;
 	public DcMotorEx spinner0;
 	Gamepad gamepad;
 	public double rotationTrim;
+	/**
+	 * Not meant to be mutated, the distance in ticks from straight ahead to the starting position of the turret
+	 */
+	public double rotationInitalOffset = 0;
 	double ticksPerRotation = 2000.0; //25 to 95 ratio, 1 full rotation is 2k steps
 	public boolean refreshEncoder = true;
 	TrackingState tracking;
@@ -75,8 +78,10 @@ public class Turret extends RobotPart {
 	public Turret(OpMode opMode, TurretPose turretPose2d) {
 		super(opMode);
 		gamepad = opMode.gamepad2;
+		rotationInitalOffset = (turretPose2d.rotation / (2 % PI)) * ticksPerRotation;
 		pose = turretPose2d;
 	}
+
 	public Turret setAngleTrim(double rotationTrim) {
 		this.rotationTrim = rotationTrim;
 		return this;
@@ -90,10 +95,8 @@ public class Turret extends RobotPart {
 		rotator = hardwareMap.dcMotor.get(Part.TurretRotator.name);
 		rotator.setPower(0);
 		rotator.setTargetPosition(0);
-		if (refreshEncoder) {
-			rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-			rotator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-		}
+		rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+		rotator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 		spinner0 = (DcMotorEx) hardwareMap.get(Part.LaunchMotor.type, Part.LaunchMotor.name);
 		spinner0.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 		spinner0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -150,6 +153,7 @@ public class Turret extends RobotPart {
 
 				double angleToTarget = atan2(target.getYComponent() - pose.pose.getY(), target.getXComponent() - pose.pose.getX());
 				targetRotation = (angleToTarget + rotationTrim - pose.pose.getHeading()) % (PI * 2);
+				d("AHM angle to target %f", angleToTarget);
 				updateRotation(targetRotation);
 				RobotLog.d("AHM TRACKING target angle %f", targetRotation);
 				updateLight();
@@ -172,11 +176,13 @@ public class Turret extends RobotPart {
 
 	public void updateRotation(double targetRotation) {
 		this.targetRotation = targetRotation % (2 * PI);
-		rotator.setTargetPosition((int) ((this.targetRotation / (2 * PI)) * ticksPerRotation));
+		rotator.setTargetPosition((int) (-rotationInitalOffset + ((this.targetRotation / (2 * PI)) * ticksPerRotation)));
+		d("AHM target rotation %d", rotator.getTargetPosition());
 	}
 
 	private void updatePose(Pose pose) {
-		rotation = ((rotator.getCurrentPosition() / ticksPerRotation)) % (2 * PI);
+		rotation = (((rotator.getCurrentPosition() + rotationInitalOffset) / ticksPerRotation)) % (2 * PI);
+		d("AHM ROTATOR TICKS %d", rotator.getCurrentPosition());
 		d("AHM rotation %f", rotation);
 		this.pose = new TurretPose(pose, rotation);
 	}

@@ -10,8 +10,6 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.autonmous.actions.Action;
 import org.firstinspires.ftc.teamcode.autonmous.actions.FollowPathAction;
@@ -19,10 +17,13 @@ import org.firstinspires.ftc.teamcode.autonmous.actions.ParallelAction;
 import org.firstinspires.ftc.teamcode.autonmous.actions.SequentialAction;
 import org.firstinspires.ftc.teamcode.autonmous.actions.SleepAction;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
+import org.firstinspires.ftc.teamcode.robot.Depot;
+import org.firstinspires.ftc.teamcode.robot.Field;
 import org.firstinspires.ftc.teamcode.robot.LimeLight;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.Tag;
 import org.firstinspires.ftc.teamcode.robot.Turret;
+import org.firstinspires.ftc.teamcode.robot.TurretPose;
 
 @Autonomous()
 @Configurable // Panels
@@ -43,7 +44,7 @@ public class Blue2 extends OpMode {
 		ll = new LimeLight(this);
 		ll.init();
 		ll.setMode(LimeLight.LimeLightMode.AprilTag);
-		robot = new Robot(this).enableTurret().enableIntake().enableHandsOfGod().enablePalmsOfGod();
+		robot = new Robot(this).enableTurret().enableIntake().enableHandsOfGod().enablePalmsOfGod().setTurretPose(new TurretPose(new Pose(46, 16, Math.toRadians(135)), 0));
 		robot.init();
 
 		panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
@@ -55,6 +56,7 @@ public class Blue2 extends OpMode {
 
 		panelsTelemetry.debug("Status", "Initialized");
 		panelsTelemetry.update(telemetry);
+		robot.turret.setRotationPower(.5);
 
 		action = new ParallelAction(
 				new SequentialAction(
@@ -85,6 +87,8 @@ public class Blue2 extends OpMode {
 						robot.shootAll(),
 						robot.resetPalms(),
 						new FollowPathAction(follower, paths.Middle8)),
+				robot.turret.trackTarget(Depot.getPosition(Field.Alliance.Blue), follower.poseTracker.getLocalizer()),
+//				robot.setTurretSpeed(robot.turret.getSpeedByDistance(robot.turret.getDistance(Depot.getPosition(Field.Alliance.Blue)))),
 				new Action() {
 					@Override
 					public boolean run() {
@@ -110,12 +114,6 @@ public class Blue2 extends OpMode {
 		panelsTelemetry.debug("Y", follower.getPose().getY());
 		panelsTelemetry.debug("Heading", follower.getPose().getHeading());
 		panelsTelemetry.update(telemetry);
-	}
-
-	@Override
-	public void stop() {
-		robot.turret.savePosition();
-		super.stop();
 	}
 
 	public static class Paths {
