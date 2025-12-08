@@ -110,7 +110,7 @@ public class Turret extends RobotPart {
 	public Turret setSpeed(double speed) {
 		targetPower = speed;
 		spinner0.setPower(speed);
-		return thisv gfddbbbv
+		return this;
 	}
 
 	public double getSpeedByDistance(double distance) {
