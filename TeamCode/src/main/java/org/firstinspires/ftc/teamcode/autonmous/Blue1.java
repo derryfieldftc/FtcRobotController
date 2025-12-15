@@ -10,9 +10,20 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import org.firstinspires.ftc.teamcode.pedro.Constants;
+import com.sun.source.doctree.DeprecatedTree;
 
-@Autonomous()
+import org.firstinspires.ftc.teamcode.autonmous.actions.Action;
+import org.firstinspires.ftc.teamcode.autonmous.actions.FollowPathAction;
+import org.firstinspires.ftc.teamcode.autonmous.actions.ParallelAction;
+import org.firstinspires.ftc.teamcode.autonmous.actions.SequentialAction;
+import org.firstinspires.ftc.teamcode.autonmous.actions.SleepAction;
+import org.firstinspires.ftc.teamcode.pedro.Constants;
+import org.firstinspires.ftc.teamcode.robot.Depot;
+import org.firstinspires.ftc.teamcode.robot.Field;
+import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.robot.TurretPose;
+
+@Autonomous(name = "Blue1", group = "Autonomous")
 @Configurable // Panels
 public class Blue1 extends OpMode {
 
@@ -20,24 +31,75 @@ public class Blue1 extends OpMode {
 	public Follower follower; // Pedro Pathing follower instance
 	private int pathState; // Current autonomous path state (state machine)
 	private Paths paths; // Paths defined in the Paths class
+	boolean completed = true;
+	Robot robot;
+	Action action;
+	Field.Alliance alliance = Field.Alliance.Blue;
 
 	@Override
 	public void init() {
+		robot = new Robot(this).enableTurret().enableIntake().enableHandsOfGod().enablePalmsOfGod()
+				.setTurretPose(new TurretPose(new Pose(24, 121, Math.toRadians(180)), 0));
+		robot.init();
+
 		panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
 		follower = Constants.createFollower(hardwareMap);
-		follower.setStartingPose(new Pose(72, 8, Math.toRadians(90)));
+		follower.setStartingPose(new Pose(24, 121, Math.toRadians(180)));
 
 		paths = new Paths(follower); // Build paths
 
 		panelsTelemetry.debug("Status", "Initialized");
 		panelsTelemetry.update(telemetry);
+		robot.turret.setRotationPower(1);
+
+		action = new ParallelAction(
+				new SequentialAction(
+						new FollowPathAction(follower, paths.FirstShot1),
+						robot.shootAll(),
+						robot.resetPalms(),
+						robot.setIntakeSpeed(1),
+						new FollowPathAction(follower, paths.PickupMidRow2),
+						new FollowPathAction(follower, paths.Lever3),
+						new SleepAction(500),
+						new FollowPathAction(follower, paths.BackSecondShot4),
+						robot.shootAll(),
+						robot.resetPalms(),
+						new FollowPathAction(follower, paths.PickupBackRow5),
+						new FollowPathAction(follower, paths.ThirdShot6),
+						robot.shootAll(),
+						robot.resetPalms(),
+						new FollowPathAction(follower, paths.PickUpClose7),
+						new FollowPathAction(follower, paths.LastShot8),
+						robot.shootAll()
+				),
+				robot.turret.trackTarget(Depot.getPosition(alliance), follower.getPoseTracker()
+						.getLocalizer()),
+				new Action() {
+					@Override
+					public boolean run() {
+						robot.turret.setSpeed(robot.turret.getSpeedByDistance(robot.turret.getDistance(Depot.getPosition(alliance))));
+						return true;
+					}
+	},
+				new Action() {
+					@Override
+					public boolean run() {
+						robot.turret.savePosition();
+						return true;
+					}
+				}
+		);
 	}
 
 	@Override
 	public void loop() {
 		follower.update(); // Update Pedro Pathing
 		pathState = autonomousPathUpdate(); // Update autonomous state machine
+		if (completed)
+			completed = action.run();
+
+		panelsTelemetry.debug("action status", completed);
 
 		// Log values to Panels and Driver Station
 		panelsTelemetry.debug("Path State", pathState);
@@ -49,57 +111,55 @@ public class Blue1 extends OpMode {
 
 	public static class Paths {
 
-		public PathChain CloseShot1;
-		public PathChain Pickup2;
-		public PathChain Lever4;
-		public PathChain CloseShot4;
+		public PathChain FirstShot1;
+		public PathChain PickupMidRow2;
+		public PathChain Lever3;
+		public PathChain BackSecondShot4;
 		public PathChain PickupBackRow5;
-		public PathChain CloseShot6;
-		public PathChain PickupFirstRow7;
-		public PathChain CloseShot8;
-		public PathChain Middle9;
+		public PathChain ThirdShot6;
+		public PathChain PickUpClose7;
+		public PathChain LastShot8;
 
 		public Paths(Follower follower) {
-			CloseShot1 = follower
+			FirstShot1 = follower
 					.pathBuilder()
 					.addPath(
-							new BezierLine(new Pose(23.487, 119.379), new Pose(51.996, 83.744))
+							new BezierLine(new Pose(24.000, 121.000), new Pose(63.010, 79.694))
 					)
-					.setConstantHeadingInterpolation(Math.toRadians(180))
+					.setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
 					.build();
 
-			Pickup2 = follower
+			PickupMidRow2 = follower
 					.pathBuilder()
 					.addPath(
 							new BezierCurve(
-									new Pose(51.996, 83.744),
-									new Pose(50.214, 56.693),
-									new Pose(61.714, 58.637),
-									new Pose(22.515, 59.285)
+									new Pose(63.010, 79.694),
+									new Pose(60.094, 50.538),
+									new Pose(18.790, 59.285)
 							)
 					)
 					.setConstantHeadingInterpolation(Math.toRadians(180))
 					.build();
 
-			Lever4 = follower
+			Lever3 = follower
 					.pathBuilder()
 					.addPath(
 							new BezierCurve(
-									new Pose(22.515, 59.285),
-									new Pose(21.867, 67.384),
-									new Pose(16.360, 65.926)
+									new Pose(18.790, 59.285),
+									new Pose(22.029, 72.081),
+									new Pose(10.529, 70.461)
 							)
 					)
 					.setConstantHeadingInterpolation(Math.toRadians(180))
 					.build();
 
-			CloseShot4 = follower
+			BackSecondShot4 = follower
 					.pathBuilder()
 					.addPath(
 							new BezierCurve(
-									new Pose(16.360, 65.926),
-									new Pose(47.460, 60.256),
-									new Pose(51.996, 84.067)
+									new Pose(10.529, 70.461),
+									new Pose(49.566, 63.172),
+									new Pose(55.559, 79.046)
 							)
 					)
 					.setConstantHeadingInterpolation(Math.toRadians(180))
@@ -108,51 +168,39 @@ public class Blue1 extends OpMode {
 			PickupBackRow5 = follower
 					.pathBuilder()
 					.addPath(
-							new BezierLine(new Pose(51.996, 84.067), new Pose(18.628, 83.906))
-					)
-					.setConstantHeadingInterpolation(Math.toRadians(180))
-					.build();
-
-			CloseShot6 = follower
-					.pathBuilder()
-					.addPath(
-							new BezierLine(new Pose(18.628, 83.906), new Pose(54.749, 84.067))
-					)
-					.setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(270))
-					.build();
-
-			PickupFirstRow7 = follower
-					.pathBuilder()
-					.addPath(
 							new BezierCurve(
-									new Pose(54.749, 84.067),
-									new Pose(63.982, 32.720),
-									new Pose(18.790, 35.312)
-							)
-					)
-					.setTangentHeadingInterpolation()
-					.build();
-
-			CloseShot8 = follower
-					.pathBuilder()
-					.addPath(
-							new BezierCurve(
-									new Pose(18.790, 35.312),
-									new Pose(59.123, 30.938),
-									new Pose(57.017, 83.906)
+									new Pose(55.559, 79.046),
+									new Pose(45.516, 84.553),
+									new Pose(19.276, 83.744)
 							)
 					)
 					.setConstantHeadingInterpolation(Math.toRadians(180))
 					.build();
 
-			Middle9 = follower
+			ThirdShot6 = follower
+					.pathBuilder()
+					.addPath(
+							new BezierLine(new Pose(19.276, 83.744), new Pose(60.418, 75.645))
+					)
+					.setConstantHeadingInterpolation(Math.toRadians(180))
+					.build();
+
+			PickUpClose7 = follower
 					.pathBuilder()
 					.addPath(
 							new BezierCurve(
-									new Pose(57.017, 83.906),
-									new Pose(57.179, 67.870),
-									new Pose(32.882, 69.003)
+									new Pose(60.418, 75.645),
+									new Pose(72.081, 29.480),
+									new Pose(16.036, 35.960)
 							)
+					)
+					.setConstantHeadingInterpolation(Math.toRadians(180))
+					.build();
+
+			LastShot8 = follower
+					.pathBuilder()
+					.addPath(
+							new BezierLine(new Pose(16.036, 35.960), new Pose(59.771, 75.159))
 					)
 					.setConstantHeadingInterpolation(Math.toRadians(180))
 					.build();

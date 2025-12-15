@@ -35,7 +35,6 @@ public class Red2 extends OpMode {
 	private int pathState; // Current autonomous path state (state machine)
 	private Paths paths; // Paths defined in the Paths class
 	boolean completed = true;
-	Tag targetTag = Tag.RED;
 	LimeLight ll;
 	Action action;
 	Robot robot;
@@ -51,38 +50,38 @@ public class Red2 extends OpMode {
 		panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
 		follower = Constants.createFollower(hardwareMap);
-		follower.setStartingPose(new Pose(46, 16, Math.toRadians(135)).mirror());
+		follower.setStartingPose(new Pose(48, 9, Math.toRadians(180)).mirror());
 
 		paths = new Paths(follower); // Build paths
 
 		panelsTelemetry.debug("Status", "Initialized");
 		panelsTelemetry.update(telemetry);
-		robot.turret.setRotationPower(.5);
+		robot.turret.setRotationPower(1);
 
 		action = new ParallelAction(
 				new SequentialAction(
 						robot.setTurretSpeed(Turret.SpeedByDistance.Far.power),
-						new SleepAction(700),
+						new SleepAction(1000),
 						robot.shootAll(),
 						robot.resetPalms(),
 						robot.setTurretSpeed(Turret.SpeedByDistance.Close.power),
 						robot.setIntakeSpeed(1),
 						new FollowPathAction(follower, paths.Pickup1),
-						robot.setIntakeSpeed(0),
-						new FollowPathAction(follower, paths.Lever2),
-						new SleepAction(1000),
+//						robot.setIntakeSpeed(0),
+//						new FollowPathAction(follower, paths.Lever2),
+						new SleepAction(100),
 						new FollowPathAction(follower, paths.CloseShot3),
 						robot.shootAll(),
 						robot.resetPalms(),
 						robot.setIntakeSpeed(1),
 						new FollowPathAction(follower, paths.PickUpBackRow4),
-						robot.setIntakeSpeed(0),
+//						robot.setIntakeSpeed(0),
 						new FollowPathAction(follower, paths.CloseShot5),
 						robot.shootAll(),
 						robot.resetPalms(),
 						robot.setIntakeSpeed(1),
 						new FollowPathAction(follower, paths.PickUpFrontRow6),
-						robot.setIntakeSpeed(0),
+//						robot.setIntakeSpeed(0),
 						robot.setTurretSpeed(Turret.SpeedByDistance.Far.power),
 						new FollowPathAction(follower, paths.FarShot7),
 						robot.shootAll(),
@@ -136,10 +135,10 @@ public class Red2 extends OpMode {
 									new Pose(48.000, 12.000).mirror(),
 									new Pose(74.025, 73.863).mirror(),
 									new Pose(42.601, 58.799).mirror(),
-									new Pose(23.973, 60.094).mirror()
+									new Pose(18.973, 60.094).mirror()
 							)
 					)
-					.setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
+					.setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
 					.build();
 
 			Lever2 = follower
@@ -172,7 +171,7 @@ public class Red2 extends OpMode {
 							new BezierCurve(
 									new Pose(53.939, 77.264).mirror(),
 									new Pose(51.186, 86.173).mirror(),
-									new Pose(20.733, 84.067).mirror()
+									new Pose(18.733, 84.067).mirror()
 							)
 					)
 					.setConstantHeadingInterpolation(Math.toRadians(0))
@@ -192,7 +191,7 @@ public class Red2 extends OpMode {
 							new BezierCurve(
 									new Pose(53.939, 77.264).mirror(),
 									new Pose(66.898, 25.917).mirror(),
-									new Pose(20.247, 35.474).mirror()
+									new Pose(18.247, 35.474).mirror()
 							)
 					)
 					.setConstantHeadingInterpolation(Math.toRadians(0))

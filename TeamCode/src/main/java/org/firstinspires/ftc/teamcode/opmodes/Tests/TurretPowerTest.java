@@ -11,7 +11,6 @@ import org.firstinspires.ftc.teamcode.robot.HandsOfGod;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 @TeleOp(name="TurretPowerTest")
-@Disabled
 public class TurretPowerTest extends OpMode {
 	Robot bot;
 	double speed;

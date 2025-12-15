@@ -12,6 +12,9 @@ import static java.lang.Math.atan2;
 import static java.lang.Math.sqrt;
 
 import android.annotation.SuppressLint;
+
+import com.bylazar.configurables.annotations.Configurable;
+import com.bylazar.panels.Panels;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.localization.Localizer;
 import com.pedropathing.math.Vector;
@@ -19,7 +22,7 @@ import com.pedropathing.math.Vector;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -33,7 +36,6 @@ public class Turret extends RobotPart {
 	//call it a radius of 6in
 	public DcMotor rotator;
 	public DcMotorEx spinner0;
-	Gamepad gamepad;
 	public double rotationTrim;
 	/**
 	 * Not meant to be mutated, the distance in ticks from straight ahead to the starting position of the turret
@@ -42,12 +44,31 @@ public class Turret extends RobotPart {
 	double ticksPerRotation = 2000.0; //25 to 95 ratio, 1 full rotation is 2k steps
 	public boolean refreshEncoder = true;
 	TrackingState tracking;
-	PID rotationPID;
 	TurretPose pose;
 	double rotation;
 	double targetPower;
 	private double targetRotation;
 	IndicatorLight light;
+
+	@Configurable
+	public static class TurretConfigs {
+		static double rotationLimit = PI / 2;
+
+		public static double spinnerP = 0;
+		public static double spinnerI = 0;
+		public static double spinnerD = 0;
+		public static double spinnerF = 0;
+
+		@Configurable
+		public static class DistanceToPowerCoefficients {
+			public static double m = 0.001714191;// 0.0017258;
+			public static double b = 0.276731;//0.315965;
+		}
+		public static double distanceToPower(double distance) {
+			d("AHM DISTANCE %f", distance);
+			return DistanceToPowerCoefficients.m * distance + DistanceToPowerCoefficients.b;
+		}
+	}
 
 	public Turret(OpMode opMode) {
 		this(opMode, new TurretPose(new Pose(0, 0, 0), 0));
@@ -77,8 +98,7 @@ public class Turret extends RobotPart {
 
 	public Turret(OpMode opMode, TurretPose turretPose2d) {
 		super(opMode);
-		gamepad = opMode.gamepad2;
-		rotationInitalOffset = (turretPose2d.rotation / (2 % PI)) * ticksPerRotation;
+		rotationInitalOffset = (turretPose2d.rotation) * ticksPerRotation;
 		pose = turretPose2d;
 	}
 
@@ -102,9 +122,6 @@ public class Turret extends RobotPart {
 		spinner0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		spinner0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 		light = new IndicatorLight(opMode, IndicatorLightTurret.name);
-
-		// If it aint broke dont fix it
-		rotationPID = new PID(.1, 0, 0, .005);
 	}
 
 	public Turret setSpeed(double speed) {
@@ -113,13 +130,29 @@ public class Turret extends RobotPart {
 		return this;
 	}
 
+	/*
+	OLD
+	distance velocity
+	133.15	1300
+	90		1120
+	47		950
+	105		1180
+	129		1280
+	y=4.05014x+757.62475
+	NEW
+	93		1000
+	141		1300
+	56.5	820
+	107		1180
+	 */
+
 	public double getSpeedByDistance(double distance) {
-		return clamp(0.0017258 * distance + 0.315965, 0, 1); // found empirically
+		return clamp(TurretConfigs.distanceToPower(distance), 0, 1); // found empirically
 	}
 
 	public void updateLight() {
 		double error = rotation - targetRotation;
-		double maxAllowedError = .7;
+		double maxAllowedError = .3;
 		d("AHM light error %f", error);
 
 		IndicatorLight.Color color;
@@ -152,7 +185,8 @@ public class Turret extends RobotPart {
 				updatePose(localizer.getPose());
 
 				double angleToTarget = atan2(target.getYComponent() - pose.pose.getY(), target.getXComponent() - pose.pose.getX());
-				targetRotation = (angleToTarget + rotationTrim - pose.pose.getHeading()) % (PI * 2);
+				targetRotation = (angleToTarget + rotationTrim - pose.pose.getHeading()) % (2 * PI);
+				targetRotation = safeRotationAngle(targetRotation);
 				d("AHM angle to target %f", angleToTarget);
 				updateRotation(targetRotation);
 				RobotLog.d("AHM TRACKING target angle %f", targetRotation);
@@ -175,16 +209,22 @@ public class Turret extends RobotPart {
 	}
 
 	public void updateRotation(double targetRotation) {
-		this.targetRotation = targetRotation % (2 * PI);
+		spinner0.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, new PIDFCoefficients(TurretConfigs.spinnerP,
+				TurretConfigs.spinnerI, TurretConfigs.spinnerD, TurretConfigs.spinnerF));
+		this.targetRotation = safeRotationAngle(targetRotation);
 		rotator.setTargetPosition((int) (-rotationInitalOffset + ((this.targetRotation / (2 * PI)) * ticksPerRotation)));
 		d("AHM target rotation %d", rotator.getTargetPosition());
 	}
 
 	private void updatePose(Pose pose) {
-		rotation = (((rotator.getCurrentPosition() + rotationInitalOffset) / ticksPerRotation)) % (2 * PI);
+		rotation = (((rotator.getCurrentPosition() - rotationInitalOffset) / ticksPerRotation));
 		d("AHM ROTATOR TICKS %d", rotator.getCurrentPosition());
 		d("AHM rotation %f", rotation);
 		this.pose = new TurretPose(pose, rotation);
+	}
+
+	private double safeRotationAngle(double rotation) {
+		return clamp(rotation, -TurretConfigs.rotationLimit, TurretConfigs.rotationLimit);
 	}
 
 	@SuppressLint("DefaultLocale")
@@ -216,7 +256,7 @@ public class Turret extends RobotPart {
 			double t = scanner.nextDouble();
 			return new TurretPose(new Pose(x, y, r), t);
 		} catch (Exception ignored) {throw new Exception(ignored);}
-	};
+	}
 }
 //
 //		tagMatch = false;

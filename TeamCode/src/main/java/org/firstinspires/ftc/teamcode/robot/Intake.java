@@ -26,10 +26,10 @@ public class Intake extends RobotPart {
 		intakeLift = hardwareMap.servo.get(Part.IntakeLift.name);
 	}
 
-	public Field.Ball getBallType() {
+	public Field.Ball getIntakeBall() {
 		float[] temp = {0f, 0f, 0f};
 		Color.RGBToHSV(colorSensor.red(), colorSensor.green(), colorSensor.blue(), temp);
-		return Field.Ball.getBallFromColor(temp);
+		return Field.Ball.getBallFromColor(temp, new Field.ColorSensorValues.Intake());
 	}
 
 	public Intake setSpeed(double speed) {

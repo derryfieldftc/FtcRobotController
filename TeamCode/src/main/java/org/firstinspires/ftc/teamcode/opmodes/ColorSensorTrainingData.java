@@ -17,7 +17,7 @@ public class ColorSensorTrainingData extends OpMode {
 
 	@Override
 	public void init() {
-		colorSensor = hardwareMap.colorSensor.get("leftEye");
+		colorSensor = hardwareMap.colorSensor.get("rightColorSensor");
 		file = new File("/sdcard/FIRST/training");
 		try {
 			file.createNewFile();

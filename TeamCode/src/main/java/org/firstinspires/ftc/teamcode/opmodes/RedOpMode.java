@@ -68,20 +68,22 @@ public class RedOpMode extends OpMode {
 
 	@Override
 	public void loop() {
+		bot.turret.savePosition();
 		drivetrain.update();
 		mecanumDrive.loop();
 		bot.loop();
 		telemetry.clearAll(); // Disables telemetry from the Turret
+
 		bot.turret.trackTarget(Depot.getPosition(Field.Alliance.Red), drivetrain.getPoseTracker()
 				.getLocalizer()).run();
 		if (autoTracking) {
 			bot.turret.setRotationPower(0);
 		} else {
-			bot.turret.setRotationPower(.5);
+			bot.turret.setRotationPower(1);
 
 		}
 
-		bot.intake.setSpeed(gamepad2.right_trigger * ((gamepad2.y) ? -1 : 1));
+		bot.intake.setSpeed(gamepad2.right_trigger * ((gamepad2.start) ? -1 : 1));
 
 		if (mgamepad.justPressed(GamepadManager.Button.X)) {
 			handsUp = !handsUp;

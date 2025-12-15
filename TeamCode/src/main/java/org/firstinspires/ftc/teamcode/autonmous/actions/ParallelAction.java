@@ -23,7 +23,6 @@ public class ParallelAction extends Action {
 		for (Action action : actions) {
 			action.run();
 		}
-		RobotLog.d("AHM parrallal");
 		return !actions.isEmpty();
 	}
 }

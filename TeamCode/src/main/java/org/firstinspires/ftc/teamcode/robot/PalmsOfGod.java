@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import java.util.regex.Pattern;
+
 public class PalmsOfGod extends RobotPart {
 	public enum Position {
 		Up,
@@ -14,8 +16,8 @@ public class PalmsOfGod extends RobotPart {
 
 	public ColorSensor rightEye, leftEye;
 	public Servo rightPalm, leftPalm;
-	public double rightUp = .55, rightDown = .3;
-	public double leftUp = .23, leftDown = .4;
+	public double rightUp = .55, rightDown = .25;
+	public double leftUp = .23, leftDown = .45;
 	public boolean useTelemetry = false;
 	public Position leftPalmPos;
 	public Position rightPalmPos;
@@ -68,13 +70,12 @@ public class PalmsOfGod extends RobotPart {
 		return this;
 	}
 
-	//TODO! get color sensor working
 	public Field.Ball getLeftBall() {
 		if (useTelemetry)
 			telemetry.addLine(String.format("left: r: %d, g: %d, b: %d", leftEye.red(), leftEye.green(), leftEye.blue()));
 		float[] temp = {0f, 0f, 0f};
 		Color.RGBToHSV(leftEye.red(), leftEye.green(), leftEye.blue(), temp);
-		return Field.Ball.getBallFromColor(temp);
+		return Field.Ball.getBallFromColor(temp, new Field.ColorSensorValues.Left());
 	}
 
 	public Field.Ball getRightBall() {
@@ -82,7 +83,7 @@ public class PalmsOfGod extends RobotPart {
 			telemetry.addLine(String.format("right: r: %d, g: %d, b: %d", rightEye.red(), rightEye.green(), rightEye.blue()));
 		float[] temp = {0f, 0f, 0f};
 		Color.RGBToHSV(rightEye.red(), rightEye.green(), rightEye.blue(), temp);
-		return Field.Ball.getBallFromColor(temp);
+		return Field.Ball.getBallFromColor(temp, new Field.ColorSensorValues.Right());
 	}
 
 	public Position getPalm(Palm palm) {

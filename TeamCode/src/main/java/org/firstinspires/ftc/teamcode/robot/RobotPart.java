@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.robot;
 import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
@@ -91,6 +92,9 @@ public class RobotPart {
 		 * Servo to lift the intake, and hopefully untake balls from the center
 		 */
 		IntakeLift	("intakeLift", Servo.class),
+		IntakeColorSensor	("intakeColorSensor", ColorSensor.class),
+		LeftEye	("leftColorSensor", ColorSensor.class),
+		RightEye	("rightColorSensor", ColorSensor.class),
 		/**
 		 * This is the limelight camera, it is used for all sorts of april tag tracking, computer vision and localization, among other things.
 		 */
