@@ -1,12 +1,12 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import static com.qualcomm.robotcore.util.RobotLog.d;
-
 import com.pedropathing.follower.Follower;
-import com.pedropathing.geometry.Pose;
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.external.Const;
 import org.firstinspires.ftc.teamcode.GamepadManager;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.plugin.plugins.MecanumDrive;
@@ -16,8 +16,13 @@ import org.firstinspires.ftc.teamcode.robot.HandsOfGod;
 import org.firstinspires.ftc.teamcode.robot.LimeLight;
 import org.firstinspires.ftc.teamcode.robot.PalmsOfGod;
 import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.robot.Tag;
 import org.firstinspires.ftc.teamcode.robot.Turret;
 import org.firstinspires.ftc.teamcode.robot.TurretPose;
+import com.pedropathing.geometry.Pose;
+
+import static com.qualcomm.robotcore.util.RobotLog.*;
+import static java.lang.Math.abs;
 
 @TeleOp(name = "BlueOpMode")
 public class BlueOpMode extends OpMode {
@@ -63,20 +68,22 @@ public class BlueOpMode extends OpMode {
 
 	@Override
 	public void loop() {
+		bot.turret.savePosition();
 		drivetrain.update();
 		mecanumDrive.loop();
 		bot.loop();
 		telemetry.clearAll(); // Disables telemetry from the Turret
+
 		bot.turret.trackTarget(Depot.getPosition(Field.Alliance.Blue), drivetrain.getPoseTracker()
 				.getLocalizer()).run();
 		if (autoTracking) {
 			bot.turret.setRotationPower(0);
 		} else {
-			bot.turret.setRotationPower(.5);
+			bot.turret.setRotationPower(1);
 
 		}
 
-		bot.intake.setSpeed(gamepad2.right_trigger * ((gamepad2.y) ? -1 : 1));
+		bot.intake.setSpeed(gamepad2.right_trigger * ((gamepad2.start) ? -1 : 1));
 
 		if (mgamepad.justPressed(GamepadManager.Button.X)) {
 			handsUp = !handsUp;
