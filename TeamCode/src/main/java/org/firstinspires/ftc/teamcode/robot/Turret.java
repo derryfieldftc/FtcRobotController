@@ -26,6 +26,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.autonmous.actions.Action;
 
 import java.io.File;
@@ -127,6 +128,7 @@ public class Turret extends RobotPart {
 	public Turret setSpeed(double speed) {
 		targetPower = speed;
 		spinner0.setPower(speed);
+		d("AHM spinner0 power %f", spinner0.getPower());
 		return this;
 	}
 
@@ -185,6 +187,7 @@ public class Turret extends RobotPart {
 				updatePose(localizer.getPose());
 
 				double angleToTarget = atan2(target.getYComponent() - pose.pose.getY(), target.getXComponent() - pose.pose.getX());
+				d("AHM atan2 %f", angleToTarget);
 				targetRotation = (angleToTarget + rotationTrim - pose.pose.getHeading()) % (2 * PI);
 				targetRotation = safeRotationAngle(targetRotation);
 				d("AHM angle to target %f", angleToTarget);
@@ -192,7 +195,7 @@ public class Turret extends RobotPart {
 				RobotLog.d("AHM TRACKING target angle %f", targetRotation);
 				updateLight();
 
-				return tracking == TrackingState.TRACKING;
+				return true;
 			}
 		};
 	}
@@ -205,7 +208,9 @@ public class Turret extends RobotPart {
 	public double getDistance(Vector target) {
 		double ydiff = this.pose.pose.getY() - target.getYComponent();
 		double xdiff = this.pose.pose.getX() - target.getXComponent();
-		return sqrt((xdiff * xdiff) + (ydiff * ydiff));
+		double distance = sqrt((xdiff * xdiff) + (ydiff * ydiff));
+		d("AHM spinner0 distance %f", distance);
+		return distance;
 	}
 
 	public void updateRotation(double targetRotation) {
@@ -224,6 +229,12 @@ public class Turret extends RobotPart {
 	}
 
 	private double safeRotationAngle(double rotation) {
+		if (rotation > PI) {
+			rotation = rotation - (2 * PI);
+		} else if (rotation < -PI) {
+			rotation = rotation + (2 * PI);
+		};
+		d("AHM SAFE TRUE %f", rotation);
 		return clamp(rotation, -TurretConfigs.rotationLimit, TurretConfigs.rotationLimit);
 	}
 

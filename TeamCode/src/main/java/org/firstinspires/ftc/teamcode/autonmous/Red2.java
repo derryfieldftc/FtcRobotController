@@ -60,35 +60,33 @@ public class Red2 extends OpMode {
 
 		action = new ParallelAction(
 				new SequentialAction(
-						robot.setTurretSpeed(Turret.SpeedByDistance.Far.power),
 						new SleepAction(1000),
 						robot.shootAll(),
 						robot.resetPalms(),
-						robot.setTurretSpeed(Turret.SpeedByDistance.Close.power),
 						robot.setIntakeSpeed(1),
 						new FollowPathAction(follower, paths.Pickup1),
-//						robot.setIntakeSpeed(0),
-//						new FollowPathAction(follower, paths.Lever2),
-						new SleepAction(100),
 						new FollowPathAction(follower, paths.CloseShot3),
 						robot.shootAll(),
 						robot.resetPalms(),
 						robot.setIntakeSpeed(1),
 						new FollowPathAction(follower, paths.PickUpBackRow4),
-//						robot.setIntakeSpeed(0),
 						new FollowPathAction(follower, paths.CloseShot5),
 						robot.shootAll(),
 						robot.resetPalms(),
 						robot.setIntakeSpeed(1),
 						new FollowPathAction(follower, paths.PickUpFrontRow6),
-//						robot.setIntakeSpeed(0),
-						robot.setTurretSpeed(Turret.SpeedByDistance.Far.power),
 						new FollowPathAction(follower, paths.FarShot7),
 						robot.shootAll(),
 						robot.resetPalms(),
 						new FollowPathAction(follower, paths.Middle8)),
 				robot.turret.trackTarget(Depot.getPosition(Field.Alliance.Red), follower.poseTracker.getLocalizer()),
-//				robot.setTurretSpeed(robot.turret.getSpeedByDistance(robot.turret.getDistance(Depot.getPosition(Field.Alliance.Red)))),
+				new Action() {
+					@Override
+					public boolean run() {
+						robot.setTurretSpeed(robot.turret.getSpeedByDistance(robot.turret.getDistance(Depot.getPosition(Field.Alliance.Red)))).run();
+						return true;
+					};
+				},
 				new Action() {
 					@Override
 					public boolean run() {

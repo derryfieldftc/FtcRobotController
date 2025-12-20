@@ -67,6 +67,16 @@ public class Robot extends RobotPart {
 		return this;
 	}
 
+	public Action setTurretSpeed_Full(double speed) {
+		return new Action() {
+			@Override
+			public boolean run() {
+				setTurretSpeed(speed).run();
+				return true;
+			}
+		};
+	}
+
 	public enum BallPosition {
 		Hands(handBall),
 		Right(rightBall),
@@ -163,7 +173,7 @@ public class Robot extends RobotPart {
 	public Action shootAll() {
 		return new SequentialAction(
 				shoot(BallPosition.Hands),
-				new SleepAction(200),
+				new SleepAction(100),
 				new Action() {
 					@Override
 					public boolean run() {
@@ -171,9 +181,9 @@ public class Robot extends RobotPart {
 						return false;
 					}
 				},
-				new SleepAction(700),
+				new SleepAction(1000),
 				shoot(BallPosition.Hands),
-				new SleepAction(200),
+				new SleepAction(100),
 				new Action() {
 					@Override
 					public boolean run() {
@@ -181,7 +191,7 @@ public class Robot extends RobotPart {
 						return false;
 					}
 				},
-				new SleepAction(700),
+				new SleepAction(1000),
 				shoot(BallPosition.Hands)
 		);
 	}

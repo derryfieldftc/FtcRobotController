@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.robot.RobotPart;
 
 @TeleOp
-@Disabled
 public class HandsOfGodPositionTest extends OpMode {
 	Servo left, right;
 

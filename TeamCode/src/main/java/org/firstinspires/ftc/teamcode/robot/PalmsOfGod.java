@@ -37,11 +37,11 @@ public class PalmsOfGod extends RobotPart {
 	}
 
 	public void init() {
-		rightPalm = hardwareMap.servo.get("rightPalm");
-		leftPalm = hardwareMap.servo.get("leftPalm");
+		rightPalm = hardwareMap.servo.get(Part.RightPalm.name);
+		leftPalm = hardwareMap.servo.get(Part.LeftPalm.name);
 
-		rightEye = hardwareMap.colorSensor.get("rightEye");
-		leftEye = hardwareMap.colorSensor.get("leftEye");
+		rightEye = hardwareMap.colorSensor.get(Part.RightEye.name);
+		leftEye = hardwareMap.colorSensor.get(Part.LeftEye.name);
 	}
 
 	public PalmsOfGod setRightPalm(Position pos) {
