@@ -76,10 +76,6 @@ public class RobotPart {
 		 * Encoder that measures drive on the right side of the robot
 		 */
 		RightDriveEncoder 	("motorBR", DcMotor.class),
-		LeftPalm	("leftPalm", Servo.class),
-		RightPalm	("rightPalm", Servo.class),
-		LeftHand	("leftHand", Servo.class),
-		RightHand	("rightHand", Servo.class),
 		/**
 		 * Motor for accelerating balls
 		 */

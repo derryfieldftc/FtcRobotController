@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.GamepadManager;
-import org.firstinspires.ftc.teamcode.robot.depricated.HandsOfGod;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 @TeleOp(name="TurretPowerTest")

@@ -5,9 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.GamepadManager;
 import org.firstinspires.ftc.teamcode.plugin.plugins.MecanumDrive;
-import org.firstinspires.ftc.teamcode.robot.Field;
-import org.firstinspires.ftc.teamcode.robot.depricated.HandsOfGod;
-import org.firstinspires.ftc.teamcode.robot.depricated.PalmsOfGod;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 @TeleOp(name = "RobotTest")
