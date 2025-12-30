@@ -35,16 +35,12 @@ public class Red2 extends OpMode {
 	private int pathState; // Current autonomous path state (state machine)
 	private Paths paths; // Paths defined in the Paths class
 	boolean completed = true;
-	LimeLight ll;
 	Action action;
 	Robot robot;
 
 	@Override
 	public void init() {
-		ll = new LimeLight(this);
-		ll.init();
-		ll.setMode(LimeLight.LimeLightMode.AprilTag);
-		robot = new Robot(this).enableTurret().enableIntake().enableHandsOfGod().enablePalmsOfGod().setTurretPose(new TurretPose(new Pose(46, 16, Math.toRadians(135)).mirror(), 0));
+		robot = new Robot(this).enableTurret().enableIntake().setTurretPose(new TurretPose(new Pose(46, 16, Math.toRadians(135)).mirror(), 0));
 		robot.init();
 
 		panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
@@ -61,23 +57,15 @@ public class Red2 extends OpMode {
 		action = new ParallelAction(
 				new SequentialAction(
 						new SleepAction(1000),
-						robot.shootAll(),
-						robot.resetPalms(),
 						robot.setIntakeSpeed(1),
 						new FollowPathAction(follower, paths.Pickup1),
 						new FollowPathAction(follower, paths.CloseShot3),
-						robot.shootAll(),
-						robot.resetPalms(),
 						robot.setIntakeSpeed(1),
 						new FollowPathAction(follower, paths.PickUpBackRow4),
 						new FollowPathAction(follower, paths.CloseShot5),
-						robot.shootAll(),
-						robot.resetPalms(),
 						robot.setIntakeSpeed(1),
 						new FollowPathAction(follower, paths.PickUpFrontRow6),
 						new FollowPathAction(follower, paths.FarShot7),
-						robot.shootAll(),
-						robot.resetPalms(),
 						new FollowPathAction(follower, paths.Middle8)),
 				robot.turret.trackTarget(Depot.getPosition(Field.Alliance.Red), follower.poseTracker.getLocalizer()),
 				new Action() {

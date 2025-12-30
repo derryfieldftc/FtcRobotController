@@ -2,12 +2,11 @@ package org.firstinspires.ftc.teamcode.opmodes.Tests;
 
 import static com.pedropathing.math.MathFunctions.clamp;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.GamepadManager;
-import org.firstinspires.ftc.teamcode.robot.HandsOfGod;
+import org.firstinspires.ftc.teamcode.robot.depricated.HandsOfGod;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 @TeleOp(name="TurretPowerTest")
@@ -19,7 +18,7 @@ public class TurretPowerTest extends OpMode {
 
 	@Override
 	public void init() {
-		bot = new Robot(this).enableTurret().enableHandsOfGod().enableIntake().enablePalmsOfGod();
+		bot = new Robot(this).enableTurret().enableIntake();
 		bot.init();
 		mgamepad2 = new GamepadManager(gamepad2);
 	}
@@ -39,8 +38,6 @@ public class TurretPowerTest extends OpMode {
 		}
 
 		bot.intake.setSpeed(gamepad2.right_trigger);
-
-		bot.handsOfGod.setPosition((handsUp) ? HandsOfGod.Position.Up : HandsOfGod.Position.Down);
 
 		bot.turret.setSpeed(speed);
 		telemetry.addData("velocity", bot.turret.spinner0.getVelocity()); // bad

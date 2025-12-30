@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.OpModeGroups;
-import org.firstinspires.ftc.teamcode.robot.HandsOfGod;
+import org.firstinspires.ftc.teamcode.robot.depricated.HandsOfGod;
 
 @TeleOp(name = "HandsOfGodTest", group = OpModeGroups.TESTS)
 @Disabled

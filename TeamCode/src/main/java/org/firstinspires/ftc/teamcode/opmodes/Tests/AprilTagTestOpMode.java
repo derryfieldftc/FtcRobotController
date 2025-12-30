@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.OpModeGroups;
 import org.firstinspires.ftc.teamcode.plugin.plugins.MecanumDrive;
-import org.firstinspires.ftc.teamcode.robot.Camera;
+import org.firstinspires.ftc.teamcode.robot.depricated.Camera;
 import org.firstinspires.ftc.teamcode.robot.Tag;
 
 @TeleOp(name = "AprilTagTest", group = OpModeGroups.TESTS)

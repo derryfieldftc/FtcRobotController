@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.robot;
+package org.firstinspires.ftc.teamcode.robot.depricated;
 
 import android.graphics.Color;
 
@@ -6,8 +6,10 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import java.util.regex.Pattern;
+import org.firstinspires.ftc.teamcode.robot.Field;
+import org.firstinspires.ftc.teamcode.robot.RobotPart;
 
+@Deprecated
 public class PalmsOfGod extends RobotPart {
 	public enum Position {
 		Up,

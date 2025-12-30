@@ -38,7 +38,7 @@ public class Blue1 extends OpMode {
 
 	@Override
 	public void init() {
-		robot = new Robot(this).enableTurret().enableIntake().enableHandsOfGod().enablePalmsOfGod()
+		robot = new Robot(this).enableTurret().enableIntake()
 				.setTurretPose(new TurretPose(new Pose(24, 121, Math.toRadians(180)), 0));
 		robot.init();
 
@@ -56,22 +56,15 @@ public class Blue1 extends OpMode {
 		action = new ParallelAction(
 				new SequentialAction(
 						new FollowPathAction(follower, paths.FirstShot1),
-						robot.shootAll(),
-						robot.resetPalms(),
 						robot.setIntakeSpeed(1),
 						new FollowPathAction(follower, paths.PickupMidRow2),
 						new FollowPathAction(follower, paths.Lever3),
 						new SleepAction(500),
 						new FollowPathAction(follower, paths.BackSecondShot4),
-						robot.shootAll(),
-						robot.resetPalms(),
 						new FollowPathAction(follower, paths.PickupBackRow5),
 						new FollowPathAction(follower, paths.ThirdShot6),
-						robot.shootAll(),
-						robot.resetPalms(),
 						new FollowPathAction(follower, paths.PickUpClose7),
-						new FollowPathAction(follower, paths.LastShot8),
-						robot.shootAll()
+						new FollowPathAction(follower, paths.LastShot8)
 				),
 				robot.turret.trackTarget(Depot.getPosition(alliance), follower.getPoseTracker()
 						.getLocalizer()),

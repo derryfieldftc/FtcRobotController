@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.robot;
+package org.firstinspires.ftc.teamcode.robot.depricated;
 
 import static org.firstinspires.ftc.teamcode.robot.Tag.GPP;
 import static org.firstinspires.ftc.teamcode.robot.Tag.PGP;
@@ -11,6 +11,9 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.robot.Field;
+import org.firstinspires.ftc.teamcode.robot.RobotPart;
+import org.firstinspires.ftc.teamcode.robot.Tag;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;

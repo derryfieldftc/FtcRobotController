@@ -6,10 +6,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.GamepadManager;
 import org.firstinspires.ftc.teamcode.plugin.plugins.MecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.Field;
-import org.firstinspires.ftc.teamcode.robot.HandsOfGod;
-import org.firstinspires.ftc.teamcode.robot.PalmsOfGod;
+import org.firstinspires.ftc.teamcode.robot.depricated.HandsOfGod;
+import org.firstinspires.ftc.teamcode.robot.depricated.PalmsOfGod;
 import org.firstinspires.ftc.teamcode.robot.Robot;
-import org.firstinspires.ftc.teamcode.robot.Tag;
 
 @TeleOp(name = "RobotTest")
 public class RobotTest extends OpMode {
@@ -22,7 +21,7 @@ public class RobotTest extends OpMode {
 
 	@Override
 	public void init() {
-		bot = new Robot(this).enableIntake().enableHandsOfGod().enablePalmsOfGod().enableTurret();
+		bot = new Robot(this).enableIntake().enableTurret();
 		mecanumDrive = new MecanumDrive(this);
 		mecanumDrive.init();
 		bot.init();
@@ -39,8 +38,6 @@ public class RobotTest extends OpMode {
 			bot.turretEnabled = !bot.turretEnabled;
 		if (gamepad2.dpad_right)
 			bot.intakeEnabled = !bot.intakeEnabled;
-		if (gamepad2.dpad_down)
-			bot.handsOfGodEnabled = !bot.handsOfGodEnabled;
 
 		mecanumDrive.loop();
 		bot.loop();
@@ -63,23 +60,10 @@ public class RobotTest extends OpMode {
 			shootLeft = true;
 		}
 
-		if (shootHands)
-			shootHands = bot.shoot(Robot.BallPosition.Hands).run();
-
-		if (shootLeft)
-			shootLeft = bot.shoot(Robot.BallPosition.Left).run();
-
-		if (shootRight)
-			shootRight = bot.shoot(Robot.BallPosition.Right).run();
-
 		bot.intake.setHeight(gamepad1.right_trigger);
 
 		bot.turret.setSpeed(-gamepad2.left_stick_y);
 
-		telemetry.addLine("Ball" + bot.palmsOfGod.getLeftBall());
-
-		if (gamepad1.y)
-			bot.setBalls(new Field.Ball[]{Field.Ball.Purple, Field.Ball.Green, Field.Ball.Purple});
 		if (mgamepad.justPressed(GamepadManager.Button.RIGHT_BUMPER)) {
 			rightPalmOpen = !rightPalmOpen;
 		}
@@ -87,13 +71,6 @@ public class RobotTest extends OpMode {
 		if (mgamepad.justPressed(GamepadManager.Button.LEFT_BUMPER)) {
 			leftPalmOpen = !leftPalmOpen;
 		}
-
-		bot.handsOfGod.setPosition((handsUp) ? HandsOfGod.Position.Up : HandsOfGod.Position.Down);
-		bot.palmsOfGod.setLeftPalm((leftPalmOpen) ? PalmsOfGod.Position.Up : PalmsOfGod.Position.Down);
-		bot.palmsOfGod.setRightPalm((rightPalmOpen) ? PalmsOfGod.Position.Up : PalmsOfGod.Position.Down);
-
-		bot.palmsOfGod.getLeftBall();
-		bot.palmsOfGod.getRightBall();
 
 		telemetry.update();
 		mgamepad.poll();

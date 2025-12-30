@@ -1,22 +1,18 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.pedropathing.follower.Follower;
-import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.robotcore.external.Const;
 import org.firstinspires.ftc.teamcode.GamepadManager;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.plugin.plugins.MecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.Depot;
 import org.firstinspires.ftc.teamcode.robot.Field;
-import org.firstinspires.ftc.teamcode.robot.HandsOfGod;
+import org.firstinspires.ftc.teamcode.robot.depricated.HandsOfGod;
 import org.firstinspires.ftc.teamcode.robot.LimeLight;
-import org.firstinspires.ftc.teamcode.robot.PalmsOfGod;
+import org.firstinspires.ftc.teamcode.robot.depricated.PalmsOfGod;
 import org.firstinspires.ftc.teamcode.robot.Robot;
-import org.firstinspires.ftc.teamcode.robot.Tag;
 import org.firstinspires.ftc.teamcode.robot.Turret;
 import org.firstinspires.ftc.teamcode.robot.TurretPose;
 import com.pedropathing.geometry.Pose;
@@ -42,7 +38,7 @@ public class BlueOpMode extends OpMode {
 
 	@Override
 	public void init() {
-		bot = new Robot(this).enableIntake().enableHandsOfGod().enablePalmsOfGod();
+		bot = new Robot(this).enableIntake();
 		bot.init();
 		ll = new LimeLight(this);
 		ll.init();
@@ -110,20 +106,9 @@ public class BlueOpMode extends OpMode {
 			shootHands = true;
 		}
 
-		if (shootHands)
-			shootHands = bot.shoot(Robot.BallPosition.Hands).run();
-
 		bot.intake.setHeight(gamepad1.right_trigger);
 
 		bot.turret.setSpeed((speedTrim + bot.turret.getSpeedByDistance(bot.turret.getDistance(Depot.getPosition(Field.Alliance.Blue)))) * ((turretOn) ? 0 : 1));
-
-		if (mgamepad.justPressed(GamepadManager.Button.RIGHT_BUMPER)) {
-			rightPalmOpen = !rightPalmOpen;
-		}
-
-		if (mgamepad.justPressed(GamepadManager.Button.LEFT_BUMPER)) {
-			leftPalmOpen = !leftPalmOpen;
-		}
 
 		if (gamepad2.b) {
 			leftPalmOpen = false;
@@ -135,10 +120,6 @@ public class BlueOpMode extends OpMode {
 		}
 
 		bot.turret.setAngleTrim((bot.turret.rotationTrim + gamepad2.right_stick_y / 17.5) * ((gamepad2.right_stick_button) ? 0 : 1)); // the lion does not concern herself with the math
-
-		bot.handsOfGod.setPosition((handsUp) ? HandsOfGod.Position.Up : HandsOfGod.Position.Down);
-		bot.palmsOfGod.setLeftPalm((leftPalmOpen) ? PalmsOfGod.Position.Up : PalmsOfGod.Position.Down);
-		bot.palmsOfGod.setRightPalm((rightPalmOpen) ? PalmsOfGod.Position.Up : PalmsOfGod.Position.Down);
 
 		telemetry.addData("turretOn", turretOn);
 		telemetry.addData("speedTrim", speedTrim);
