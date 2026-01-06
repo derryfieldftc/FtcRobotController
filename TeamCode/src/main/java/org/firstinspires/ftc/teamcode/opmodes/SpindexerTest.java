@@ -3,11 +3,9 @@ package org.firstinspires.ftc.teamcode.opmodes;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.robot.Intake;
 import org.firstinspires.ftc.teamcode.robot.Lift;
-import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.RobotPart;
 import org.firstinspires.ftc.teamcode.robot.Spindexer;
 
@@ -62,6 +60,9 @@ public class SpindexerTest extends OpMode {
 			lift.setPosition(Lift.Position.Up);
 		}
 
-		turret.setPower(-(-gamepad1.right_stick_y + 1) / 2);
+		telemetry.addData("limit", spindexer.touchSensorPressed());
+		telemetry.update();
+
+		turret.setPower(gamepad1.right_stick_y);
 	}
 }

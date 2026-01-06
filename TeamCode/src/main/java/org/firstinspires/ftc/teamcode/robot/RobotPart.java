@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -98,7 +99,11 @@ public class RobotPart {
 		IndicatorLightTurret	("RGB_Turret", Servo.class), // not actually a servo
 		SpindexerRotator	("spindexerMotor", DcMotor.class),
 		SpindexerLift	("spindexerServo", Servo.class),
-		LiftServo	("lift", Servo.class)
+		LiftServo	("lift", Servo.class),
+		SpindexerLimit	("spindexerLimit", TouchSensor.class),
+		SpindexerColor0	("spindexerColor0", ColorSensor.class),
+		SpindexerColor1	("spindexerColor1", ColorSensor.class),
+		SpindexerColor2	("spindexerColor2", ColorSensor.class),
 		;
 		//TODO! make this list exhaustive
 

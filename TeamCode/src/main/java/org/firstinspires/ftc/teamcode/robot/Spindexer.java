@@ -3,14 +3,16 @@ package org.firstinspires.ftc.teamcode.robot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.MotorControlAlgorithm;
-import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
+
+import org.firstinspires.ftc.teamcode.autonmous.actions.Action;
 
 public class Spindexer extends RobotPart {
 	DcMotorEx rotator;
 	Servo lift;
 	Position currentPosition = Position.Zero;
+	TouchSensor limit;
 
 	// 4:1 ratio
 	// 103.8 ticks per revolution
@@ -44,11 +46,17 @@ public class Spindexer extends RobotPart {
 		super(opMode);
 	}
 
-	public void init() {
-		rotator = hardwareMap.get(DcMotorEx.class, Part.SpindexerRotator.name);
+	private void resetSpindexer() {
 		rotator.setTargetPosition(0);
 		rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		rotator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+	}
+
+	public void init() {
+		rotator = hardwareMap.get(DcMotorEx.class, Part.SpindexerRotator.name);
+		resetSpindexer();
+
+		limit = hardwareMap.touchSensor.get(Part.SpindexerLimit.name);
 
 		// What the heck is happening with the PIDF. We must use 0 for p i and d if we use a non-depricated algorithm
 //		rotator.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, new PIDFCoefficients(.5, 1, 0.001, .02, MotorControlAlgorithm.LegacyPID));
@@ -66,6 +74,27 @@ public class Spindexer extends RobotPart {
 	public void moveToReset() {
 		//TODO! make this reset the encoder position and zero the spindexer
 	}
+
+	public boolean touchSensorPressed() {
+		return limit.isPressed();
+	}
+
+	public Action resetPosition() {
+		return new Action() {
+			@Override
+			public boolean run() {
+				rotator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+				rotator.setPower(-.1);
+				if (touchSensorPressed()) {
+					rotator.setPower(0);
+					resetSpindexer();
+					return false;
+				}
+				return true;
+			}
+		};
+	}
+
 
 	/**
 	 * Spins to whichever position
