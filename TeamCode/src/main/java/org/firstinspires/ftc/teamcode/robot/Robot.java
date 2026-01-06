@@ -98,8 +98,6 @@ public class Robot extends RobotPart {
 
 	public void loop() {
 		currentTime = opMode.getRuntime();
-		if (intakeEnabled)
-			intake.loop();
 		telemetry.update();
 	}
 

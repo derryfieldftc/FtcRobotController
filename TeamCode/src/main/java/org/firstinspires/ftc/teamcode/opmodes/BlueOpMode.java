@@ -104,8 +104,6 @@ public class BlueOpMode extends OpMode {
 			shootHands = true;
 		}
 
-		bot.intake.setHeight(gamepad1.right_trigger);
-
 		bot.turret.setSpeed((speedTrim + bot.turret.getSpeedByDistance(bot.turret.getDistance(Depot.getPosition(Field.Alliance.Blue)))) * ((turretOn) ? 0 : 1));
 
 		if (gamepad2.b) {

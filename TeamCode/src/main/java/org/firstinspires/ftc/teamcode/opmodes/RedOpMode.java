@@ -104,8 +104,6 @@ public class RedOpMode extends OpMode {
 			shootHands = true;
 		}
 
-		bot.intake.setHeight(gamepad1.right_trigger);
-
 		bot.turret.setSpeed((speedTrim + bot.turret.getSpeedByDistance(bot.turret.getDistance(Depot.getPosition(Field.Alliance.Red)))) * ((turretOn) ? 0 : 1));
 
 		if (mgamepad.justPressed(GamepadManager.Button.RIGHT_BUMPER)) {

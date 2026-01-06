@@ -57,8 +57,6 @@ public class RobotTest extends OpMode {
 			shootLeft = true;
 		}
 
-		bot.intake.setHeight(gamepad1.right_trigger);
-
 		bot.turret.setSpeed(-gamepad2.left_stick_y);
 
 		if (mgamepad.justPressed(GamepadManager.Button.RIGHT_BUMPER)) {

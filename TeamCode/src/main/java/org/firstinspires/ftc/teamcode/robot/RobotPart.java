@@ -96,6 +96,9 @@ public class RobotPart {
 		 */
 		LimeLight	("limelight", Limelight3A.class),
 		IndicatorLightTurret	("RGB_Turret", Servo.class), // not actually a servo
+		SpindexerRotator	("spindexerMotor", DcMotor.class),
+		SpindexerLift	("spindexerServo", Servo.class),
+		LiftServo	("lift", Servo.class)
 		;
 		//TODO! make this list exhaustive
 
