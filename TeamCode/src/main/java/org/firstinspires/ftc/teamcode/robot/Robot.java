@@ -14,9 +14,9 @@ import org.firstinspires.ftc.teamcode.autonmous.actions.Action;
  */
 public class Robot extends RobotPart {
 	public Intake intake;
-	public boolean intakeEnabled;
 	public Turret turret;
-	public boolean turretEnabled;
+	public Spindexer spindexer;
+	public Lift lift;
 	public TurretPose turretPose;
 
 
@@ -69,29 +69,15 @@ public class Robot extends RobotPart {
 		super(opMode);
 		intake = new Intake(this.opMode);
 		turret = new Turret(this.opMode, new TurretPose(new Pose(0, 0, 0), 0));
+		lift = new Lift(this.opMode);
+		spindexer = new Spindexer(this.opMode);
+
 		voltageSensor = hardwareMap.voltageSensor.iterator()
 				.next(); // funky but also how RR gets voltage sensor
 	}
 
-	public Robot enableTurret() {
-		turretEnabled = true;
-		return this;
-	}
-
-	public Robot enableIntake() {
-		intakeEnabled = true;
-		return this;
-	}
-
 	public double getVoltage() {
 		return voltageSensor.getVoltage();
-	}
-
-	public void init() {
-		if (intakeEnabled)
-			intake.init();
-		if (turretEnabled)
-			turret.init();
 	}
 
 	double currentTime = 0;

@@ -17,8 +17,7 @@ public class TurretPowerTest extends OpMode {
 
 	@Override
 	public void init() {
-		bot = new Robot(this).enableTurret().enableIntake();
-		bot.init();
+		bot = new Robot(this);
 		mgamepad2 = new GamepadManager(gamepad2);
 	}
 

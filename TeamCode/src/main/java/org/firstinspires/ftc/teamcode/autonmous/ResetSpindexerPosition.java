@@ -12,7 +12,6 @@ public class ResetSpindexerPosition extends OpMode {
 	@Override
 	public void init() {
 		spindexer = new Spindexer(this);
-		spindexer.init();
 	}
 
 	@Override

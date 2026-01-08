@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.plugin.plugins.MecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.Depot;
 import org.firstinspires.ftc.teamcode.robot.Field;
+import org.firstinspires.ftc.teamcode.robot.Lift;
 import org.firstinspires.ftc.teamcode.robot.LimeLight;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.Turret;
@@ -25,7 +26,7 @@ public class RedOpMode extends OpMode {
 	GamepadManager mgamepad;
 	Follower drivetrain;
 	double speedTrim = 0;
-	boolean handsUp = false;
+	boolean liftUp = false;
 	boolean autoTracking = true;
 	boolean shootHands;
 	boolean leftPalmOpen = false, rightPalmOpen = false;
@@ -36,10 +37,8 @@ public class RedOpMode extends OpMode {
 
 	@Override
 	public void init() {
-		bot = new Robot(this).enableIntake();
-		bot.init();
+		bot = new Robot(this);
 		ll = new LimeLight(this);
-		ll.init();
 		ll.setMode(LimeLight.LimeLightMode.AprilTag);
 		d("AHM init");
 		drivetrain = Constants.createFollower(hardwareMap);
@@ -52,7 +51,6 @@ public class RedOpMode extends OpMode {
 
 		bot.turret = new Turret(this, lastPose);
 		bot.turret.refreshEncoder = false;
-		bot.turret.init();
 		mecanumDrive = new MecanumDrive(this);
 		mecanumDrive.init();
 		drivetrain.setStartingPose(lastPose.pose);
@@ -70,7 +68,7 @@ public class RedOpMode extends OpMode {
 
 		bot.turret.trackTarget(Depot.getPosition(Field.Alliance.Red), drivetrain.getPoseTracker()
 				.getLocalizer()).run();
-		if (autoTracking) {
+		if (!autoTracking) {
 			bot.turret.setRotationPower(0);
 		} else {
 			bot.turret.setRotationPower(1);
@@ -80,7 +78,13 @@ public class RedOpMode extends OpMode {
 		bot.intake.setSpeed(gamepad2.right_trigger * ((gamepad2.start) ? -1 : 1));
 
 		if (mgamepad.justPressed(GamepadManager.Button.X)) {
-			handsUp = !handsUp;
+			liftUp = !liftUp;
+		}
+
+		if (liftUp) {
+			bot.lift.setPosition(Lift.Position.Up);
+		} else {
+			bot.lift.setPosition(Lift.Position.Down);
 		}
 
 		if (gamepad1.a && ! lastA)
@@ -100,24 +104,7 @@ public class RedOpMode extends OpMode {
 		if (mgamepad.justPressed(GamepadManager.Button.Y))
 			turretOn = !turretOn;
 
-		if (gamepad2.a) {
-			shootHands = true;
-		}
-
 		bot.turret.setSpeed((speedTrim + bot.turret.getSpeedByDistance(bot.turret.getDistance(Depot.getPosition(Field.Alliance.Red)))) * ((turretOn) ? 0 : 1));
-
-		if (mgamepad.justPressed(GamepadManager.Button.RIGHT_BUMPER)) {
-			rightPalmOpen = !rightPalmOpen;
-		}
-
-		if (mgamepad.justPressed(GamepadManager.Button.LEFT_BUMPER)) {
-			leftPalmOpen = !leftPalmOpen;
-		}
-
-		if (gamepad2.b) {
-			leftPalmOpen = false;
-			rightPalmOpen = false;
-		}
 
 		if (mgamepad.justPressed(GamepadManager.Button.DPAD_LEFT)) {
 			autoTracking = !autoTracking;

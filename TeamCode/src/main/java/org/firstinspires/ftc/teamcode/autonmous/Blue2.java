@@ -40,8 +40,7 @@ public class Blue2 extends OpMode {
 
 	@Override
 	public void init() {
-		robot = new Robot(this).enableTurret().enableIntake().setTurretPose(new TurretPose(new Pose(48, 9, Math.toRadians(180)), 0));
-		robot.init();
+		robot = new Robot(this).setTurretPose(new TurretPose(new Pose(48, 9, Math.toRadians(180)), 0));
 
 		panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 

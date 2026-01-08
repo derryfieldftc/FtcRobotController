@@ -8,9 +8,6 @@ public class Lift extends RobotPart {
 
 	public Lift(OpMode opMode) {
 		super(opMode);
-	}
-
-	public void init() {
 		lift = hardwareMap.servo.get(Part.LiftServo.name);
 	}
 

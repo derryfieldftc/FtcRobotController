@@ -44,15 +44,7 @@ public class Spindexer extends RobotPart {
 
 	public Spindexer(OpMode opMode) {
 		super(opMode);
-	}
 
-	private void resetSpindexer() {
-		rotator.setTargetPosition(0);
-		rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-		rotator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-	}
-
-	public void init() {
 		rotator = hardwareMap.get(DcMotorEx.class, Part.SpindexerRotator.name);
 		resetSpindexer();
 
@@ -61,6 +53,12 @@ public class Spindexer extends RobotPart {
 		// What the heck is happening with the PIDF. We must use 0 for p i and d if we use a non-depricated algorithm
 //		rotator.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, new PIDFCoefficients(.5, 1, 0.001, .02, MotorControlAlgorithm.LegacyPID));
 		lift = hardwareMap.servo.get(RobotPart.Part.SpindexerLift.name);
+	}
+
+	private void resetSpindexer() {
+		rotator.setTargetPosition(0);
+		rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+		rotator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 	}
 
 	public void setRotatorPower(double power) {

@@ -29,8 +29,6 @@ public class TurretAngleTest extends OpMode {
 		drivetrain = Constants.createFollower(this.hardwareMap);
 		drivetrain.setStartingPose(new Pose(72, 72, 0));
 		turret = new Turret(this, new TurretPose(new Pose(72, 72, 0), 0));
-		turret.init();
-		ll.init();
 		mecanumDrive.init();
 	}
 

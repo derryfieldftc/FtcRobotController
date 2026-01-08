@@ -17,7 +17,6 @@ public class MotifAuto extends OpMode {
 	public void init() {
 		Field.motif = null;
 		robot = new Robot(this);
-		robot.init();
 
 	}
 

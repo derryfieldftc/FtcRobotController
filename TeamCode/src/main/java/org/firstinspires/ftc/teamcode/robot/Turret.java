@@ -101,6 +101,19 @@ public class Turret extends RobotPart {
 		super(opMode);
 		rotationInitalOffset = (turretPose2d.rotation) * ticksPerRotation;
 		pose = turretPose2d;
+
+		rotator = hardwareMap.dcMotor.get(Part.TurretRotator.name);
+		spinner0 = (DcMotorEx) hardwareMap.get(Part.LaunchMotor.type, Part.LaunchMotor.name);
+		light = new IndicatorLight(opMode, IndicatorLightTurret.name);
+
+		rotator.setPower(0);
+		rotator.setTargetPosition(0);
+		rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+		rotator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+		spinner0.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+		spinner0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+		spinner0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 	}
 
 	public Turret setAngleTrim(double rotationTrim) {
@@ -110,19 +123,6 @@ public class Turret extends RobotPart {
 
 	public void setRotationPower(double power) {
 		rotator.setPower(power);
-	}
-
-	public void init() {
-		rotator = hardwareMap.dcMotor.get(Part.TurretRotator.name);
-		rotator.setPower(0);
-		rotator.setTargetPosition(0);
-		rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-		rotator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-		spinner0 = (DcMotorEx) hardwareMap.get(Part.LaunchMotor.type, Part.LaunchMotor.name);
-		spinner0.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-		spinner0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-		spinner0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-		light = new IndicatorLight(opMode, IndicatorLightTurret.name);
 	}
 
 	public Turret setSpeed(double speed) {

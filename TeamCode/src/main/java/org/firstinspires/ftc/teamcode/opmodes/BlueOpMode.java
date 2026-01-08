@@ -36,10 +36,8 @@ public class BlueOpMode extends OpMode {
 
 	@Override
 	public void init() {
-		bot = new Robot(this).enableIntake();
-		bot.init();
+		bot = new Robot(this);
 		ll = new LimeLight(this);
-		ll.init();
 		ll.setMode(LimeLight.LimeLightMode.AprilTag);
 		d("AHM init");
 		drivetrain = Constants.createFollower(hardwareMap);
@@ -52,7 +50,6 @@ public class BlueOpMode extends OpMode {
 
 		bot.turret = new Turret(this, lastPose);
 		bot.turret.refreshEncoder = false;
-		bot.turret.init();
 		mecanumDrive = new MecanumDrive(this);
 		mecanumDrive.init();
 		drivetrain.setStartingPose(lastPose.pose);

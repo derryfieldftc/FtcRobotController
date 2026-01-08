@@ -18,10 +18,9 @@ public class RobotTest extends OpMode {
 
 	@Override
 	public void init() {
-		bot = new Robot(this).enableIntake().enableTurret();
+		bot = new Robot(this);
 		mecanumDrive = new MecanumDrive(this);
 		mecanumDrive.init();
-		bot.init();
 //		bot.turret.useGamepad();
 
 
@@ -30,12 +29,6 @@ public class RobotTest extends OpMode {
 
 	@Override
 	public void loop() {
-		// enable or disable parts of the robot, this does not fully shut parts off, intake.setSpeed() will still change the motor speed, this is an okay sacrifice as imo disabling parts like this are niche
-		if (gamepad2.dpad_up)
-			bot.turretEnabled = !bot.turretEnabled;
-		if (gamepad2.dpad_right)
-			bot.intakeEnabled = !bot.intakeEnabled;
-
 		mecanumDrive.loop();
 		bot.loop();
 

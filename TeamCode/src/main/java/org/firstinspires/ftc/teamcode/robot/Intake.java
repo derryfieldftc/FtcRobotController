@@ -14,9 +14,6 @@ public class Intake extends RobotPart {
 
 	public Intake(OpMode opMode) {
 		super(opMode);
-	}
-
-	public void init() {
 		intake = hardwareMap.dcMotor.get(Part.Intake.name);
 		intake.setDirection(DcMotorSimple.Direction.FORWARD);
 	}

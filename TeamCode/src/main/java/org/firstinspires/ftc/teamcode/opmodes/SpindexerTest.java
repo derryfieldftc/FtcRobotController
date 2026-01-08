@@ -19,13 +19,10 @@ public class SpindexerTest extends OpMode {
 	@Override
 	public void init() {
 		spindexer = new Spindexer(this);
-		spindexer.init();
 
 		intake = new Intake(this);
-		intake.init();
 
 		lift = new Lift(this);
-		lift.init();
 
 		turret = hardwareMap.dcMotor.get(RobotPart.Part.LaunchMotor.name);
 		turret.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
