@@ -88,10 +88,6 @@ public class RobotPart {
 		/**
 		 * Servo to lift the intake, and hopefully untake balls from the center
 		 */
-		IntakeLift	("intakeLift", Servo.class),
-		IntakeColorSensor	("intakeColorSensor", ColorSensor.class),
-		LeftEye	("leftColorSensor", ColorSensor.class),
-		RightEye	("rightColorSensor", ColorSensor.class),
 		/**
 		 * This is the limelight camera, it is used for all sorts of april tag tracking, computer vision and localization, among other things.
 		 */

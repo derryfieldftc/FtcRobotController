@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.robot.Field;
 import org.firstinspires.ftc.teamcode.robot.Lift;
 import org.firstinspires.ftc.teamcode.robot.LimeLight;
 import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.robot.Spindexer;
 import org.firstinspires.ftc.teamcode.robot.Turret;
 import org.firstinspires.ftc.teamcode.robot.TurretPose;
 import com.pedropathing.geometry.Pose;
@@ -28,8 +29,6 @@ public class RedOpMode extends OpMode {
 	double speedTrim = 0;
 	boolean liftUp = false;
 	boolean autoTracking = true;
-	boolean shootHands;
-	boolean leftPalmOpen = false, rightPalmOpen = false;
 	boolean lastA;
 	LimeLight ll;
 	TurretPose lastPose;
@@ -72,14 +71,38 @@ public class RedOpMode extends OpMode {
 			bot.turret.setRotationPower(0);
 		} else {
 			bot.turret.setRotationPower(1);
+		}
 
+		if (gamepad2.right_stick_button) {
+			bot.spindexer.resetPosition().run();
+		} else {
+			bot.spindexer.setRotatorPower(1);
 		}
 
 		bot.intake.setSpeed(gamepad2.right_trigger * ((gamepad2.start) ? -1 : 1));
+		if (gamepad2.right_trigger > .5) {
+			bot.spindexer.setLiftPosition(Spindexer.Height.Down);
+		} else {
+			bot.spindexer.setLiftPosition(Spindexer.Height.Up);
+		}
 
-		if (mgamepad.justPressed(GamepadManager.Button.X)) {
+		if (mgamepad.justPressed(GamepadManager.Button.RIGHT_BUMPER)) {
 			liftUp = !liftUp;
 		}
+
+		if (mgamepad.justPressed(GamepadManager.Button.X)) {
+			bot.spindexer.setPosition(Spindexer.Position.Zero);
+		}
+
+		if (mgamepad.justPressed(GamepadManager.Button.A)) {
+			bot.spindexer.setPosition(Spindexer.Position.One);
+		}
+
+		if (mgamepad.justPressed(GamepadManager.Button.B)) {
+			bot.spindexer.setPosition(Spindexer.Position.Two);
+		}
+
+		bot.spindexer.setRotatorPower(1);
 
 		if (liftUp) {
 			bot.lift.setPosition(Lift.Position.Up);

@@ -6,7 +6,7 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 public class LimeLight extends RobotPart {
-	Limelight3A ll;
+	public Limelight3A ll;
 	public enum LimeLightMode { // <3 enums
 		Default (0),
 		AprilTag (1),

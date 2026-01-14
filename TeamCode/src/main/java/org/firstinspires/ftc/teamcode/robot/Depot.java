@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import static org.firstinspires.ftc.teamcode.robot.Field.Alliance;
 import static org.firstinspires.ftc.teamcode.robot.Field.Ball;
-import static org.firstinspires.ftc.teamcode.robot.Field.Motif;
+import static org.firstinspires.ftc.teamcode.robot.Obelisk.Motif;
 
 import java.util.ArrayList;
 
@@ -16,8 +16,6 @@ public class Depot {
 	public Depot(Alliance alliance) {
 		this.alliance = alliance;
 	}
-
-	;
 
 	/**
 	 * Returns the amount of balls in the gutter

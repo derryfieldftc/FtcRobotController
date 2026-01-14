@@ -8,7 +8,7 @@ import com.bylazar.configurables.annotations.Configurable;
 public class Field {
 	// This class contains some terrible code
 
-	public static Motif motif = Motif.PGP; // default
+	public static Obelisk.Motif motif = Obelisk.Motif.PGP; // default
 
 	// I hate java so much, all I wanted was a struct
 	public static class ColorSensorValue {
@@ -36,7 +36,7 @@ public class Field {
 	public abstract static class ColorSensorValues {
 		abstract ColorSensorValue getValues();
 		@Configurable
-		public static class Intake extends ColorSensorValues {
+		public static class Zero extends ColorSensorValues {
 			public static float[] Purple = {221.1095443F, 0.5889083609F, 2.393604294F};
 			public static float[] PurpleStandardDev = {5.549840808F, 0.03360296602F, 0.6559297522F};
 			public static float[] Green = {169.4471924F, 0.6627107526F, 1.519375929F};
@@ -50,7 +50,7 @@ public class Field {
 			}
 		}
 		@Configurable
-		public static class Right extends ColorSensorValues{
+		public static class One extends ColorSensorValues{
 			public static float[] Purple = {225.2889038F, 0.5683059188F, 1.764237594F};
 			public static float[] PurpleStandardDev = {11.56284251F, 0.05297879102F, 1.637031313F};
 			public static float[] Green = {164.4971972F, 0.7140865378F, 1.419567729F};
@@ -64,7 +64,7 @@ public class Field {
 			}
 		}
 		@Configurable
-		public static class Left extends ColorSensorValues {
+		public static class Two extends ColorSensorValues {
 			public static float[] Purple = {220.7293108F, 0.5350395014F, 0.9359466158F};
 			public static float[] PurpleStandardDev = {7.055582598F, 0.0391077265F, 0.9913694394F};
 			public static float[] Green = {162.5407762F, 0.715224336F, 0.981909621F};
@@ -122,38 +122,6 @@ public class Field {
 	public enum Alliance {
 		Red,
 		Blue
-	}
-
-	public enum Motif {
-		PPG,
-		PGP,
-		GPP;
-
-		public Ball getBall(int position) {
-			if (this == PPG) {
-				if (position == 0)
-					return Ball.Purple;
-				if (position == 1)
-					return Ball.Purple;
-				if (position == 2)
-					return Ball.Green;
-			} else if (this == PGP) {
-				if (position == 0)
-					return Ball.Purple;
-				if (position == 1)
-					return Ball.Green;
-				if (position == 2)
-					return Ball.Purple;
-			} else if (this == GPP) {
-				if (position == 0)
-					return Ball.Green;
-				if (position == 1)
-					return Ball.Purple;
-				if (position == 2)
-					return Ball.Purple;
-			}
-			return Ball.None;
-		}
 	}
 
 }

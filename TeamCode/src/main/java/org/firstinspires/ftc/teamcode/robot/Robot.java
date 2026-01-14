@@ -4,6 +4,9 @@ import static org.firstinspires.ftc.teamcode.robot.Field.Ball;
 import static org.firstinspires.ftc.teamcode.robot.Field.Ball.None;
 
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.localization.Localizer;
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.autonmous.actions.Action;
@@ -17,6 +20,7 @@ public class Robot extends RobotPart {
 	public Turret turret;
 	public Spindexer spindexer;
 	public Lift lift;
+	public LimeLight limeLight;
 	public TurretPose turretPose;
 
 
@@ -71,6 +75,7 @@ public class Robot extends RobotPart {
 		turret = new Turret(this.opMode, new TurretPose(new Pose(0, 0, 0), 0));
 		lift = new Lift(this.opMode);
 		spindexer = new Spindexer(this.opMode);
+		limeLight = new LimeLight(this.opMode);
 
 		voltageSensor = hardwareMap.voltageSensor.iterator()
 				.next(); // funky but also how RR gets voltage sensor
@@ -93,6 +98,32 @@ public class Robot extends RobotPart {
 			public boolean run() {
 				intake.setSpeed(speed);
 				return false;
+			}
+		};
+	}
+
+	public Action getMotif(Localizer localizer) {
+		return new Action() {
+			@Override
+			public boolean run() {
+				turret.trackTarget(Obelisk.getObeliskPosition(), localizer);
+				LLResult results = limeLight.getResults();
+
+				if (results.isValid()) {
+					for (LLResultTypes.FiducialResult tag : results.getFiducialResults()) {
+
+						switch (tag.getFiducialId()) {
+							case Tag.PGP.id:
+								Field.motif = Obelisk.Motif.PGP;
+							case Tag.PPG.id:
+								Field.motif = Obelisk.Motif.PPG;
+							case Tag.GPP.id:
+								Field.motif = Obelisk.Motif.GPP;
+							default:
+								return true;
+						}
+					}
+				}
 			}
 		};
 	}

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.robot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
@@ -50,8 +51,6 @@ public class Spindexer extends RobotPart {
 
 		limit = hardwareMap.touchSensor.get(Part.SpindexerLimit.name);
 
-		// What the heck is happening with the PIDF. We must use 0 for p i and d if we use a non-depricated algorithm
-//		rotator.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, new PIDFCoefficients(.5, 1, 0.001, .02, MotorControlAlgorithm.LegacyPID));
 		lift = hardwareMap.servo.get(RobotPart.Part.SpindexerLift.name);
 	}
 
@@ -59,6 +58,7 @@ public class Spindexer extends RobotPart {
 		rotator.setTargetPosition(0);
 		rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		rotator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+		rotator.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, new PIDFCoefficients(0, 0, 0, 0));
 	}
 
 	public void setRotatorPower(double power) {
@@ -100,7 +100,7 @@ public class Spindexer extends RobotPart {
 	 */
 	public void setPosition(Position targetPosition) {
 		int currentPositionTicks = rotator.getCurrentPosition();
-		int rotations = currentPositionTicks / fullRotationTicks;
+		int rotations = (currentPositionTicks + (stepTicks / 2)) / fullRotationTicks;
 
 		// Don't look at this
 		switch (currentPosition) {
