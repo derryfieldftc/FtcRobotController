@@ -90,7 +90,7 @@ public class RedOpMode extends OpMode {
 					-gamepad1.left_stick_y * (1 - gamepad1.right_trigger),
 					-gamepad1.left_stick_x * (1 - gamepad1.right_trigger),
 					-gamepad1.right_stick_x * (1 - gamepad1.right_trigger),
-					gamepad1.right_bumper);
+					true);
 
 		if (autoMoving && (mgamepad1.justPressed(GamepadManager.Button.B) || !drivetrain.isBusy())) {
 			drivetrain.startTeleopDrive();
@@ -111,7 +111,7 @@ public class RedOpMode extends OpMode {
 		}
 
 		bot.intake.setSpeed(gamepad2.right_trigger * ((gamepad2.start) ? -1 : 1));
-		if (gamepad2.right_trigger > .5) {
+		if (!gamepad2.left_bumper) {
 			bot.spindexer.setLiftPosition(Spindexer.Height.Down);
 		} else {
 			bot.spindexer.setLiftPosition(Spindexer.Height.Up);

@@ -34,15 +34,16 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 public class Turret extends RobotPart {
-	//call it a radius of 6in
+	// call it a radius of 6in
 	public DcMotor rotator;
 	public DcMotorEx spinner0;
 	public double rotationTrim;
 	/**
-	 * Not meant to be mutated, the distance in ticks from straight ahead to the starting position of the turret
+	 * Not meant to be mutated, the distance in ticks from straight ahead to the
+	 * starting position of the turret
 	 */
 	public double rotationInitalOffset = 0;
-	double ticksPerRotation = 2000.0; //25 to 95 ratio, 1 full rotation is 2k steps
+	double ticksPerRotation = 2000.0; // 25 to 95 ratio, 1 full rotation is 2k steps
 	public boolean refreshEncoder = true;
 	TrackingState tracking;
 	TurretPose pose;
@@ -61,9 +62,10 @@ public class Turret extends RobotPart {
 
 		@Configurable
 		public static class DistanceToPowerCoefficients {
-			public static double m = 0.001714191;// 0.0017258;
-			public static double b = 0.276731;//0.315965;
+			public static double m = 0.00321953;// 0.0017258;
+			public static double b = 0.362021;// 0.315965;
 		}
+
 		public static double distanceToPower(double distance) {
 			d("AHM DISTANCE %f", distance);
 			return DistanceToPowerCoefficients.m * distance + DistanceToPowerCoefficients.b;
@@ -87,13 +89,16 @@ public class Turret extends RobotPart {
 
 	@Deprecated
 	public enum SpeedByDistance {
-		Max (1),
-		None (0),
-		Close (.44),
-		Far (.52);
+		Max(1),
+		None(0),
+		Close(.44),
+		Far(.52);
+
 		public final double power;
 
-		SpeedByDistance(double power) {this.power = power;};
+		SpeedByDistance(double power) {
+			this.power = power;
+		};
 	}
 
 	public Turret(OpMode opMode, TurretPose turretPose2d) {
@@ -132,19 +137,19 @@ public class Turret extends RobotPart {
 	}
 
 	/*
-	OLD
-	distance velocity
-	133.15	1300
-	90		1120
-	47		950
-	105		1180
-	129		1280
-	y=4.05014x+757.62475
-	NEW
-	93		1000
-	141		1300
-	56.5	820
-	107		1180
+	 * OLD
+	 * distance velocity
+	 * 133.15 1300
+	 * 90 1120
+	 * 47 950
+	 * 105 1180
+	 * 129 1280
+	 * y=4.05014x+757.62475
+	 * NEW
+	 * 93 1000
+	 * 141 1300
+	 * 56.5 820
+	 * 107 1180
 	 */
 
 	public double getSpeedByDistance(double distance) {
@@ -174,7 +179,8 @@ public class Turret extends RobotPart {
 	}
 
 	/**
-	 * This is action should never finish until the stopAutoTracking Action is called
+	 * This is action should never finish until the stopAutoTracking Action is
+	 * called
 	 */
 	public Action trackTarget(Vector target, Localizer localizer) {
 		return new Action() {
@@ -184,7 +190,8 @@ public class Turret extends RobotPart {
 					tracking = TrackingState.TRACKING;
 				updatePose(localizer.getPose());
 
-				double angleToTarget = atan2(target.getYComponent() - pose.pose.getY(), target.getXComponent() - pose.pose.getX());
+				double angleToTarget = atan2(target.getYComponent() - pose.pose.getY(),
+						target.getXComponent() - pose.pose.getX());
 				d("AHM atan2 %f", angleToTarget);
 				targetRotation = (angleToTarget + rotationTrim - pose.pose.getHeading()) % (2 * PI);
 				targetRotation = safeRotationAngle(targetRotation);
@@ -200,6 +207,7 @@ public class Turret extends RobotPart {
 
 	/**
 	 * Compute distance between robot pose and target
+	 * 
 	 * @param target
 	 * @return
 	 */
@@ -215,7 +223,8 @@ public class Turret extends RobotPart {
 		spinner0.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, new PIDFCoefficients(TurretConfigs.spinnerP,
 				TurretConfigs.spinnerI, TurretConfigs.spinnerD, TurretConfigs.spinnerF));
 		this.targetRotation = safeRotationAngle(targetRotation);
-		rotator.setTargetPosition((int) (-rotationInitalOffset + ((this.targetRotation / (2 * PI)) * ticksPerRotation)));
+		rotator.setTargetPosition(
+				(int) (-rotationInitalOffset + ((this.targetRotation / (2 * PI)) * ticksPerRotation)));
 		d("AHM target rotation %d", rotator.getTargetPosition());
 	}
 
@@ -231,7 +240,8 @@ public class Turret extends RobotPart {
 			rotation = rotation - (2 * PI);
 		} else if (rotation < -PI) {
 			rotation = rotation + (2 * PI);
-		};
+		}
+		;
 		d("AHM SAFE TRUE %f", rotation);
 		return clamp(rotation, -TurretConfigs.rotationLimit, TurretConfigs.rotationLimit);
 	}
@@ -244,7 +254,8 @@ public class Turret extends RobotPart {
 			PrintWriter writer = new PrintWriter(file);
 			file.createNewFile();
 
-			writer.println(String.format("%f %f %f %f", pose.pose.getX(), pose.pose.getY(), pose.pose.getHeading(), pose.rotation));
+			writer.println(String.format("%f %f %f %f", pose.pose.getX(), pose.pose.getY(), pose.pose.getHeading(),
+					pose.rotation));
 			writer.flush();
 			writer.close();
 			d("AHM WROTE");
@@ -264,38 +275,41 @@ public class Turret extends RobotPart {
 			double r = scanner.nextDouble();
 			double t = scanner.nextDouble();
 			return new TurretPose(new Pose(x, y, r), t);
-		} catch (Exception ignored) {throw new Exception(ignored);}
+		} catch (Exception ignored) {
+			throw new Exception(ignored);
+		}
 	}
 }
 //
-//		tagMatch = false;
-//		if (ll.getResults() != null && ll.getResults().isValid() && !ll.getResults()
-//				.getFiducialResults().isEmpty()) {
+// tagMatch = false;
+// if (ll.getResults() != null && ll.getResults().isValid() && !ll.getResults()
+// .getFiducialResults().isEmpty()) {
 //
-//			d("AHM got ll results, size: " + ll.getResults().getFiducialResults().size());
-//			LLResult llr = ll.getResults();
+// d("AHM got ll results, size: " +
+// ll.getResults().getFiducialResults().size());
+// LLResult llr = ll.getResults();
 //
-//			if (!gamepad2.start) {
-//				for (LLResultTypes.FiducialResult result : llr.getFiducialResults()) {
-//					d("AHM tag number " + result.getFiducialId());
-//					if (result.getFiducialId() == targetTag.id) {
-//						d("AHM matches target tag");
-//						telemetry.addData("tx", result.getTargetXDegrees());
-//						double tx = -result.getTargetXDegrees();
-//						d("AHM tx " + tx);
-//						bot.turret.rotator.setPower(tx / 50 * ((gamepad2.start) ? 0 : 1));
-//						d("AHM power " + tx / 50);
-//						tagMatch = true;
-//					}
-//				}
-//			}
-//		}
+// if (!gamepad2.start) {
+// for (LLResultTypes.FiducialResult result : llr.getFiducialResults()) {
+// d("AHM tag number " + result.getFiducialId());
+// if (result.getFiducialId() == targetTag.id) {
+// d("AHM matches target tag");
+// telemetry.addData("tx", result.getTargetXDegrees());
+// double tx = -result.getTargetXDegrees();
+// d("AHM tx " + tx);
+// bot.turret.rotator.setPower(tx / 50 * ((gamepad2.start) ? 0 : 1));
+// d("AHM power " + tx / 50);
+// tagMatch = true;
+// }
+// }
+// }
+// }
 //
-//		if (!tagMatch || gamepad2.start)
-//			bot.turret.rotator.setPower(gamepad2.left_stick_x);
+// if (!tagMatch || gamepad2.start)
+// bot.turret.rotator.setPower(gamepad2.left_stick_x);
 //
-//		if (tagMatch) {
-//			gamepad2.setLedColor(0, 255, 0, 300);
-//		} else {
-//			gamepad2.setLedColor(255, 0, 0, 300);
-//		}
+// if (tagMatch) {
+// gamepad2.setLedColor(0, 255, 0, 300);
+// } else {
+// gamepad2.setLedColor(255, 0, 0, 300);
+// }

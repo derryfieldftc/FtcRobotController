@@ -24,9 +24,9 @@ import org.firstinspires.ftc.teamcode.robot.Field;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.TurretPose;
 
-@Autonomous(name = "Blue1", group = "Autonomous")
+@Autonomous(name = "Red1", group = "Autonomous")
 @Configurable // Panels
-public class Blue1 extends OpMode {
+public class Red1 extends OpMode {
 
 	private TelemetryManager panelsTelemetry; // Panels Telemetry instance
 	public Follower follower; // Pedro Pathing follower instance
@@ -35,7 +35,7 @@ public class Blue1 extends OpMode {
 	boolean completed = true;
 	Robot robot;
 	Action action;
-	Field.Alliance alliance = Field.Alliance.Blue;
+	Field.Alliance alliance = Field.Alliance.Red;
 
 	@Override
 	public void init() {
@@ -45,7 +45,7 @@ public class Blue1 extends OpMode {
 		panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
 		follower = Constants.createFollower(hardwareMap);
-		follower.setStartingPose(new Pose(33, 134, Math.toRadians(270)));
+		follower.setStartingPose(new Pose(33, 134, Math.toRadians(270)).mirror());
 
 		paths = new Paths(follower); // Build paths
 
@@ -55,25 +55,24 @@ public class Blue1 extends OpMode {
 
 		action = new ParallelAction(
 				new SequentialAction(
-						new SleepAction(10000)
-				),
+						new SleepAction(10000)),
 				robot.turret.trackTarget(Depot.getPosition(alliance), follower.getPoseTracker()
 						.getLocalizer()),
 				new Action() {
 					@Override
 					public boolean run() {
-						robot.turret.setSpeed(robot.turret.getSpeedByDistance(robot.turret.getDistance(Depot.getPosition(alliance))));
+						robot.turret.setSpeed(
+								robot.turret.getSpeedByDistance(robot.turret.getDistance(Depot.getPosition(alliance))));
 						return true;
 					}
-	},
+				},
 				new Action() {
 					@Override
 					public boolean run() {
 						robot.turret.savePosition();
 						return true;
 					}
-				}
-		);
+				});
 	}
 
 	@Override
@@ -108,8 +107,7 @@ public class Blue1 extends OpMode {
 			FirstShot1 = follower
 					.pathBuilder()
 					.addPath(
-							new BezierLine(new Pose(24.000, 121.000), new Pose(63.010, 79.694))
-					)
+							new BezierLine(new Pose(24.000, 121.000), new Pose(63.010, 79.694)))
 					.setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
 					.build();
 
@@ -119,9 +117,7 @@ public class Blue1 extends OpMode {
 							new BezierCurve(
 									new Pose(63.010, 79.694),
 									new Pose(60.094, 50.538),
-									new Pose(18.790, 59.285)
-							)
-					)
+									new Pose(18.790, 59.285)))
 					.setConstantHeadingInterpolation(Math.toRadians(180))
 					.build();
 
@@ -131,9 +127,7 @@ public class Blue1 extends OpMode {
 							new BezierCurve(
 									new Pose(18.790, 59.285),
 									new Pose(22.029, 72.081),
-									new Pose(10.529, 70.461)
-							)
-					)
+									new Pose(10.529, 70.461)))
 					.setConstantHeadingInterpolation(Math.toRadians(180))
 					.build();
 
@@ -143,9 +137,7 @@ public class Blue1 extends OpMode {
 							new BezierCurve(
 									new Pose(10.529, 70.461),
 									new Pose(49.566, 63.172),
-									new Pose(55.559, 79.046)
-							)
-					)
+									new Pose(55.559, 79.046)))
 					.setConstantHeadingInterpolation(Math.toRadians(180))
 					.build();
 
@@ -155,17 +147,14 @@ public class Blue1 extends OpMode {
 							new BezierCurve(
 									new Pose(55.559, 79.046),
 									new Pose(45.516, 84.553),
-									new Pose(19.276, 83.744)
-							)
-					)
+									new Pose(19.276, 83.744)))
 					.setConstantHeadingInterpolation(Math.toRadians(180))
 					.build();
 
 			ThirdShot6 = follower
 					.pathBuilder()
 					.addPath(
-							new BezierLine(new Pose(19.276, 83.744), new Pose(60.418, 75.645))
-					)
+							new BezierLine(new Pose(19.276, 83.744), new Pose(60.418, 75.645)))
 					.setConstantHeadingInterpolation(Math.toRadians(180))
 					.build();
 
@@ -175,17 +164,14 @@ public class Blue1 extends OpMode {
 							new BezierCurve(
 									new Pose(60.418, 75.645),
 									new Pose(72.081, 29.480),
-									new Pose(16.036, 35.960)
-							)
-					)
+									new Pose(16.036, 35.960)))
 					.setConstantHeadingInterpolation(Math.toRadians(180))
 					.build();
 
 			LastShot8 = follower
 					.pathBuilder()
 					.addPath(
-							new BezierLine(new Pose(16.036, 35.960), new Pose(59.771, 75.159))
-					)
+							new BezierLine(new Pose(16.036, 35.960), new Pose(59.771, 75.159)))
 					.setConstantHeadingInterpolation(Math.toRadians(180))
 					.build();
 		}
