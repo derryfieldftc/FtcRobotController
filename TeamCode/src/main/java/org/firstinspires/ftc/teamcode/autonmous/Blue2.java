@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.autonmous;
 
+import static com.qualcomm.robotcore.util.RobotLog.d;
+
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
@@ -40,12 +42,12 @@ public class Blue2 extends OpMode {
 
 	@Override
 	public void init() {
-		robot = new Robot(this).setTurretPose(new TurretPose(new Pose(48, 9, Math.toRadians(180)), 0));
+		robot = new Robot(this).setTurretPose(new TurretPose(new Pose(46, 16, Math.toRadians(135)), 0));
 
 		panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
 		follower = Constants.createFollower(hardwareMap);
-		follower.setStartingPose(new Pose(48, 9, Math.toRadians(180)));
+		follower.setStartingPose(new Pose(48, 9, Math.toRadians(90)));
 
 		paths = new Paths(follower); // Build paths
 
@@ -53,24 +55,38 @@ public class Blue2 extends OpMode {
 		panelsTelemetry.update(telemetry);
 		robot.turret.setRotationPower(1);
 
+		d("AHM searching");
+		telemetry.addLine("Searching");
+		telemetry.update();
+		robot.getMotif(follower.getPoseTracker().getLocalizer()).run();
+		d("AHM FOUND " + Field.motif);
+		telemetry.addData("motif", Field.motif);
+		telemetry.update();
+
 		action = new ParallelAction(
 				new SequentialAction(
-						new SleepAction(1000),
+						new SleepAction(AutoConfigs.initalWaitTime),
+						robot.shootAll(),
 						robot.setIntakeSpeed(1),
 						new FollowPathAction(follower, paths.Pickup1),
 						new FollowPathAction(follower, paths.CloseShot3),
+						robot.shootAll(),
 						robot.setIntakeSpeed(1),
 						new FollowPathAction(follower, paths.PickUpBackRow4),
 						new FollowPathAction(follower, paths.CloseShot5),
+						robot.shootAll(),
 						robot.setIntakeSpeed(1),
 						new FollowPathAction(follower, paths.PickUpFrontRow6),
 						new FollowPathAction(follower, paths.FarShot7),
+						robot.shootAll(),
 						new FollowPathAction(follower, paths.Middle8)),
 				robot.turret.trackTarget(Depot.getPosition(Field.Alliance.Blue), follower.poseTracker.getLocalizer()),
 				new Action() {
 					@Override
 					public boolean run() {
-						robot.setTurretSpeed(robot.turret.getSpeedByDistance(robot.turret.getDistance(Depot.getPosition(Field.Alliance.Blue)))).run();
+						robot.setTurretSpeed(robot.turret
+								.getSpeedByDistance(robot.turret.getDistance(Depot.getPosition(Field.Alliance.Blue))))
+								.run();
 						return true;
 					};
 				},
@@ -80,14 +96,27 @@ public class Blue2 extends OpMode {
 						robot.turret.savePosition();
 						return true;
 					}
-				}
-		);
+				});
+
+	}
+
+	@Override
+	public void init_loop() {
+		d("AHM searching");
+		telemetry.addLine("Searching");
+		telemetry.update();
+		robot.getMotif(follower.getPoseTracker().getLocalizer()).run();
+		d("AHM FOUND " + Field.motif);
+		telemetry.addData("motif", Field.motif);
+		telemetry.update();
+
 	}
 
 	@Override
 	public void loop() {
 		follower.update(); // Update Pedro Pathing
 		pathState = autonomousPathUpdate(); // Update autonomous state machine
+		robot.spindexer.setRotatorPower(1);
 		if (completed)
 			completed = action.run();
 
@@ -120,10 +149,8 @@ public class Blue2 extends OpMode {
 									new Pose(48.000, 12.000),
 									new Pose(74.025, 73.863),
 									new Pose(42.601, 58.799),
-									new Pose(18.973, 60.094)
-							)
-					)
-					.setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+									new Pose(18.973, 60.094)))
+					.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(180))
 					.build();
 
 			Lever2 = follower
@@ -132,9 +159,7 @@ public class Blue2 extends OpMode {
 							new BezierCurve(
 									new Pose(23.973, 60.094),
 									new Pose(23.163, 68.355),
-									new Pose(14.036, 69.651)
-							)
-					)
+									new Pose(14.036, 69.651)))
 					.setConstantHeadingInterpolation(Math.toRadians(180))
 					.build();
 
@@ -144,9 +169,7 @@ public class Blue2 extends OpMode {
 							new BezierCurve(
 									new Pose(16.036, 69.651),
 									new Pose(49.404, 65.440),
-									new Pose(53.939, 77.264)
-							)
-					)
+									new Pose(53.939, 77.264)))
 					.setConstantHeadingInterpolation(Math.toRadians(180))
 					.build();
 
@@ -156,17 +179,14 @@ public class Blue2 extends OpMode {
 							new BezierCurve(
 									new Pose(53.939, 77.264),
 									new Pose(51.186, 86.173),
-									new Pose(18.733, 84.067)
-							)
-					)
+									new Pose(18.733, 84.067)))
 					.setConstantHeadingInterpolation(Math.toRadians(180))
 					.build();
 
 			CloseShot5 = follower
 					.pathBuilder()
 					.addPath(
-							new BezierLine(new Pose(20.733, 84.067), new Pose(53.939, 77.264))
-					)
+							new BezierLine(new Pose(20.733, 84.067), new Pose(53.939, 77.264)))
 					.setConstantHeadingInterpolation(Math.toRadians(180))
 					.build();
 
@@ -176,25 +196,21 @@ public class Blue2 extends OpMode {
 							new BezierCurve(
 									new Pose(53.939, 77.264),
 									new Pose(66.898, 25.917),
-									new Pose(18.247, 35.474)
-							)
-					)
+									new Pose(18.247, 35.474)))
 					.setConstantHeadingInterpolation(Math.toRadians(180))
 					.build();
 
 			FarShot7 = follower
 					.pathBuilder()
 					.addPath(
-							new BezierLine(new Pose(18.247, 35.474), new Pose(54.475, 21.543))
-					)
+							new BezierLine(new Pose(18.247, 35.474), new Pose(54.475, 21.543)))
 					.setConstantHeadingInterpolation(Math.toRadians(180))
 					.build();
 
 			Middle8 = follower
 					.pathBuilder()
 					.addPath(
-							new BezierLine(new Pose(58.475, 21.543), new Pose(26.403, 66.736))
-					)
+							new BezierLine(new Pose(58.475, 21.543), new Pose(26.403, 66.736)))
 					.setConstantHeadingInterpolation(Math.toRadians(180))
 					.build();
 		}
