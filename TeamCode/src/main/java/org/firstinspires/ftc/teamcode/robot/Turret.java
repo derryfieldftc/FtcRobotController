@@ -5,7 +5,6 @@ import static com.qualcomm.robotcore.util.RobotLog.d;
 import static com.qualcomm.robotcore.util.RobotLog.i;
 import static com.qualcomm.robotcore.util.RobotLog.w;
 
-import static org.firstinspires.ftc.teamcode.robot.RobotPart.Part.IndicatorLightTurret;
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;
 import static java.lang.Math.atan2;
@@ -50,7 +49,6 @@ public class Turret extends RobotPart {
 	double rotation;
 	double targetPower;
 	private double targetRotation;
-	IndicatorLight light;
 
 	@Configurable
 	public static class TurretConfigs {
@@ -105,7 +103,6 @@ public class Turret extends RobotPart {
 
 		rotator = hardwareMap.dcMotor.get(Part.TurretRotator.name);
 		spinner0 = (DcMotorEx) hardwareMap.get(Part.LaunchMotor.type, Part.LaunchMotor.name);
-		light = new IndicatorLight(opMode, IndicatorLightTurret.name);
 
 		rotator.setPower(0);
 		rotator.setTargetPosition(0);
@@ -167,7 +164,6 @@ public class Turret extends RobotPart {
 		} else {
 			color = IndicatorLight.Color.Green;
 		}
-		light.setColor(color);
 	}
 
 	public void dumpTelemetry(Telemetry telemetry) {

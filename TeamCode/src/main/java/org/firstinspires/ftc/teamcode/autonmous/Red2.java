@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.autonmous;
 
+import static com.qualcomm.robotcore.util.RobotLog.d;
+
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.bylazar.telemetry.TelemetryManager;
@@ -45,7 +47,7 @@ public class Red2 extends OpMode {
 		panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
 		follower = Constants.createFollower(hardwareMap);
-		follower.setStartingPose(new Pose(48, 9, Math.toRadians(180)).mirror());
+		follower.setStartingPose(new Pose(48, 9, Math.toRadians(90)).mirror());
 
 		paths = new Paths(follower); // Build paths
 
@@ -53,18 +55,30 @@ public class Red2 extends OpMode {
 		panelsTelemetry.update(telemetry);
 		robot.turret.setRotationPower(1);
 
+		d("AHM searching");
+		telemetry.addLine("Searching");
+		telemetry.update();
+		robot.getMotif(follower.getPoseTracker().getLocalizer()).run();
+		d("AHM FOUND " + Field.motif);
+		telemetry.addData("motif", Field.motif);
+		telemetry.update();
+
 		action = new ParallelAction(
 				new SequentialAction(
-						new SleepAction(1000),
+						new SleepAction(AutoConfigs.initalWaitTime),
+						robot.shootAll(),
 						robot.setIntakeSpeed(1),
 						new FollowPathAction(follower, paths.Pickup1),
 						new FollowPathAction(follower, paths.CloseShot3),
+						robot.shootAll(),
 						robot.setIntakeSpeed(1),
 						new FollowPathAction(follower, paths.PickUpBackRow4),
 						new FollowPathAction(follower, paths.CloseShot5),
+						robot.shootAll(),
 						robot.setIntakeSpeed(1),
 						new FollowPathAction(follower, paths.PickUpFrontRow6),
 						new FollowPathAction(follower, paths.FarShot7),
+						robot.shootAll(),
 						new FollowPathAction(follower, paths.Middle8)),
 				robot.turret.trackTarget(Depot.getPosition(Field.Alliance.Red), follower.poseTracker.getLocalizer()),
 				new Action() {
@@ -82,12 +96,26 @@ public class Red2 extends OpMode {
 					}
 				}
 		);
+
+	}
+
+	@Override
+	public void init_loop() {
+		d("AHM searching");
+		telemetry.addLine("Searching");
+		telemetry.update();
+		robot.getMotif(follower.getPoseTracker().getLocalizer()).run();
+		d("AHM FOUND " + Field.motif);
+		telemetry.addData("motif", Field.motif);
+		telemetry.update();
+
 	}
 
 	@Override
 	public void loop() {
 		follower.update(); // Update Pedro Pathing
 		pathState = autonomousPathUpdate(); // Update autonomous state machine
+		robot.spindexer.setRotatorPower(1);
 		if (completed)
 			completed = action.run();
 
@@ -123,7 +151,7 @@ public class Red2 extends OpMode {
 									new Pose(18.973, 60.094).mirror()
 							)
 					)
-					.setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+					.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(0))
 					.build();
 
 			Lever2 = follower

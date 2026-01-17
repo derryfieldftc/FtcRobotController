@@ -17,7 +17,7 @@ public class SequentialAction extends Action {
 
 	@Override
 	public boolean run() {
-		if (actions.isEmpty()) {
+		if (actions.isEmpty() || index == actions.size()) {
 			return false;
 		}
 		if (!actions.get(index).run()) {

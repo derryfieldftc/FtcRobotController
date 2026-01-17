@@ -4,9 +4,9 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /**
- * Use this within other robot parts
+ * Use this within other robot parts (dont question that its not a RobotPart itself)
  */
-public class IndicatorLight extends RobotPart {
+public class IndicatorLight {
 	Servo light; // Not a servo but the color is controlled via pwm and acts similar to a servo
 
 	/**
@@ -15,7 +15,7 @@ public class IndicatorLight extends RobotPart {
 	public enum Color {
 		// Values found from https://www.gobilda.com/rgb-indicator-light-pwm-controlled/ color image thing
 		Off (0),
-		Red (0.277),
+		Red (0.278),
 		Orange (0.333),
 		Yellow (0.388),
 		Sage (0.444),
@@ -32,9 +32,8 @@ public class IndicatorLight extends RobotPart {
 		}
 	}
 
-	public IndicatorLight(OpMode opMode, String name) {
-		super(opMode);
-		light = hardwareMap.servo.get(name);
+	public IndicatorLight(Servo light) {
+		this.light = light;
 	}
 
 	/**

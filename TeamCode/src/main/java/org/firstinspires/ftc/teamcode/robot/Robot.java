@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.robot;
 import static org.firstinspires.ftc.teamcode.robot.Field.Ball;
 import static org.firstinspires.ftc.teamcode.robot.Field.Ball.None;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.localization.Localizer;
 import com.qualcomm.hardware.limelightvision.LLResult;
@@ -10,6 +11,9 @@ import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.autonmous.actions.Action;
+import org.firstinspires.ftc.teamcode.autonmous.actions.SequentialAction;
+import org.firstinspires.ftc.teamcode.autonmous.actions.SleepAction;
+import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 /**
  * Class meant to easily hold all other robot classes, define positions and add methods as necessary
@@ -54,21 +58,81 @@ public class Robot extends RobotPart {
 		return this;
 	}
 
-	public Action setTurretSpeed_Full(double speed) {
-		return new Action() {
-			@Override
-			public boolean run() {
-				setTurretSpeed(speed).run();
-				return true;
-			}
-		};
+	/**
+	 * TODO! make work with color sensors
+	 * @return
+	 */
+	public Action shootAll() {
+		return new SequentialAction(
+				new Action() {
+					@Override
+					public boolean run() {
+						spindexer.setPosition(Spindexer.Position.Zero);
+						return false;
+					}
+				},
+				spindexer.waitUntilFinished(),
+				this.shoot(),
+				new Action() {
+					@Override
+					public boolean run() {
+						spindexer.setPosition(Spindexer.Position.One);
+						return false;
+					}
+				},
+				spindexer.waitUntilFinished(),
+				this.shoot(),
+				new Action() {
+					@Override
+					public boolean run() {
+						spindexer.setPosition(Spindexer.Position.Two);
+						return false;
+					}
+				},
+				spindexer.waitUntilFinished(),
+				this.shoot()
+				);
+	}
+
+	@Configurable
+	static class LiftTime {
+		static long liftMillis = 600;
 	}
 
 	/**
-	 * Do not forget to chain this with all of the enable methods
-	 *
-	 * @param opMode
+	 * Shoots whatever ball is in a currently shootable position
+	 * @return
 	 */
+	public Action shoot() {
+		return new SequentialAction(
+				new Action() {
+					@Override
+					public boolean run() {
+						lift.setPosition(Lift.Position.Up);
+						return false;
+					}
+				},
+				new SleepAction(LiftTime.liftMillis),
+				new Action() {
+					@Override
+					public boolean run() {
+						lift.setPosition(Lift.Position.Down);
+						return false;
+					}
+				},
+				new SleepAction(LiftTime.liftMillis),
+				new Action() {
+					@Override
+					public boolean run() {
+						if (spindexer.getShootingBall() != None) {
+
+						}
+						return false;
+					}
+				}
+		);
+	}
+
 	public Robot(OpMode opMode) {
 		super(opMode);
 		intake = new Intake(this.opMode);
@@ -102,28 +166,38 @@ public class Robot extends RobotPart {
 		};
 	}
 
+	/**
+	 * Updates Field.motif value, do not forget to correct the target after
+	 * @param localizer
+	 * @return
+	 */
 	public Action getMotif(Localizer localizer) {
+		//TODO! make not aim towards obelisk cause its annoying
 		return new Action() {
 			@Override
 			public boolean run() {
 				turret.trackTarget(Obelisk.getObeliskPosition(), localizer);
 				LLResult results = limeLight.getResults();
+				limeLight.setMode(LimeLight.LimeLightMode.AprilTag);
 
 				if (results.isValid()) {
 					for (LLResultTypes.FiducialResult tag : results.getFiducialResults()) {
 
 						switch (tag.getFiducialId()) {
-							case Tag.PGP.id:
+							case 22: // Magic numbers corresponding to the ids of tags, can be found in the Tag class. Should work, but Enum variants are constructed at runtime, while switches require compile time information
 								Field.motif = Obelisk.Motif.PGP;
-							case Tag.PPG.id:
+								return false;
+							case 23:
 								Field.motif = Obelisk.Motif.PPG;
-							case Tag.GPP.id:
+								return false;
+							case 21:
 								Field.motif = Obelisk.Motif.GPP;
+								return false;
 							default:
-								return true;
 						}
 					}
 				}
+				return true;
 			}
 		};
 	}

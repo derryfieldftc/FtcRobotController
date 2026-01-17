@@ -4,15 +4,17 @@ import static com.pedropathing.math.MathFunctions.clamp;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.GamepadManager;
+import org.firstinspires.ftc.teamcode.robot.Lift;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
 @TeleOp(name="TurretPowerTest")
 public class TurretPowerTest extends OpMode {
 	Robot bot;
 	double speed;
-	boolean handsUp;
+	boolean liftUp;
 	GamepadManager mgamepad2;
 
 	@Override
@@ -23,6 +25,9 @@ public class TurretPowerTest extends OpMode {
 
 	@Override
 	public void loop() {
+		Servo light = hardwareMap.servo.get("light0");
+		light.setPosition(gamepad1.left_trigger);
+
 		bot.loop();
 		mgamepad2.poll();
 
@@ -31,9 +36,10 @@ public class TurretPowerTest extends OpMode {
 		if (mgamepad2.justPressed(GamepadManager.Button.DPAD_UP))
 			speed = clamp(speed + .05, -1, 1);
 
-		if (mgamepad2.justPressed(GamepadManager.Button.X)) {
-			handsUp = !handsUp;
-		}
+		if (mgamepad2.justPressed(GamepadManager.Button.X))
+			liftUp = !liftUp;
+
+		bot.lift.setPosition(liftUp ? Lift.Position.Up : Lift.Position.Down);
 
 		bot.intake.setSpeed(gamepad2.right_trigger);
 

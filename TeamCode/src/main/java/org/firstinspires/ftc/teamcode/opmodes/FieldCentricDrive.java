@@ -17,8 +17,17 @@ public class FieldCentricDrive extends OpMode {
 	}
 
 	@Override
+	public void start() {
+		follower.startTeleOpDrive();
+	}
+
+	@Override
 	public void loop() {
 		follower.update();
-		follower.setTeleOpDrive(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, false);
+		follower.setTeleOpDrive( // values for blue
+				gamepad1.left_stick_y * (1 - gamepad1.right_trigger) * ((gamepad1.right_bumper) ? -1 : 1),
+				gamepad1.left_stick_x * (1 - gamepad1.right_trigger) * ((gamepad1.right_bumper) ? -1 : 1),
+				-gamepad1.right_stick_x * (1 - gamepad1.right_trigger),
+				gamepad1.right_bumper);
 	}
 }

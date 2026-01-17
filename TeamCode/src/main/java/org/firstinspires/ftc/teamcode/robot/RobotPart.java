@@ -86,13 +86,9 @@ public class RobotPart {
 		 */
 		TurretRotator	("turretRotator", DcMotor.class),
 		/**
-		 * Servo to lift the intake, and hopefully untake balls from the center
-		 */
-		/**
 		 * This is the limelight camera, it is used for all sorts of april tag tracking, computer vision and localization, among other things.
 		 */
 		LimeLight	("limelight", Limelight3A.class),
-		IndicatorLightTurret	("RGB_Turret", Servo.class), // not actually a servo
 		SpindexerRotator	("spindexerMotor", DcMotor.class),
 		SpindexerLift	("spindexerServo", Servo.class),
 		LiftServo	("lift", Servo.class),
@@ -100,6 +96,9 @@ public class RobotPart {
 		SpindexerColor0	("spindexerColor0", ColorSensor.class),
 		SpindexerColor1	("spindexerColor1", ColorSensor.class),
 		SpindexerColor2	("spindexerColor2", ColorSensor.class),
+		IndicatorLight0	("light0", Servo.class),
+		IndicatorLight1	("light1", Servo.class),
+		IndicatorLight2	("light2", Servo.class),
 		;
 		//TODO! make this list exhaustive
 
