@@ -197,7 +197,7 @@ public class Spindexer extends RobotPart {
 		return new Action() {
 			@Override
 			public boolean run() {
-				return atPosition();
+				return !atPosition();
 			}
 		};
 	}

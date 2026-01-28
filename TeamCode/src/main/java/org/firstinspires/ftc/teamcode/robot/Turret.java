@@ -228,8 +228,8 @@ public class Turret extends RobotPart {
 		d("AHM target rotation %d", rotator.getTargetPosition());
 	}
 
-	private void updatePose(Pose pose) {
-		rotation = (((rotator.getCurrentPosition() - rotationInitalOffset) / ticksPerRotation));
+	private void updatePose(Pose pose) { //TODO! once odometry is fixed this *might* cause a bug, "fix" is to subtract initial offset
+		rotation = (((rotator.getCurrentPosition() + rotationInitalOffset) / ticksPerRotation));
 		d("AHM ROTATOR TICKS %d", rotator.getCurrentPosition());
 		d("AHM rotation %f", rotation);
 		this.pose = new TurretPose(pose, rotation);
@@ -253,17 +253,18 @@ public class Turret extends RobotPart {
 		try {
 			PrintWriter writer = new PrintWriter(file);
 			file.createNewFile();
+			String toWrite = String.format("%f %f %f %f", pose.pose.getX(), pose.pose.getY(), pose.pose.getHeading(),
+					pose.rotation);
 
-			writer.println(String.format("%f %f %f %f", pose.pose.getX(), pose.pose.getY(), pose.pose.getHeading(),
-					pose.rotation));
+			writer.println(toWrite);
 			writer.flush();
 			writer.close();
-			d("AHM WROTE");
+			d("AHM WROTE " + toWrite);
 
 		} catch (Exception ignored) {
 			d("AHM WRITE FAIL " + ignored);
 			throw new RuntimeException(ignored);
-		} // beautiful exception handleing
+		} // beautiful exception handling
 	}
 
 	public static TurretPose getSavedPosition() throws Exception {
@@ -274,6 +275,8 @@ public class Turret extends RobotPart {
 			double y = scanner.nextDouble();
 			double r = scanner.nextDouble();
 			double t = scanner.nextDouble();
+
+			d("AHM SWITCH " + x + " " + y + " " + r + " " + t);
 			return new TurretPose(new Pose(x, y, r), t);
 		} catch (Exception ignored) {
 			throw new Exception(ignored);

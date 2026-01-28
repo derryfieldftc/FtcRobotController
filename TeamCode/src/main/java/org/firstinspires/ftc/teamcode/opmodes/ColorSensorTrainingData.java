@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 
+import org.firstinspires.ftc.teamcode.robot.RobotPart;
+
 import java.io.File;
 import java.io.PrintWriter;
 
@@ -17,7 +19,7 @@ public class ColorSensorTrainingData extends OpMode {
 
 	@Override
 	public void init() {
-		colorSensor = hardwareMap.colorSensor.get("rightColorSensor");
+		colorSensor = hardwareMap.colorSensor.get(RobotPart.Part.SpindexerColor0.name);
 		file = new File("/sdcard/FIRST/training");
 		try {
 			file.createNewFile();

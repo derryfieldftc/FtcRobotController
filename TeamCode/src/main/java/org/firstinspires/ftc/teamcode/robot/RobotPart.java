@@ -76,7 +76,7 @@ public class RobotPart {
 		/**
 		 * Encoder that measures drive on the right side of the robot
 		 */
-		RightDriveEncoder 	("motorBR", DcMotor.class),
+		RightDriveEncoder 	("intake", DcMotor.class),
 		/**
 		 * Motor for accelerating balls
 		 */

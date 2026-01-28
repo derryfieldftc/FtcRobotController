@@ -55,7 +55,7 @@ public class MecanumDrive extends RobotPlugin {
 		motorFR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 		motorBR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-		motorFL.setDirection(DcMotorSimple.Direction.FORWARD);
+		motorFL.setDirection(DcMotorSimple.Direction.REVERSE);
 		motorBL.setDirection(DcMotorSimple.Direction.FORWARD);
 		motorFR.setDirection(DcMotorSimple.Direction.REVERSE);
 		motorBR.setDirection(DcMotorSimple.Direction.REVERSE);

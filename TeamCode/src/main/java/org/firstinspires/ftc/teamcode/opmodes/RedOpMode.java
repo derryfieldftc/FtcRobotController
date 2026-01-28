@@ -34,7 +34,7 @@ public class RedOpMode extends OpMode {
 	Follower drivetrain;
 	double speedTrim = 0;
 	boolean liftUp = false;
-	boolean autoTracking = true;
+	boolean autoTracking = false;
 	boolean autoMoving = false;
 	TeleOpAction shootAll;
 	boolean lastA;
