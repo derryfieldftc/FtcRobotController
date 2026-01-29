@@ -120,16 +120,7 @@ public class Robot extends RobotPart {
 						return false;
 					}
 				},
-				new SleepAction(LiftTime.liftMillis),
-				new Action() {
-					@Override
-					public boolean run() {
-						if (spindexer.getShootingBall() != None) {
-
-						}
-						return false;
-					}
-				}
+				new SleepAction(LiftTime.liftMillis)
 		);
 	}
 
