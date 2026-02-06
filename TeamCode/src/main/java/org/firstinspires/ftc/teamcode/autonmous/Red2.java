@@ -81,33 +81,59 @@ public class Red2 extends OpMode {
 							@Override
 							public boolean run() {
 								robot.spindexer.setPosition(Spindexer.Position.Zero);
+								robot.spindexer.setLiftPosition(Spindexer.Height.Down);
 								return false;
 							};
 						},
 						robot.setIntakeSpeed(1),
 						new FollowPathAction(follower, paths.Pickup1),
+						robot.setIntakeSpeed(0),
+						new Action() {
+							@Override
+							public boolean run() {
+								robot.spindexer.setLiftPosition(Spindexer.Height.Up);
+								return false;
+							};
+						},
 						new FollowPathAction(follower, paths.CloseShot3),
 						robot.shootAll(),
 						new Action() {
 							@Override
 							public boolean run() {
 								robot.spindexer.setPosition(Spindexer.Position.Zero);
+								robot.spindexer.setLiftPosition(Spindexer.Height.Down);
 								return false;
 							};
 						},
 						robot.setIntakeSpeed(1),
 						new FollowPathAction(follower, paths.PickUpBackRow4),
+						robot.setIntakeSpeed(0),
+						new Action() {
+							@Override
+							public boolean run() {
+								robot.spindexer.setLiftPosition(Spindexer.Height.Up);
+								return false;
+							};
+						},
 						new FollowPathAction(follower, paths.CloseShot5),
 						robot.shootAll(),
 						new Action() {
 							@Override
 							public boolean run() {
 								robot.spindexer.setPosition(Spindexer.Position.Zero);
+								robot.spindexer.setLiftPosition(Spindexer.Height.Down);
 								return false;
 							};
 						},
 						robot.setIntakeSpeed(1),
 						new FollowPathAction(follower, paths.PickUpFrontRow6),
+						new Action() {
+							@Override
+							public boolean run() {
+								robot.spindexer.setLiftPosition(Spindexer.Height.Up);
+								return false;
+							};
+						},
 						new FollowPathAction(follower, paths.FarShot7),
 						robot.shootAll(),
 						new FollowPathAction(follower, paths.Middle8)),

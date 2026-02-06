@@ -53,7 +53,7 @@ public class Spindexer extends RobotPart {
 
 	public enum Height {
 		Down	(0),
-		Up		(1);
+		Up		(.8);
 
 		public double height;
 		Height(double height) {

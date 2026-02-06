@@ -96,7 +96,7 @@ public class Robot extends RobotPart {
 
 	@Configurable
 	static class LiftTime {
-		static long liftMillis = 600;
+		static long liftMillis = 400;
 	}
 
 	/**

@@ -4,6 +4,6 @@ import com.bylazar.configurables.annotations.Configurable;
 
 @Configurable
 public class AutoConfigs {
-	public static long initalWaitTime;
+	public static long initalWaitTime = 1000;
 
 }
