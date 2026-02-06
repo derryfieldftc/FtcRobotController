@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import static com.qualcomm.robotcore.util.RobotLog.d;
+import static com.qualcomm.robotcore.util.RobotLog.w;
+
 import com.bylazar.configurables.annotations.Configurable;
 
 /**
@@ -37,12 +40,12 @@ public class Field {
 		abstract ColorSensorValue getValues();
 		@Configurable
 		public static class Zero extends ColorSensorValues {
-			public static float[] Purple = {221.1095443F, 0.5889083609F, 2.393604294F};
-			public static float[] PurpleStandardDev = {5.549840808F, 0.03360296602F, 0.6559297522F};
-			public static float[] Green = {169.4471924F, 0.6627107526F, 1.519375929F};
-			public static float[] GreenStandardDev = {3.163976239F, 0.06508052043F, 0.8013250679F};
-			public static float[] None = {164.3992496F, 0.4646091011F, 0.4885410549F};
-			public static float[] NoneStandardDev = {2.15535129F, 0.01570962479F, 0.03565093929F};
+			public static float[] Purple = {167.294F, 0.3593159F, 2.17007F};
+			public static float[] PurpleStandardDev = {3F, 0.1F, 0.3F};
+			public static float[] Green = {151.853F, 0.532245F, 2.47099F};
+			public static float[] GreenStandardDev = {3F, 0.1F, 0.3F};
+			public static float[] None = {153.347F, 0.468059F, 1.77127F};
+			public static float[] NoneStandardDev = {3F, 0.1F, 0.3F};
 
 			@Override
 			public ColorSensorValue getValues() {
@@ -96,19 +99,29 @@ public class Field {
 		 */
 		public static Ball getBallFromColor(float[] hsv, ColorSensorValues colorSensorValues) {
 			ColorSensorValue csvn = colorSensorValues.getValues();
-			float purpleScore = getScore(hsv, csvn.purple, csvn.purpleStandardDev);
-			float greenScore  = getScore(hsv, csvn.green, csvn.greenStandardDev);
-			float noneScore   = getScore(hsv, csvn.none, csvn.noneStandardDev);
 
-			float min = Math.min(Math.min(purpleScore, greenScore), noneScore);
+//			float purpleScore = getScore(hsv, csvn.purple, csvn.purpleStandardDev);
+//			float greenScore  = getScore(hsv, csvn.green, csvn.greenStandardDev);
+//			float noneScore   = getScore(hsv, csvn.none, csvn.noneStandardDev);
+//
+//			float min = Math.min(Math.min(purpleScore, greenScore), noneScore);
+//
+//			if (purpleScore == min) {
+//				return Ball.Purple;
+//			}
+//			if (greenScore == min) {
+//				return Ball.Green;
+//			}
+//			return Ball.None;
 
-			if (purpleScore == min) {
-				return Ball.Purple;
-			}
-			if (greenScore == min) {
-				return Ball.Green;
-			}
-			return Ball.None;
+			if (157 < hsv[0])
+				return Purple;
+
+			d("AHM color " + hsv[0] + " " + hsv[1] + " " + hsv[2]);
+			if (hsv[1] > .5)
+				return Green;
+
+			return None;
 		}
 
 		private static float getScore(float[] hsv, float[] compare, float[] stddev) {

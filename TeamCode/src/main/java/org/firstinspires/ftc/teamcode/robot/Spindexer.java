@@ -193,6 +193,18 @@ public class Spindexer extends RobotPart {
 		return !rotator.isBusy();
 	}
 
+	public Action waitUntilFinished(double timoutSeconds) {
+		return new Action() {
+			double startTime = -1; // bad way
+			@Override
+			public boolean run() {
+				if (startTime == -1) {
+					startTime = opMode.getRuntime();
+				}
+				return !atPosition() && (opMode.getRuntime() + startTime > timoutSeconds);
+			}
+		};
+	}
 	public Action waitUntilFinished() {
 		return new Action() {
 			@Override
@@ -209,6 +221,7 @@ public class Spindexer extends RobotPart {
 	public void setPosition(Position targetPosition) {
 		int currentPositionTicks = rotator.getCurrentPosition();
 		int rotations = (currentPositionTicks + (stepTicks / 2)) / fullRotationTicks;
+		setLiftPosition(Height.Up);
 
 		// Don't look at this
 		switch (currentPosition) {

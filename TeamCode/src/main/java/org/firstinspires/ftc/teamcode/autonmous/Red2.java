@@ -24,6 +24,7 @@ import org.firstinspires.ftc.teamcode.robot.Depot;
 import org.firstinspires.ftc.teamcode.robot.Field;
 import org.firstinspires.ftc.teamcode.robot.LimeLight;
 import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.robot.Spindexer;
 import org.firstinspires.ftc.teamcode.robot.Tag;
 import org.firstinspires.ftc.teamcode.robot.Turret;
 import org.firstinspires.ftc.teamcode.robot.TurretPose;
@@ -63,18 +64,48 @@ public class Red2 extends OpMode {
 		telemetry.addData("motif", Field.motif);
 		telemetry.update();
 
+		robot.spindexer.setLiftPosition(Spindexer.Height.Up);
+
 		action = new ParallelAction(
 				new SequentialAction(
 						new SleepAction(AutoConfigs.initalWaitTime),
 						robot.shootAll(),
+						new Action() {
+							@Override
+							public boolean run() {
+								robot.spindexer.setLiftPosition(Spindexer.Height.Down);
+								return false;
+							}
+						},
+						new Action() {
+							@Override
+							public boolean run() {
+								robot.spindexer.setPosition(Spindexer.Position.Zero);
+								return false;
+							};
+						},
 						robot.setIntakeSpeed(1),
 						new FollowPathAction(follower, paths.Pickup1),
 						new FollowPathAction(follower, paths.CloseShot3),
 						robot.shootAll(),
+						new Action() {
+							@Override
+							public boolean run() {
+								robot.spindexer.setPosition(Spindexer.Position.Zero);
+								return false;
+							};
+						},
 						robot.setIntakeSpeed(1),
 						new FollowPathAction(follower, paths.PickUpBackRow4),
 						new FollowPathAction(follower, paths.CloseShot5),
 						robot.shootAll(),
+						new Action() {
+							@Override
+							public boolean run() {
+								robot.spindexer.setPosition(Spindexer.Position.Zero);
+								return false;
+							};
+						},
 						robot.setIntakeSpeed(1),
 						new FollowPathAction(follower, paths.PickUpFrontRow6),
 						new FollowPathAction(follower, paths.FarShot7),
@@ -96,6 +127,8 @@ public class Red2 extends OpMode {
 					}
 				}
 		);
+
+		while (robot.spindexer.resetPosition().run());
 
 	}
 

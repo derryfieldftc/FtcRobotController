@@ -68,7 +68,8 @@ public class Turret extends RobotPart {
 
 		public static double distanceToPower(double distance) {
 			d("AHM DISTANCE %f", distance);
-			return DistanceToPowerCoefficients.m * distance + DistanceToPowerCoefficients.b;
+//			return DistanceToPowerCoefficients.m * distance + DistanceToPowerCoefficients.b;
+			return -0.00000127696 * Math.pow(distance, 3) + 0.000347914 * Math.pow(distance, 2) + -0.0283176 * distance + 1.20971;
 		}
 	}
 
@@ -117,7 +118,7 @@ public class Turret extends RobotPart {
 		spinner0.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 		spinner0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		spinner0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-		spinner0.setDirection(DcMotorSimple.Direction.REVERSE);
+		spinner0.setDirection(DcMotorSimple.Direction.FORWARD);
 	}
 
 	public Turret setAngleTrim(double rotationTrim) {

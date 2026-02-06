@@ -71,7 +71,7 @@ public class Robot extends RobotPart {
 						return false;
 					}
 				},
-				spindexer.waitUntilFinished(),
+				spindexer.waitUntilFinished(1),
 				this.shoot(),
 				new Action() {
 					@Override
@@ -80,7 +80,7 @@ public class Robot extends RobotPart {
 						return false;
 					}
 				},
-				spindexer.waitUntilFinished(),
+				spindexer.waitUntilFinished(1),
 				this.shoot(),
 				new Action() {
 					@Override
@@ -89,7 +89,7 @@ public class Robot extends RobotPart {
 						return false;
 					}
 				},
-				spindexer.waitUntilFinished(),
+				spindexer.waitUntilFinished(1),
 				this.shoot()
 				);
 	}

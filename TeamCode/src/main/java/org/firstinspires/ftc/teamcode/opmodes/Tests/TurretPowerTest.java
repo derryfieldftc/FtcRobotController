@@ -36,6 +36,11 @@ public class TurretPowerTest extends OpMode {
 		if (mgamepad2.justPressed(GamepadManager.Button.DPAD_UP))
 			speed = clamp(speed + .05, -1, 1);
 
+		if (mgamepad2.justPressed(GamepadManager.Button.DPAD_LEFT))
+			speed = clamp(speed - .01, -1, 1);
+		if (mgamepad2.justPressed(GamepadManager.Button.DPAD_RIGHT))
+			speed = clamp(speed + .01, -1, 1);
+
 		if (mgamepad2.justPressed(GamepadManager.Button.X))
 			liftUp = !liftUp;
 

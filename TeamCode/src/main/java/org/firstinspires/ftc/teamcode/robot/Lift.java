@@ -12,7 +12,7 @@ public class Lift extends RobotPart {
 	}
 
 	public enum Position {
-		Up		(.4),
+		Up		(1),
 		Down	(0);
 
 		final double position;

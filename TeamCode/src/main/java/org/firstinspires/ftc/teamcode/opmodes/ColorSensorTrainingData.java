@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -34,14 +35,15 @@ public class ColorSensorTrainingData extends OpMode {
 
 	}
 
-	@Override
+	@SuppressLint("DefaultLocale")
+    @Override
 	public void loop() {
 		float[] hsv = new float[3];
 
 		Color.RGBToHSV(colorSensor2.red(), colorSensor2.green(), colorSensor2.blue(), hsv);
-		String string2 = String.format("h %0.3f, s %0.3f, v %0.3f", hsv[0], hsv[1], hsv[2]);
+		String string2 = String.format("%.3f, %.3f, %.3f", hsv[0], hsv[1], hsv[2]);
 		telemetry.addLine("2");
-		telemetry.addLine(String.format("r %0.3f, g %0.3f, b %0.3f", colorSensor2.red(), colorSensor2.green(), colorSensor2.blue()));
+		telemetry.addLine(String.format("r %d, g %d, b %d", colorSensor2.red(), colorSensor2.green(), colorSensor2.blue()));
 		telemetry.addLine(string2);
 
 		if (gamepad1.x) {
@@ -51,7 +53,7 @@ public class ColorSensorTrainingData extends OpMode {
 		Color.RGBToHSV(colorSensor1.red(), colorSensor1.green(), colorSensor1.blue(), hsv);
 		String string1 = String.format("%.3f, %,3f, %.3f", hsv[0], hsv[1], hsv[2]);
 		telemetry.addLine("1");
-		telemetry.addLine(String.format("r %0.3f, g %0.3f, b %0.3f", colorSensor1.red(), colorSensor1.green(), colorSensor1.blue()));
+		telemetry.addLine(String.format("r %d, g %d, b %d", colorSensor1.red(), colorSensor1.green(), colorSensor1.blue()));
 		telemetry.addLine(string1);
 
 		if (gamepad1.b) {
@@ -61,7 +63,7 @@ public class ColorSensorTrainingData extends OpMode {
 		Color.RGBToHSV(colorSensor0.red(), colorSensor0.green(), colorSensor0.blue(), hsv);
 		String string0 = String.format("%.3f, %,3f, %.3f", hsv[0], hsv[1], hsv[2]);
 		telemetry.addLine("0");
-		telemetry.addLine(String.format("r %0.3f, g %0.3f, b %0.3f", colorSensor0.red(), colorSensor0.green(), colorSensor0.blue()));
+		telemetry.addLine(String.format("r %d, g %d, b %d", colorSensor0.red(), colorSensor0.green(), colorSensor0.blue()));
 		telemetry.addLine(string0);
 		telemetry.update();
 

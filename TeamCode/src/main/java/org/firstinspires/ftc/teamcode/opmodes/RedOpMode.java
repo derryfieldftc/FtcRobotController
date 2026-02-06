@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.GamepadManager;
 import org.firstinspires.ftc.teamcode.autonmous.actions.TeleOpAction;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.robot.Depot;
+import org.firstinspires.ftc.teamcode.robot.Drawing;
 import org.firstinspires.ftc.teamcode.robot.Field;
 import org.firstinspires.ftc.teamcode.robot.Lift;
 import org.firstinspires.ftc.teamcode.robot.LimeLight;
@@ -22,6 +23,7 @@ import org.firstinspires.ftc.teamcode.robot.TurretPose;
 import com.pedropathing.geometry.Pose;
 
 import static com.qualcomm.robotcore.util.RobotLog.*;
+import static org.firstinspires.ftc.teamcode.pedro.Tuning.follower;
 import static java.lang.Math.abs;
 
 import java.util.function.Supplier;
@@ -89,7 +91,7 @@ public class RedOpMode extends OpMode {
 			drivetrain.setTeleOpDrive(
 					-gamepad1.left_stick_y * (1 - gamepad1.right_trigger),
 					-gamepad1.left_stick_x * (1 - gamepad1.right_trigger),
-					-gamepad1.right_stick_x * (1 - gamepad1.right_trigger),
+					(-gamepad1.right_stick_x / 1.5) * (1 - gamepad1.right_trigger),
 					true);
 
 		if (autoMoving && (mgamepad1.justPressed(GamepadManager.Button.B) || !drivetrain.isBusy())) {
@@ -111,7 +113,7 @@ public class RedOpMode extends OpMode {
 		}
 
 		bot.intake.setSpeed(gamepad2.right_trigger * ((gamepad2.start) ? -1 : 1));
-		if (!gamepad2.left_bumper) {
+		if (gamepad2.right_trigger > .1) {
 			bot.spindexer.setLiftPosition(Spindexer.Height.Down);
 		} else {
 			bot.spindexer.setLiftPosition(Spindexer.Height.Up);
@@ -179,5 +181,7 @@ public class RedOpMode extends OpMode {
 		telemetry.update();
 		mgamepad1.poll();
 		mgamepad2.poll();
+
+//		Drawing.drawDebug(follower);
 	}
 }
