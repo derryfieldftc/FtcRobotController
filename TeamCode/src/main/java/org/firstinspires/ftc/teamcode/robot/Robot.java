@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import static com.qualcomm.robotcore.util.RobotLog.d;
 import static org.firstinspires.ftc.teamcode.robot.Field.Ball;
 import static org.firstinspires.ftc.teamcode.robot.Field.Ball.None;
 
@@ -10,6 +11,7 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.autonmous.actions.Action;
 import org.firstinspires.ftc.teamcode.autonmous.actions.SequentialAction;
 import org.firstinspires.ftc.teamcode.autonmous.actions.SleepAction;
@@ -51,6 +53,15 @@ public class Robot extends RobotPart {
 				return false;
 			}
 		};
+	}
+
+	// Returns only the X and Y of the robot
+	public Pose getLLPose() {
+		limeLight.setMode(LimeLight.LimeLightMode.Localization);
+		Pose3D llpose = limeLight.ll.getLatestResult().getBotpose_MT2();
+		d("AHM LLPOSE " + llpose.toString());
+
+		return new Pose(llpose.getPosition().x * -3.28084, llpose.getPosition().y);
 	}
 
 	public Robot setTurretPose(TurretPose pose) {

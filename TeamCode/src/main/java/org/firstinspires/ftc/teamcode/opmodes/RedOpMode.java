@@ -30,6 +30,7 @@ import java.util.function.Supplier;
 
 @TeleOp(name = "RedOpMode")
 public class RedOpMode extends OpMode {
+	double lastLoopTime = 0;
 	Robot bot;
 	GamepadManager mgamepad1;
 	GamepadManager mgamepad2;
@@ -177,10 +178,17 @@ public class RedOpMode extends OpMode {
 
 		bot.turret.dumpTelemetry(telemetry);
 
-		bot.spindexer.updateBalls();
+		telemetry.addData("loop time ", this.getRuntime() - lastLoopTime);
+		lastLoopTime = this.getRuntime();
+
+		if (!gamepad1.y)
+			bot.spindexer.updateBalls();
+
 		telemetry.update();
 		mgamepad1.poll();
 		mgamepad2.poll();
+
+		bot.getLLPose();
 
 //		Drawing.drawDebug(follower);
 	}

@@ -21,10 +21,18 @@ import org.firstinspires.ftc.teamcode.robot.RobotPart;
 
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
-            .mass(10.4326) //KG
-            .forwardZeroPowerAcceleration(-28.571047441654848)
-            .lateralZeroPowerAcceleration(-73.4325534098)
-            .translationalPIDFCoefficients(new PIDFCoefficients(0.1, 0.0001, 0.0001, 0.0002));
+            .mass(11.339) //Kg
+            .forwardZeroPowerAcceleration(-28.80868329)
+            .lateralZeroPowerAcceleration(-57.99970102)
+            .translationalPIDFCoefficients(new PIDFCoefficients(.3, 0, .05, .01)) // if anything fix this one
+            .secondaryTranslationalPIDFCoefficients(new PIDFCoefficients(.2, .00001, .0001, .01)) // if anything fix this one
+            .drivePIDFCoefficients(new FilteredPIDFCoefficients(.1, .001, 0.0001, .6, .1))
+            .secondaryDrivePIDFCoefficients(new FilteredPIDFCoefficients(.05, .1, .00005, .6, .01))
+            .headingPIDFCoefficients(new PIDFCoefficients(3, 0, .01, .01))
+            .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(5, .001, .001, .00))
+            .useSecondaryTranslationalPIDF(true)
+            .useSecondaryHeadingPIDF(true)
+            .useSecondaryDrivePIDF(true);
 
     public static MecanumConstants mecanumDrive = new MecanumConstants()
             .maxPower(1)
@@ -36,23 +44,8 @@ public class Constants {
             .leftRearMotorDirection(DcMotorSimple.Direction.FORWARD)
             .rightFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
             .rightRearMotorDirection(DcMotorSimple.Direction.REVERSE)
-            .xVelocity(66.84776316581288)
-            .yVelocity(54.147475146056685);
-
-
-//    public static ThreeWheelConstants threeWheelLocalizer = new ThreeWheelConstants()
-//            .leftPodY(8)
-//            .rightPodY(-8)
-//            .strafePodX(-7)
-//            .leftEncoder_HardwareMapName(RobotPart.Part.LeftDriveEncoder.name)
-//            .rightEncoder_HardwareMapName(RobotPart.Part.RightDriveEncoder.name)
-//            .strafeEncoder_HardwareMapName(RobotPart.Part.StrafeEncoder.name)
-//            .leftEncoderDirection(Encoder.FORWARD)
-//            .rightEncoderDirection(Encoder.FORWARD)
-//            .strafeEncoderDirection(Encoder.FORWARD)
-//            .forwardTicksToInches(0.0019895402114732674)
-//            .strafeTicksToInches(0.0019896225811645574)
-//            .turnTicksToInches(0.00197568911474871);
+            .xVelocity(59.639027)
+            .yVelocity(42.776740);
 
     public static PinpointConstants localizerConstants = new PinpointConstants()
             .forwardPodY(6.5)

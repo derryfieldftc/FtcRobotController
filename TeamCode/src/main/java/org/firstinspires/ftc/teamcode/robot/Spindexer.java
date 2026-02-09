@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot;
 
 import static com.qualcomm.robotcore.util.RobotLog.d;
+import static com.qualcomm.robotcore.util.RobotLog.w;
 
 import android.graphics.Color;
 
@@ -13,6 +14,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
 import org.firstinspires.ftc.teamcode.autonmous.actions.Action;
+import org.firstinspires.ftc.teamcode.autonmous.actions.EternalAction;
 
 import java.util.Arrays;
 
@@ -121,6 +123,26 @@ public class Spindexer extends RobotPart {
 	}
 
 	/**
+	 * Cause I'm a little lazy this changes the power to 1, so if you are using a non-1 power value reset it after this finishes
+	 * @return
+	 */
+	public EternalAction jiggle() {
+        return new EternalAction() {
+			@Override
+			public void runForever() {
+				rotator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+				rotator.setPower(rotator.getPower() * -1);
+			}
+
+			@Override
+			public void cleanup() {
+				rotator.setPower(1);
+				rotator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+			}
+		};
+    }
+
+	/**
 	 * Returns the ball that is in the shooting position
 	 * @return
 	 */
@@ -155,6 +177,7 @@ public class Spindexer extends RobotPart {
 		rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		rotator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 		rotator.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, new PIDFCoefficients(10, 0, 0, 0));
+		rotator.setTargetPositionTolerance(10);
 	}
 
 	public void setRotatorPower(double power) {
@@ -163,10 +186,6 @@ public class Spindexer extends RobotPart {
 
 	public void setLiftPosition(Height height) {
 		lift.setPosition(height.height);
-	}
-
-	public void moveToReset() {
-		//TODO! make this reset the encoder position and zero the spindexer
 	}
 
 	public boolean touchSensorPressed() {

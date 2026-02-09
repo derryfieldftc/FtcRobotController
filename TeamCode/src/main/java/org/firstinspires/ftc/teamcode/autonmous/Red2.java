@@ -38,12 +38,13 @@ public class Red2 extends OpMode {
 	private int pathState; // Current autonomous path state (state machine)
 	private Paths paths; // Paths defined in the Paths class
 	boolean completed = true;
+	boolean resetting = true;
 	Action action;
 	Robot robot;
 
 	@Override
 	public void init() {
-		robot = new Robot(this).setTurretPose(new TurretPose(new Pose(46, 16, Math.toRadians(135)).mirror(), 0));
+		robot = new Robot(this).setTurretPose(new TurretPose(new Pose(46, 9, Math.toRadians(135)).mirror(), 0));
 
 		panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
@@ -108,6 +109,7 @@ public class Red2 extends OpMode {
 						robot.setIntakeSpeed(1),
 						new FollowPathAction(follower, paths.PickUpBackRow4),
 						robot.setIntakeSpeed(0),
+						new FollowPathAction(follower, paths.CloseShot5),
 						new Action() {
 							@Override
 							public boolean run() {
@@ -115,7 +117,7 @@ public class Red2 extends OpMode {
 								return false;
 							};
 						},
-						new FollowPathAction(follower, paths.CloseShot5),
+//						new FollowPathAction(follower, paths.CloseShot4),
 						robot.shootAll(),
 						new Action() {
 							@Override
@@ -156,6 +158,7 @@ public class Red2 extends OpMode {
 
 		while (robot.spindexer.resetPosition().run());
 
+
 	}
 
 	@Override
@@ -167,7 +170,6 @@ public class Red2 extends OpMode {
 		d("AHM FOUND " + Field.motif);
 		telemetry.addData("motif", Field.motif);
 		telemetry.update();
-
 	}
 
 	@Override

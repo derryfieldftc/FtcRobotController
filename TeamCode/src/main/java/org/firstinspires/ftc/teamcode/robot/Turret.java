@@ -28,6 +28,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.autonmous.actions.Action;
+import org.firstinspires.ftc.teamcode.autonmous.actions.EternalAction;
 
 import java.io.File;
 import java.io.PrintWriter;
@@ -180,13 +181,13 @@ public class Turret extends RobotPart {
 	}
 
 	/**
-	 * This is action should never finish until the stopAutoTracking Action is
+	 * This is action should never finish until stop() is called on it
 	 * called
 	 */
-	public Action trackTarget(Vector target, Localizer localizer) {
-		return new Action() {
+	public EternalAction trackTarget(Vector target, Localizer localizer) {
+		return new EternalAction() {
 			@Override
-			public boolean run() {
+			public void runForever() {
 				if (tracking == TrackingState.NOT_TRACKING)
 					tracking = TrackingState.TRACKING;
 				updatePose(localizer.getPose());
@@ -200,8 +201,6 @@ public class Turret extends RobotPart {
 				updateRotation(targetRotation);
 				RobotLog.d("AHM TRACKING target angle %f", targetRotation);
 				updateLight();
-
-				return true;
 			}
 		};
 	}
