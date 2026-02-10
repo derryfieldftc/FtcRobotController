@@ -240,7 +240,6 @@ public class Spindexer extends RobotPart {
 	public void setPosition(Position targetPosition) {
 		int currentPositionTicks = rotator.getCurrentPosition();
 		int rotations = (currentPositionTicks + (stepTicks / 2)) / fullRotationTicks;
-		setLiftPosition(Height.Up);
 
 		// Don't look at this
 		switch (currentPosition) {
