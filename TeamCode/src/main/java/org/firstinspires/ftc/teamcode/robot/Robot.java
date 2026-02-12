@@ -167,7 +167,35 @@ public class Robot extends RobotPart {
 			}
 		};
 	}
+	public Action spindexerPrepIntake() {
+		return new SequentialAction(
+				new Action() {
+					@Override
+					public boolean run() {
+						spindexer.setPosition(Spindexer.Position.Zero);
+						return false;
+					}
+				},
+				new Action() {
+					@Override
+					public boolean run() {
+						spindexer.setLiftPosition(Spindexer.Height.Down);
+						return false;
+					}
+				}
 
+		);
+	}
+	public Action spindexerPrepShoot() {
+		return new Action() {
+			@Override
+			public boolean run() {
+				spindexer.setLiftPosition(Spindexer.Height.Up);
+				return false;
+			}
+		};
+
+	}
 	/**
 	 * Updates Field.motif value, do not forget to correct the target after
 	 * @param localizer

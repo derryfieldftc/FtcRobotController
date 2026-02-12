@@ -67,75 +67,81 @@ public class TTRed2 extends OpMode {
 				new SequentialAction(
 						new SleepAction(AutoConfigs.initalWaitTime),
 						robot.shootAll(),
-
-						new Action() {
-							@Override
-							public boolean run() {
-								robot.spindexer.setPosition(Spindexer.Position.Zero);
-								robot.spindexer.setLiftPosition(Spindexer.Height.Down);
-								return false;
-							};
-						},
+						robot.spindexerPrepIntake(),
+//						new Action() {
+//							@Override
+//							public boolean run() {
+//								robot.spindexer.setPosition(Spindexer.Position.Zero);
+//								robot.spindexer.setLiftPosition(Spindexer.Height.Down);
+//								return false;
+//							};
+//						},
 						robot.setIntakeSpeed(1),
 						new FollowPathAction(follower, paths.ToPickup1),
 						new FollowPathAction(follower, paths.Intake2),
 						new FollowPathAction(follower, paths.Shoot3),
-						new Action() {
-							@Override
-							public boolean run() {
-								robot.spindexer.setLiftPosition(Spindexer.Height.Up);
-								return false;
-							}
-						},
+						robot.spindexerPrepShoot(),
+//						new Action() {
+//							@Override
+//							public boolean run() {
+//								robot.spindexer.setLiftPosition(Spindexer.Height.Up);
+//								return false;
+//							}
+//						},
 						robot.setIntakeSpeed(0),
 						robot.shootAll(),
-						new Action() {
-							@Override
-							public boolean run() {
-								robot.spindexer.setPosition(Spindexer.Position.Zero);
-								robot.spindexer.setLiftPosition(Spindexer.Height.Down);
-								return false;
-							};
-						},
+						robot.spindexerPrepIntake(),
+//						new Action() {
+//							@Override
+//							public boolean run() {
+//								robot.spindexer.setPosition(Spindexer.Position.Zero);
+//								robot.spindexer.setLiftPosition(Spindexer.Height.Down);
+//								return false;
+//							};
+//						},
 						robot.setIntakeSpeed(1),
 						new FollowPathAction(follower, paths.Lever4),
-						new Action() {
-							@Override
-							public boolean run() {
-								robot.spindexer.setLiftPosition(Spindexer.Height.Up);
-								return false;
-							}
-						},
+						robot.spindexerPrepShoot(),
+//						new Action() {
+//							@Override
+//							public boolean run() {
+//								robot.spindexer.setLiftPosition(Spindexer.Height.Up);
+//								return false;
+//							}
+//						},
 						new FollowPathAction(follower, paths.Shoot5),
 						robot.setIntakeSpeed(0),
 						robot.shootAll()),
-						new Action() {
-							@Override
-							public boolean run() {
-								robot.spindexer.setPosition(Spindexer.Position.Zero);
-								robot.spindexer.setLiftPosition(Spindexer.Height.Down);
-								return false;
-							};
-						},
+						robot.spindexerPrepIntake(),
+//						new Action() {
+//							@Override
+//							public boolean run() {
+//								robot.spindexer.setPosition(Spindexer.Position.Zero);
+//								robot.spindexer.setLiftPosition(Spindexer.Height.Down);
+//								return false;
+//							};
+//						},
 						robot.setIntakeSpeed(1),
 						new FollowPathAction(follower, paths.Intake6),
 						new FollowPathAction(follower, paths.Shoot7),
-						new Action() {
-							@Override
-							public boolean run() {
-								robot.spindexer.setLiftPosition(Spindexer.Height.Up);
-								return false;
-							}
-						},
+						robot.spindexerPrepShoot(),
+//						new Action() {
+//							@Override
+//							public boolean run() {
+//								robot.spindexer.setLiftPosition(Spindexer.Height.Up);
+//								return false;
+//							}
+//						},
 						robot.setIntakeSpeed(0),
-						new Action() {
-							@Override
-							public boolean run() {
-								robot.spindexer.setPosition(Spindexer.Position.Zero);
-								robot.spindexer.setLiftPosition(Spindexer.Height.Down);
-								return false;
-							};
-						},
+						robot.spindexerPrepIntake(),
+//						new Action() {
+//							@Override
+//							public boolean run() {
+//								robot.spindexer.setPosition(Spindexer.Position.Zero);
+//								robot.spindexer.setLiftPosition(Spindexer.Height.Down);
+//								return false;
+//							};
+//						},
 						new FollowPathAction(follower, paths.Middle8),
 
 				robot.turret.trackTarget(Depot.getPosition(Field.Alliance.Red), follower.poseTracker.getLocalizer()),

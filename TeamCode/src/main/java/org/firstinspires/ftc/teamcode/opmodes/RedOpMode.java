@@ -115,7 +115,8 @@ public class RedOpMode extends OpMode {
 
 		bot.intake.setSpeed(gamepad2.right_trigger * ((gamepad2.start) ? -1 : 1));
 		if (gamepad2.right_trigger > .1) {
-			bot.spindexer.setLiftPosition(Spindexer.Height.Down);
+			bot.spindexerPrepIntake();
+//			bot.spindexer.setLiftPosition(Spindexer.Height.Down);
 		} else {
 			bot.spindexer.setLiftPosition(Spindexer.Height.Up);
 		}
