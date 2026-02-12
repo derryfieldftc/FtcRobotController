@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.GamepadManager;
+import org.firstinspires.ftc.teamcode.autonmous.actions.Action;
 import org.firstinspires.ftc.teamcode.autonmous.actions.TeleOpAction;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.robot.Depot;
@@ -39,7 +40,8 @@ public class RedOpMode extends OpMode {
 	boolean liftUp = false;
 	boolean autoTracking = false;
 	boolean autoMoving = false;
-	TeleOpAction shootAll;
+	boolean shootingAll = false;
+	Action shootAll;
 	boolean lastA;
 	LimeLight ll;
 	TurretPose lastPose;
@@ -54,8 +56,6 @@ public class RedOpMode extends OpMode {
 		d("AHM init");
 		drivetrain = Constants.createFollower(hardwareMap);
 
-		shootAll = new TeleOpAction(bot.shootAll());
-
 		try {
 			lastPose = Turret.getSavedPosition();
 		} catch (Exception e) {
@@ -69,12 +69,13 @@ public class RedOpMode extends OpMode {
 		mgamepad1 = new GamepadManager(gamepad1);
 		mgamepad2 = new GamepadManager(gamepad2);
 
-		bot.spindexer.setRotatorPower(1);
+		bot.spindexer.setRotatorPower(.5);
 
 		gotoLever = () -> drivetrain.pathBuilder() //Lazy Curve Generation
 				.addPath(new Path(new BezierLine(drivetrain::getPose, new Pose(132, 60))))
 				.setHeadingInterpolation(HeadingInterpolator.linearFromPoint(drivetrain::getHeading, Math.toRadians(40), 0.8))
 				.build();
+		shootAll = bot.shootAll();
 	}
 
 	@Override
@@ -102,11 +103,13 @@ public class RedOpMode extends OpMode {
 
 		bot.turret.savePosition();
 		drivetrain.update();
-		bot.loop();
+		if (!shootingAll) {
+			bot.loop();
+			bot.turret.trackTarget(Depot.getPosition(Field.Alliance.Red), drivetrain.getPoseTracker()
+					.getLocalizer()).run();
+		}
 		telemetry.clearAll(); // Disables telemetry from the Turret
 
-		bot.turret.trackTarget(Depot.getPosition(Field.Alliance.Red), drivetrain.getPoseTracker()
-				.getLocalizer()).run();
 		if (!autoTracking) {
 			bot.turret.setRotationPower(0);
 		} else {
@@ -184,11 +187,20 @@ public class RedOpMode extends OpMode {
 		if (!gamepad1.y)
 			bot.spindexer.updateBalls();
 
+		if (shootingAll || gamepad2.left_bumper) {
+			shootingAll = shootAll.run();
+			telemetry.addLine("shooting all");
+			if (!shootingAll) {
+				shootAll = bot.shootAll(); // set it to new shootall action as the last one finished
+			}
+		}
+
 		telemetry.update();
 		mgamepad1.poll();
 		mgamepad2.poll();
 
 		bot.getLLPose();
+
 
 //		Drawing.drawDebug(follower);
 	}

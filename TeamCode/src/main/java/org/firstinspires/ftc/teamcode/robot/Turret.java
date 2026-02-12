@@ -122,6 +122,7 @@ public class Turret extends RobotPart {
 		spinner0.setDirection(DcMotorSimple.Direction.FORWARD);
 	}
 
+	@Deprecated
 	public Turret setAngleTrim(double rotationTrim) {
 		this.rotationTrim = rotationTrim;
 		return this;
