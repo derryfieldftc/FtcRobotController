@@ -42,6 +42,9 @@ public class RedOpMode extends OpMode {
 	boolean autoMoving = false;
 	boolean shootingAll = false;
 	Action shootAll;
+	boolean preppingIntake = false;
+	Action prepIntake;
+	double intakeTargetSpeed = 0.0;
 	boolean lastA;
 	LimeLight ll;
 	TurretPose lastPose;
@@ -115,11 +118,15 @@ public class RedOpMode extends OpMode {
 		} else {
 			bot.turret.setRotationPower(1);
 		}
-
-		bot.intake.setSpeed(gamepad2.right_trigger * ((gamepad2.start) ? -1 : 1));
-		if (gamepad2.right_trigger > .1) {
-			bot.spindexerPrepIntake();
-//			bot.spindexer.setLiftPosition(Spindexer.Height.Down);
+		intakeTargetSpeed = gamepad2.right_trigger * ((gamepad2.start) ? -1 : 1);
+		bot.intake.setSpeed(intakeTargetSpeed);
+		if (intakeTargetSpeed > .1) {
+			bot.spindexer.setLiftPosition(Spindexer.Height.Down);
+//			preppingIntake = prepIntake.run();
+//			if (!preppingIntake){
+//				prepIntake = bot.spindexerPrepIntake();
+//
+//				}
 		} else {
 			bot.spindexer.setLiftPosition(Spindexer.Height.Up);
 		}

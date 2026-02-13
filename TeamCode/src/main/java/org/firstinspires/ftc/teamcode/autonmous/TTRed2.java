@@ -78,6 +78,7 @@ public class TTRed2 extends OpMode {
 //						},
 						robot.setIntakeSpeed(1),
 						new FollowPathAction(follower, paths.ToPickup1),
+
 						new FollowPathAction(follower, paths.Intake2),
 						new FollowPathAction(follower, paths.Shoot3),
 						robot.spindexerPrepShoot(),
@@ -111,7 +112,7 @@ public class TTRed2 extends OpMode {
 //						},
 						new FollowPathAction(follower, paths.Shoot5),
 						robot.setIntakeSpeed(0),
-						robot.shootAll()),
+						robot.shootAll(),
 						robot.spindexerPrepIntake(),
 //						new Action() {
 //							@Override
@@ -142,7 +143,7 @@ public class TTRed2 extends OpMode {
 //								return false;
 //							};
 //						},
-						new FollowPathAction(follower, paths.Middle8),
+						new FollowPathAction(follower, paths.Middle8)),
 
 				robot.turret.trackTarget(Depot.getPosition(Field.Alliance.Red), follower.poseTracker.getLocalizer()),
 				new Action() {
