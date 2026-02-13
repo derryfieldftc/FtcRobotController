@@ -76,7 +76,6 @@ public class RedOpMode extends OpMode {
 				.setHeadingInterpolation(HeadingInterpolator.linearFromPoint(drivetrain::getHeading, Math.toRadians(40), 0.8))
 				.build();
 		shootAll = bot.shootAll();
-		drivetrain.constants.setT
 	}
 
 	@Override
