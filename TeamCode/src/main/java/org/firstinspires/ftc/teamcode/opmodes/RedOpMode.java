@@ -76,6 +76,7 @@ public class RedOpMode extends OpMode {
 				.setHeadingInterpolation(HeadingInterpolator.linearFromPoint(drivetrain::getHeading, Math.toRadians(40), 0.8))
 				.build();
 		shootAll = bot.shootAll();
+		drivetrain.constants.setT
 	}
 
 	@Override
@@ -118,8 +119,8 @@ public class RedOpMode extends OpMode {
 
 		bot.intake.setSpeed(gamepad2.right_trigger * ((gamepad2.start) ? -1 : 1));
 		if (gamepad2.right_trigger > .1) {
-			bot.spindexerPrepIntake();
-//			bot.spindexer.setLiftPosition(Spindexer.Height.Down);
+			bot.spindexerPrepIntake().run(); // bad solution but works for now
+			bot.spindexerPrepIntake().run();
 		} else {
 			bot.spindexer.setLiftPosition(Spindexer.Height.Up);
 		}
@@ -142,10 +143,12 @@ public class RedOpMode extends OpMode {
 
 		bot.spindexer.setRotatorPower(1);
 
-		if (liftUp) {
-			bot.lift.setPosition(Lift.Position.Up);
-		} else {
-			bot.lift.setPosition(Lift.Position.Down);
+		if (!shootingAll) {
+			if (liftUp) {
+				bot.lift.setPosition(Lift.Position.Up);
+			} else {
+				bot.lift.setPosition(Lift.Position.Down);
+			}
 		}
 
 		if (gamepad1.a && ! lastA)
