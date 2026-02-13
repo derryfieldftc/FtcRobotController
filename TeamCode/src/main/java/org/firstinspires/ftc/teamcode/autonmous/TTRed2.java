@@ -68,81 +68,30 @@ public class TTRed2 extends OpMode {
 						new SleepAction(AutoConfigs.initalWaitTime),
 						robot.shootAll(),
 						robot.spindexerPrepIntake(),
-//						new Action() {
-//							@Override
-//							public boolean run() {
-//								robot.spindexer.setPosition(Spindexer.Position.Zero);
-//								robot.spindexer.setLiftPosition(Spindexer.Height.Down);
-//								return false;
-//							};
-//						},
 						robot.setIntakeSpeed(1),
 						new FollowPathAction(follower, paths.ToPickup1),
 
 						new FollowPathAction(follower, paths.Intake2),
 						new FollowPathAction(follower, paths.Shoot3),
 						robot.spindexerPrepShoot(),
-//						new Action() {
-//							@Override
-//							public boolean run() {
-//								robot.spindexer.setLiftPosition(Spindexer.Height.Up);
-//								return false;
-//							}
-//						},
 						robot.setIntakeSpeed(0),
 						robot.shootAll(),
 						robot.spindexerPrepIntake(),
-//						new Action() {
-//							@Override
-//							public boolean run() {
-//								robot.spindexer.setPosition(Spindexer.Position.Zero);
-//								robot.spindexer.setLiftPosition(Spindexer.Height.Down);
-//								return false;
-//							};
-//						},
-						robot.setIntakeSpeed(1),
 						new FollowPathAction(follower, paths.Lever4),
+						robot.setIntakeSpeed(1),
+						new SleepAction(2000),
 						robot.spindexerPrepShoot(),
-//						new Action() {
-//							@Override
-//							public boolean run() {
-//								robot.spindexer.setLiftPosition(Spindexer.Height.Up);
-//								return false;
-//							}
-//						},
 						new FollowPathAction(follower, paths.Shoot5),
 						robot.setIntakeSpeed(0),
 						robot.shootAll(),
 						robot.spindexerPrepIntake(),
-//						new Action() {
-//							@Override
-//							public boolean run() {
-//								robot.spindexer.setPosition(Spindexer.Position.Zero);
-//								robot.spindexer.setLiftPosition(Spindexer.Height.Down);
-//								return false;
-//							};
-//						},
 						robot.setIntakeSpeed(1),
 						new FollowPathAction(follower, paths.Intake6),
 						new FollowPathAction(follower, paths.Shoot7),
 						robot.spindexerPrepShoot(),
-//						new Action() {
-//							@Override
-//							public boolean run() {
-//								robot.spindexer.setLiftPosition(Spindexer.Height.Up);
-//								return false;
-//							}
-//						},
 						robot.setIntakeSpeed(0),
+						robot.shootAll(),
 						robot.spindexerPrepIntake(),
-//						new Action() {
-//							@Override
-//							public boolean run() {
-//								robot.spindexer.setPosition(Spindexer.Position.Zero);
-//								robot.spindexer.setLiftPosition(Spindexer.Height.Down);
-//								return false;
-//							};
-//						},
 						new FollowPathAction(follower, paths.Middle8)),
 
 				robot.turret.trackTarget(Depot.getPosition(Field.Alliance.Red), follower.poseTracker.getLocalizer()),
@@ -203,6 +152,9 @@ public class TTRed2 extends OpMode {
 
 
 
+
+
+
 	public static class Paths {
 		public PathChain ToPickup1;
 		public PathChain Intake2;
@@ -216,9 +168,9 @@ public class TTRed2 extends OpMode {
 		public Paths(Follower follower) {
 			ToPickup1 = follower.pathBuilder().addPath(
 							new BezierCurve(
-									new Pose(93.616, 9.430),
-									new Pose(95.801, 56.828),
-									new Pose(105.854, 59.603)
+									new Pose(96.000, 9.000),
+									new Pose(91.987, 59.927),
+									new Pose(102.278, 58.411)
 							)
 					).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(0))
 
@@ -226,9 +178,9 @@ public class TTRed2 extends OpMode {
 
 			Intake2 = follower.pathBuilder().addPath(
 							new BezierLine(
-									new Pose(105.854, 59.603),
+									new Pose(102.278, 58.411),
 
-									new Pose(133.795, 58.887)
+									new Pose(128.550, 57.695)
 							)
 					).setTangentHeadingInterpolation()
 
@@ -236,7 +188,7 @@ public class TTRed2 extends OpMode {
 
 			Shoot3 = follower.pathBuilder().addPath(
 							new BezierCurve(
-									new Pose(133.795, 58.887),
+									new Pose(128.550, 57.695),
 									new Pose(93.232, 56.454),
 									new Pose(96.020, 72.785),
 									new Pose(84.179, 87.252)
@@ -249,19 +201,19 @@ public class TTRed2 extends OpMode {
 							new BezierCurve(
 									new Pose(84.179, 87.252),
 									new Pose(118.454, 47.513),
-									new Pose(135.033, 61.563)
+									new Pose(131.364, 61.748)
 							)
-					).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(30))
+					).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(45))
 
 					.build();
 
 			Shoot5 = follower.pathBuilder().addPath(
 							new BezierCurve(
-									new Pose(135.033, 61.563),
+									new Pose(131.364, 61.748),
 									new Pose(126.358, 52.076),
 									new Pose(83.695, 86.550)
 							)
-					).setLinearHeadingInterpolation(Math.toRadians(30), Math.toRadians(0))
+					).setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(0))
 
 					.build();
 
@@ -270,7 +222,7 @@ public class TTRed2 extends OpMode {
 									new Pose(83.695, 86.550),
 									new Pose(109.126, 27.801),
 									new Pose(97.781, 36.298),
-									new Pose(133.894, 35.530)
+									new Pose(126.742, 35.291)
 							)
 					).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
 
@@ -278,9 +230,9 @@ public class TTRed2 extends OpMode {
 
 			Shoot7 = follower.pathBuilder().addPath(
 							new BezierCurve(
-									new Pose(133.894, 35.530),
+									new Pose(126.742, 35.291),
 									new Pose(102.126, 20.255),
-									new Pose(92.874, 11.325)
+									new Pose(86.675, 18.477)
 							)
 					).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
 
@@ -288,15 +240,18 @@ public class TTRed2 extends OpMode {
 
 			Middle8 = follower.pathBuilder().addPath(
 							new BezierLine(
-									new Pose(92.874, 11.325),
+									new Pose(86.675, 18.477),
 
-									new Pose(95.656, 27.815)
+									new Pose(86.596, 28.291)
 							)
 					).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
 
 					.build();
 		}
 	}
+
+
+
 
 
 
