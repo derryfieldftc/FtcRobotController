@@ -60,6 +60,7 @@ public class Constants {
     public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
 
     public static Follower createFollower(HardwareMap hardwareMap) {
+        mecanumDrive.setUseBrakeModeInTeleOp(true);
         return new FollowerBuilder(followerConstants, hardwareMap)
                 .mecanumDrivetrain(mecanumDrive)
                 .pathConstraints(pathConstraints)
