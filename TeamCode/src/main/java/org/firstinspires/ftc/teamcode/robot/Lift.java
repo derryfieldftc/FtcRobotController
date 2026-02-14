@@ -1,10 +1,15 @@
 package org.firstinspires.ftc.teamcode.robot;
 
+import static org.firstinspires.ftc.teamcode.robot.Lift.Position.Down;
+import static org.firstinspires.ftc.teamcode.robot.Lift.Position.Up;
+
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 
 public class Lift extends RobotPart {
 	Servo lift;
+	TouchSensor liftSwitch;
 
 	public Lift(OpMode opMode) {
 		super(opMode);
@@ -23,5 +28,15 @@ public class Lift extends RobotPart {
 
 	public void setPosition(Position position) {
 		lift.setPosition(position.position);
+	}
+	public Position getPosition(){
+		return liftSwitch.isPressed() ? Down : Up;
+	}
+	public boolean isDown(){
+		if (getPosition().equals(Down)){
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

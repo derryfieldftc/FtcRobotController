@@ -80,7 +80,7 @@ public class Robot extends RobotPart {
 				new Action() {
 					@Override
 					public boolean run() {
-						spindexer.setPosition(Spindexer.Position.Zero);
+						spindexer.safelySetPosition(Spindexer.Position.Zero, lift);
 						return false;
 					}
 				},
@@ -89,7 +89,7 @@ public class Robot extends RobotPart {
 				new Action() {
 					@Override
 					public boolean run() {
-						spindexer.setPosition(Spindexer.Position.One);
+						spindexer.safelySetPosition(Spindexer.Position.One, lift);
 						return false;
 					}
 				},
@@ -98,7 +98,7 @@ public class Robot extends RobotPart {
 				new Action() {
 					@Override
 					public boolean run() {
-						spindexer.setPosition(Spindexer.Position.Two);
+						spindexer.safelySetPosition(Spindexer.Position.Two, lift);
 						return false;
 					}
 				},
@@ -109,7 +109,7 @@ public class Robot extends RobotPart {
 
 	@Configurable
 	static class LiftTime {
-		static long liftMillis = 400;
+		static long liftMillis = 350;
 	}
 
 	/**
@@ -130,10 +130,9 @@ public class Robot extends RobotPart {
 					@Override
 					public boolean run() {
 						lift.setPosition(Lift.Position.Down);
-						return false;
+						return !lift.isDown();
 					}
-				},
-				new SleepAction(LiftTime.liftMillis)
+				}
 		);
 	}
 

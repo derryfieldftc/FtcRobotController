@@ -289,4 +289,17 @@ public class Spindexer extends RobotPart {
 
 		currentPosition = targetPosition;
 	}
+
+	/**
+	 * Checks the lift limit switch, if its down, sets position of the spindexer, else sets the lift to down
+	 * @param targetPosition
+	 * @param lift
+	 */
+	public void safelySetPosition(Position targetPosition, Lift lift){
+		if (lift.isDown()) {
+			setPosition(targetPosition);
+		} else {
+			lift.setPosition(Lift.Position.Down);
+		}
+	}
 }
