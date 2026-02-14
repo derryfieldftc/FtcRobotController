@@ -201,7 +201,7 @@ public class RedOpMode extends OpMode {
 		mgamepad1.poll();
 		mgamepad2.poll();
 
-		bot.getLLPose(drivetrain);
+		d("AHM LLPOSE " + bot.getLLPose(drivetrain).toString());
 
 
 //		Drawing.drawDebug(follower);

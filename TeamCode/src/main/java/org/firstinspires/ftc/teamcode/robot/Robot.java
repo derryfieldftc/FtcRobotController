@@ -61,7 +61,6 @@ public class Robot extends RobotPart {
 	public Pose getLLPose(Follower follower) {
 		limeLight.setMode(LimeLight.LimeLightMode.Localization);
 		Pose3D llpose = limeLight.ll.getLatestResult().getBotpose_MT2();
-		d("AHM LLPOSE " + llpose.toString());
 
 		return new Pose(llpose.getPosition().x * 3.28084, llpose.getPosition().y * 3.28084, follower.getHeading(), FTCCoordinates.INSTANCE);
 	}
@@ -71,10 +70,10 @@ public class Robot extends RobotPart {
 		return this;
 	}
 
-	/**
-	 * TODO! make work with color sensors
-	 * @return
-	 */
+	public Action shootAllWithRegardForColor() {
+		return new SequentialAction();
+	}
+
 	public Action shootAll() {
 		return new SequentialAction(
 				new Action() {
