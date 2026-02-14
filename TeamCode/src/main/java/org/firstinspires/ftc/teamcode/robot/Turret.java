@@ -69,8 +69,10 @@ public class Turret extends RobotPart {
 
 		public static double distanceToPower(double distance) {
 			d("AHM DISTANCE %f", distance);
+			double x = distance; // makes it easier to plug in from desmos
 //			return DistanceToPowerCoefficients.m * distance + DistanceToPowerCoefficients.b;
-			return -0.00000127696 * Math.pow(distance, 3) + 0.000347914 * Math.pow(distance, 2) + -0.0283176 * distance + 1.20971;
+//			return -0.00000127696 * Math.pow(distance, 3) + 0.000347914 * Math.pow(distance, 2) + -0.0283176 * distance + 1.20971;
+			return -(3.04772e-7) * Math.pow(x, 3) + 0.000152132 * Math.pow(x, 2) - 0.0192717 * x + 1.22563;
 		}
 	}
 
@@ -138,22 +140,6 @@ public class Turret extends RobotPart {
 		d("AHM spinner0 power %f", spinner0.getPower());
 		return this;
 	}
-
-	/*
-	 * OLD
-	 * distance velocity
-	 * 133.15 1300
-	 * 90 1120
-	 * 47 950
-	 * 105 1180
-	 * 129 1280
-	 * y=4.05014x+757.62475
-	 * NEW
-	 * 93 1000
-	 * 141 1300
-	 * 56.5 820
-	 * 107 1180
-	 */
 
 	public double getSpeedByDistance(double distance) {
 		return clamp(TurretConfigs.distanceToPower(distance), 0, 1); // found empirically

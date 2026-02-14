@@ -51,7 +51,7 @@ public class BlueOpMode extends OpMode {
 		d("AHM init");
 		drivetrain = Constants.createFollower(hardwareMap);
 
-		shootAll = new TeleOpAction(bot.shootAll());
+		shootAll = new TeleOpAction(() -> bot.shootAll());
 
 		try {
 			lastPose = Turret.getSavedPosition();

@@ -5,6 +5,8 @@ import static org.firstinspires.ftc.teamcode.robot.Field.Ball;
 import static org.firstinspires.ftc.teamcode.robot.Field.Ball.None;
 
 import com.bylazar.configurables.annotations.Configurable;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.ftc.FTCCoordinates;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.localization.Localizer;
 import com.qualcomm.hardware.limelightvision.LLResult;
@@ -56,12 +58,12 @@ public class Robot extends RobotPart {
 	}
 
 	// Returns only the X and Y of the robot
-	public Pose getLLPose() {
+	public Pose getLLPose(Follower follower) {
 		limeLight.setMode(LimeLight.LimeLightMode.Localization);
 		Pose3D llpose = limeLight.ll.getLatestResult().getBotpose_MT2();
 		d("AHM LLPOSE " + llpose.toString());
 
-		return new Pose(llpose.getPosition().x * -3.28084, llpose.getPosition().y);
+		return new Pose(llpose.getPosition().x * 3.28084, llpose.getPosition().y * 3.28084, follower.getHeading(), FTCCoordinates.INSTANCE);
 	}
 
 	public Robot setTurretPose(TurretPose pose) {

@@ -16,6 +16,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.autonmous.actions.Action;
 import org.firstinspires.ftc.teamcode.autonmous.actions.FollowPathAction;
+import org.firstinspires.ftc.teamcode.autonmous.actions.InstantAction;
 import org.firstinspires.ftc.teamcode.autonmous.actions.ParallelAction;
 import org.firstinspires.ftc.teamcode.autonmous.actions.SequentialAction;
 import org.firstinspires.ftc.teamcode.autonmous.actions.SleepAction;
@@ -67,94 +68,60 @@ public class Red2 extends OpMode {
 
 		robot.spindexer.setLiftPosition(Spindexer.Height.Up);
 
-		action = new ParallelAction(
-				new SequentialAction(
-						new SleepAction(AutoConfigs.initalWaitTime),
-						robot.shootAll(),
-						new Action() {
-							@Override
-							public boolean run() {
-								robot.spindexer.setLiftPosition(Spindexer.Height.Down);
-								return false;
-							}
-						},
-						new Action() {
-							@Override
-							public boolean run() {
-								robot.spindexer.setPosition(Spindexer.Position.Zero);
-								robot.spindexer.setLiftPosition(Spindexer.Height.Down);
-								return false;
-							};
-						},
-						robot.setIntakeSpeed(1),
-						new FollowPathAction(follower, paths.Pickup1),
-						robot.setIntakeSpeed(0),
-						new Action() {
-							@Override
-							public boolean run() {
-								robot.spindexer.setLiftPosition(Spindexer.Height.Up);
-								return false;
-							};
-						},
-						new FollowPathAction(follower, paths.CloseShot3),
-						robot.shootAll(),
-						new Action() {
-							@Override
-							public boolean run() {
-								robot.spindexer.setPosition(Spindexer.Position.Zero);
-								robot.spindexer.setLiftPosition(Spindexer.Height.Down);
-								return false;
-							};
-						},
-						robot.setIntakeSpeed(1),
-						new FollowPathAction(follower, paths.PickUpBackRow4),
-						robot.setIntakeSpeed(0),
-						new FollowPathAction(follower, paths.CloseShot5),
-						new Action() {
-							@Override
-							public boolean run() {
-								robot.spindexer.setLiftPosition(Spindexer.Height.Up);
-								return false;
-							};
-						},
+		action = new SequentialAction(
+				new SleepAction(AutoConfigs.initalWaitTime),
+				robot.shootAll(),
+				new InstantAction(() -> robot.spindexer.setLiftPosition(Spindexer.Height.Down)),
+				new InstantAction(() -> {
+					robot.spindexer.setPosition(Spindexer.Position.Zero);
+					robot.spindexer.setLiftPosition(Spindexer.Height.Down);
+				}),
+				robot.setIntakeSpeed(1),
+				new FollowPathAction(follower, paths.Pickup1),
+				robot.setIntakeSpeed(0),
+				new InstantAction(() -> robot.spindexer.setLiftPosition(Spindexer.Height.Up)),
+				new FollowPathAction(follower, paths.CloseShot3),
+				robot.shootAll(),
+				new InstantAction(() -> {
+					robot.spindexer.setPosition(Spindexer.Position.Zero);
+					robot.spindexer.setLiftPosition(Spindexer.Height.Down);
+				}),
+				robot.setIntakeSpeed(1),
+				new FollowPathAction(follower, paths.PickUpBackRow4),
+				robot.setIntakeSpeed(0),
+				new FollowPathAction(follower, paths.CloseShot5),
+				new InstantAction(() -> robot.spindexer.setLiftPosition(Spindexer.Height.Up)),
 //						new FollowPathAction(follower, paths.CloseShot4),
-						robot.shootAll(),
+				robot.shootAll(),
+				new InstantAction(() -> {
+					robot.spindexer.setPosition(Spindexer.Position.Zero);
+					robot.spindexer.setLiftPosition(Spindexer.Height.Down);
+				}),
+				robot.setIntakeSpeed(1),
+				new FollowPathAction(follower, paths.PickUpFrontRow6),
+				new InstantAction(() -> robot.spindexer.setLiftPosition(Spindexer.Height.Up)),
+				new FollowPathAction(follower, paths.FarShot7),
+				robot.shootAll(),
+				new FollowPathAction(follower, paths.Middle8))
+
+				.andAlso(robot.turret.trackTarget(Depot.getPosition(Field.Alliance.Red), follower.poseTracker.getLocalizer()))
+				.andAlso(
+						// These lower ones CANNOT be InstantActions because they need to run continuesly
 						new Action() {
 							@Override
 							public boolean run() {
-								robot.spindexer.setPosition(Spindexer.Position.Zero);
-								robot.spindexer.setLiftPosition(Spindexer.Height.Down);
-								return false;
+								robot.setTurretSpeed(robot.turret.getSpeedByDistance(robot.turret.getDistance(Depot.getPosition(Field.Alliance.Red)))).run();
+								return true;
 							};
-						},
-						robot.setIntakeSpeed(1),
-						new FollowPathAction(follower, paths.PickUpFrontRow6),
+						})
+				.andAlso(
 						new Action() {
 							@Override
 							public boolean run() {
-								robot.spindexer.setLiftPosition(Spindexer.Height.Up);
-								return false;
-							};
-						},
-						new FollowPathAction(follower, paths.FarShot7),
-						robot.shootAll(),
-						new FollowPathAction(follower, paths.Middle8)),
-				robot.turret.trackTarget(Depot.getPosition(Field.Alliance.Red), follower.poseTracker.getLocalizer()),
-				new Action() {
-					@Override
-					public boolean run() {
-						robot.setTurretSpeed(robot.turret.getSpeedByDistance(robot.turret.getDistance(Depot.getPosition(Field.Alliance.Red)))).run();
-						return true;
-					};
-				},
-				new Action() {
-					@Override
-					public boolean run() {
-						robot.turret.savePosition();
-						return true;
-					}
-				}
-		);
+								robot.turret.savePosition();
+								return true;
+							}
+						});
 
 		while (robot.spindexer.resetPosition().run());
 

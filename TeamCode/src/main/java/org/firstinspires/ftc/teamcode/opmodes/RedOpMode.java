@@ -173,8 +173,6 @@ public class RedOpMode extends OpMode {
 			autoTracking = !autoTracking;
 		}
 
-		bot.turret.setAngleTrim((bot.turret.rotationTrim + gamepad2.right_stick_y / 17.5) * ((gamepad2.right_stick_button) ? 0 : 1)); // the lion does not concern herself with the math
-
 		telemetry.addData("turretOn", turretOn);
 		telemetry.addData("speedTrim", speedTrim);
 		telemetry.addData("angleTrim", bot.turret.rotationTrim);
@@ -202,7 +200,7 @@ public class RedOpMode extends OpMode {
 		mgamepad1.poll();
 		mgamepad2.poll();
 
-		bot.getLLPose();
+		bot.getLLPose(drivetrain);
 
 
 //		Drawing.drawDebug(follower);

@@ -1,27 +1,33 @@
 package org.firstinspires.ftc.teamcode.autonmous.actions;
 
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import java.util.function.Supplier;
 
 /**
- * This is a funky action, because it is not an action in the normal sense, and it does not extend actions, if it should be started is passed to the run method
+ * This is a funky action, because it is not an action in the normal sense
  */
-public class TeleOpAction {
+public class TeleOpAction extends Action {
 	Action action;
+	Supplier<Action> actionSupplier; // We use this supplier to get a new action each time ours finishes, because calling run on an action that has already been completed is undefined
 	boolean wasRunning = false;
 
-	public TeleOpAction(Action action) {
-		this.action = action;
+	public TeleOpAction(Supplier<Action> actionSupplier) {
+		this.action = actionSupplier.get();
+		this.actionSupplier = actionSupplier;
 	}
 
-	/**
-	 * Call this every loop, call it with start being true if you want to run the action, then it will continue running until finished, note that you cannot 'queue' or buffer actions after themselves by passing true multiple times, rather it will run once, regardless of how many times true is passed until it is done, at which case passing true makes it run again
-	 * @param start
-	 */
-	public void run(boolean start) {
-		try {
-			if (start || wasRunning) {
-				wasRunning = action.run();
+	@Override
+	public boolean run() {
+		if (wasRunning) {
+			wasRunning = action.run();
+			if (!wasRunning) {
+				action = actionSupplier.get();
 			}
-		} catch (Exception ignored) {}
+		}
+		return wasRunning;
+	}
+
+	public void start() {
+		wasRunning = true;
+
 	}
 }
