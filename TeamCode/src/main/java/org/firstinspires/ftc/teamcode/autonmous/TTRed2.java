@@ -79,7 +79,7 @@ public class TTRed2 extends OpMode {
 						robot.spindexerPrepIntake(),
 						new FollowPathAction(follower, paths.Lever4),
 						robot.setIntakeSpeed(1),
-						new SleepAction(2000),
+						new SleepAction(3000),
 						robot.spindexerPrepShoot(),
 						new FollowPathAction(follower, paths.Shoot5),
 						robot.setIntakeSpeed(0),
