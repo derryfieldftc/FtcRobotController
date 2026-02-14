@@ -16,6 +16,7 @@ public class Intake extends RobotPart {
 		super(opMode);
 		intake = hardwareMap.dcMotor.get(Part.Intake.name);
 		intake.setDirection(DcMotorSimple.Direction.FORWARD);
+		intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 	}
 
 	public Intake setSpeed(double speed) {

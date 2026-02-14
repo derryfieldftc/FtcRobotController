@@ -28,6 +28,9 @@ public class TeleOpAction extends Action {
 
 	public void start() {
 		wasRunning = true;
+	}
 
+	public boolean isRunning() {
+		return wasRunning;
 	}
 }
