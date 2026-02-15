@@ -9,11 +9,9 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
-import com.pedropathing.localization.Localizer;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.teamcode.autonmous.actions.Action;
 import org.firstinspires.ftc.teamcode.autonmous.actions.FollowPathAction;
@@ -23,14 +21,13 @@ import org.firstinspires.ftc.teamcode.autonmous.actions.SleepAction;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.robot.Depot;
 import org.firstinspires.ftc.teamcode.robot.Field;
-import org.firstinspires.ftc.teamcode.robot.Obelisk;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.Spindexer;
 import org.firstinspires.ftc.teamcode.robot.TurretPose;
 
 @Autonomous()
 @Configurable // Panels
-public class TTRed2 extends OpMode {
+public class TTTestColors extends OpMode {
 
 	private TelemetryManager panelsTelemetry; // Panels Telemetry instance
 	public Follower follower; // Pedro Pathing follower instance
@@ -63,14 +60,14 @@ public class TTRed2 extends OpMode {
 		telemetry.addData("motif", Field.motif);
 		telemetry.update();
 		robot.spindexer.setLiftPosition(Spindexer.Height.Up);
+		robot.spindexer.setBalls(Field.Ball.Green, Field.Ball.Purple, Field.Ball.Purple);
 		action = new ParallelAction(
 				new SequentialAction(
 						new SleepAction(AutoConfigs.initalWaitTime),
-						robot.shootAll(),
+						robot.shootAllSortedInitial(Robot.balls),
 						robot.spindexerPrepIntake(),
 						robot.setIntakeSpeed(1),
 						new FollowPathAction(follower, paths.ToPickup1),
-
 						new FollowPathAction(follower, paths.Intake2),
 						new FollowPathAction(follower, paths.Shoot3),
 						robot.spindexerPrepShoot(),

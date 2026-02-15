@@ -45,7 +45,7 @@ public class Spindexer extends RobotPart {
 	public enum Position {
 		Zero	(0),
 		One		(138),
-		Two		(277);
+		Two		(276);
 
 		public int fromZeroTicks;
 		Position(int ticks) {
@@ -85,7 +85,11 @@ public class Spindexer extends RobotPart {
 		second.setColor(IndicatorLight.Color.Green);
 		third.setColor(IndicatorLight.Color.Blue);
 	}
-
+	public void setBalls(Field.Ball pos0, Field.Ball pos1, Field.Ball pos2) {
+		balls = new Field.Ball[]{pos0, pos1, pos2};
+		d("AHM balls " + Arrays.toString(balls));
+		updateLights();
+	}
 	public void updateBalls() {
 		switch (currentPosition) {
 			case Zero:
@@ -176,7 +180,7 @@ public class Spindexer extends RobotPart {
 		rotator.setTargetPosition(0);
 		rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		rotator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-		rotator.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, new PIDFCoefficients(10, 0, 0, 0));
+		rotator.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, new PIDFCoefficients(25, 0, 0, 0));
 		rotator.setTargetPositionTolerance(10);
 	}
 
@@ -273,7 +277,7 @@ public class Spindexer extends RobotPart {
 				fakeZero = rotations * fullRotationTicks + stepTicks * 2;
 				switch (targetPosition) {
 					case Zero:
-						rotator.setTargetPosition(fakeZero + stepTicks);
+						rotator.setTargetPosition((rotations + 1) * fullRotationTicks); // 0 of next rotation
 						break;
 					case One:
 						rotator.setTargetPosition(fakeZero - stepTicks);
@@ -288,5 +292,41 @@ public class Spindexer extends RobotPart {
 		d("AHM spin target " + rotator.getTargetPosition());
 
 		currentPosition = targetPosition;
+	}
+	public void nextPosition() {
+		int currentPositionTicks = rotator.getCurrentPosition();
+		int targetPosition = currentPositionTicks + 138;
+		rotator.setTargetPosition(targetPosition);
+	}
+	public void previousPosition() {
+		int currentPositionTicks = rotator.getCurrentPosition();
+		int targetPosition = currentPositionTicks - 138;
+		rotator.setTargetPosition(targetPosition);
+	}
+	/**
+	 * Checks the lift limit switch, if its down, sets position of the spindexer, else sets the lift to down
+	 * @param targetPosition
+	 * @param lift
+	 */
+	public void safelySetPosition(Position targetPosition, Lift lift){
+		if (lift.isDown()) {
+			setPosition(targetPosition);
+		} else {
+			lift.setPosition(Lift.Position.Down);
+		}
+	}
+	public void safelyNextPosition(Lift lift){
+		if (lift.isDown()) {
+			nextPosition();
+		} else {
+			lift.setPosition(Lift.Position.Down);
+		}
+	}
+	public void safelyPreviousPosition(Lift lift){
+		if (lift.isDown()) {
+			previousPosition();
+		} else {
+			lift.setPosition(Lift.Position.Down);
+		}
 	}
 }
