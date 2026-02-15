@@ -12,11 +12,13 @@ import com.pedropathing.localization.Localizer;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.autonmous.actions.Action;
 import org.firstinspires.ftc.teamcode.autonmous.actions.SequentialAction;
 import org.firstinspires.ftc.teamcode.autonmous.actions.SleepAction;
+import org.firstinspires.ftc.teamcode.opmodes.Tests.ShootAllTest;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 /**
@@ -105,7 +107,113 @@ public class Robot extends RobotPart {
 				this.shoot()
 				);
 	}
+	public Action shootAllFromPos(Spindexer.Position targetPosition, Lift lift) {
+		return new SequentialAction(
+				new Action() {
+					@Override
+					public boolean run() {
+						spindexer.safelySetPosition(targetPosition, lift);
+						return false;
+					}
+				},
+				spindexer.waitUntilFinished(1),
+				this.shoot(),
+				new Action() {
+					@Override
+					public boolean run() {
+						spindexer.safelyPreviousPosition(lift);
+						return false;
+					}
+				},
+				spindexer.waitUntilFinished(1),
+				this.shoot(),
+				new Action() {
+					@Override
+					public boolean run() {
+						spindexer.safelyPreviousPosition(lift);
+						return false;
+					}
+				},
+				spindexer.waitUntilFinished(1),
+				this.shoot()
+		);
+	}
 
+	public Action shootAllOne() {
+		return new SequentialAction(
+				new Action() {
+					@Override
+					public boolean run() {
+						spindexer.safelySetPosition(Spindexer.Position.One, lift);
+						return false;
+					}
+				},
+				spindexer.waitUntilFinished(1),
+				this.shoot(),
+				new Action() {
+					@Override
+					public boolean run() {
+						spindexer.safelySetPosition(Spindexer.Position.Two, lift);
+						return false;
+					}
+				},
+				spindexer.waitUntilFinished(1),
+				this.shoot(),
+				new Action() {
+					@Override
+					public boolean run() {
+						spindexer.safelySetPosition(Spindexer.Position.Zero, lift);
+						return false;
+					}
+				},
+				spindexer.waitUntilFinished(1),
+				this.shoot()
+		);
+	}
+	public Action shootAllTwo() {
+		return new SequentialAction(
+				new Action() {
+					@Override
+					public boolean run() {
+						spindexer.safelySetPosition(Spindexer.Position.Two, lift);
+						return false;
+					}
+				},
+				spindexer.waitUntilFinished(1),
+				this.shoot(),
+				new Action() {
+					@Override
+					public boolean run() {
+						spindexer.safelySetPosition(Spindexer.Position.Zero, lift);
+						return false;
+					}
+				},
+				spindexer.waitUntilFinished(1),
+				this.shoot(),
+				new Action() {
+					@Override
+					public boolean run() {
+						spindexer.safelySetPosition(Spindexer.Position.One, lift);
+						return false;
+					}
+				},
+				spindexer.waitUntilFinished(1),
+				this.shoot()
+		);
+	}
+
+	public Action shootAllSorted(Field.Ball[] balls) {
+		if (Field.motif.getBall(0) == Field.Ball.Green) {
+			d("TCT:Shooting All pos 0, green is first");
+			return shootAllFromPos(Spindexer.Position.Zero, lift);
+		} else if (Field.motif.getBall(1) == Field.Ball.Green) {
+			d("TCT:Shooting All pos 2, green is second");
+			return shootAllFromPos(Spindexer.Position.One, lift);
+		} else {
+			d("TCT:Shooting All pos 1, green is last");
+			return shootAllFromPos(Spindexer.Position.Two, lift);
+		}
+	}
 	@Configurable
 	static class LiftTime {
 		static long liftMillis = 350;
