@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.robot;
 import static com.qualcomm.robotcore.util.RobotLog.d;
 import static org.firstinspires.ftc.teamcode.robot.Field.Ball;
 import static org.firstinspires.ftc.teamcode.robot.Field.Ball.None;
+import static org.firstinspires.ftc.teamcode.robot.Field.motif;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
@@ -43,7 +44,7 @@ public class Robot extends RobotPart {
 	public static Ball firstBall = balls[0];
 	public static Ball secondBall = balls[1];
 	public static Ball thirdBall = balls[2];
-
+	public int newMotifIndex;
 	/**
 	 * This action sets a speed for the turret
 	 * @param speed
@@ -70,10 +71,6 @@ public class Robot extends RobotPart {
 	public Robot setTurretPose(TurretPose pose) {
 		turret.setPose(pose);
 		return this;
-	}
-
-	public Action shootAllWithRegardForColor() {
-		return new SequentialAction();
 	}
 
 	public Action shootAll() {
@@ -139,70 +136,8 @@ public class Robot extends RobotPart {
 		);
 	}
 
-	public Action shootAllOne() {
-		return new SequentialAction(
-				new Action() {
-					@Override
-					public boolean run() {
-						spindexer.safelySetPosition(Spindexer.Position.One, lift);
-						return false;
-					}
-				},
-				spindexer.waitUntilFinished(1),
-				this.shoot(),
-				new Action() {
-					@Override
-					public boolean run() {
-						spindexer.safelySetPosition(Spindexer.Position.Two, lift);
-						return false;
-					}
-				},
-				spindexer.waitUntilFinished(1),
-				this.shoot(),
-				new Action() {
-					@Override
-					public boolean run() {
-						spindexer.safelySetPosition(Spindexer.Position.Zero, lift);
-						return false;
-					}
-				},
-				spindexer.waitUntilFinished(1),
-				this.shoot()
-		);
-	}
-	public Action shootAllTwo() {
-		return new SequentialAction(
-				new Action() {
-					@Override
-					public boolean run() {
-						spindexer.safelySetPosition(Spindexer.Position.Two, lift);
-						return false;
-					}
-				},
-				spindexer.waitUntilFinished(1),
-				this.shoot(),
-				new Action() {
-					@Override
-					public boolean run() {
-						spindexer.safelySetPosition(Spindexer.Position.Zero, lift);
-						return false;
-					}
-				},
-				spindexer.waitUntilFinished(1),
-				this.shoot(),
-				new Action() {
-					@Override
-					public boolean run() {
-						spindexer.safelySetPosition(Spindexer.Position.One, lift);
-						return false;
-					}
-				},
-				spindexer.waitUntilFinished(1),
-				this.shoot()
-		);
-	}
-
-	public Action shootAllSorted(Field.Ball[] balls) {
+	public Action shootAllSortedInitial(Field.Ball[] balls) {
+		//For initial sorted shots in auto, green in shooting spot and two purple in the back spots
 		if (Field.motif.getBall(0) == Field.Ball.Green) {
 			d("TCT:Shooting All pos 0, green is first");
 			return shootAllFromPos(Spindexer.Position.Zero, lift);
@@ -213,6 +148,102 @@ public class Robot extends RobotPart {
 			d("TCT:Shooting All pos 1, green is last");
 			return shootAllFromPos(Spindexer.Position.Two, lift);
 		}
+	}
+	public Action shootAllSorted(Field.Ball[] balls, int motifIndex ){
+		newMotifIndex = motifIndex % 3;
+		int position = 0;
+		return new SequentialAction(
+				new Action() {
+					@Override
+					public boolean run() {
+						if (balls[position] == Field.motif.getBall(newMotifIndex)) {
+							newMotifIndex = (newMotifIndex + 1) % 3;
+							return false;
+						} else if (balls[position + 1] == Field.motif.getBall(newMotifIndex)) {
+							newMotifIndex = (newMotifIndex + 1) % 3;
+							spindexer.safelyNextPosition(lift);
+							return false;
+						} else if (balls[position + 2] == Field.motif.getBall(newMotifIndex)) {
+							newMotifIndex = (newMotifIndex + 1) % 3;
+							spindexer.safelyPreviousPosition(lift);
+							return false;
+
+						} else {
+							//If it doesn't have the color it needs...
+							if (balls[position] != Ball.None){
+								//Has a ball but not the correct one
+								newMotifIndex = (newMotifIndex + 1) % 3;
+								return false;
+							} else {
+								//Will still shoot but SOMEONE set this up so I cant think of a way to make it end the sequential action if there is no ball
+								return false;
+							}
+						}
+					}
+				},
+				spindexer.waitUntilFinished(1),
+				this.shoot(),
+				new Action() {
+					@Override
+					public boolean run() {
+						if (balls[position] == Field.motif.getBall(newMotifIndex)) {
+							newMotifIndex = (newMotifIndex + 1) % 3;
+							return false;
+						} else if (balls[position + 1] == Field.motif.getBall(newMotifIndex)) {
+							newMotifIndex = (newMotifIndex + 1) % 3;
+							spindexer.safelyNextPosition(lift);
+							return false;
+						} else if (balls[position + 2] == Field.motif.getBall(newMotifIndex)) {
+							newMotifIndex = (newMotifIndex + 1) % 3;
+							spindexer.safelyPreviousPosition(lift);
+							return false;
+
+						} else {
+							//If it doesn't have the color it needs...
+							if (balls[position] != Ball.None){
+								//Has a ball but not the correct one
+								newMotifIndex = (newMotifIndex + 1) % 3;
+								return false;
+							} else {
+								//Will still shoot but SOMEONE set this up so I cant think of a way to make it end the sequential action if there is no ball
+								return false;
+							}
+						}
+					}
+				},
+				this.shoot(),
+				spindexer.waitUntilFinished(1),
+				new Action() {
+					@Override
+					public boolean run() {
+						if (balls[position] == Field.motif.getBall(newMotifIndex)) {
+							newMotifIndex = (newMotifIndex + 1) % 3;
+							return false;
+						} else if (balls[position + 1] == Field.motif.getBall(newMotifIndex)) {
+							newMotifIndex = (newMotifIndex + 1) % 3;
+							spindexer.safelyNextPosition(lift);
+							return false;
+						} else if (balls[position + 2] == Field.motif.getBall(newMotifIndex)) {
+							newMotifIndex = (newMotifIndex + 1) % 3;
+							spindexer.safelyPreviousPosition(lift);
+							return false;
+
+						} else {
+							//If it doesn't have the color it needs...
+							if (balls[position] != Ball.None){
+								//Has a ball but not the correct one
+								newMotifIndex = (newMotifIndex + 1) % 3;
+								return false;
+							} else {
+								//Will still shoot but SOMEONE set this up so I cant think of a way to make it end the sequential action if there is no ball
+								return false;
+							}
+						}
+					}
+				},
+				spindexer.waitUntilFinished(1),
+				this.shoot()
+		);
 	}
 	@Configurable
 	static class LiftTime {
