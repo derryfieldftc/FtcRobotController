@@ -6,6 +6,7 @@ import static org.firstinspires.ftc.teamcode.robot.Lift.Position.Up;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
+import com.qualcomm.robotcore.util.RobotLog;
 
 public class Lift extends RobotPart {
 	Servo lift;
@@ -14,6 +15,7 @@ public class Lift extends RobotPart {
 	public Lift(OpMode opMode) {
 		super(opMode);
 		lift = hardwareMap.servo.get(Part.LiftServo.name);
+		liftSwitch = hardwareMap.get(TouchSensor.class, "liftSwitch");
 	}
 
 	public enum Position {

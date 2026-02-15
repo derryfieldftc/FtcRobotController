@@ -172,6 +172,18 @@ public class Robot extends RobotPart {
 				new Action() {
 					@Override
 					public boolean run() {
+						if (lift.isDown()) {
+							return false;
+
+						} else {
+							lift.setPosition(Lift.Position.Down);
+							return true;
+						}
+					}
+				},
+				new Action() {
+					@Override
+					public boolean run() {
 						spindexer.setPosition(Spindexer.Position.Zero);
 						return false;
 					}
