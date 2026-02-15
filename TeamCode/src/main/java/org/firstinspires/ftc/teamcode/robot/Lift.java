@@ -35,10 +35,6 @@ public class Lift extends RobotPart {
 		return liftSwitch.isPressed() ? Down : Up;
 	}
 	public boolean isDown(){
-		if (getPosition().equals(Down)){
-			return true;
-		} else {
-			return false;
-		}
+		return getPosition() == Down;
 	}
 }
