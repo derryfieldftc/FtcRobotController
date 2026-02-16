@@ -2,8 +2,9 @@ package org.firstinspires.ftc.teamcode.robot;
 
 import static com.qualcomm.robotcore.util.RobotLog.d;
 import static org.firstinspires.ftc.teamcode.robot.Field.Ball;
+import static org.firstinspires.ftc.teamcode.robot.Field.Ball.Green;
 import static org.firstinspires.ftc.teamcode.robot.Field.Ball.None;
-import static org.firstinspires.ftc.teamcode.robot.Field.motif;
+import static org.firstinspires.ftc.teamcode.robot.Field.Ball.Purple;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
@@ -13,14 +14,13 @@ import com.pedropathing.localization.Localizer;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.autonmous.actions.Action;
+import org.firstinspires.ftc.teamcode.autonmous.actions.InstantAction;
+import org.firstinspires.ftc.teamcode.autonmous.actions.NothingAction;
 import org.firstinspires.ftc.teamcode.autonmous.actions.SequentialAction;
 import org.firstinspires.ftc.teamcode.autonmous.actions.SleepAction;
-import org.firstinspires.ftc.teamcode.opmodes.Tests.ShootAllTest;
-import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 /**
  * Class meant to easily hold all other robot classes, define positions and add methods as necessary
@@ -133,6 +133,58 @@ public class Robot extends RobotPart {
 				},
 				spindexer.waitUntilFinished(1),
 				this.shoot()
+		);
+	}
+
+	public Action shootAllSorted() {
+		spindexer.updateBalls();
+		Obelisk.Motif motif = Field.motif;
+
+		switch (motif) {
+            case PPG:
+                return shootAllPPG();
+            case PGP:
+				return shootAllPGP();
+            case GPP:
+				return shootAllGPP();
+        };
+
+		return null;
+	}
+
+	private Action shootColor(Ball color) {
+		int index = spindexer.doWeHaveThisBall(color);
+		if (index != 0) {
+			return new SequentialAction(
+					new InstantAction(() -> spindexer.setPosition(Spindexer.Position.from(index))),
+					spindexer.waitUntilFinished(1),
+					shoot()
+			);
+		}
+		return new NothingAction();
+	}
+
+	private Action shootAllGPP() {
+		return new SequentialAction(
+				shootColor(Green),
+				shootColor(Purple),
+				shootColor(Purple)
+		);
+	}
+
+	private Action shootAllPGP() {
+		return new SequentialAction(
+				shootColor(Purple),
+				shootColor(Green),
+				shootColor(Purple)
+		);
+	}
+
+	private Action shootAllPPG() {
+		return new SequentialAction(
+				shootColor(Purple),
+				shootColor(Purple),
+				shootColor(Green)
 		);
 	}
 

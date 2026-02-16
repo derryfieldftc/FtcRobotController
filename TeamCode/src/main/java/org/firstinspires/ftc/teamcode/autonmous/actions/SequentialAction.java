@@ -32,4 +32,12 @@ public class SequentialAction extends Action {
 		}
 		return index != actions.size();
 	}
+
+	/**
+	 * Appends a new action to the end of the list
+	 * @param action
+	 */
+	public void appendAction(Action action) {
+		actions.add(action);
+	}
 }

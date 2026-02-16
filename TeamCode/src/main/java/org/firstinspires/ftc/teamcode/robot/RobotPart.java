@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -99,6 +100,7 @@ public class RobotPart {
 		IndicatorLight0	("light0", Servo.class),
 		IndicatorLight1	("light1", Servo.class),
 		IndicatorLight2	("light2", Servo.class),
+		LiftSwitch	("liftSwitch", TouchSensor.class),
 		;
 		//TODO! make this list exhaustive
 
@@ -129,7 +131,7 @@ public class RobotPart {
 
 		// Don't know when you would use this, its more of an example
 		public static List<Part> driveMotors() {
-			return Arrays.asList(new Part[]{MotorFR, MotorFL, MotorBR, MotorBL});
+			return Arrays.asList(MotorFR, MotorFL, MotorBR, MotorBL);
 		}
 
 		/**
