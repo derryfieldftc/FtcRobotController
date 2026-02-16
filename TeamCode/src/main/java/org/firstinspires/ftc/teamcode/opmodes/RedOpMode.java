@@ -69,7 +69,7 @@ public class RedOpMode extends OpMode {
 		mgamepad1 = new GamepadManager(gamepad1);
 		mgamepad2 = new GamepadManager(gamepad2);
 
-		bot.spindexer.setRotatorPower(.5);
+		bot.spindexer.setRotatorPower(.75);
 
 		gotoLever = () -> drivetrain.pathBuilder() //Lazy Curve Generation
 				.addPath(new Path(new BezierLine(drivetrain::getPose, new Pose(132, 60))))
@@ -141,7 +141,7 @@ public class RedOpMode extends OpMode {
 			bot.spindexer.setPosition(Spindexer.Position.Two);
 		}
 
-		bot.spindexer.setRotatorPower(1);
+//		bot.spindexer.setRotatorPower(1);
 
 		if (!shootingAll) {
 			if (liftUp) {

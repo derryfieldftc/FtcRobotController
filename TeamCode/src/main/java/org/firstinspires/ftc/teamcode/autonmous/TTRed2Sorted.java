@@ -136,10 +136,7 @@ public class TTRed2Sorted extends OpMode {
 					}
 				}
 		);
-
 		while (robot.spindexer.resetPosition().run());
-
-
 	}
 
 	@Override
@@ -157,7 +154,7 @@ public class TTRed2Sorted extends OpMode {
 	public void loop() {
 		follower.update(); // Update Pedro Pathing
 		pathState = autonomousPathUpdate(); // Update autonomous state machine
-		robot.spindexer.setRotatorPower(.9);
+		robot.spindexer.setRotatorPower(.75);
 		if (completed)
 			completed = action.run();
 

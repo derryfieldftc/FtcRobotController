@@ -5,6 +5,7 @@ import static com.qualcomm.robotcore.util.RobotLog.w;
 
 import android.graphics.Color;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -43,6 +44,7 @@ public class Spindexer extends RobotPart {
 	final int stepTicks = 138;
 
 	public enum Position {
+		NotAPosition	(-1), // god if only the Result<T> type existed
 		Zero	(0),
 		One		(138),
 		Two		(276);
@@ -51,6 +53,26 @@ public class Spindexer extends RobotPart {
 		Position(int ticks) {
 			this.fromZeroTicks = ticks;
 		}
+
+		public static Position from(int i) {
+			switch (i) {
+				case 0:
+					return Zero;
+				case 1:
+					return One;
+				case 2:
+					return Two;
+			}
+			return NotAPosition;
+		}
+	}
+
+	@Configurable
+	public static class SpindexerPID {
+		public static double P = 25;
+		public static double I = 0;
+		public static double D = 0;
+		public static double F = 0;
 	}
 
 	public enum Height {
@@ -105,7 +127,19 @@ public class Spindexer extends RobotPart {
 		updateLights();
 	}
 
-	private void updateLights() {
+	/**
+	 * Returns first found index of a ball color or -1 if it is not found
+	 * @return
+	 */
+	public int doWeHaveThisBall(Field.Ball ball) {
+		for (int i = 0; i < balls.length; i++) {
+			if (balls[i] == ball) {
+				return i;
+			}
+		}
+	}
+
+    private void updateLights() {
 		first.setColor(getColorFromBall(balls[0]));
 		second.setColor(getColorFromBall(balls[1]));
 		third.setColor(getColorFromBall(balls[2]));
@@ -180,7 +214,7 @@ public class Spindexer extends RobotPart {
 		rotator.setTargetPosition(0);
 		rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		rotator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-		rotator.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, new PIDFCoefficients(25, 0, 0, 0));
+		rotator.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, new PIDFCoefficients(SpindexerPID.P, SpindexerPID.I, SpindexerPID.D, SpindexerPID.F));
 		rotator.setTargetPositionTolerance(10);
 	}
 
