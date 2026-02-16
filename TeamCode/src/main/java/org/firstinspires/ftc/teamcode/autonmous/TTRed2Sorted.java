@@ -69,52 +69,30 @@ public class TTRed2Sorted extends OpMode {
 						new FollowPathAction(follower, paths.Intake1),
 						new FollowPathAction(follower, paths.Shoot2),
 						robot.spindexerPrepShoot(),
-						new Action() {
-							@Override
-							public boolean run() {
-								robot.spindexer.updateBalls();
-								return true;
-							};
-						},
 						robot.setIntakeSpeed(-.5),
 						new SleepAction(AutoConfigs.preShootWait),
 						robot.setIntakeSpeed(0),
-						robot.shootAllSorted(Robot.balls, 0),
+						robot.shootAll(),
 						robot.spindexerPrepIntake(),
 
 						robot.setIntakeSpeed(1),
 						new FollowPathAction(follower, paths.Intake3),
 						new FollowPathAction(follower, paths.Shoot4),
 						robot.spindexerPrepShoot(),
-						new Action() {
-							@Override
-							public boolean run() {
-								robot.spindexer.updateBalls();
-								return true;
-							};
-						},
 						robot.setIntakeSpeed(-.5),
 						new SleepAction(AutoConfigs.preShootWait),
 						robot.setIntakeSpeed(0),
-						robot.shootAllSorted(Robot.balls, 0),
+						robot.shootAll(),
 						robot.spindexerPrepIntake(),
 
 						robot.setIntakeSpeed(1),
 						new FollowPathAction(follower, paths.Intake5),
 						new FollowPathAction(follower, paths.Shoot6),
 						robot.spindexerPrepShoot(),
-
-						new Action() {
-							@Override
-							public boolean run() {
-								robot.spindexer.updateBalls();
-								return true;
-							};
-						},
 						robot.setIntakeSpeed(-.5),
 						new SleepAction(AutoConfigs.preShootWait),
 						robot.setIntakeSpeed(0),
-						robot.shootAllSorted(Robot.balls, 0),
+						robot.shootAll(),
 						robot.spindexerPrepIntake(),
 
 						new FollowPathAction(follower, paths.Middle7)

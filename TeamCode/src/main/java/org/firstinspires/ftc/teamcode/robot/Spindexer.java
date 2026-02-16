@@ -180,8 +180,8 @@ public class Spindexer extends RobotPart {
 		rotator.setTargetPosition(0);
 		rotator.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		rotator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-		rotator.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, new PIDFCoefficients(25, 0, 0, 0));
-		rotator.setTargetPositionTolerance(10);
+		rotator.setPIDFCoefficients(DcMotor.RunMode.RUN_TO_POSITION, new PIDFCoefficients(20, 0, 0, 0));
+		rotator.setTargetPositionTolerance(5);
 	}
 
 	public void setRotatorPower(double power) {
