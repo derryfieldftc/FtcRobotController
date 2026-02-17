@@ -145,6 +145,7 @@ public class Red2 extends OpMode {
 		follower.update(); // Update Pedro Pathing
 		pathState = autonomousPathUpdate(); // Update autonomous state machine
 		robot.spindexer.setRotatorPower(Spindexer.SpindexerConfig.speed);
+		panelsTelemetry.debug("Set Power to ", Spindexer.SpindexerConfig.speed);
 		if (completed)
 			completed = action.run();
 

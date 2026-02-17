@@ -154,7 +154,7 @@ public class Robot extends RobotPart {
 
 	private Action shootColor(Ball color) {
 		int index = spindexer.doWeHaveThisBall(color);
-		if (index != 0) {
+		if (index != -1) {
 			return new SequentialAction(
 					new InstantAction(() -> spindexer.setPosition(Spindexer.Position.from(index))),
 					spindexer.waitUntilFinished(1),

@@ -63,7 +63,8 @@ public class TTRed2Sorted extends OpMode {
 		action = new ParallelAction(
 				new SequentialAction(
 						new SleepAction(AutoConfigs.initalWaitTime),
-						robot.shootAllSortedInitial(Robot.balls),
+//						robot.shootAllSortedInitial(Robot.balls),
+						robot.shootAllSorted(),
 						robot.spindexerPrepIntake(),
 						robot.setIntakeSpeed(1),
 						new FollowPathAction(follower, paths.Intake1),

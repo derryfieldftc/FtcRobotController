@@ -139,6 +139,7 @@ public class Spindexer extends RobotPart {
 	public int doWeHaveThisBall(Field.Ball ball) {
 		for (int i = 0; i < balls.length; i++) {
 			if (balls[i] == ball) {
+				balls[i] = ball.None;
 				return i;
 			}
 		}
