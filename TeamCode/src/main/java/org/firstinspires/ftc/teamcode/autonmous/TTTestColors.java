@@ -64,7 +64,8 @@ public class TTTestColors extends OpMode {
 		action = new ParallelAction(
 				new SequentialAction(
 						new SleepAction(AutoConfigs.initalWaitTime),
-						robot.shootAllSortedInitial(Robot.balls),
+//						robot.shootAllSortedInitial(Robot.balls),
+						robot.shootAllSorted(),
 						robot.spindexerPrepIntake(),
 						robot.setIntakeSpeed(1),
 						new FollowPathAction(follower, paths.ToPickup1),

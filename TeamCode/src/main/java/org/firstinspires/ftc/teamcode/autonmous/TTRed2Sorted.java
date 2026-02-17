@@ -21,6 +21,7 @@ import org.firstinspires.ftc.teamcode.autonmous.actions.SleepAction;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.robot.Depot;
 import org.firstinspires.ftc.teamcode.robot.Field;
+import org.firstinspires.ftc.teamcode.robot.Lift;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 import org.firstinspires.ftc.teamcode.robot.Spindexer;
 import org.firstinspires.ftc.teamcode.robot.TurretPose;
@@ -59,11 +60,12 @@ public class TTRed2Sorted extends OpMode {
 		d("AHM FOUND " + Field.motif);
 		telemetry.addData("motif", Field.motif);
 		telemetry.update();
+		robot.lift.setPosition(Lift.Position.Down);
 		robot.spindexer.setLiftPosition(Spindexer.Height.Up);
+		robot.spindexer.setBalls(Field.Ball.Green, Field.Ball.Purple, Field.Ball.Purple);
 		action = new ParallelAction(
 				new SequentialAction(
 						new SleepAction(AutoConfigs.initalWaitTime),
-//						robot.shootAllSortedInitial(Robot.balls),
 						robot.shootAllSorted(),
 						robot.spindexerPrepIntake(),
 						robot.setIntakeSpeed(1),
@@ -133,7 +135,7 @@ public class TTRed2Sorted extends OpMode {
 	public void loop() {
 		follower.update(); // Update Pedro Pathing
 		pathState = autonomousPathUpdate(); // Update autonomous state machine
-		robot.spindexer.setRotatorPower(.75);
+		robot.spindexer.setRotatorPower(Spindexer.SpindexerConfig.speed);
 		if (completed)
 			completed = action.run();
 

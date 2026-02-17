@@ -16,6 +16,7 @@ import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.teamcode.autonmous.AutoConfigs;
 import org.firstinspires.ftc.teamcode.autonmous.actions.Action;
 import org.firstinspires.ftc.teamcode.autonmous.actions.InstantAction;
 import org.firstinspires.ftc.teamcode.autonmous.actions.NothingAction;
@@ -104,37 +105,6 @@ public class Robot extends RobotPart {
 				this.shoot()
 				);
 	}
-	public Action shootAllFromPos(Spindexer.Position targetPosition, Lift lift) {
-		return new SequentialAction(
-				new Action() {
-					@Override
-					public boolean run() {
-						spindexer.safelySetPosition(targetPosition, lift);
-						return false;
-					}
-				},
-				spindexer.waitUntilFinished(1),
-				this.shoot(),
-				new Action() {
-					@Override
-					public boolean run() {
-						spindexer.safelyPreviousPosition(lift);
-						return false;
-					}
-				},
-				spindexer.waitUntilFinished(1),
-				this.shoot(),
-				new Action() {
-					@Override
-					public boolean run() {
-						spindexer.safelyPreviousPosition(lift);
-						return false;
-					}
-				},
-				spindexer.waitUntilFinished(1),
-				this.shoot()
-		);
-	}
 
 	public Action shootAllSorted() {
 		Obelisk.Motif motif = Field.motif;
@@ -156,8 +126,9 @@ public class Robot extends RobotPart {
 		int index = spindexer.doWeHaveThisBall(color);
 		if (index != -1) {
 			return new SequentialAction(
-					new InstantAction(() -> spindexer.setPosition(Spindexer.Position.from(index))),
+					new InstantAction(() -> spindexer.safelySetPosition(Spindexer.Position.from(index), lift)),
 					spindexer.waitUntilFinished(1),
+					new SleepAction(AutoConfigs.preShootWait),
 					shoot()
 			);
 		}
@@ -188,118 +159,10 @@ public class Robot extends RobotPart {
 		);
 	}
 
-	public Action shootAllSortedInitial(Field.Ball[] balls) {
-		//For initial sorted shots in auto, green in shooting spot and two purple in the back spots
-		if (Field.motif.getBall(0) == Field.Ball.Green) {
-			d("TCT:Shooting All pos 0, green is first");
-			return shootAllFromPos(Spindexer.Position.Zero, lift);
-		} else if (Field.motif.getBall(1) == Field.Ball.Green) {
-			d("TCT:Shooting All pos 2, green is second");
-			return shootAllFromPos(Spindexer.Position.One, lift);
-		} else {
-			d("TCT:Shooting All pos 1, green is last");
-			return shootAllFromPos(Spindexer.Position.Two, lift);
-		}
-	}
-	public Action shootAllSorted(Field.Ball[] balls, int motifIndex ){
-		newMotifIndex = motifIndex % 3;
-		int position = 0;
-		return new SequentialAction(
-				new Action() {
-					@Override
-					public boolean run() {
-						if (balls[position] == Field.motif.getBall(newMotifIndex)) {
-							newMotifIndex = (newMotifIndex + 1) % 3;
-							return false;
-						} else if (balls[position + 1] == Field.motif.getBall(newMotifIndex)) {
-							newMotifIndex = (newMotifIndex + 1) % 3;
-							spindexer.safelyNextPosition(lift);
-							return false;
-						} else if (balls[position + 2] == Field.motif.getBall(newMotifIndex)) {
-							newMotifIndex = (newMotifIndex + 1) % 3;
-							spindexer.safelyPreviousPosition(lift);
-							return false;
-
-						} else {
-							//If it doesn't have the color it needs...
-							if (balls[position] != Ball.None){
-								//Has a ball but not the correct one
-								newMotifIndex = (newMotifIndex + 1) % 3;
-								return false;
-							} else {
-								//Will still shoot but SOMEONE set this up so I cant think of a way to make it end the sequential action if there is no ball
-								return false;
-							}
-						}
-					}
-				},
-				spindexer.waitUntilFinished(1),
-				this.shoot(),
-				new Action() {
-					@Override
-					public boolean run() {
-						if (balls[position] == Field.motif.getBall(newMotifIndex)) {
-							newMotifIndex = (newMotifIndex + 1) % 3;
-							return false;
-						} else if (balls[position + 1] == Field.motif.getBall(newMotifIndex)) {
-							newMotifIndex = (newMotifIndex + 1) % 3;
-							spindexer.safelyNextPosition(lift);
-							return false;
-						} else if (balls[position + 2] == Field.motif.getBall(newMotifIndex)) {
-							newMotifIndex = (newMotifIndex + 1) % 3;
-							spindexer.safelyPreviousPosition(lift);
-							return false;
-
-						} else {
-							//If it doesn't have the color it needs...
-							if (balls[position] != Ball.None){
-								//Has a ball but not the correct one
-								newMotifIndex = (newMotifIndex + 1) % 3;
-								return false;
-							} else {
-								//Will still shoot but SOMEONE set this up so I cant think of a way to make it end the sequential action if there is no ball
-								return false;
-							}
-						}
-					}
-				},
-				this.shoot(),
-				spindexer.waitUntilFinished(1),
-				new Action() {
-					@Override
-					public boolean run() {
-						if (balls[position] == Field.motif.getBall(newMotifIndex)) {
-							newMotifIndex = (newMotifIndex + 1) % 3;
-							return false;
-						} else if (balls[position + 1] == Field.motif.getBall(newMotifIndex)) {
-							newMotifIndex = (newMotifIndex + 1) % 3;
-							spindexer.safelyNextPosition(lift);
-							return false;
-						} else if (balls[position + 2] == Field.motif.getBall(newMotifIndex)) {
-							newMotifIndex = (newMotifIndex + 1) % 3;
-							spindexer.safelyPreviousPosition(lift);
-							return false;
-
-						} else {
-							//If it doesn't have the color it needs...
-							if (balls[position] != Ball.None){
-								//Has a ball but not the correct one
-								newMotifIndex = (newMotifIndex + 1) % 3;
-								return false;
-							} else {
-								//Will still shoot but SOMEONE set this up so I cant think of a way to make it end the sequential action if there is no ball
-								return false;
-							}
-						}
-					}
-				},
-				spindexer.waitUntilFinished(1),
-				this.shoot()
-		);
-	}
 	@Configurable
 	static class LiftTime {
 		static long liftMillis = 350;
+		static long postLiftDelay = 300;
 	}
 
 	/**
@@ -379,6 +242,7 @@ public class Robot extends RobotPart {
 						return false;
 					}
 				},
+				new SleepAction(AutoConfigs.postShootSpindexerWait),
 				new Action() {
 					@Override
 					public boolean run() {

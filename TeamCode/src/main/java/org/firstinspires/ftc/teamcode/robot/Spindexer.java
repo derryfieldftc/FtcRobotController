@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.robot;
 import static com.qualcomm.robotcore.util.RobotLog.d;
 import static com.qualcomm.robotcore.util.RobotLog.w;
 
+import static org.firstinspires.ftc.teamcode.robot.Spindexer.SpindexerConfig.speed;
+
 import android.graphics.Color;
 
 import com.bylazar.configurables.annotations.Configurable;
@@ -45,7 +47,7 @@ public class Spindexer extends RobotPart {
 
 	@Configurable
 	public static class SpindexerConfig {
-		public static double speed = .75;
+		public static double speed = .6;
 	}
 
 	public enum Position {
@@ -74,7 +76,7 @@ public class Spindexer extends RobotPart {
 
 	@Configurable
 	public static class SpindexerPID {
-		public static double P = 25;
+		public static double P = 20;
 		public static double I = 0;
 		public static double D = 0;
 		public static double F = 0;
@@ -181,7 +183,7 @@ public class Spindexer extends RobotPart {
 
 			@Override
 			public void cleanup() {
-				rotator.setPower(1);
+				rotator.setPower(speed);
 				rotator.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 			}
 		};
@@ -277,7 +279,9 @@ public class Spindexer extends RobotPart {
 			}
 		};
 	}
-
+	public double getRotatorPower() {
+		return rotator.getPower();
+	}
 	/**
 	 * Spins to whichever position
 	 * @param targetPosition
