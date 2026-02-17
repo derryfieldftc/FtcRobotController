@@ -161,7 +161,7 @@ public class Robot extends RobotPart {
 
 	@Configurable
 	static class LiftTime {
-		static long liftMillis = 350;
+		static long liftMillis = 400;
 		static long postLiftDelay = 300;
 	}
 
