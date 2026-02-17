@@ -43,6 +43,11 @@ public class Spindexer extends RobotPart {
 	final int fullRotationTicks = 415;
 	final int stepTicks = 138;
 
+	@Configurable
+	public static class SpindexerConfig {
+		public static double speed = .75;
+	}
+
 	public enum Position {
 		NotAPosition	(-1), // god if only the Result<T> type existed
 		Zero	(0),
@@ -137,6 +142,7 @@ public class Spindexer extends RobotPart {
 				return i;
 			}
 		}
+		return -1;
 	}
 
     private void updateLights() {

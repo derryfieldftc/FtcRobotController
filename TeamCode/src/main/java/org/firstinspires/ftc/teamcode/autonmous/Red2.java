@@ -67,10 +67,11 @@ public class Red2 extends OpMode {
 		telemetry.update();
 
 		robot.spindexer.setLiftPosition(Spindexer.Height.Up);
+		robot.spindexer.setBalls(Field.Ball.Green, Field.Ball.Purple, Field.Ball.Purple);
 
 		action = new SequentialAction(
 				new SleepAction(AutoConfigs.initalWaitTime),
-				robot.shootAll(),
+				robot.shootAllSorted(),
 				new InstantAction(() -> robot.spindexer.setLiftPosition(Spindexer.Height.Down)),
 				new InstantAction(() -> {
 					robot.spindexer.setPosition(Spindexer.Position.Zero);
@@ -143,7 +144,7 @@ public class Red2 extends OpMode {
 	public void loop() {
 		follower.update(); // Update Pedro Pathing
 		pathState = autonomousPathUpdate(); // Update autonomous state machine
-		robot.spindexer.setRotatorPower(1);
+		robot.spindexer.setRotatorPower(Spindexer.SpindexerConfig.speed);
 		if (completed)
 			completed = action.run();
 

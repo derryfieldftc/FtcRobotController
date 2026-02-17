@@ -137,8 +137,8 @@ public class Robot extends RobotPart {
 	}
 
 	public Action shootAllSorted() {
-		spindexer.updateBalls();
 		Obelisk.Motif motif = Field.motif;
+		d("AHM shooting sorted " + motif.toString());
 
 		switch (motif) {
             case PPG:
