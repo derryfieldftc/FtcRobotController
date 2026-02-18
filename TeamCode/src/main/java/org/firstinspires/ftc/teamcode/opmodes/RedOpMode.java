@@ -88,6 +88,9 @@ public class RedOpMode extends OpMode {
 
 	@Override
 	public void loop() {
+
+		bot.spindexer.updateBalls();
+
 		if (mgamepad1.justPressed(GamepadManager.Button.A)) {
 			drivetrain.followPath(gotoLever.get()); // thx pedropathing <3
 			autoMoving = true;
@@ -104,7 +107,7 @@ public class RedOpMode extends OpMode {
 			autoMoving = false;
 		}
 
-		bot.turret.savePosition();
+//		bot.turret.savePosition();
 		drivetrain.update();
 		if (!shootingAll) {
 			bot.loop();
