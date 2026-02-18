@@ -289,7 +289,9 @@ public class Spindexer extends RobotPart {
 	public void setPosition(Position targetPosition) {
 		int currentPositionTicks = rotator.getCurrentPosition();
 		int rotations = (currentPositionTicks + (stepTicks / 2)) / fullRotationTicks;
+		d("AHM setPose " + targetPosition + " current " + currentPositionTicks);
 
+		d("AHM rotations " + rotations);
 		// Don't look at this
 		switch (currentPosition) {
 			case Zero:
@@ -322,7 +324,7 @@ public class Spindexer extends RobotPart {
 				fakeZero = rotations * fullRotationTicks + stepTicks * 2;
 				switch (targetPosition) {
 					case Zero:
-						rotator.setTargetPosition((rotations + 1) * fullRotationTicks); // 0 of next rotation
+						rotator.setTargetPosition((rotations) * fullRotationTicks); // 0 of next rotation
 						break;
 					case One:
 						rotator.setTargetPosition(fakeZero - stepTicks);
