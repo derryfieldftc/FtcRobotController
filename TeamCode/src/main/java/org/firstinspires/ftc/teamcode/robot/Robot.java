@@ -128,7 +128,7 @@ public class Robot extends RobotPart {
 			return new SequentialAction(
 					new InstantAction(() -> spindexer.safelySetPosition(Spindexer.Position.from(index), lift)),
 					spindexer.waitUntilFinished(1),
-					new SleepAction(AutoConfigs.preShootWait),
+					new SleepAction(AutoConfigs.preShootReverseIntakeWait),
 					shoot()
 			);
 		}
@@ -161,8 +161,7 @@ public class Robot extends RobotPart {
 
 	@Configurable
 	static class LiftTime {
-		static long liftMillis = 600;
-		static long postLiftDelay = 300;
+		static long liftMillis = 500;
 	}
 
 	/**
