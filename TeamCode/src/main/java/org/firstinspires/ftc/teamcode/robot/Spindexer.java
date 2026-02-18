@@ -47,7 +47,7 @@ public class Spindexer extends RobotPart {
 
 	@Configurable
 	public static class SpindexerConfig {
-		public static double speed = .6;
+		public static double speed = .7;
 	}
 
 	public enum Position {
