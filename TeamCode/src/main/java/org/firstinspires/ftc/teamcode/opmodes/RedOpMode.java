@@ -118,8 +118,7 @@ public class RedOpMode extends OpMode {
 
 		bot.intake.setSpeed(gamepad2.right_trigger * ((gamepad2.start) ? -1 : 1));
 		if (gamepad2.right_trigger > .1 && !gamepad2.start) {
-			bot.spindexerPrepIntake().run(); // bad solution but works for now
-			bot.spindexerPrepIntake().run();
+			while (bot.spindexer.resetPosition().run()); // its okay to have a while loop here because this executes really really fast
 			bot.spindexer.setLiftPosition(Spindexer.Height.Down);
 		} else {
 			bot.spindexer.setLiftPosition(Spindexer.Height.Up);
