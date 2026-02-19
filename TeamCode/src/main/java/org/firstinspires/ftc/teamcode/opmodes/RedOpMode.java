@@ -89,7 +89,6 @@ public class RedOpMode extends OpMode {
 	@Override
 	public void loop() {
 
-		bot.spindexer.updateBalls();
 
 		if (mgamepad1.justPressed(GamepadManager.Button.A)) {
 			drivetrain.followPath(gotoLever.get()); // thx pedropathing <3
@@ -134,6 +133,8 @@ public class RedOpMode extends OpMode {
 			}
 		} else {
 			bot.spindexer.setLiftPosition(Spindexer.Height.Up);
+			if (prevIntaking)
+				bot.spindexer.updateBalls(); // only if we just stopped intaking
 			prevIntaking = false;
 		}
 
@@ -147,14 +148,17 @@ public class RedOpMode extends OpMode {
 
 		if (mgamepad2.justPressed(GamepadManager.Button.X)) {
 			bot.spindexer.setPosition(Spindexer.Position.Zero);
+			bot.spindexer.updateBalls();
 		}
 
 		if (mgamepad2.justPressed(GamepadManager.Button.A)) {
 			bot.spindexer.setPosition(Spindexer.Position.One);
+			bot.spindexer.updateBalls();
 		}
 
 		if (mgamepad2.justPressed(GamepadManager.Button.B)) {
 			bot.spindexer.setPosition(Spindexer.Position.Two);
+			bot.spindexer.updateBalls();
 		}
 
 //		bot.spindexer.setRotatorPower(1);
@@ -201,9 +205,6 @@ public class RedOpMode extends OpMode {
 
 		telemetry.addData("loop time ", this.getRuntime() - lastLoopTime);
 		lastLoopTime = this.getRuntime();
-
-		if (!gamepad1.y)
-			bot.spindexer.updateBalls();
 
 		if (shootingAll || gamepad2.left_bumper) {
 			shootingAll = shootAll.run();
