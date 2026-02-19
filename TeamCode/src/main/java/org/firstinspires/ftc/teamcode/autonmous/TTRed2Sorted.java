@@ -15,6 +15,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.autonmous.actions.Action;
 import org.firstinspires.ftc.teamcode.autonmous.actions.FollowPathAction;
+import org.firstinspires.ftc.teamcode.autonmous.actions.InstantAction;
 import org.firstinspires.ftc.teamcode.autonmous.actions.ParallelAction;
 import org.firstinspires.ftc.teamcode.autonmous.actions.SequentialAction;
 import org.firstinspires.ftc.teamcode.autonmous.actions.SleepAction;
@@ -71,12 +72,13 @@ public class TTRed2Sorted extends OpMode {
 						robot.setIntakeSpeed(1),
 						new FollowPathAction(follower, paths.Intake1),
 						new FollowPathAction(follower, paths.Shoot2),
+						new InstantAction(() -> robot.spindexer.updateBalls()),
 						robot.spindexerPrepShoot(),
 						robot.setIntakeSpeed(-.5),
 						new SleepAction(AutoConfigs.preShootReverseIntakeWait),
 						robot.setIntakeSpeed(0),
 						new SleepAction(AutoConfigs.postMovePreShootWait),
-						robot.shootAll(),
+						robot.shootAllSorted(),
 						robot.spindexerPrepIntake(),
 
 						robot.setIntakeSpeed(1),

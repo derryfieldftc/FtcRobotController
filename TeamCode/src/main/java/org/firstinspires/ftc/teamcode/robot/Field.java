@@ -114,7 +114,7 @@ public class Field {
 //			}
 //			return Ball.None;
 
-			if (hsv[0] > 150)
+			if (hsv[0] > 160)
 				return Purple;
 
 			d("AHM color " + hsv[0] + " " + hsv[1] + " " + hsv[2]);

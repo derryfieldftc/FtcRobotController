@@ -8,14 +8,17 @@ import static org.firstinspires.ftc.teamcode.robot.Spindexer.SpindexerConfig.spe
 import android.graphics.Color;
 
 import com.bylazar.configurables.annotations.Configurable;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.autonmous.actions.Action;
 import org.firstinspires.ftc.teamcode.autonmous.actions.EternalAction;
 
@@ -35,6 +38,7 @@ public class Spindexer extends RobotPart {
 	Position currentPosition = Position.Zero;
 	TouchSensor limit;
 	ColorSensor shooting, left, right;
+	DistanceSensor Dshooting, Dleft, Dright;
 	IndicatorLight first, second, third;
 	Field.Ball[] balls = new Field.Ball[3];
 	// 0 1 2
@@ -102,9 +106,13 @@ public class Spindexer extends RobotPart {
 
 		lift = hardwareMap.servo.get(Part.SpindexerLift.name);
 
-		shooting = hardwareMap.colorSensor.get(Part.SpindexerColor0.name);
-		left = hardwareMap.colorSensor.get(Part.SpindexerColor1.name);
-		right = hardwareMap.colorSensor.get(Part.SpindexerColor2.name);
+		shooting = (ColorSensor) hardwareMap.get(Part.SpindexerColor0.type, Part.SpindexerColor0.name);
+		left = (ColorSensor) hardwareMap.get(Part.SpindexerColor1.type, Part.SpindexerColor1.name);
+		right = (ColorSensor) hardwareMap.get(Part.SpindexerColor2.type, Part.SpindexerColor2.name);
+
+		Dshooting = (DistanceSensor) shooting;
+		Dleft = (DistanceSensor) left;
+		Dright = (DistanceSensor) right;
 
 		first = new IndicatorLight(hardwareMap.servo.get(Part.IndicatorLight0.name));
 		second = new IndicatorLight(hardwareMap.servo.get(Part.IndicatorLight1.name));
@@ -120,6 +128,7 @@ public class Spindexer extends RobotPart {
 		updateLights();
 	}
 	public void updateBalls() {
+		d("AHM distance shooting " + Dshooting.getDistance(DistanceUnit.INCH) + " left: " + Dleft.getDistance(DistanceUnit.INCH) + " right: " + Dright.getDistance(DistanceUnit.INCH));
 		switch (currentPosition) {
 			case Zero:
 				balls = new Field.Ball[]{getShootingBall(), getRightBall(), getLeftBall()};
