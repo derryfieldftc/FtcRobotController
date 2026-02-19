@@ -41,12 +41,14 @@ public class RedOpMode extends OpMode {
 	boolean autoTracking = false;
 	boolean autoMoving = false;
 	boolean shootingAll = false;
+	boolean prevIntaking;
 	Action shootAll;
 	boolean lastA;
 	LimeLight ll;
 	TurretPose lastPose;
 	Supplier<PathChain> gotoLever;
 	private boolean turretOn = true;
+	TeleOpAction resetForIntaking;
 
 	@Override
 	public void init() {
@@ -76,6 +78,7 @@ public class RedOpMode extends OpMode {
 				.setHeadingInterpolation(HeadingInterpolator.linearFromPoint(drivetrain::getHeading, Math.toRadians(40), 0.8))
 				.build();
 		shootAll = bot.shootAll();
+		resetForIntaking = new TeleOpAction(() -> bot.spindexerPrepIntake());
 	}
 
 	@Override
@@ -85,6 +88,9 @@ public class RedOpMode extends OpMode {
 
 	@Override
 	public void loop() {
+
+		bot.spindexer.updateBalls();
+
 		if (mgamepad1.justPressed(GamepadManager.Button.A)) {
 			drivetrain.followPath(gotoLever.get()); // thx pedropathing <3
 			autoMoving = true;
@@ -101,7 +107,7 @@ public class RedOpMode extends OpMode {
 			autoMoving = false;
 		}
 
-		bot.turret.savePosition();
+//		bot.turret.savePosition();
 		drivetrain.update();
 		if (!shootingAll) {
 			bot.loop();
@@ -116,12 +122,23 @@ public class RedOpMode extends OpMode {
 			bot.turret.setRotationPower(1);
 		}
 
-		bot.intake.setSpeed(gamepad2.right_trigger * ((gamepad2.start) ? -1 : 1));
-		if (gamepad2.right_trigger > .1 && !gamepad2.start) {
-			while (bot.spindexer.resetPosition().run()); // its okay to have a while loop here because this executes really really fast
-			bot.spindexer.setLiftPosition(Spindexer.Height.Down);
+		resetForIntaking.run();
+		if (gamepad2.right_trigger > .5 && !gamepad2.start) {
+			if (!prevIntaking)
+				resetForIntaking.start();
+			prevIntaking = true;
+
+			if (!resetForIntaking.isRunning()) {
+				bot.intake.setSpeed(gamepad2.right_trigger * ((gamepad2.start) ? -1 : 1));
+				bot.spindexer.setLiftPosition(Spindexer.Height.Down);
+			}
 		} else {
 			bot.spindexer.setLiftPosition(Spindexer.Height.Up);
+			prevIntaking = false;
+		}
+
+		if (gamepad2.start) {
+			bot.intake.setSpeed(-1);
 		}
 
 		if (mgamepad2.justPressed(GamepadManager.Button.RIGHT_BUMPER)) {

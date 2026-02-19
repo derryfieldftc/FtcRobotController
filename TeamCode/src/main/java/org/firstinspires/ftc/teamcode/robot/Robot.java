@@ -241,7 +241,7 @@ public class Robot extends RobotPart {
 						return false;
 					}
 				},
-				new SleepAction(AutoConfigs.postShootSpindexerWait),
+				spindexer.waitUntilFinished(),
 				new Action() {
 					@Override
 					public boolean run() {
