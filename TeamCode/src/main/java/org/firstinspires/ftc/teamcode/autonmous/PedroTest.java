@@ -6,6 +6,7 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.autonmous.actions.Action;
@@ -13,6 +14,7 @@ import org.firstinspires.ftc.teamcode.autonmous.actions.FollowPathAction;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 
 @Autonomous
+@Disabled
 public class PedroTest extends AutoOpMode {
 	PathChain forward;
 	Follower follower;

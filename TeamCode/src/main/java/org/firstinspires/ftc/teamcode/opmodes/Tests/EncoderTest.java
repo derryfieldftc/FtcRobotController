@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.robot.RobotPart;
 
 @TeleOp
+@Disabled
 public class EncoderTest extends OpMode {
 	DcMotor left, right, strafe;
 

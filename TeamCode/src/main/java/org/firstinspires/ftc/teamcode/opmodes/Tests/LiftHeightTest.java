@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.Tests;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -7,6 +8,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.robot.RobotPart;
 
 @TeleOp
+@Disabled
 public class LiftHeightTest extends OpMode {
 	Servo lift;
 

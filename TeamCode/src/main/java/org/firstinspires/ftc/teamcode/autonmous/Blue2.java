@@ -11,6 +11,7 @@ import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -30,6 +31,7 @@ import org.firstinspires.ftc.teamcode.robot.TurretPose;
 
 @Autonomous()
 @Configurable // Panels
+@Disabled
 public class Blue2 extends OpMode {
 
 	private TelemetryManager panelsTelemetry; // Panels Telemetry instance

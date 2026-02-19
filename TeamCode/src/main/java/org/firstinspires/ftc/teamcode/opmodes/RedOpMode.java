@@ -10,6 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.GamepadManager;
 import org.firstinspires.ftc.teamcode.autonmous.actions.Action;
+import org.firstinspires.ftc.teamcode.autonmous.actions.SleepAction;
 import org.firstinspires.ftc.teamcode.autonmous.actions.TeleOpAction;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.robot.Depot;
@@ -32,6 +33,7 @@ import java.util.function.Supplier;
 @TeleOp(name = "RedOpMode")
 public class RedOpMode extends OpMode {
 	double lastLoopTime = 0;
+	double averageLoopTime = 0;
 	Robot bot;
 	GamepadManager mgamepad1;
 	GamepadManager mgamepad2;
@@ -88,8 +90,6 @@ public class RedOpMode extends OpMode {
 
 	@Override
 	public void loop() {
-
-
 		if (mgamepad1.justPressed(GamepadManager.Button.A)) {
 			drivetrain.followPath(gotoLever.get()); // thx pedropathing <3
 			autoMoving = true;
@@ -206,8 +206,9 @@ public class RedOpMode extends OpMode {
 
 		bot.turret.dumpTelemetry(telemetry);
 
-		telemetry.addData("loop time ", this.getRuntime() - lastLoopTime);
+		averageLoopTime = (averageLoopTime + (this.getRuntime() - lastLoopTime)) / 2;
 		lastLoopTime = this.getRuntime();
+		telemetry.addData("loop time ", averageLoopTime);
 
 		if (shootingAll || gamepad2.left_bumper) {
 			shootingAll = shootAll.run();
