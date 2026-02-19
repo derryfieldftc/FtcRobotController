@@ -136,11 +136,14 @@ public class RedOpMode extends OpMode {
 			if (prevIntaking)
 				bot.spindexer.updateBalls(); // only if we just stopped intaking
 			prevIntaking = false;
+
+			if (gamepad2.start) {
+				bot.intake.setSpeed(-1);
+			} else {
+				bot.intake.setSpeed(0);
+			}
 		}
 
-		if (gamepad2.start) {
-			bot.intake.setSpeed(-1);
-		}
 
 		if (mgamepad2.justPressed(GamepadManager.Button.RIGHT_BUMPER)) {
 			liftUp = !liftUp;
@@ -219,7 +222,6 @@ public class RedOpMode extends OpMode {
 		mgamepad2.poll();
 
 		d("AHM LLPOSE " + bot.getLLPose(drivetrain).toString());
-
 
 //		Drawing.drawDebug(follower);
 	}
