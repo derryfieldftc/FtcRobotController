@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.opmodes.Tests;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp
+@Disabled
 public class BaseOpModeLoopTimeTest extends OpMode {
     double lastLoopTime;
     double averageLoopTime;
