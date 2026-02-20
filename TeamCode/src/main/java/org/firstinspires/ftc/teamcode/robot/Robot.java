@@ -76,6 +76,7 @@ public class Robot extends RobotPart {
 
 	public Action shootAll() {
 		return new SequentialAction(
+				new SleepAction(AutoConfigs.preFirstShotWait),
 				new Action() {
 					@Override
 					public boolean run() {
@@ -161,7 +162,7 @@ public class Robot extends RobotPart {
 
 	@Configurable
 	static class LiftTime {
-		static long liftMillis = 800;
+		static long liftMillis = 400;
 	}
 
 	/**

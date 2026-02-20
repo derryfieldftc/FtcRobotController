@@ -9,5 +9,6 @@ public class AutoConfigs {
 	public static long preShootReverseIntakeWait = 250;
 	public static long postShootSpindexerWait = 50;
 	public static long postMovePreShootWait = 500;
+	public static long preFirstShotWait = 500;
 
 }
