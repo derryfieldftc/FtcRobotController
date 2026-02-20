@@ -37,6 +37,10 @@ public class Field {
 	}
 	@Configurable
 	public abstract static class ColorSensorValues {
+		public static double NormalGreenValue = .5;
+		public static int NormalPurpleHue = 155;
+		public static double NormalNoneDistance = 4;
+
 		abstract ColorSensorValue getValues();
 		@Configurable
 		public static class Zero extends ColorSensorValues {
@@ -113,18 +117,22 @@ public class Field {
 //				return Ball.Green;
 //			}
 //			return Ball.None;
-			d("AHM color " + hsv[0] + " " + hsv[1] + " " + hsv[2] + " d " + distance);
+			d("AHM color " + colorSensorValues.getClass().toString().substring(67) + " " + hsv[0] + " " + hsv[1] + " " + hsv[2] + " d " + distance);
 
-			if (distance > 4) // If we dont have a ball
+			if (colorSensorValues.getClass() != ColorSensorValues.One.class) {
+				if (distance > ColorSensorValues.NormalNoneDistance) // If we dont have a ball
+					return None;
+
+				if (hsv[1] < ColorSensorValues.NormalGreenValue)
+					return Green;
+
+				if (hsv[0] > ColorSensorValues.NormalPurpleHue)
+					return Purple;
+
 				return None;
-
-			if (hsv[1] > .5)
-				return Green;
-
-			if (hsv[0] > 155)
-				return Purple;
-
-			return None;
+			} else {
+				return None;
+			}
 		}
 
 		private static float getScore(float[] hsv, float[] compare, float[] stddev) {
