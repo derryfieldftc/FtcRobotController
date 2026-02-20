@@ -205,7 +205,7 @@ public class Spindexer extends RobotPart {
 	public Field.Ball getShootingBall() {
 		float[] temp = new float[3];
 		Color.RGBToHSV(shooting.red(), shooting.green(), shooting.blue(), temp);
-		return Field.Ball.getBallFromColor(temp, new Field.ColorSensorValues.Zero()); // what the heck, why do enums need constructors I hate I hate I hate
+		return Field.Ball.getBallFromColor(temp, new Field.ColorSensorValues.Zero(), Dshooting.getDistance(DistanceUnit.INCH)); // what the heck, why do enums need constructors I hate I hate I hate
 	}
 
 	/**
@@ -215,7 +215,7 @@ public class Spindexer extends RobotPart {
 	public Field.Ball getLeftBall() {
 		float[] temp = new float[3];
 		Color.RGBToHSV(left.red(), left.green(), left.blue(), temp);
-		return Field.Ball.getBallFromColor(temp, new Field.ColorSensorValues.One()); // what the heck, why do enums need constructors I hate I hate I hate
+		return Field.Ball.getBallFromColor(temp, new Field.ColorSensorValues.One(), Dleft.getDistance(DistanceUnit.INCH)); // what the heck, why do enums need constructors I hate I hate I hate
 	}
 
 	/**
@@ -225,7 +225,7 @@ public class Spindexer extends RobotPart {
 	public Field.Ball getRightBall() {
 		float[] temp = new float[3];
 		Color.RGBToHSV(right.red(), right.green(), right.blue(), temp);
-		return Field.Ball.getBallFromColor(temp, new Field.ColorSensorValues.Two()); // what the heck, why do enums need constructors I hate I hate I hate
+		return Field.Ball.getBallFromColor(temp, new Field.ColorSensorValues.Two(), Dright.getDistance(DistanceUnit.INCH)); // what the heck, why do enums need constructors I hate I hate I hate
 	}
 
 	private void resetSpindexer() {
