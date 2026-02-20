@@ -15,7 +15,7 @@ public class IndicatorLight {
 	public enum Color {
 		// Values found from https://www.gobilda.com/rgb-indicator-light-pwm-controlled/ color image thing
 		Off (0),
-		Red (0.278),
+		Red (0.280),
 		Orange (0.333),
 		Yellow (0.388),
 		Sage (0.444),

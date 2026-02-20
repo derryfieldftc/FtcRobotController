@@ -118,7 +118,7 @@ public class Spindexer extends RobotPart {
 		second = new IndicatorLight(hardwareMap.servo.get(Part.IndicatorLight1.name));
 		third = new IndicatorLight(hardwareMap.servo.get(Part.IndicatorLight2.name));
 
-		first.setColor(IndicatorLight.Color.Orange);
+		first.setColor(IndicatorLight.Color.Red);
 		second.setColor(IndicatorLight.Color.Green);
 		third.setColor(IndicatorLight.Color.Blue);
 	}
@@ -128,10 +128,10 @@ public class Spindexer extends RobotPart {
 		updateLights();
 	}
 	public void updateBalls() {
-		d("AHM distance shooting " + Dshooting.getDistance(DistanceUnit.INCH) + " left: " + Dleft.getDistance(DistanceUnit.INCH) + " right: " + Dright.getDistance(DistanceUnit.INCH));
 		switch (currentPosition) {
 			case Zero:
 				balls = new Field.Ball[]{getShootingBall(), getRightBall(), getLeftBall()};
+				break;
 			case One:
 				balls = new Field.Ball[]{getLeftBall(), getShootingBall(), getRightBall()};
 				break;
@@ -139,8 +139,15 @@ public class Spindexer extends RobotPart {
 				balls = new Field.Ball[]{getRightBall(), getLeftBall(), getShootingBall()};
 				break;
 		}
-		d("AHM balls " + Arrays.toString(balls));
+		d("AHM balls " + Arrays.toString(balls) + " " + currentPosition);
 		updateLights();
+	}
+
+	private void updateLights() {
+		first.setColor(getColorFromBall(balls[0]));
+		second.setColor(getColorFromBall(balls[1]));
+		third.setColor(getColorFromBall(balls[2]));
+
 	}
 
 	/**
@@ -155,13 +162,6 @@ public class Spindexer extends RobotPart {
 			}
 		}
 		return -1;
-	}
-
-    private void updateLights() {
-		first.setColor(getColorFromBall(balls[0]));
-		second.setColor(getColorFromBall(balls[1]));
-		third.setColor(getColorFromBall(balls[2]));
-
 	}
 
 	private IndicatorLight.Color getColorFromBall(Field.Ball ball) {

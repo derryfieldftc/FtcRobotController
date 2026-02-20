@@ -187,7 +187,7 @@ public class Turret extends RobotPart {
 				d("AHM angle to target %f", angleToTarget);
 				updateRotation(targetRotation);
 				RobotLog.d("AHM TRACKING target angle %f", targetRotation);
-				updateLight();
+//				updateLight();
 			}
 		};
 	}
@@ -236,6 +236,7 @@ public class Turret extends RobotPart {
 	@SuppressLint("DefaultLocale")
 	public void savePosition() {
 		File file = new File("/sdcard/FIRST/lastPose");
+		double writeStart = opMode.getRuntime();
 
 		try {
 			PrintWriter writer = new PrintWriter(file);
@@ -252,6 +253,7 @@ public class Turret extends RobotPart {
 			d("AHM WRITE FAIL " + ignored);
 			throw new RuntimeException(ignored);
 		} // beautiful exception handling
+		d("AHM writeTime " + (opMode.getRuntime() - writeStart));
 	}
 
 	public static TurretPose getSavedPosition() throws Exception {

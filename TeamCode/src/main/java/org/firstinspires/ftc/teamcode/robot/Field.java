@@ -37,9 +37,15 @@ public class Field {
 	}
 	@Configurable
 	public abstract static class ColorSensorValues {
-		public static double NormalGreenValue = .5;
-		public static int NormalPurpleHue = 155;
-		public static double NormalNoneDistance = 4;
+		public static double ZeroGreenValue = .5;
+		public static int ZeroPurpleHue = 160;
+		public static double ZeroNoneDistance = 4;
+		public static double TwoGreenValue = .3;
+		public static int TwoPurpleHue = 155;
+		public static double TwoNoneDistance = 4;
+		public static double OneGreenValue = .3;
+		public static int OnePurpleHue = 155;
+		public static double OneNoneDistance = 4;
 
 		abstract ColorSensorValue getValues();
 		@Configurable
@@ -103,6 +109,45 @@ public class Field {
 		 */
 		public static Ball getBallFromColor(float[] hsv, ColorSensorValues colorSensorValues, double distance) {
 			ColorSensorValue csvn = colorSensorValues.getValues();
+			d("AHM color " + colorSensorValues.getClass().toString().substring(67) + " " + hsv[0] + " " + hsv[1] + " " + hsv[2] + " d " + distance);
+
+			if (colorSensorValues.getClass() == ColorSensorValues.Two.class) {
+				if (distance > ColorSensorValues.TwoNoneDistance) // If we dont have a ball
+					return None;
+
+				if (hsv[1] > ColorSensorValues.TwoGreenValue)
+					return Green;
+
+				if (hsv[0] > ColorSensorValues.TwoPurpleHue)
+					return Purple;
+
+				return None;
+			} else if (colorSensorValues.getClass() == ColorSensorValues.One.class) {
+				if (distance > ColorSensorValues.OneNoneDistance) // If we dont have a ball
+					return None;
+
+				if (hsv[1] > ColorSensorValues.OneGreenValue)
+					return Green;
+
+				if (hsv[0] > ColorSensorValues.OnePurpleHue)
+					return Purple;
+
+				return None;
+			} else {
+				d("AHM OOGA BOOGA");
+				if (distance > ColorSensorValues.ZeroNoneDistance) // If we dont have a ball
+					return None;
+
+				if (hsv[1] > ColorSensorValues.ZeroGreenValue)
+					return Green;
+
+				if (hsv[0] > ColorSensorValues.ZeroPurpleHue)
+					return Purple;
+
+				return None;
+			}
+		}
+
 
 //			float purpleScore = getScore(hsv, csvn.purple, csvn.purpleStandardDev);
 //			float greenScore  = getScore(hsv, csvn.green, csvn.greenStandardDev);
@@ -117,23 +162,6 @@ public class Field {
 //				return Ball.Green;
 //			}
 //			return Ball.None;
-			d("AHM color " + colorSensorValues.getClass().toString().substring(67) + " " + hsv[0] + " " + hsv[1] + " " + hsv[2] + " d " + distance);
-
-			if (colorSensorValues.getClass() != ColorSensorValues.One.class) {
-				if (distance > ColorSensorValues.NormalNoneDistance) // If we dont have a ball
-					return None;
-
-				if (hsv[1] < ColorSensorValues.NormalGreenValue)
-					return Green;
-
-				if (hsv[0] > ColorSensorValues.NormalPurpleHue)
-					return Purple;
-
-				return None;
-			} else {
-				return None;
-			}
-		}
 
 		private static float getScore(float[] hsv, float[] compare, float[] stddev) {
 			float errorH = (hsv[0] - compare[0]) / stddev[0];
