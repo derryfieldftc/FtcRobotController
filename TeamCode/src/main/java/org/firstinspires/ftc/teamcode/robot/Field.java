@@ -94,10 +94,10 @@ public class Field {
 
 		/**
 		 * hsv is an array of length three, and colorSensor must be one of the color sensors
-		 * @param hsv
+		 * @param hsv Hue, Saturation, Value
 		 * @param colorSensorValues
 		 */
-		public static Ball getBallFromColor(float[] hsv, ColorSensorValues colorSensorValues) {
+		public static Ball getBallFromColor(float[] hsv, ColorSensorValues colorSensorValues, double distance) {
 			ColorSensorValue csvn = colorSensorValues.getValues();
 
 //			float purpleScore = getScore(hsv, csvn.purple, csvn.purpleStandardDev);
@@ -113,13 +113,16 @@ public class Field {
 //				return Ball.Green;
 //			}
 //			return Ball.None;
+			d("AHM color " + hsv[0] + " " + hsv[1] + " " + hsv[2] + " d " + distance);
 
-			if (hsv[0] > 160)
-				return Purple;
+			if (distance > 4) // If we dont have a ball
+				return None;
 
-			d("AHM color " + hsv[0] + " " + hsv[1] + " " + hsv[2]);
 			if (hsv[1] > .5)
 				return Green;
+
+			if (hsv[0] > 155)
+				return Purple;
 
 			return None;
 		}
