@@ -30,6 +30,11 @@ public class TeleOpAction extends Action {
 		wasRunning = true;
 	}
 
+	public void reset() {
+		wasRunning = false;
+		action = actionSupplier.get();
+	}
+
 	public boolean isRunning() {
 		return wasRunning;
 	}

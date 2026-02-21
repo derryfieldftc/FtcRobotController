@@ -10,11 +10,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.GamepadManager;
 import org.firstinspires.ftc.teamcode.autonmous.actions.Action;
-import org.firstinspires.ftc.teamcode.autonmous.actions.SleepAction;
 import org.firstinspires.ftc.teamcode.autonmous.actions.TeleOpAction;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.robot.Depot;
-import org.firstinspires.ftc.teamcode.robot.Drawing;
 import org.firstinspires.ftc.teamcode.robot.Field;
 import org.firstinspires.ftc.teamcode.robot.Lift;
 import org.firstinspires.ftc.teamcode.robot.LimeLight;
@@ -25,7 +23,6 @@ import org.firstinspires.ftc.teamcode.robot.TurretPose;
 import com.pedropathing.geometry.Pose;
 
 import static com.qualcomm.robotcore.util.RobotLog.*;
-import static org.firstinspires.ftc.teamcode.pedro.Tuning.follower;
 import static java.lang.Math.abs;
 
 import java.util.function.Supplier;
@@ -142,6 +139,9 @@ public class RedOpMode extends OpMode {
 			} else {
 				bot.intake.setSpeed(0);
 			}
+		}
+		if (gamepad2.right_stick_button) {
+			resetForIntaking.reset();
 		}
 
 

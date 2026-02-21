@@ -144,6 +144,9 @@ public class BlueOpMode extends OpMode {
 				bot.intake.setSpeed(0);
 			}
 		}
+		if (gamepad2.right_stick_button) {
+			resetForIntaking.reset();
+		}
 
 		if (mgamepad2.justPressed(GamepadManager.Button.RIGHT_BUMPER)) {
 			liftUp = !liftUp;
