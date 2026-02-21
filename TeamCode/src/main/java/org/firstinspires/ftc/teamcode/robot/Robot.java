@@ -7,6 +7,7 @@ import static org.firstinspires.ftc.teamcode.robot.Field.Ball;
 import static org.firstinspires.ftc.teamcode.robot.Field.Ball.Green;
 import static org.firstinspires.ftc.teamcode.robot.Field.Ball.None;
 import static org.firstinspires.ftc.teamcode.robot.Field.Ball.Purple;
+import static org.firstinspires.ftc.teamcode.robot.Field.motif;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
@@ -135,6 +136,7 @@ public class Robot extends RobotPart {
                     int index = spindexer.doWeHaveThisBall(color);
                     d("AHM INDEX " + index);
                     if (index != -1) {
+						newMotifIndex += 1;
                         innerAction = new SequentialAction(
                                 new InstantAction(() -> spindexer.safelySetPosition(Spindexer.Position.from(index), lift)),
 								spindexer.waitUntilFinished(),
@@ -147,6 +149,13 @@ public class Robot extends RobotPart {
                 return innerAction.run();
             }
         };
+	}
+	private Action shootFromIndex(){
+		return new SequentialAction(
+			shootColor(motif.getBall(newMotifIndex % 3)),
+			shootColor(motif.getBall(newMotifIndex % 3)),
+			shootColor(motif.getBall(newMotifIndex % 3))
+		);
 	}
 
 	private Action shootAllGPP() {

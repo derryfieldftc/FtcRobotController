@@ -109,6 +109,7 @@ public class Field {
 		 */
 		public static Ball getBallFromColor(float[] hsv, ColorSensorValues colorSensorValues, double distance) {
 			ColorSensorValue csvn = colorSensorValues.getValues();
+			//SIX SEVEN!!!
 			d("AHM color " + colorSensorValues.getClass().toString().substring(67) + " " + hsv[0] + " " + hsv[1] + " " + hsv[2] + " d " + distance);
 
 			if (colorSensorValues.getClass() == ColorSensorValues.Two.class) {
@@ -134,7 +135,7 @@ public class Field {
 
 				return None;
 			} else {
-				d("AHM OOGA BOOGA");
+				d("AHM OOGA BOOGA"); //WHY IS THERE OOGA BOOGA!??!?!?
 				if (distance > ColorSensorValues.ZeroNoneDistance) // If we dont have a ball
 					return None;
 
