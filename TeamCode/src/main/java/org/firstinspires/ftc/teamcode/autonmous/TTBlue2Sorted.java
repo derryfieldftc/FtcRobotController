@@ -212,14 +212,14 @@ public class TTBlue2Sorted extends OpMode {
 					new BezierLine(
 							new Pose(87.741, 17.678).mirror(),
 
-							new Pose(132.030, 11.466).mirror()))
+							new Pose(132.030, 15.466).mirror()))
 					.setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(186))
 
 					.build();
 
 			Shoot6 = follower.pathBuilder().addPath(
 					new BezierLine(
-							new Pose(132.030, 11.466).mirror(),
+							new Pose(132.030, 15.466).mirror(),
 
 							new Pose(84.283, 14.273).mirror()))
 					.setLinearHeadingInterpolation(Math.toRadians(186), Math.toRadians(135))
