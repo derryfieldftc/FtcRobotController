@@ -37,8 +37,8 @@ public class Field {
 	}
 	@Configurable
 	public abstract static class ColorSensorValues {
-		public static double ZeroGreenValue = .5;
-		public static int ZeroPurpleHue = 160;
+		public static double ZeroGreenValue = .47;
+		public static int ZeroPurpleHue = 157;
 		public static double ZeroNoneDistance = 4;
 		public static double TwoGreenValue = .3;
 		public static int TwoPurpleHue = 155;
@@ -135,7 +135,6 @@ public class Field {
 
 				return None;
 			} else {
-				d("AHM OOGA BOOGA"); //WHY IS THERE OOGA BOOGA!??!?!?
 				if (distance > ColorSensorValues.ZeroNoneDistance) // If we dont have a ball
 					return None;
 
