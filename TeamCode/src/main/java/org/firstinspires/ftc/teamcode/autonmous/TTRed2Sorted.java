@@ -69,16 +69,20 @@ public class TTRed2Sorted extends OpMode {
 				new SequentialAction(
 						new SleepAction(AutoConfigs.initalWaitTime),
 						robot.shootAllSorted(),
-						robot.spindexerPrepIntake(),
-						robot.setIntakeSpeed(1),
-						new FollowPathAction(follower, paths.Intake1),
+						new ParallelAction(
+								new SequentialAction(
+										robot.spindexerPrepIntake(),
+										robot.setIntakeSpeed(1)),
+								new FollowPathAction(follower, paths.Intake1)
+						),
+						new InstantAction(() -> robot.spindexer.updateBalls()),
 						new FollowPathAction(follower, paths.Shoot2),
 						new InstantAction(() -> robot.spindexer.updateBalls()),
 						robot.spindexerPrepShoot(),
 						robot.setIntakeSpeed(-.5),
 						new SleepAction(AutoConfigs.preShootReverseIntakeWait),
 						robot.setIntakeSpeed(0),
-						new SleepAction(AutoConfigs.postMovePreShootWait),
+//						new SleepAction(AutoConfigs.postMovePreShootWait),
 						robot.shootAllSorted(),
 						robot.spindexerPrepIntake(),
 
@@ -90,7 +94,8 @@ public class TTRed2Sorted extends OpMode {
 						new SleepAction(AutoConfigs.preShootReverseIntakeWait),
 						robot.setIntakeSpeed(0),
 						new SleepAction(AutoConfigs.postMovePreShootWait),
-						robot.shootAll(),
+						new InstantAction(() -> robot.spindexer.updateBalls()),
+						robot.shootAllSorted(),
 						robot.spindexerPrepIntake(),
 
 						robot.setIntakeSpeed(1),
@@ -101,7 +106,8 @@ public class TTRed2Sorted extends OpMode {
 						new SleepAction(AutoConfigs.preShootReverseIntakeWait),
 						robot.setIntakeSpeed(0),
 						new SleepAction(AutoConfigs.postMovePreShootWait),
-						robot.shootAll(),
+						new InstantAction(() -> robot.spindexer.updateBalls()),
+						robot.shootAllSorted(),
 						robot.spindexerPrepIntake(),
 
 						new FollowPathAction(follower, paths.Middle7)),
@@ -111,7 +117,7 @@ public class TTRed2Sorted extends OpMode {
 					@Override
 					public boolean run() {
 						robot.setTurretSpeed(robot.turret
-								.getSpeedByDistance(robot.turret.getDistance(Depot.getPosition(Field.Alliance.Red))))
+										.getSpeedByDistance(robot.turret.getDistance(Depot.getPosition(Field.Alliance.Red))))
 								.run();
 						return true;
 					};
@@ -123,8 +129,7 @@ public class TTRed2Sorted extends OpMode {
 						return true;
 					}
 				});
-		while (robot.spindexer.resetPosition().run())
-			;
+		while (robot.spindexer.resetPosition().run());
 	}
 
 	@Override
@@ -167,65 +172,65 @@ public class TTRed2Sorted extends OpMode {
 
 		public Paths(Follower follower) {
 			Intake1 = follower.pathBuilder().addPath(
-					new BezierCurve(
-							new Pose(96.000, 9.000),
-							new Pose(96.389, 64.031),
-							new Pose(90.088, 52.332),
-							new Pose(125.557, 59.118)))
+							new BezierCurve(
+									new Pose(96.000, 9.000),
+									new Pose(96.389, 64.031),
+									new Pose(90.088, 52.332),
+									new Pose(125.557, 59.118)))
 					.setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(0))
 
 					.build();
 
 			Shoot2 = follower.pathBuilder().addPath(
-					new BezierCurve(
-							new Pose(125.557, 59.118),
-							new Pose(101.584, 59.249),
-							new Pose(87.541, 17.439)))
+							new BezierCurve(
+									new Pose(125.557, 59.118),
+									new Pose(101.584, 59.249),
+									new Pose(87.541, 17.439)))
 					.setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
 
 					.build();
 
 			Intake3 = follower.pathBuilder().addPath(
-					new BezierCurve(
-							new Pose(87.541, 17.439),
-							new Pose(96.949, 36.983),
-							new Pose(127.395, 35.519)))
+							new BezierCurve(
+									new Pose(87.541, 17.439),
+									new Pose(96.949, 36.983),
+									new Pose(127.395, 35.519)))
 					.setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(16))
 
 					.build();
 
 			Shoot4 = follower.pathBuilder().addPath(
-					new BezierLine(
-							new Pose(127.395, 35.519),
+							new BezierLine(
+									new Pose(127.395, 35.519),
 
-							new Pose(87.741, 17.678)))
+									new Pose(87.741, 17.678)))
 					.setLinearHeadingInterpolation(Math.toRadians(16), Math.toRadians(0))
 
 					.build();
 
 			Intake5 = follower.pathBuilder().addPath(
-					new BezierLine(
-							new Pose(87.741, 17.678),
+							new BezierLine(
+									new Pose(87.741, 17.678),
 
-							new Pose(132.030, 11.466)))
+									new Pose(132.030, 11.466)))
 					.setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(-6))
 
 					.build();
 
 			Shoot6 = follower.pathBuilder().addPath(
-					new BezierLine(
-							new Pose(132.030, 11.466),
+							new BezierLine(
+									new Pose(132.030, 11.466),
 
-							new Pose(84.283, 14.273)))
+									new Pose(84.283, 14.273)))
 					.setLinearHeadingInterpolation(Math.toRadians(-6), Math.toRadians(45))
 
 					.build();
 
 			Middle7 = follower.pathBuilder().addPath(
-					new BezierLine(
-							new Pose(84.283, 14.273),
+							new BezierLine(
+									new Pose(84.283, 14.273),
 
-							new Pose(97.917, 28.063)))
+									new Pose(97.917, 28.063)))
 					.setConstantHeadingInterpolation(Math.toRadians(45))
 
 					.build();

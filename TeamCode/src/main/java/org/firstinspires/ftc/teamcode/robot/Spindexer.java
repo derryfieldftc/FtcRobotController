@@ -51,7 +51,7 @@ public class Spindexer extends RobotPart {
 
 	@Configurable
 	public static class SpindexerConfig {
-		public static double speed = .7;
+		public static double speed = .43;
 	}
 
 	public enum Position {
@@ -155,6 +155,7 @@ public class Spindexer extends RobotPart {
 	 * @return
 	 */
 	public int doWeHaveThisBall(Field.Ball ball) {
+		d("AHM searchedBall " + ball + " " + Arrays.toString(balls));
 		for (int i = 0; i < balls.length; i++) {
 			if (balls[i] == ball) {
 				balls[i] = ball.None;
@@ -253,7 +254,7 @@ public class Spindexer extends RobotPart {
 			@Override
 			public boolean run() {
 				rotator.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-				rotator.setPower(-.1);
+				rotator.setPower(-.05);
 				if (touchSensorPressed()) {
 					rotator.setPower(0);
 					resetSpindexer();

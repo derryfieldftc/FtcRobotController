@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.robot;
 
 import static com.qualcomm.robotcore.util.RobotLog.d;
+import static com.qualcomm.robotcore.util.RobotLog.logAppInfo;
+import static com.qualcomm.robotcore.util.RobotLog.w;
 import static org.firstinspires.ftc.teamcode.robot.Field.Ball;
 import static org.firstinspires.ftc.teamcode.robot.Field.Ball.Green;
 import static org.firstinspires.ftc.teamcode.robot.Field.Ball.None;
@@ -120,20 +122,31 @@ public class Robot extends RobotPart {
 				return shootAllGPP();
         };
 
-		return null;
+		return new NothingAction();
 	}
 
 	private Action shootColor(Ball color) {
-		int index = spindexer.doWeHaveThisBall(color);
-		if (index != -1) {
-			return new SequentialAction(
-					new InstantAction(() -> spindexer.safelySetPosition(Spindexer.Position.from(index), lift)),
-					spindexer.waitUntilFinished(1),
-					new SleepAction(AutoConfigs.preShootReverseIntakeWait),
-					shoot()
-			);
-		}
-		return new NothingAction();
+        return new Action() { // TODO! make a better system for definitions and conditional Actions
+            boolean first = true;
+            Action innerAction;
+            @Override
+            public boolean run() {
+                if (first) {
+                    int index = spindexer.doWeHaveThisBall(color);
+                    d("AHM INDEX " + index);
+                    if (index != -1) {
+                        innerAction = new SequentialAction(
+                                new InstantAction(() -> spindexer.safelySetPosition(Spindexer.Position.from(index), lift)),
+								spindexer.waitUntilFinished(),
+                                shoot());
+                    } else {
+                        innerAction = new NothingAction();
+                    }
+                    first = false;
+                }
+                return innerAction.run();
+            }
+        };
 	}
 
 	private Action shootAllGPP() {
@@ -148,7 +161,8 @@ public class Robot extends RobotPart {
 		return new SequentialAction(
 				shootColor(Purple),
 				shootColor(Green),
-				shootColor(Purple)
+				shootColor(Purple),
+				new InstantAction(() -> d("AHM FinishedPGP"))
 		);
 	}
 
