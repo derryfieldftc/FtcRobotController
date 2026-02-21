@@ -71,15 +71,17 @@ public class TTBlue2Sorted extends OpMode {
 						robot.shootAllSorted(),
 						robot.spindexerPrepIntake(),
 						robot.setIntakeSpeed(1),
-						new FollowPathAction(follower, paths.Intake1),
+						new InstantAction(() -> robot.spindexer.updateBalls()),
 						new FollowPathAction(follower, paths.Shoot2),
 						new InstantAction(() -> robot.spindexer.updateBalls()),
 						robot.spindexerPrepShoot(),
 						robot.setIntakeSpeed(-.5),
 						new SleepAction(AutoConfigs.preShootReverseIntakeWait),
 						robot.setIntakeSpeed(0),
-						new SleepAction(AutoConfigs.postMovePreShootWait),
+						// new SleepAction(AutoConfigs.postMovePreShootWait),
 						robot.shootAllSorted(),
+						new InstantAction(() -> robot.spindexer.updateBalls()),
+						robot.shootAllRemaining(),
 						robot.spindexerPrepIntake(),
 
 						robot.setIntakeSpeed(1),
@@ -90,7 +92,10 @@ public class TTBlue2Sorted extends OpMode {
 						new SleepAction(AutoConfigs.preShootReverseIntakeWait),
 						robot.setIntakeSpeed(0),
 						new SleepAction(AutoConfigs.postMovePreShootWait),
-						robot.shootAll(),
+						new InstantAction(() -> robot.spindexer.updateBalls()),
+						robot.shootAllSorted(),
+						new InstantAction(() -> robot.spindexer.updateBalls()),
+						robot.shootAllRemaining(),
 						robot.spindexerPrepIntake(),
 
 						robot.setIntakeSpeed(1),
@@ -101,7 +106,8 @@ public class TTBlue2Sorted extends OpMode {
 						new SleepAction(AutoConfigs.preShootReverseIntakeWait),
 						robot.setIntakeSpeed(0),
 						new SleepAction(AutoConfigs.postMovePreShootWait),
-						robot.shootAll(),
+						new InstantAction(() -> robot.spindexer.updateBalls()),
+						robot.shootAllSorted(),
 						robot.spindexerPrepIntake(),
 
 						new FollowPathAction(follower, paths.Middle7)),
@@ -131,7 +137,6 @@ public class TTBlue2Sorted extends OpMode {
 	public void init_loop() {
 		d("AHM searching");
 		telemetry.addLine("Searching");
-		telemetry.update();
 		robot.getMotif(follower.getPoseTracker().getLocalizer()).run();
 		d("AHM FOUND " + Field.motif);
 		telemetry.addData("motif", Field.motif);

@@ -9,9 +9,12 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.GamepadManager;
+import org.firstinspires.ftc.teamcode.autonmous.actions.Action;
+import org.firstinspires.ftc.teamcode.autonmous.actions.SleepAction;
 import org.firstinspires.ftc.teamcode.autonmous.actions.TeleOpAction;
 import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.robot.Depot;
+import org.firstinspires.ftc.teamcode.robot.Drawing;
 import org.firstinspires.ftc.teamcode.robot.Field;
 import org.firstinspires.ftc.teamcode.robot.Lift;
 import org.firstinspires.ftc.teamcode.robot.LimeLight;
@@ -22,12 +25,15 @@ import org.firstinspires.ftc.teamcode.robot.TurretPose;
 import com.pedropathing.geometry.Pose;
 
 import static com.qualcomm.robotcore.util.RobotLog.*;
+import static org.firstinspires.ftc.teamcode.pedro.Tuning.follower;
 import static java.lang.Math.abs;
 
 import java.util.function.Supplier;
 
 @TeleOp(name = "BlueOpMode")
 public class BlueOpMode extends OpMode {
+	double lastLoopTime = 0;
+	double averageLoopTime = 0;
 	Robot bot;
 	GamepadManager mgamepad1;
 	GamepadManager mgamepad2;
@@ -36,12 +42,15 @@ public class BlueOpMode extends OpMode {
 	boolean liftUp = false;
 	boolean autoTracking = false;
 	boolean autoMoving = false;
-	TeleOpAction shootAll;
+	boolean shootingAll = false;
+	boolean prevIntaking;
+	Action shootAll;
 	boolean lastA;
 	LimeLight ll;
 	TurretPose lastPose;
 	Supplier<PathChain> gotoLever;
 	private boolean turretOn = true;
+	TeleOpAction resetForIntaking;
 
 	@Override
 	public void init() {
@@ -50,8 +59,6 @@ public class BlueOpMode extends OpMode {
 		ll.setMode(LimeLight.LimeLightMode.AprilTag);
 		d("AHM init");
 		drivetrain = Constants.createFollower(hardwareMap);
-
-		shootAll = new TeleOpAction(() -> bot.shootAll());
 
 		try {
 			lastPose = Turret.getSavedPosition();
@@ -66,13 +73,15 @@ public class BlueOpMode extends OpMode {
 		mgamepad1 = new GamepadManager(gamepad1);
 		mgamepad2 = new GamepadManager(gamepad2);
 
-		bot.spindexer.setRotatorPower(1);
+		bot.spindexer.setRotatorPower(Spindexer.SpindexerConfig.speed);
 
 		gotoLever = () -> drivetrain.pathBuilder() // Lazy Curve Generation
-				.addPath(new Path(new BezierLine(drivetrain::getPose, new Pose(12, 60))))
+				.addPath(new Path(new BezierLine(drivetrain::getPose, new Pose(10, 60))))
 				.setHeadingInterpolation(
 						HeadingInterpolator.linearFromPoint(drivetrain::getHeading, Math.toRadians(140), 0.8))
 				.build();
+		shootAll = bot.shootAll();
+		resetForIntaking = new TeleOpAction(() -> bot.spindexerPrepIntake());
 	}
 
 	@Override
@@ -90,7 +99,7 @@ public class BlueOpMode extends OpMode {
 			drivetrain.setTeleOpDrive(
 					-gamepad1.left_stick_y * (1 - gamepad1.right_trigger),
 					-gamepad1.left_stick_x * (1 - gamepad1.right_trigger),
-					-gamepad1.right_stick_x * (1 - gamepad1.right_trigger),
+					(-gamepad1.right_stick_x / 1.5) * (1 - gamepad1.right_trigger),
 					true);
 
 		if (autoMoving && (mgamepad1.justPressed(GamepadManager.Button.B) || !drivetrain.isBusy())) {
@@ -98,24 +107,42 @@ public class BlueOpMode extends OpMode {
 			autoMoving = false;
 		}
 
-		bot.turret.savePosition();
+		// bot.turret.savePosition();
 		drivetrain.update();
-		bot.loop();
+		if (!shootingAll) {
+			bot.loop();
+			bot.turret.trackTarget(Depot.getPosition(Field.Alliance.Blue), drivetrain.getPoseTracker()
+					.getLocalizer()).run();
+		}
 		telemetry.clearAll(); // Disables telemetry from the Turret
 
-		bot.turret.trackTarget(Depot.getPosition(Field.Alliance.Blue), drivetrain.getPoseTracker()
-				.getLocalizer()).run();
 		if (!autoTracking) {
 			bot.turret.setRotationPower(0);
 		} else {
 			bot.turret.setRotationPower(1);
 		}
 
-		bot.intake.setSpeed(gamepad2.right_trigger * ((gamepad2.start) ? -1 : 1));
-		if (!gamepad2.left_bumper) {
-			bot.spindexer.setLiftPosition(Spindexer.Height.Down);
+		resetForIntaking.run();
+		if (gamepad2.right_trigger > .5 && !gamepad2.start) {
+			if (!prevIntaking)
+				resetForIntaking.start();
+			prevIntaking = true;
+
+			if (!resetForIntaking.isRunning()) {
+				bot.intake.setSpeed(gamepad2.right_trigger * ((gamepad2.start) ? -1 : 1));
+				bot.spindexer.setLiftPosition(Spindexer.Height.Down);
+			}
 		} else {
 			bot.spindexer.setLiftPosition(Spindexer.Height.Up);
+			if (prevIntaking)
+				bot.spindexer.updateBalls(); // only if we just stopped intaking
+			prevIntaking = false;
+
+			if (gamepad2.start) {
+				bot.intake.setSpeed(-1);
+			} else {
+				bot.intake.setSpeed(0);
+			}
 		}
 
 		if (mgamepad2.justPressed(GamepadManager.Button.RIGHT_BUMPER)) {
@@ -124,22 +151,27 @@ public class BlueOpMode extends OpMode {
 
 		if (mgamepad2.justPressed(GamepadManager.Button.X)) {
 			bot.spindexer.setPosition(Spindexer.Position.Zero);
+			bot.spindexer.updateBalls();
 		}
 
 		if (mgamepad2.justPressed(GamepadManager.Button.A)) {
 			bot.spindexer.setPosition(Spindexer.Position.One);
+			bot.spindexer.updateBalls();
 		}
 
 		if (mgamepad2.justPressed(GamepadManager.Button.B)) {
 			bot.spindexer.setPosition(Spindexer.Position.Two);
+			bot.spindexer.updateBalls();
 		}
 
-		bot.spindexer.setRotatorPower(1);
+		// bot.spindexer.setRotatorPower(1);
 
-		if (liftUp) {
-			bot.lift.setPosition(Lift.Position.Up);
-		} else {
-			bot.lift.setPosition(Lift.Position.Down);
+		if (!shootingAll) {
+			if (liftUp) {
+				bot.lift.setPosition(Lift.Position.Up);
+			} else {
+				bot.lift.setPosition(Lift.Position.Down);
+			}
 		}
 
 		if (gamepad1.a && !lastA)
@@ -167,17 +199,6 @@ public class BlueOpMode extends OpMode {
 			autoTracking = !autoTracking;
 		}
 
-		bot.turret.setAngleTrim(
-				(bot.turret.rotationTrim + gamepad2.right_stick_y / 17.5) * ((gamepad2.right_stick_button) ? 0 : 1)); // the
-																														// lion
-																														// does
-																														// not
-																														// concern
-																														// herself
-																														// with
-																														// the
-																														// math
-
 		telemetry.addData("turretOn", turretOn);
 		telemetry.addData("speedTrim", speedTrim);
 		telemetry.addData("angleTrim", bot.turret.rotationTrim);
@@ -187,9 +208,24 @@ public class BlueOpMode extends OpMode {
 
 		bot.turret.dumpTelemetry(telemetry);
 
-		bot.spindexer.updateBalls();
+		averageLoopTime = (averageLoopTime + (this.getRuntime() - lastLoopTime)) / 2;
+		lastLoopTime = this.getRuntime();
+		telemetry.addData("loop time ", averageLoopTime);
+
+		if (shootingAll || gamepad2.left_bumper) {
+			shootingAll = shootAll.run();
+			telemetry.addLine("shooting all");
+			if (!shootingAll) {
+				shootAll = bot.shootAll(); // set it to new shootall action as the last one finished
+			}
+		}
+
 		telemetry.update();
 		mgamepad1.poll();
 		mgamepad2.poll();
+
+		d("AHM LLPOSE " + bot.getLLPose(drivetrain).toString());
+
+		// Drawing.drawDebug(follower);
 	}
 }
