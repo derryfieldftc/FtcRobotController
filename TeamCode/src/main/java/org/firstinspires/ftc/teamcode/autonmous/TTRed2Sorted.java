@@ -80,6 +80,8 @@ public class TTRed2Sorted extends OpMode {
 						robot.setIntakeSpeed(0),
 //						new SleepAction(AutoConfigs.postMovePreShootWait),
 						robot.shootAllSorted(),
+						new InstantAction(() -> robot.spindexer.updateBalls()),
+						robot.shootAllRemaining(),
 						robot.spindexerPrepIntake(),
 
 						robot.setIntakeSpeed(1),
@@ -92,6 +94,8 @@ public class TTRed2Sorted extends OpMode {
 						new SleepAction(AutoConfigs.postMovePreShootWait),
 						new InstantAction(() -> robot.spindexer.updateBalls()),
 						robot.shootAllSorted(),
+						new InstantAction(() -> robot.spindexer.updateBalls()),
+						robot.shootAllRemaining(),
 						robot.spindexerPrepIntake(),
 
 						robot.setIntakeSpeed(1),
@@ -132,7 +136,6 @@ public class TTRed2Sorted extends OpMode {
 	public void init_loop() {
 		d("AHM searching");
 		telemetry.addLine("Searching");
-		telemetry.update();
 		robot.getMotif(follower.getPoseTracker().getLocalizer()).run();
 		d("AHM FOUND " + Field.motif);
 		telemetry.addData("motif", Field.motif);

@@ -140,6 +140,7 @@ public class Robot extends RobotPart {
                         innerAction = new SequentialAction(
                                 new InstantAction(() -> spindexer.safelySetPosition(Spindexer.Position.from(index), lift)),
 								spindexer.waitUntilFinished(),
+								new SleepAction(Spindexer.SpindexerConfig.extraDelay),
                                 shoot());
                     } else {
                         innerAction = new NothingAction();
@@ -150,11 +151,23 @@ public class Robot extends RobotPart {
             }
         };
 	}
-	private Action shootFromIndex(){
+
+	// Crappy but will work
+	public Action shootAllRemaining() {
+		return new SequentialAction(
+				shootColor(Purple),
+				shootColor(Purple),
+				shootColor(Purple),
+				shootColor(Green),
+				shootColor(Green),
+				shootColor(Green)
+		);
+	}
+	public Action shootByIndex(){
 		return new SequentialAction(
 			shootColor(motif.getBall(newMotifIndex % 3)),
-			shootColor(motif.getBall(newMotifIndex % 3)),
-			shootColor(motif.getBall(newMotifIndex % 3))
+			shootColor(motif.getBall(newMotifIndex + 1 % 3)),
+			shootColor(motif.getBall(newMotifIndex + 2 % 3))
 		);
 	}
 
@@ -170,8 +183,7 @@ public class Robot extends RobotPart {
 		return new SequentialAction(
 				shootColor(Purple),
 				shootColor(Green),
-				shootColor(Purple),
-				new InstantAction(() -> d("AHM FinishedPGP"))
+				shootColor(Purple)
 		);
 	}
 
