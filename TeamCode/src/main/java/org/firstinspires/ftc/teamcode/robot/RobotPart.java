@@ -37,73 +37,36 @@ public class RobotPart {
 		voltageSensor = hardwareMap.voltageSensor.iterator().next();
 	}
 
-
-	// <3 enums as lookup tables... sure wish there were macros in java for compile time existence checking
+	// <3 enums as lookup tables... sure wish there were macros in java for compile
+	// time existence checking
 	/**
 	 * List of robot parts.
-	 * use Part.name when getting a part, so if a configuration is changed, this can be updated simply.
+	 * use Part.name when getting a part, so if a configuration is changed, this can
+	 * be updated simply.
 	 * Would recommend importing this as static
 	 */
 	@Configurable
+	// Notice how doc can be added to variants to make them more understandable,
+	// please use this liberally, but not excessively
 	public enum Part {
-		//Notice how doc can be added to variants to make them more understandable, please use this liberally, but not excessively
 		/**
 		 * Front Right drive motor
 		 */
-		MotorFR 	("motorFR", DcMotor.class),
+		MotorFR("motorFR", DcMotor.class),
 		/**
 		 * Front Left drive motor
 		 */
-		MotorFL 	("motorFL", DcMotor.class),
+		MotorFL("motorFL", DcMotor.class),
 		/**
 		 * Back Right drive motor
 		 */
-		MotorBR 	("motorBR", DcMotor.class),
+		MotorBR("motorBR", DcMotor.class),
 		/**
 		 * Back Left drive motor
 		 */
-		MotorBL 	("motorBL", DcMotor.class),
-		/**
-		 * Intake Motor
-		 */
-		Intake 		("intake", DcMotor.class),
-		/**
-		 * Encoder that measures strafe on the robot
-		 */
-		StrafeEncoder 		("motorFR", DcMotor.class),
-		/**
-		 * Encoder that measures drive on the left side of the robot
-		 */
-		LeftDriveEncoder 	("motorBL", DcMotor.class),
-		/**
-		 * Encoder that measures drive on the right side of the robot
-		 */
-		RightDriveEncoder 	("intake", DcMotor.class),
-		/**
-		 * Motor for accelerating balls
-		 */
-		LaunchMotor	("spinny0", DcMotorEx.class),
-		/**
-		 * Motor for rotating the turret
-		 */
-		TurretRotator	("turretRotator", DcMotor.class),
-		/**
-		 * This is the limelight camera, it is used for all sorts of april tag tracking, computer vision and localization, among other things.
-		 */
-		LimeLight	("limelight", Limelight3A.class),
-		SpindexerRotator	("spindexerMotor", DcMotor.class),
-		SpindexerLift	("spindexerServo", Servo.class),
-		LiftServo	("lift", Servo.class),
-		SpindexerLimit	("spindexerLimit", TouchSensor.class),
-		SpindexerColor0	("spindexerColor0", ColorSensor.class),
-		SpindexerColor1	("spindexerColor1", ColorSensor.class),
-		SpindexerColor2	("spindexerColor2", ColorSensor.class),
-		IndicatorLight0	("light0", Servo.class),
-		IndicatorLight1	("light1", Servo.class),
-		IndicatorLight2	("light2", Servo.class),
-		LiftSwitch	("liftSwitch", TouchSensor.class),
-		;
-		//TODO! make this list exhaustive
+		MotorBL("motorBL", DcMotor.class),
+		LimeLight("limelight", Limelight3A.class),;
+		// TODO! make this list exhaustive
 
 		public final String name;
 		public final Class<? extends HardwareDevice> type;
@@ -113,7 +76,7 @@ public class RobotPart {
 			this.type = type;
 		};
 
-		//Note that methods can also be created
+		// Note that methods can also be created
 		public static List<Part> Servos() {
 			return Stream.of(Part.values()).filter(Part::isServo).collect(Collectors.toList());
 		}
@@ -136,12 +99,14 @@ public class RobotPart {
 		}
 
 		/**
-		 * Returns true if the hardware device exists in the Driver Hub configuration, a return of true means that it is safe to call hardwaremap.get() on it
+		 * Returns true if the hardware device exists in the Driver Hub configuration, a
+		 * return of true means that it is safe to call hardwaremap.get() on it
+		 * 
 		 * @param hardwareMap
 		 * @return Devices existence
 		 */
 		public boolean exists(HardwareMap hardwareMap) {
-			//Kinda silly way to do this, if only errors as values were a thing
+			// Kinda silly way to do this, if only errors as values were a thing
 			try {
 				hardwareMap.get(this.name);
 				return true;
@@ -152,6 +117,7 @@ public class RobotPart {
 
 		/**
 		 * Checks to make sure every Part is valid / exists
+		 * 
 		 * @param hardwareMap
 		 * @return if all Parts are valid
 		 */
