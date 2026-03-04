@@ -27,7 +27,6 @@ public class SequentialAction extends Action {
 			return false;
 		}
 		if (!actions.get(index).run()) {
-			RobotLog.d("AHM next sequential update");
 			index += 1;
 		}
 		return index != actions.size();

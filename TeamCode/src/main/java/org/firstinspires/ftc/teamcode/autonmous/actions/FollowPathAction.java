@@ -25,7 +25,6 @@ public class FollowPathAction extends Action {
 			if (currentPath == paths.size())
 				return false;
 			follower.followPath(paths.get(currentPath), true);
-			RobotLog.d("AHM PATH increased");
 		}
 
 		return currentPath <= paths.size();
