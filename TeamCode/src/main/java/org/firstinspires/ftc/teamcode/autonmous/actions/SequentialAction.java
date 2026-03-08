@@ -15,7 +15,8 @@ public class SequentialAction extends Action {
 	boolean lastAction;
 
 	/**
-	 * A Sequential Action runs each of its arguments, and then advances to the next argument once one is finished
+	 * A Sequential Action runs each of its arguments, and then advances to the next
+	 * argument once one is finished
 	 */
 	public SequentialAction(Action... actions) {
 		this.actions = new ArrayList<>(Arrays.asList(actions));
@@ -34,6 +35,7 @@ public class SequentialAction extends Action {
 
 	/**
 	 * Appends a new action to the end of the list
+	 * 
 	 * @param action
 	 */
 	public void appendAction(Action action) {

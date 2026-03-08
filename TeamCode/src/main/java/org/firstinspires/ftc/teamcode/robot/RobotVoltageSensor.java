@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 public class RobotVoltageSensor extends RobotPart {
 	VoltageSensor voltageSensor;
 
-	//TODO! actually get empirical values
+	// TODO! actually get empirical values
 	enum VoltageLevel {
 		Perfect(13.0, 1),
 		Good(12.0, 1),

@@ -14,10 +14,14 @@ public abstract class Action {
 	public abstract boolean run();
 
 	/**
-	 * Takes a hold of the current thread and runs its action until it is finished, this method is not safe from force stops, and will **not** stop if the OpMode is told to stop. If that behavior is desired, call the actions yourself in the main loop.
+	 * Takes a hold of the current thread and runs its action until it is finished,
+	 * this method is not safe from force stops, and will **not** stop if the OpMode
+	 * is told to stop. If that behavior is desired, call the actions yourself in
+	 * the main loop.
 	 */
 	public static void runBlocking(Action action) {
-		while (action.run()) {}
+		while (action.run()) {
+		}
 	}
 
 	public static <T, R> Action from(Function<T, R> function, T input) {
@@ -39,6 +43,7 @@ public abstract class Action {
 
 	/**
 	 * Returns a new ParallelAction made of this and any other action
+	 * 
 	 * @param otherAction
 	 * @return
 	 */

@@ -7,6 +7,10 @@ import com.qualcomm.robotcore.util.RobotLog;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * This action follows a pedropathing path. It is used in place of the
+ * pedropathing state machine model.
+ */
 public class FollowPathAction extends Action {
 	ArrayList<PathChain> paths;
 	Follower follower;

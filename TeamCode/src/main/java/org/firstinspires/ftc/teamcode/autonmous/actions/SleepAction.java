@@ -1,7 +1,8 @@
 package org.firstinspires.ftc.teamcode.autonmous.actions;
 
 /**
- * An action that sleeps for an amount of time, the timer starts the first time run() is called.
+ * An action that sleeps for an amount of time, the timer starts the first time
+ * run() is called.
  */
 public class SleepAction extends Action {
 	long startTime = -1;
@@ -9,6 +10,7 @@ public class SleepAction extends Action {
 
 	/**
 	 * 1000 ms = 1 s
+	 * 
 	 * @param sleepMs
 	 */
 	public SleepAction(long sleepMs) {

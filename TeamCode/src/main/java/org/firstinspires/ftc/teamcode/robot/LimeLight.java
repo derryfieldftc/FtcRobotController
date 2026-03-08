@@ -7,11 +7,12 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 public class LimeLight extends RobotPart {
 	public Limelight3A ll;
+
 	public enum LimeLightMode { // <3 enums
-		Default (0),
-		AprilTag (1),
-		Localization (2),
-		Color (3);
+		Default(0),
+		AprilTag(1),
+		Localization(2),
+		Color(3);
 
 		int pipeline;
 
@@ -39,8 +40,11 @@ public class LimeLight extends RobotPart {
 		ll.captureSnapshot(String.valueOf(opMode.getRuntime()));
 	}
 
-	//TODO! these
-	public void updateLocalizer(Localizer localizer, double rotation) {}
-	public void updateLocalizer(Localizer localizer) {}
+	// TODO! these
+	public void updateLocalizer(Localizer localizer, double rotation) {
+	}
+
+	public void updateLocalizer(Localizer localizer) {
+	}
 
 }

@@ -20,19 +20,26 @@ import org.firstinspires.ftc.teamcode.robot.Robot;
 // Both the name and group arguments are not actually necessary, and I would argue that the name argument actively makes code worse, as without it the OpMode shares the name of the class, making it much easier to find.
 @TeleOp
 
-// This line declares the class. The name of this class always matches the name of the file.
-// The extends keyword here means that this class is a sub-class of the OpMode class. This means it inherits its members (like hardwaremap), but also means that you have to implement some functions.
-// The two main classes that you will extend is an OpMode, and a LinearOpMode. Most beginners extend LinearOpMode, as it is "simpler" I disagree with this notion. I believe that the iterative nature (loop function) of a normal OpMode is much better to learn, because it is most commonly used (an exception to this is an autonomous opmode, which can be whatever)
+// This line declares the class. The name of this class always matches the name
+// of the file.
+// The extends keyword here means that this class is a sub-class of the OpMode
+// class. This means it inherits its members (like hardwaremap), but also means
+// that you have to implement some functions.
+// The two main classes that you will extend is an OpMode, and a LinearOpMode.
+// Most beginners extend LinearOpMode, as it is "simpler" I disagree with this
+// notion. I believe that the iterative nature (loop function) of a normal
+// OpMode is much better to learn, because it is most commonly used (an
+// exception to this is an autonomous opmode, which can be whatever)
 public class ExampleOpMode extends OpMode {
-    Robot robot;
+	Robot robot;
 
-    @Override
-    public void init() {
+	@Override
+	public void init() {
 
-    }
+	}
 
-    @Override
-    public void loop() {
+	@Override
+	public void loop() {
 
-    }
+	}
 }
