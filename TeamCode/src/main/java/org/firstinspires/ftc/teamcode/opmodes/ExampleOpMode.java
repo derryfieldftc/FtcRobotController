@@ -9,8 +9,13 @@ package org.firstinspires.ftc.teamcode.opmodes;
 // Importing a file allows you to use code from that file in you project. Generally you will not write these imports yourself, but Android Studio will auto-magically import them for you.
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
+import org.firstinspires.ftc.teamcode.GamepadManager;
+import org.firstinspires.ftc.teamcode.autonmous.actions.TeleOpAction;
 import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.robot.RobotPart;
 
 // After the imports comes the actual code.
 
@@ -31,15 +36,73 @@ import org.firstinspires.ftc.teamcode.robot.Robot;
 // OpMode is much better to learn, because it is most commonly used (an
 // exception to this is an autonomous opmode, which can be whatever)
 public class ExampleOpMode extends OpMode {
+	// Here is where we declare all of our member variables. It is convention to leave variables at the top like this.
+	// This is our robot, which is a container for all the subsystems, and a place for functions that require multiple subsystems are held
 	Robot robot;
+
+	// This is used to show an example of using an action during teleop
+	TeleOpAction doSomethingImportant;
+
+	// This is a declaration of our motors. **DO NOT DO THIS**. The robot should hold all the subsystems. This is just used in the example to make it not useless
+	DcMotor motorFR, motorFL, motorBR, motorBL;
+
+	// We use a class called GamepadManager (cutesy of https://github.com/asmi57)
+	// Its preference, but we use this cause it is more ergonomic.
+	// If you decide not to use this, the gamepad class has methods like gamepad.aWasPressed()
+	GamepadManager mgamepad1;
 
 	@Override
 	public void init() {
+		robot = new Robot(this);
+		doSomethingImportant = new TeleOpAction(() -> robot.doSomethingAction());
 
+		motorFR = hardwareMap.dcMotor.get(RobotPart.Part.MotorFR.name);
+		motorFL = hardwareMap.dcMotor.get(RobotPart.Part.MotorFL.name);
+		motorBR = hardwareMap.dcMotor.get(RobotPart.Part.MotorBR.name);
+		motorBL = hardwareMap.dcMotor.get(RobotPart.Part.MotorBL.name);
+
+		motorFL.setDirection(DcMotorSimple.Direction.REVERSE);
+		motorBL.setDirection(DcMotorSimple.Direction.REVERSE);
+
+		mgamepad1 = new GamepadManager(gamepad1);
 	}
 
 	@Override
 	public void loop() {
+		boolean doingSomethingImportant = doSomethingImportant.run(); // Because this is a TeleOpAction we do not care about the result of run(); We use it here for telemetry though
+		if (mgamepad1.justPressed(GamepadManager.Button.A))
+			doSomethingImportant.start();
 
+		telemetry.addData("Doing something important", doingSomethingImportant);
+
+		// Mecanum Logic
+		double y = -gamepad1.left_stick_y;
+		double x = gamepad1.left_stick_x;
+		double rx = gamepad1.right_stick_x;
+		double powerFL = y + x + rx;
+		double powerBL = y - x + rx;
+		double powerFR = y - x - rx;
+		double powerBR = y + x - rx;
+
+		double multiplier = 1 - gamepad1.right_trigger;
+
+		motorFL.setPower(clamp(1, -1, powerFL) * multiplier);
+		motorBL.setPower(clamp(1, -1, powerBL) * multiplier);
+		motorFR.setPower(clamp(1, -1, powerFR) * multiplier);
+		motorBR.setPower(clamp(1, -1, powerBR) * multiplier);
+		// End of Mecanum logic
+
+		telemetry.update(); // notice how this is ONLY called ONCE at the end of the whole block
+		mgamepad1.poll(); // We also only poll the gamepadManager once per loop
 	}
+
+    private double clamp(double max, double min, double num) {
+        if (num > max) {
+            return max;
+        } else if (num < min) {
+            return min;
+        } else {
+            return num;
+        }
+    }
 }

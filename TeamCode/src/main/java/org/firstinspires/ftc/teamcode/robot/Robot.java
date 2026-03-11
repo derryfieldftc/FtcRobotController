@@ -47,6 +47,7 @@ public class Robot extends RobotPart {
 		// telemetry.update(); <- do not use telemetry.update() unless you are in an opMode
 	}
 
+	// This variable breaks the norm of putting all members at the top of the class. This is an okay place to break this rule (in Alex's opinion)
 	int somethingsDid = 0;
 	/**
 	 * Does something very important...
