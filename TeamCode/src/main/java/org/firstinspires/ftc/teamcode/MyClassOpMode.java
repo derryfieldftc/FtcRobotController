@@ -35,7 +35,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import org.firstinspires.ftc.teamcode.robot.Robot;
+import org.firstinspires.ftc.teamcode.robot.*;
 
 /*
  * 1) Axial:    Driving forward and backward               Left-joystick Forward/Backward
@@ -46,7 +46,7 @@ import org.firstinspires.ftc.teamcode.robot.Robot;
  * the direction of all 4 motors (see code below).
  */
 
-@TeleOp(name="Robot Class Test", group="GTTest")
+@TeleOp(name="Lift Class Test", group="GTTest")
 public class MyClassOpMode extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
@@ -72,7 +72,7 @@ public class MyClassOpMode extends LinearOpMode {
         tiltMotor = hardwareMap.get(DcMotor.class, "tilt");
         tiltLimit =  hardwareMap.get(RevTouchSensor.class, "tiltLimit");
 
-        Robot robot = new Robot(hardwareMap);
+        TiltRobot robot = new TiltRobot(hardwareMap);
 
         // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");

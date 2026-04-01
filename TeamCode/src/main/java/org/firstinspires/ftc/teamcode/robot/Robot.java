@@ -72,28 +72,4 @@ public class Robot {
         driveFL.setPower(frontLeftPower);
         driveFR.setPower(frontRightPower);
     }
-
-    public void lift(boolean up, boolean down) {
-        double liftMotorPower = 0;
-        if (up) {
-            liftMotorPower += 1;
-        }
-        if (down) {
-            liftMotorPower += -1;
-        }
-        liftMotor.setPower(liftMotorPower);
-    }
-    public void tilt(boolean up, boolean down, boolean limit) {
-        double tiltMotorPower = 0;
-        if (limit) {
-            tiltMotorPower = 0;
-        }else if (up) {
-            tiltMotorPower += 0.25;
-        }
-        if (down) {
-            tiltMotorPower += -0.25;
-        }
-
-        tiltMotor.setPower(tiltMotorPower);
-    }
 }
