@@ -36,19 +36,24 @@ import org.firstinspires.ftc.teamcode.robot.RobotPart;
 // OpMode is much better to learn, because it is most commonly used (an
 // exception to this is an autonomous opmode, which can be whatever)
 public class ExampleOpMode extends OpMode {
-	// Here is where we declare all of our member variables. It is convention to leave variables at the top like this.
-	// This is our robot, which is a container for all the subsystems, and a place for functions that require multiple subsystems are held
+	// Here is where we declare all of our member variables. It is convention to
+	// leave variables at the top like this.
+	// This is our robot, which is a container for all the subsystems, and a place
+	// for functions that require multiple subsystems are held
 	Robot robot;
 
 	// This is used to show an example of using an action during teleop
 	TeleOpAction doSomethingImportant;
 
-	// This is a declaration of our motors. **DO NOT DO THIS**. The robot should hold all the subsystems. This is just used in the example to make it not useless
+	// This is a declaration of our motors. **DO NOT DO THIS**. The robot should
+	// hold all the subsystems. This is just used in the example to make it not
+	// useless
 	DcMotor motorFR, motorFL, motorBR, motorBL;
 
 	// We use a class called GamepadManager (cutesy of https://github.com/asmi57)
 	// Its preference, but we use this cause it is more ergonomic.
-	// If you decide not to use this, the gamepad class has methods like gamepad.aWasPressed()
+	// If you decide not to use this, the gamepad class has methods like
+	// gamepad.aWasPressed()
 	GamepadManager mgamepad1;
 
 	@Override
@@ -69,7 +74,10 @@ public class ExampleOpMode extends OpMode {
 
 	@Override
 	public void loop() {
-		boolean doingSomethingImportant = doSomethingImportant.run(); // Because this is a TeleOpAction we do not care about the result of run(); We use it here for telemetry though
+		boolean doingSomethingImportant = doSomethingImportant.run(); // Because this is a TeleOpAction we do not care
+																		// about the result of run(); We use it here for
+																		// telemetry though
+		doSomethingImportant.run();
 		if (mgamepad1.justPressed(GamepadManager.Button.A))
 			doSomethingImportant.start();
 
@@ -96,13 +104,13 @@ public class ExampleOpMode extends OpMode {
 		mgamepad1.poll(); // We also only poll the gamepadManager once per loop
 	}
 
-    private double clamp(double max, double min, double num) {
-        if (num > max) {
-            return max;
-        } else if (num < min) {
-            return min;
-        } else {
-            return num;
-        }
-    }
+	private double clamp(double max, double min, double num) {
+		if (num > max) {
+			return max;
+		} else if (num < min) {
+			return min;
+		} else {
+			return num;
+		}
+	}
 }
