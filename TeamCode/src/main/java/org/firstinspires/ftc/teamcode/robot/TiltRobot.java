@@ -17,6 +17,7 @@ public class TiltRobot extends Robot {
 
     public TiltRobot(HardwareMap hardwareMap){
         super(hardwareMap);
+        // NOTE: Commented out is from Robot.java.
 //        this.hardwareMap = hardwareMap;
 //        driveBL = this.hardwareMap.get(DcMotor.class, "motorBL");
 //        driveBR = this.hardwareMap.get(DcMotor.class, "motorBR");
