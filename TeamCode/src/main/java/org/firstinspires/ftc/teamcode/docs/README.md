@@ -3,7 +3,7 @@ This is not meant to be docs in the usual sense of code comments and whatnot, mo
 This is meant for programmers to leave information on external library usage, and other general information.
 
 ## Contributing:
-If you do anything in this code base, add you name and any link you want below.
+If you do anything in this code base, add you name and any link you want to the *BOTTOM* of this list.
 Lets not forget all the people who taught and helped us.
 
 ## Contributors:
