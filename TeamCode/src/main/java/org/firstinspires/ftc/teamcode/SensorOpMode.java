@@ -49,7 +49,7 @@ import org.firstinspires.ftc.teamcode.robot.TiltRobot;
  * the direction of all 4 motors (see code below).
  */
 
-@TeleOp(name="Lift Class Test", group="GTTest")
+@TeleOp(name="Sensor Op Mode", group="GTTest")
 public class SensorOpMode extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
@@ -75,18 +75,13 @@ public class SensorOpMode extends LinearOpMode {
 // TODO: change placeholders to proper software's names.
         fSensor = this.hardwareMap.get(Rev2mDistanceSensor.class, "front");
         lSensor = this.hardwareMap.get(Rev2mDistanceSensor.class, "left");
-        rSensor = this.hardwareMap.get(Rev2mDistanceSensor.class, "back");
-        bSensor = this.hardwareMap.get(Rev2mDistanceSensor.class, "right");
+        bSensor = this.hardwareMap.get(Rev2mDistanceSensor.class, "back");
+        rSensor = this.hardwareMap.get(Rev2mDistanceSensor.class, "right");
 
-        Robot robot = new Robot(hardwareMap);
         SensorRobot sensor = new SensorRobot(hardwareMap);
 
         // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");
-        telemetry.addData("Forward Distance:", sensor.getDistance(SensorRobot.Sensors.FRONT));
-        telemetry.addData("Left Distance:", sensor.getDistance(SensorRobot.Sensors.LEFT));
-        telemetry.addData("Right Distance:", sensor.getDistance(SensorRobot.Sensors.RIGHT));
-        telemetry.addData("Back Distance:", sensor.getDistance(SensorRobot.Sensors.BACK));
         telemetry.update();
 
         waitForStart();
@@ -100,8 +95,12 @@ public class SensorOpMode extends LinearOpMode {
             double yaw     =  gamepad1.right_stick_x;
 
 
-            robot.drive(axial, lateral, yaw);
+            sensor.drive(axial, lateral, yaw);
 
+            telemetry.addData("Forward Distance:", sensor.getDistance(SensorRobot.Sensors.FRONT));
+            telemetry.addData("Left Distance:", sensor.getDistance(SensorRobot.Sensors.LEFT));
+            telemetry.addData("Right Distance:", sensor.getDistance(SensorRobot.Sensors.RIGHT));
+            telemetry.addData("Back Distance:", sensor.getDistance(SensorRobot.Sensors.BACK));
             telemetry.update();
         }
     }}

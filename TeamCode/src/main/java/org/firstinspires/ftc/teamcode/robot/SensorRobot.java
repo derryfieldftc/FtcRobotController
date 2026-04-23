@@ -7,13 +7,13 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-public class SensorRobot extends Robot {
+public class SensorRobot extends Robot{
     private HardwareMap hardwareMap;
 
-//    private DcMotor driveBL;
-//    private DcMotor driveBR;
-//    private DcMotor driveFL;
-//    private DcMotor driveFR;
+    private DcMotor driveBL;
+    private DcMotor driveBR;
+    private DcMotor driveFL;
+    private DcMotor driveFR;
     private Rev2mDistanceSensor fSensor;
     private Rev2mDistanceSensor lSensor;
     private Rev2mDistanceSensor rSensor;
@@ -27,7 +27,7 @@ public class SensorRobot extends Robot {
     }
     public SensorRobot(HardwareMap hardwareMap){
         super(hardwareMap);
-//        this.hardwareMap = hardwareMap;
+        this.hardwareMap = hardwareMap;
 //        driveBL = this.hardwareMap.get(DcMotor.class, "motorBL");
 //        driveBR = this.hardwareMap.get(DcMotor.class, "motorBR");
 //        driveFL = this.hardwareMap.get(DcMotor.class, "motorFL");
@@ -60,5 +60,8 @@ public class SensorRobot extends Robot {
                 return rSensor.getDistance(DistanceUnit.METER);
         }
         return DistanceUnit.infinity;
+    }
+    public void drive(double axial, double lateral, double yaw){
+        super.drive(axial, lateral, yaw);
     }
 }
