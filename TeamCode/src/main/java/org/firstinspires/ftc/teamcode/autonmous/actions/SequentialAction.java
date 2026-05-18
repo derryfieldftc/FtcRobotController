@@ -1,10 +1,7 @@
 package org.firstinspires.ftc.teamcode.autonmous.actions;
 
-import com.qualcomm.robotcore.util.RobotLog;
-
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Stack;
 
 /**
  * Use this to run a list of actions, starting the next one after one finishes
@@ -34,11 +31,27 @@ public class SequentialAction extends Action {
 	}
 
 	/**
-	 * Appends a new action to the end of the list
-	 * 
-	 * @param action
+	 * Appends new actions to the end of the list
 	 */
-	public void appendAction(Action action) {
-		actions.add(action);
+	public void appendActions(Action... actions) {
+        this.actions.addAll(Arrays.asList(actions));
+	}
+
+	/**
+	 * Returns the currently running action
+	 * @return
+	 */
+	public Action getCurrentAction() {
+		return actions.get(index);
+	}
+
+	/**
+	 * Returns the action at the specified index
+	 * @param index
+	 * @return
+	 * @throws IndexOutOfBoundsException
+	 */
+	public Action getAction(int index) throws IndexOutOfBoundsException {
+		return actions.get(index);
 	}
 }
