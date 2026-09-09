@@ -20,7 +20,7 @@ public class Robot extends RobotPart {
 
 	// Make sure all subsystems are public
 	public RobotVoltageSensor voltage;
-
+	public Intake intake;
 	// This a weird subsection of the robot, being the follower. This is made by and for pedropathing.
 	public Follower follower;
 
@@ -31,6 +31,7 @@ public class Robot extends RobotPart {
 		// At this point also instantiate any sub-systems of the robot.
 		// RobotVoltageSensor is used here as an example
 		voltage = new RobotVoltageSensor(opMode);
+		intake = new Intake(opMode);
 	}
 
 	/**
@@ -63,7 +64,15 @@ public class Robot extends RobotPart {
 			}
 		};
 	}
-
+	public Action intakeAction(double speed) {
+		return new Action() {
+			@Override
+			public boolean run() {
+				intake.setSpeed(speed);
+				return true;
+			}
+		};
+	}
 	double lastTime = 0;
 	/**
 	 * This function is used to check loop times. It returns the difference, in seconds, of the current time since the last time it was called.

@@ -65,9 +65,9 @@ public class RobotPart {
 		 * Back Left drive motor
 		 */
 		MotorBL("motorBL", DcMotor.class),
-		LimeLight("limelight", Limelight3A.class),;
+		LimeLight("limelight", Limelight3A.class),
 		// TODO! make this list exhaustive
-
+		intakeMotor("intakeMotor", DcMotor.class),;
 		public final String name;
 		public final Class<? extends HardwareDevice> type;
 
