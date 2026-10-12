@@ -92,10 +92,10 @@ public class TTopMode extends OpMode {
 
 		// Mecanum Logic
 		double y = -gamepad1.left_stick_y;
-		double x = gamepad1.left_stick_x;
+		double x = -gamepad1.left_stick_x;
 		double rx = gamepad1.right_stick_x;
-		double powerFL = y + x + rx;
-		double powerBL = y - x + rx;
+		double powerFL = y - x + rx;
+		double powerBL = y + x + rx;
 		double powerFR = y - x - rx;
 		double powerBR = y + x - rx;
 
@@ -106,7 +106,8 @@ public class TTopMode extends OpMode {
 		motorFR.setPower(clamp(1, -1, powerFR) * multiplier);
 		motorBR.setPower(clamp(1, -1, powerBR) * multiplier);
 		// End of Mecanum logic
-		robot.intake.setSpeed(gamepad1.right_trigger);
+
+		robot.intake.setSpeed(-gamepad1.right_trigger);
 		telemetry.update(); // notice how this is ONLY called ONCE at the end of the whole block
 		mgamepad1.poll(); // We also only poll the gamepadManager once per loop
 	}
