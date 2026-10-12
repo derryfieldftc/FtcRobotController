@@ -23,12 +23,36 @@ import org.firstinspires.ftc.teamcode.robot.RobotPart;
 public class Constants {
 	public static FollowerConstants followerConstants = new FollowerConstants();
 
-	public static MecanumConstants mecanumDrive = new MecanumConstants();
+	// Motor names/directions are structural (they describe wiring, not this year's
+	// robot dimensions), so they're restored here. Directions are last year's values
+	// as a starting point - verify empirically (drive forward on the joystick, flip
+	// the direction of any wheel spinning backward).
+	public static MecanumConstants mecanumDrive = new MecanumConstants()
+			.maxPower(1)
+			.rightFrontMotorName(RobotPart.Part.MotorFR.name)
+			.rightRearMotorName(RobotPart.Part.MotorBR.name)
+			.leftRearMotorName(RobotPart.Part.MotorBL.name)
+			.leftFrontMotorName(RobotPart.Part.MotorFL.name)
+			.leftFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
+			.leftRearMotorDirection(DcMotorSimple.Direction.FORWARD)
+			.rightFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
+			.rightRearMotorDirection(DcMotorSimple.Direction.REVERSE);
 
-	public static PinpointConstants localizerConstants = new PinpointConstants();
+	// forwardPodY/strafePodX are physical pod offsets from last year's chassis -
+	// TODO: re-measure for this year's robot. hardwareMapName/encoderResolution/
+	// encoder directions are structural and restored below.
+	public static PinpointConstants localizerConstants = new PinpointConstants()
+			.forwardPodY(6.5)
+			.strafePodX(-(3 + 7 / 8.0))
+			.distanceUnit(DistanceUnit.INCH)
+			.hardwareMapName("pinpoint")
+			.encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
+			.forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD)
+			.strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED);
 
-	// Last years Example:
-	// public static FollowerConstants followerConstants = new FollowerConstants()
+	// Last year's followerConstants tuning (mass/PIDF/velocities) - do not reuse
+	// blindly, this describes last year's physical robot. Re-tune via the Pedro
+	// Pathing tuning OpModes: https://pedropathing.com/docs/pathing/tuning
 	// .mass(11.339) //Kg
 	// .forwardZeroPowerAcceleration(-28.80868329)
 	// .lateralZeroPowerAcceleration(-57.99970102)
@@ -45,28 +69,8 @@ public class Constants {
 	// .useSecondaryTranslationalPIDF(true)
 	// .useSecondaryHeadingPIDF(true)
 	// .useSecondaryDrivePIDF(true);
-	//
-	// public static MecanumConstants mecanumDrive = new MecanumConstants()
-	// .maxPower(1)
-	// .rightFrontMotorName(RobotPart.Part.MotorFR.name)
-	// .rightRearMotorName(RobotPart.Part.MotorBR.name)
-	// .leftRearMotorName(RobotPart.Part.MotorBL.name)
-	// .leftFrontMotorName(RobotPart.Part.MotorFL.name)
-	// .leftFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
-	// .leftRearMotorDirection(DcMotorSimple.Direction.FORWARD)
-	// .rightFrontMotorDirection(DcMotorSimple.Direction.REVERSE)
-	// .rightRearMotorDirection(DcMotorSimple.Direction.REVERSE)
-	// .xVelocity(59.639027)
-	// .yVelocity(42.776740);
-	//
-	// public static PinpointConstants localizerConstants = new PinpointConstants()
-	// .forwardPodY(6.5)
-	// .strafePodX(-(3 + 7 / 8.0))
-	// .distanceUnit(DistanceUnit.INCH)
-	// .hardwareMapName("pinpoint")
-	// .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)
-	// .forwardEncoderDirection(GoBildaPinpointDriver.EncoderDirection.FORWARD)
-	// .strafeEncoderDirection(GoBildaPinpointDriver.EncoderDirection.REVERSED);
+	// mecanumDrive also previously had .xVelocity(59.639027) and .yVelocity(42.776740)
+	// tuned for last year's robot - re-tune these too.
 
 	public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
 
